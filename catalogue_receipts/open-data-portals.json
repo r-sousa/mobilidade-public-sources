@@ -1,0 +1,93 @@
+{
+  "catalogues": [
+    {
+      "catalogue_role": "DISCOVERY_AND_DISTRIBUTION_RESOLVER",
+      "endpoint": "https://dados.gov.pt/api/1/datasets/?page_size=3&q=transporte",
+      "format": "udata-json",
+      "name": "Portugal — dados.gov.pt",
+      "provider": "dados_gov_pt",
+      "sample": [
+        {
+          "id": "6870547c8c1cd0da86631c25",
+          "organization": "Instituto Nacional de Estatística",
+          "page": "https://dados.gov.pt/datasets/transporte-de-correio-tkm-pelas-empresas-nacionais-de-transporte-aereo",
+          "resource_urls": [
+            "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0009811&lang=PT",
+            "https://www.ine.pt/ine/json_indicador/pindicaMeta.jsp?varcd=0009811&lang=PT"
+          ],
+          "title": "Transporte de correio (tkm) pelas empresas nacionais de transporte aéreo"
+        },
+        {
+          "id": "68704f198c1cd0da866318c7",
+          "organization": "Instituto Nacional de Estatística",
+          "page": "https://dados.gov.pt/datasets/transporte-de-carga-tkm-pelas-empresas-nacionais-de-transporte-aereo",
+          "resource_urls": [
+            "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0009810&lang=PT",
+            "https://www.ine.pt/ine/json_indicador/pindicaMeta.jsp?varcd=0009810&lang=PT"
+          ],
+          "title": "Transporte de carga (tkm) pelas empresas nacionais de transporte aéreo"
+        },
+        {
+          "id": "687055108c1cd0da86631c7a",
+          "organization": "Instituto Nacional de Estatística",
+          "page": "https://dados.gov.pt/datasets/transporte-de-passageiros-pkm-pelas-empresas-nacionais-de-transporte-aereo",
+          "resource_urls": [
+            "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0009809&lang=PT",
+            "https://www.ine.pt/ine/json_indicador/pindicaMeta.jsp?varcd=0009809&lang=PT"
+          ],
+          "title": "Transporte de passageiros (pkm) pelas empresas nacionais de transporte aéreo"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "catalogue_role": "DISCOVERY_AND_DISTRIBUTION_RESOLVER",
+      "endpoint": "https://datos.gob.es/apidata/catalog/dataset.json?_pageSize=3&_page=0",
+      "external_urls_sample": [
+        "http://inspire.ec.europa.eu/theme/ac",
+        "http://publications.europa.eu/resource/authority/data-theme/ENVI",
+        "http://publications.europa.eu/resource/authority/file-type/HTML",
+        "http://publications.europa.eu/resource/authority/frequency/OP_DATPRO",
+        "http://publications.europa.eu/resource/authority/language/SPA",
+        "http://publications.europa.eu/resource/authority/licence/CC_BY_4_0",
+        "http://purl.org/dc/terms/IMT",
+        "http://purl.org/linked-data/api/vocab#ListEndpoint",
+        "http://purl.org/linked-data/api/vocab#Page",
+        "http://servicios3.aragon.es/iaeaxi_docs/04/14/02/041402F04.px",
+        "http://www.w3.org/ns/dcat#Dataset",
+        "http://www.w3.org/ns/dcat#Distribution",
+        "http://xmlns.com/foaf/0.1/Document",
+        "https://catalogo.datosabiertos.miteco.gob.es/catalogo/bnode/N094d7b9e44c94c8cbe2b03562fdaeea3",
+        "https://catalogo.datosabiertos.miteco.gob.es/catalogo/dataset/b0da07b8-6856-4af2-91f7-20a7531d6b6f/resource/4e99901d-aed7-445c-ab1b-0690a1e195f5",
+        "https://datosabiertos.jcyl.es/web/jcyl/risp/es/salud/cobertura-vacunacion/1284880380254.csv",
+        "https://datosabiertos.jcyl.es/web/jcyl/risp/es/salud/cobertura-vacunacion/1284880380254.json",
+        "https://datosabiertos.jcyl.es/web/jcyl/risp/es/salud/cobertura-vacunacion/1284880380254.xls",
+        "https://datosabiertos.jcyl.es/web/jcyl/set/es/salud/cobertura-vacunacion/1284880380254",
+        "https://opendata.aragon.es/datos/catalogo/dataset/poblacion-con-dificultades-para-las-actividades-del-hogar-debido-a-una-limitacion-en-la-actividad-o-una-enfermedad-de-larga-duracion-segun-el-grado-de-dificultad-por-relacion-con-la-actividad-economica"
+      ],
+      "format": "datos-gob-semantic-json",
+      "name": "Spain — datos.gob.es",
+      "provider": "datos_gob_es",
+      "status": "PASS",
+      "top_level_type": "dict"
+    },
+    {
+      "catalogue_role": "DISCOVERY_AND_DISTRIBUTION_RESOLVER",
+      "endpoint": "https://data.europa.eu/sparql",
+      "format": "DCAT-AP/SPARQL",
+      "name": "Europe — data.europa.eu",
+      "provider": "data_europa_eu",
+      "sample_dataset_uris": [
+        "http://data.europa.eu/88u/dataset/0800af55-8e56-49a0-8986-aa55151d0440",
+        "http://data.europa.eu/88u/dataset/22984271-bundesamt-fur-statistik-bfs",
+        "http://data.europa.eu/88u/dataset/09bd95e6-091a-4b04-8984-1a7ea23fcf9d",
+        "http://data.europa.eu/88u/dataset/244310-11",
+        "http://data.europa.eu/88u/dataset/244310-16"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "fingerprint": "89736100d823cd89bc37be8183e68dc64696a097b2d34172c9023dea262ddebf",
+  "role": "CATALOGUE_RESOLVER_NOT_CANONICAL_SOURCE",
+  "schema_version": "1.0.0"
+}
