@@ -1,0 +1,48 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "ea297dd3df0114020f1528264cdb6fc380be36ae",
+  "acquisition_timestamp": "2026-09-21T09:25:51.795287Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 47444,
+      "format": "HTML",
+      "name": "APDL_LEIXOES_GOODS_ANNUAL__F150-movimento-mercadorias-anual.html",
+      "role": "native",
+      "sha256": "c06ffb80e2d2eb88a4b5c190282199f21223ebb556313ac8354d70efd834e505",
+      "source_url": "https://leixoes.apdl.pt/estatisticas/carga/movimento-de-mercadorias-anual/"
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "HTML",
+  "limitations": "Preserve the producer HTML table and category labels exactly; no consumer transformation in this repository.",
+  "native_asset_fingerprint": "a45b861a241a6cec44fbc24c72f3fc72169cc501c1ed3af718ec482f74f4a0b9",
+  "producer": "APDL",
+  "product_key": "mobilidade-source-id::F150",
+  "raw_native": {
+    "classification": "producer-native cargo categories",
+    "geography": "Porto de Leixões"
+  },
+  "request_id": "MN-PRIVATE-SINK-F150-20260921T1028",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": null,
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "current published annual table",
+  "source_set_id": "F150",
+  "source_url": "https://leixoes.apdl.pt/estatisticas/carga/movimento-de-mercadorias-anual/",
+  "title": "APDL Leixões — Movimento de Mercadorias Anual",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
