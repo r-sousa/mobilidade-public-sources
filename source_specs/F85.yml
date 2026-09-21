@@ -2,7 +2,7 @@ schema_version: 1.0.0
 source_set_id: F85
 title: INE — Inquérito às Despesas das Famílias 2022/2023 — transport expenditure route
 producer: INE Portugal
-product_key: ine.pt::0013516
+product_key: mobilidade-source-id::F85
 adapter: ine_json
 access: public
 sink: private
