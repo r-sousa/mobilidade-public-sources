@@ -1,4 +1,4 @@
-# retest INE code-label equivalence 2026-09-21
+# retest INE full-dimension omission fix 2026-09-21
 schema_version: 1.0.0
 source_set_id: F85
 title: INE — Inquérito às Despesas das Famílias 2022/2023 — transport expenditure route
