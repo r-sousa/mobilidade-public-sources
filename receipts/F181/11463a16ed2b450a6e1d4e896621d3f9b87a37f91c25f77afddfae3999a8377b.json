@@ -1,0 +1,46 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "7d0ddc3abedba916fde437ad24effdc1884a052e",
+  "acquisition_timestamp": "2026-09-21T02:38:16.769883Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 621771,
+      "format": "JSON",
+      "name": "JCYL_ELECTRICITY_MONTHLY__consumo-electricidad-mensual.json",
+      "sha256": "a120bac91f0b023e1870b49748ec90c8caad642a8d84d5ecb6acb9df8740ba99",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/exports//json?&timezone=Europe/Madrid&lang=es"
+    }
+  ],
+  "cadence": "monthly",
+  "disposition": {
+    "bytes_persisted": false,
+    "intended_sink": "private",
+    "status": "PROBE_ONLY_NO_PERSISTENCE"
+  },
+  "expected_format": "JSON",
+  "limitations": "Preserve publisher-native nulls and categories; no public redistribution is inferred here.",
+  "native_asset_fingerprint": "11463a16ed2b450a6e1d4e896621d3f9b87a37f91c25f77afddfae3999a8377b",
+  "producer": "Junta de Castilla y León Open Data",
+  "product_key": "mobilidade-source-id::F181",
+  "raw_native": {
+    "classification": "supplier and residential/services/industrial type",
+    "geography": "Castilla y León provinces"
+  },
+  "request_id": "push-35554824107",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://datos.gob.es/es/catalogo/a07002862-consumo-de-electricidad-mensual-en-castilla-y-leon1",
+    "license": "CC BY 4.0 reported by the public catalogue; canonical reuse state remains unchanged",
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "current producer export",
+  "source_set_id": "F181",
+  "source_url": "https://datosabiertos.jcyl.es/web/jcyl/set/es/energia/consumo-electricidad-mensual/1284978851890",
+  "title": "Junta de Castilla y León — Consumo de electricidad mensual",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
