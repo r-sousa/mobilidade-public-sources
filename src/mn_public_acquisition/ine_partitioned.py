@@ -533,16 +533,44 @@ def acquire(spec: dict, work: Path) -> dict:
             raise INESemanticError(f"Requested {dim} codes absent from metadata: {unknown}")
         dims[dim] = requested
 
-    selected_meta = {}
+    for k, levels in (pms.get("dimension_levels") or {}).items():
+        dim_num = int(k)
+        dim = f"Dim{dim_num}"
+        wanted_levels = {str(x) for x in (levels if isinstance(levels, list) else [levels])}
+        items = _dimension_items(meta_obj, dim_num)
+        selected = [
+            code for code in dims.get(dim, [])
+            if str((items.get(code) or {}).get("categ_nivel")) in wanted_levels
+        ]
+        if not selected:
+            raise INESemanticError(
+                f"Requested {dim} metadata levels absent after prior filters: {sorted(wanted_levels)}"
+            )
+        dims[dim] = selected
+
+    selected_meta_summary = {}
     for dim, codes in dims.items():
         n = int(dim[3:])
         items = _dimension_items(meta_obj, n)
-        selected_meta[dim] = {code: items.get(code) for code in codes}
-    print(json.dumps({"ine_selected_metadata": selected_meta}, ensure_ascii=False), flush=True)
+        selected_meta_summary[dim] = {
+            "count": len(codes),
+            "sample": {code: items.get(code) for code in codes[:20]},
+        }
+    print(
+        json.dumps({"ine_selected_metadata_summary": selected_meta_summary}, ensure_ascii=False),
+        flush=True,
+    )
 
     max_cells = min(MAX_CELLS, int(pms.get("max_cells_per_chunk", MAX_CELLS)))
+    max_url_length = min(
+        MAX_URL_LENGTH, int(pms.get("max_url_length", MAX_URL_LENGTH))
+    )
     plan = _plan(
-        indicator, dims, full_dimensions=all_dims, max_cells=max_cells
+        indicator,
+        dims,
+        full_dimensions=all_dims,
+        max_cells=max_cells,
+        max_url_length=max_url_length,
     )
 
     pending = [{"selection": x, "explicit": False} for x in plan]
@@ -605,6 +633,14 @@ def acquire(spec: dict, work: Path) -> dict:
             for child in reversed(_split(selection)):
                 pending.insert(0, {"selection": child, "explicit": explicit})
             continue
+        except requests.HTTPError as e:
+            status = getattr(e.response, "status_code", None)
+            splittable = any(len(v) > 1 for v in selection.values())
+            if status == 403 and splittable:
+                for child in reversed(_split(selection)):
+                    pending.insert(0, {"selection": child, "explicit": explicit})
+                continue
+            raise
 
     missing = {
         dim: sorted(set(values) - observed_global[dim])
@@ -623,7 +659,7 @@ def acquire(spec: dict, work: Path) -> dict:
         "schema_version": "1.0.0",
         "indicator": indicator,
         "max_cells_per_chunk": max_cells,
-        "max_url_length": MAX_URL_LENGTH,
+        "max_url_length": max_url_length,
         "spacing_seconds": spacing,
         "planned_initial_chunks": len(plan),
         "completed_chunks": len(raw_assets),
