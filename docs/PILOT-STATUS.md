@@ -39,17 +39,22 @@ Disposition:
 - do not silently replace the official producer route with a secondary mirror;
 - retain F12 for retry after the official producer route is operational.
 
-## Staged, not yet executed against the private sink
+## Current private-control-plane pilots
 
-Draft PR #1 stages:
+The control direction has been inverted so that all cross-repository secrets remain private.
 
-- F148 — Eurostat `tran_r_rago`;
-- F85 — INE indicator route `0013516`, preserving canonical F85 identity;
-- F49 — ANSR annual XLSX annexes;
-- F30 — IGE table 4580;
-- F181 — Junta de Castilla y León OpenDataSoft dataset.
+Validated under the current public receipt contract:
 
-They remain unmerged until the public repository contains the repository Actions secret `MN_PRIVATE_SINK_TOKEN`. No secret value belongs in source, logs, receipts or chat.
+- F148 — Eurostat `tran_r_rago`: public acquisition/validation passed; sanitized receipt written; no source bytes persisted publicly.
+- F150 — APDL annual goods HTML: public acquisition/validation passed; sanitized receipt written; no source bytes persisted publicly.
+- F181 — Junta de Castilla y León direct publisher JSON: public acquisition/validation passed; sanitized receipt written; no source bytes persisted publicly.
+- F49 — ANSR annual XLSX annexes: public acquisition/XLSX validation passed; sanitized receipt written; no source bytes persisted publicly.
+- F30 — IGE table 4580: passed after verified TLS incomplete-chain repair and producer-encoding-safe JSON validation; sanitized receipt written.
+- F56 — CP static GTFS: GTFS structural validation passed; sanitized receipt written.
+
+F85 is being reduced to the exact producer-native 2022/2023 × Norte × Transportes × Total slice, with all dimension codes resolved from INE metadata before the data request.
+
+F12 reached a public runner but the official Porto Digital host failed DNS resolution at that time. The GTFS adapter family is independently proven by F56, so F12 remains a producer-route retry case rather than an adapter failure.
 
 ## Remaining pilot gates
 
