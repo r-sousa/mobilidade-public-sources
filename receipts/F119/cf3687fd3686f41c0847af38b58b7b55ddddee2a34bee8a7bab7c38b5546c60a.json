@@ -1,0 +1,86 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "ca8465b4f5b04ed879e0c1f4781f8823b3bc2086",
+  "acquisition_timestamp": "2026-09-21T14:10:54.952976Z",
+  "adapter": "ine_json",
+  "assets": [
+    {
+      "bytes": 10752296,
+      "format": "JSON",
+      "name": "0008152-metadata.json",
+      "role": "native",
+      "sha256": "9ac7bf83fb1d41777eb8e3cf8dde3bf179f99122b76b5e3132c1f2bfb7d99af8",
+      "source_url": "https://github.com/r-sousa/EU-transp-weekly/releases/tag/source-rhomolo-mm-2024-f36c666af69512fe897a#member=F119_INE_0008152_metadata.json"
+    },
+    {
+      "bytes": 23719,
+      "format": "JSON",
+      "name": "0008152-chunk-00001.json",
+      "role": "native",
+      "sha256": "77216bc72311933f44e0cb8c8a9d693b1234bb6df3d32c0a810f879eafe040d0",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008152&lang=PT&Dim1=S7A2024&Dim2=ES&Dim3=01%2C02%2C03%2C04%2C05%2C06%2C07%2C08%2C09%2C10%2C11%2C12%2C13%2C14%2C15%2C16%2C17%2C18%2C19%2C20%2C21%2C22%2C23%2C24%2C25%2C26%2C27%2C28%2C29%2C30%2C31%2C32%2C33%2C34%2C35%2C36%2C37%2C38%2C39%2C40%2C41%2C42%2C43%2C44%2C45%2C46%2C47%2C48%2C49%2C50%2C51%2C52%2C53%2C54%2C55%2C56%2C57%2C58%2C59%2C60%2C61%2C62%2C63%2C64%2C65%2C66%2C67%2C68%2C69%2C70%2C71%2C72%2C73%2C74%2C75%2C76%2C78%2C79%2C80%2C81%2C82%2C83%2C84%2C85%2C86%2C87%2C88%2C89%2C90%2C91%2C92%2C93%2C94%2C95%2C96%2C97%2C98%2C99"
+    },
+    {
+      "bytes": 6594,
+      "format": "JSON",
+      "name": "ine-plan-and-coverage.json",
+      "role": "recomposed",
+      "sha256": "aae7c2f724b51759f301f6e20b5e46c4aad8866029efc586cc29023bb3ebb534",
+      "source_url": null
+    },
+    {
+      "bytes": 4698,
+      "format": "JSONL.GZ",
+      "name": "observations.jsonl.gz",
+      "role": "recomposed",
+      "sha256": "e5cdbc6738cabcded5fb6c42ebc531d0857debc7530d243b7c5bbc868a21d682",
+      "source_url": null
+    },
+    {
+      "bytes": 1471,
+      "format": "JSON",
+      "name": "composition-manifest.json",
+      "role": "recomposed",
+      "sha256": "2d9b1acbe6e746a16d6c9e0cbaba87d1e3c9d4016ad52dccb77e1b05b30ef6f4",
+      "source_url": null
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "INE native JSON",
+  "limitations": "INE requests are metadata-defined and recursively partitioned below the 40,000-cell contract and URL-length bound. Cod=7 or saturated responses trigger further splitting. Raw chunks remain native; recomposed JSONL is derived without replacing missing or confidential values with zero.",
+  "native_asset_fingerprint": "cf3687fd3686f41c0847af38b58b7b55ddddee2a34bee8a7bab7c38b5546c60a",
+  "primary_repair": true,
+  "producer": "INE Portugal",
+  "product_key": "ine.pt::0008152",
+  "raw_native": {
+    "acquisition_scope": "2024 × Spain partner × producer-native NC2 chapter level within the NC8 source hierarchy; national diagnostic slice",
+    "classification": "NC8",
+    "geography": "Portugal reporter × origin country"
+  },
+  "repair_authorization": {
+    "path": "statistics/recovery-20260920/simple-runtime/outputs/orchestrator/20260921T1433PT-primary-repair-authorisation.json",
+    "ref": "f560edbb80350671215887a09221856229128e58"
+  },
+  "request_id": "MN-PRIMARY-REPAIR-F119-ES-NC2-20260921T1515PT",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": null,
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2024",
+  "source_set_id": "F119",
+  "source_url": "https://www.ine.pt/xurl/indx/0008152/PT",
+  "title": "INE 0008152 — Importações anuais em massa por origem × NC8",
+  "validation_result": "PASS_INE_PARTITIONED_RECOMPOSED_COMPLETE"
+}
