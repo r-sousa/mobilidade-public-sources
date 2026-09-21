@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "request_id": "W3C-G39-F166-AENA-MONTHLY",
+  "mission_generation": 39,
+  "source_set_id": "F166",
+  "fingerprint": "164d246dbb187d6aea641d7c8624bb7cbb55d9dd0f0f2213715dfc8ba03e7cab",
+  "private_release_tag": "mn-src-f166-164d246dbb187d6aea64",
+  "handoff_path": "statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P114-GEN39-F166-AENA-PRIVATE-BYTES-EXTRACTION-HANDOFF.json",
+  "execution_revision": 1,
+  "producer_reacquisition": false,
+  "rights_adjudication": false,
+  "consumer_joins": false
+}
