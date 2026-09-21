@@ -1,0 +1,62 @@
+name: Validate public acquisition engine
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'schema/**'
+      - 'source_specs/**'
+      - 'requirements.txt'
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'schema/**'
+      - 'source_specs/**'
+      - 'requirements.txt'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Compile runtime
+        run: python -m compileall -q src
+      - name: Validate every source spec
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from mn_public_acquisition.core import load_spec
+          ids = set()
+          for path in sorted(Path("source_specs").glob("*.y*ml")):
+              spec = load_spec(path)
+              sid = spec["source_set_id"]
+              if sid in ids:
+                  raise SystemExit(f"Duplicate source_set_id: {sid}")
+              ids.add(sid)
+              if path.stem != sid:
+                  raise SystemExit(f"Spec filename {path.name} does not match {sid}")
+              print(f"VALID {sid}: {spec['adapter']} -> {spec['sink']}")
+          if not ids:
+              raise SystemExit("No source specs")
+          PY
+      - name: Security scan for forbidden credential names/values
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE '(DATACOMEX_PASSWORD|AENA_PASSWORD|MN_PRIVATE_SINK_TOKEN|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY)'               --exclude-dir=.git .; then
+            echo "Forbidden credential/private-key material or obsolete public-sink secret reference found" >&2
+            exit 1
+          fi
