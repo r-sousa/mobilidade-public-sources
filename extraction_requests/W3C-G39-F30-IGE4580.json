@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "worker": "W3C",
   "mission_generation": 39,
-  "execution_revision": 2,
+  "execution_revision": 3,
   "package": "P124_F30_IGE4580_EXTRACTION",
   "release_tag": "mn-src-f30-92525a31c1907715c00f",
   "asset_id": 578707824,
@@ -12,5 +12,5 @@
   "producer_reacquisition": false,
   "rights_adjudication": false,
   "consumer_joins": false,
-  "material_change": "strict UTF-8 decode failure replaced by reversible ISO-8859-1 fallback after exact byte/hash verification"
+  "material_change": "interpret producer-native IGE variables plus datos matrix positionally; preserve DatoN and DatoT independently"
 }
