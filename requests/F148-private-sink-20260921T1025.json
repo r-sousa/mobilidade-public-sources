@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F148",
+  "request_id": "MN-PRIVATE-SINK-F148-20260921T1025",
+  "requested_by": "EU-transp-weekly/Mobilidade-Norte-Orchestrator",
+  "reason": "verify MN_PRIVATE_SINK_TOKEN cross-repository private preservation",
+  "canonical_private_branch": "mobilidade-norte-recovery-20260919"
+}
