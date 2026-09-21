@@ -1,0 +1,30 @@
+schema_version: 1.0.0
+source_set_id: F166
+title: Aena — Informes mensuales de tráfico
+producer: Aena
+product_key: mobilidade-source-id::F166
+adapter: html_assets
+access: public
+sink: private
+cadence: monthly
+expected_format: XLS
+source:
+  landing_url: https://www.aena.es/es/estadisticas/informes-mensuales.html?anio=2026
+raw_native:
+  geography: Aena airport network
+  classification: passengers, operations and freight as published by Aena
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://www.aena.es/es/estadisticas/informes-mensuales.html
+  license: null
+  asset_check: null
+parameters:
+  period: "2026"
+  landing_url: https://www.aena.es/es/estadisticas/informes-mensuales.html?anio=2026
+  include_href_regex: "blobwhere="
+  include_text_regex: "^XLS"
+  allowed_host_suffixes:
+    - aena.es
+  max_assets: 1
+  content_type_regex: "(excel|spreadsheet|octet-stream)"
