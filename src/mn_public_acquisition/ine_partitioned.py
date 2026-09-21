@@ -329,13 +329,16 @@ def _plan(
     indicator: str,
     dimensions: dict[str, list[str]],
     *,
+    full_dimensions: dict[str, list[str]] | None = None,
     max_cells: int = MAX_CELLS,
     max_url_length: int = MAX_URL_LENGTH,
 ) -> list[dict[str, list[str]]]:
     result = []
 
     def visit(selection):
-        url = _request_url(indicator, selection, dimensions, explicit=False)
+        url = _request_url(
+            indicator, selection, full_dimensions or dimensions, explicit=False
+        )
         cells = math.prod(len(v) for v in selection.values())
         if cells > max_cells or len(url) > max_url_length:
             for child in _split(selection):
@@ -461,7 +464,9 @@ def acquire(spec: dict, work: Path) -> dict:
     print(json.dumps({"ine_selected_metadata": selected_meta}, ensure_ascii=False), flush=True)
 
     max_cells = min(MAX_CELLS, int(pms.get("max_cells_per_chunk", MAX_CELLS)))
-    plan = _plan(indicator, dims, max_cells=max_cells)
+    plan = _plan(
+        indicator, dims, full_dimensions=all_dims, max_cells=max_cells
+    )
 
     pending = [{"selection": x, "explicit": False} for x in plan]
     raw_assets = []
@@ -473,7 +478,7 @@ def acquire(spec: dict, work: Path) -> dict:
         job = pending.pop(0)
         selection = job["selection"]
         explicit = bool(job["explicit"])
-        url = _request_url(indicator, selection, dims, explicit=explicit)
+        url = _request_url(indicator, selection, all_dims, explicit=explicit)
         try:
             body, final_url = _fetch(s, url, spacing=spacing, attempts=3)
             obj = json.loads(body.decode("utf-8-sig"))
@@ -486,7 +491,7 @@ def acquire(spec: dict, work: Path) -> dict:
 
             omitted = [
                 dim for dim, values in selection.items()
-                if dim != "Dim1" and values == dims.get(dim)
+                if dim != "Dim1" and values == all_dims.get(dim)
             ] if not explicit else []
             if any(set(observed[dim]) != set(selection[dim]) for dim in omitted):
                 pending.insert(0, {"selection": selection, "explicit": True})
