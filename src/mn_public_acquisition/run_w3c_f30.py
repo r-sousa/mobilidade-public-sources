@@ -2,7 +2,7 @@ from __future__ import annotations
 import argparse,json,os
 from pathlib import Path
 import yaml
-from .extract_w3c_f30 import run
+from .extract_w3c_f30_v2 import run
 
 def main() -> None:
     ap=argparse.ArgumentParser(); ap.add_argument('config',type=Path); ap.add_argument('--out',type=Path,required=True); args=ap.parse_args()
