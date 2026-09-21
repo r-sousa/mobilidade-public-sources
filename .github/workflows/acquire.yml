@@ -139,16 +139,39 @@ jobs:
           print(s["source_set_id"])
           PY
             )
-            read -r sink preserved_skip <<<"$(python - "$spec" <<'PY'
+            read -r sink preserved_skip force_primary <<<"$(python - "$spec" <<'PY'
           import sys, yaml
           s=yaml.safe_load(open(sys.argv[1], encoding="utf-8"))
-          print(s["sink"], "1" if (s.get("parameters") or {}).get("preserved_first_skip_primary") else "0")
+          p=s.get("parameters") or {}
+          print(
+            s["sink"],
+            "1" if p.get("preserved_first_skip_primary") else "0",
+            "1" if p.get("force_primary_after_preservation_review") else "0"
+          )
+          PY
+            )"
+            read -r gate_decision gate_state gate_action <<<"$(python - "$sid" "$force_primary" <<'PY'
+          import sys
+          from mn_public_acquisition.preserved_state import primary_decision
+          sid=sys.argv[1]
+          force=sys.argv[2]=="1"
+          d=primary_decision(sid, force_primary=force)
+          print(d["decision"], d["preservation_state"], d["default_action"])
           PY
             )"
             receipt="$RUNNER_TEMP/receipts/${sid}.json"
             echo "::group::${spec}"
+            echo "PRESERVED_STATE ${sid}: state=${gate_state} action=${gate_action} decision=${gate_decision}"
             if [[ "$preserved_skip" == "1" ]]; then
               echo "PRESERVED_FIRST_SKIP_PRIMARY $spec"
+              echo "::endgroup::"
+              continue
+            elif [[ "$gate_decision" == "SKIP_PRIMARY_USE_PRESERVED_FIRST" ]]; then
+              echo "PRESERVED_STATE_ACKNOWLEDGED_SKIP_PRIMARY $spec"
+              echo "::endgroup::"
+              continue
+            elif [[ "$gate_decision" == "BLOCK_PRIMARY" ]]; then
+              echo "PRESERVED_STATE_BLOCK_PRIMARY $spec"
               echo "::endgroup::"
               continue
             elif [[ "$sink" == "private" ]]; then
