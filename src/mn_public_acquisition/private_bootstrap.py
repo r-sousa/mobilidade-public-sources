@@ -219,7 +219,14 @@ def asset_gate(path: Path, item: dict) -> dict:
         }
         missing = sorted(x for x in required if x.casefold() not in member_basenames)
         if missing:
-            raise RuntimeError(f"GTFS package missing required files: {missing}")
+            raise RuntimeError(
+                "GTFS package missing required files: "
+                + repr(missing)
+                + "; top_level_sample="
+                + repr(evidence["member_names"][:80])
+                + "; nested_sample="
+                + repr(evidence["nested_member_names"][:80])
+            )
         detail = {"gtfs_required_members": "PASS"}
     else:
         raise RuntimeError(f"Unsupported asset-level check {check}")
