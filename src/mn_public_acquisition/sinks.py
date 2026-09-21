@@ -307,24 +307,7 @@ def disposition(spec: dict, work: Path, records: list[dict], receipt: dict) -> d
         }
         return result
 
-    token = os.environ.get("MN_PRIVATE_SINK_TOKEN", "")
-    if not token:
-        raise RuntimeError(
-            "MN_PRIVATE_SINK_TOKEN is required for a private sink; "
-            "source bytes were not persisted publicly"
-        )
-
-    result = release_disposition(
-        spec, work, records, receipt,
-        PRIVATE_REPO, token, PRIVATE_BRANCH, False
+    raise RuntimeError(
+        "Private disposition is pull-controlled by the canonical private repository. "
+        "The public runner must use --probe-only and persist only a sanitized public receipt."
     )
-    private_receipt = {**receipt, "disposition": result}
-    path = (
-        "statistics/recovery-20260920/simple-runtime/acquisition-bridge/results/"
-        f"public-plane/{spec['source_set_id']}/"
-        f"{receipt['native_asset_fingerprint']}.json"
-    )
-    result["private_receipt"] = write_immutable_receipt(
-        PRIVATE_REPO, PRIVATE_BRANCH, path, private_receipt, token
-    )
-    return result
