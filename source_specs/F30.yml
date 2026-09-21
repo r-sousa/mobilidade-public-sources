@@ -1,0 +1,24 @@
+schema_version: 1.0.0
+source_set_id: F30
+title: IGE 4580 — Tráfico comercial nos aeroportos
+producer: Instituto Galego de Estatística
+product_key: ige.gal::4580
+adapter: ige_table
+access: public
+sink: private
+cadence: producer-update
+expected_format: CSV
+source:
+  landing_url: https://www.ige.gal/igebdt/selector.jsp?COD=4580
+raw_native:
+  geography: IGE table-native Galicia, Spain, Portugal and Norte geographies
+  classification: IGE table 4580 native dimensions
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://www.ige.gal/web/mostrar_paxina.jsp?paxina=004015
+  license: null
+  asset_check: null
+parameters:
+  table_code: 4580
+  format: csv
