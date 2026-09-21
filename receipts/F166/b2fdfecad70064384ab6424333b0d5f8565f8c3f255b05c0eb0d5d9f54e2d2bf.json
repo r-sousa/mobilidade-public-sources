@@ -1,0 +1,53 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "9f456529b7807177b9e8e32c7639b9d8a88ee71c",
+  "acquisition_timestamp": "2026-09-21T06:55:25.195002Z",
+  "adapter": "html_assets",
+  "assets": [
+    {
+      "bytes": 83235,
+      "format": "HTML",
+      "name": "landing.html",
+      "sha256": "ae1610a20c95407bd4179401cc238daf91e247ba15353d626f5ff37c325c768a",
+      "source_url": "https://www.aena.es/es/estadisticas/informes-mensuales.html?anio=2026"
+    },
+    {
+      "bytes": 55558,
+      "format": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "name": "Satellite",
+      "sha256": "b55e404f9e802392c48f661df784e38cb8b96c3e71cb5e8a58ad0f12ff9506df",
+      "source_url": "https://www.aena.es/sites/Satellite?blobcol=urldata&blobkey=id&blobtable=MungoBlobs&blobwhere=1576873282373&ssbinary=true"
+    }
+  ],
+  "cadence": "monthly",
+  "disposition": {
+    "bytes_persisted": false,
+    "intended_sink": "private",
+    "status": "PROBE_ONLY_NO_PERSISTENCE"
+  },
+  "expected_format": "XLS",
+  "limitations": "Producer landing HTML and selected linked assets are preserved natively; discovery rules are declarative and do not infer reuse permission.",
+  "native_asset_fingerprint": "b2fdfecad70064384ab6424333b0d5f8565f8c3f255b05c0eb0d5d9f54e2d2bf",
+  "producer": "Aena",
+  "product_key": "mobilidade-source-id::F166",
+  "raw_native": {
+    "classification": "passengers, operations and freight as published by Aena",
+    "geography": "Aena airport network"
+  },
+  "request_id": "push-35570532285",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.aena.es/es/estadisticas/informes-mensuales.html",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2026",
+  "source_set_id": "F166",
+  "source_url": "https://www.aena.es/es/estadisticas/informes-mensuales.html?anio=2026",
+  "title": "Aena — Informes mensuales de tráfico",
+  "validation_result": "PASS_HTML_ASSET_DISCOVERY"
+}
