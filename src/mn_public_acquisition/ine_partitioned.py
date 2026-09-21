@@ -375,6 +375,13 @@ def acquire(spec: dict, work: Path) -> dict:
             raise INESemanticError(f"Requested {dim} codes absent from metadata: {unknown}")
         dims[dim] = requested
 
+    selected_meta = {}
+    for dim, codes in dims.items():
+        n = int(dim[3:])
+        items = _dimension_items(meta_obj, n)
+        selected_meta[dim] = {code: items.get(code) for code in codes}
+    print(json.dumps({"ine_selected_metadata": selected_meta}, ensure_ascii=False), flush=True)
+
     max_cells = min(MAX_CELLS, int(pms.get("max_cells_per_chunk", MAX_CELLS)))
     plan = _plan(indicator, dims, max_cells=max_cells)
 
