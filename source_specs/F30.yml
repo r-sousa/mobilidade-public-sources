@@ -7,11 +7,11 @@ adapter: ige_table
 access: public
 sink: private
 cadence: producer-update
-expected_format: CSV
+expected_format: JSON
 source:
   landing_url: https://www.ige.gal/igebdt/selector.jsp?COD=4580
 raw_native:
-  geography: IGE table-native Galicia, Spain, Portugal and Norte geographies
+  geography: IGE table-native geographies
   classification: IGE table 4580 native dimensions
 reuse:
   status: not_verified
@@ -21,4 +21,4 @@ reuse:
   asset_check: null
 parameters:
   table_code: 4580
-  format: csv
+  format: json
