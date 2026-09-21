@@ -1,0 +1,32 @@
+schema_version: 1.0.0
+mode: ARCHIVE_INVENTORY_FIRST
+mission_generation: 39
+private_repository: r-sousa/EU-transp-weekly
+private_branch: mobilidade-norte-recovery-20260919
+release_tag: source-rhomolo-mm-2024-f36c666af69512fe897a
+asset:
+  id: 565922694
+  name: RHOMOLO_MM_2024_source_recovery_final.zip
+  bytes: 9357521
+  sha256: 013ced7e4c5564f3e4219272219325475cd000ec90011fe2c6a0e2652e0840e8
+guards:
+  F169:
+    - Admit only explicitly labelled transport-sector energy rows.
+    - Preserve producer geography, period, native units, flags and missingness.
+    - Never allocate national values to Norte.
+  F170:
+    - Admit only explicit transport or mobility sector rows at producer-native municipality geography.
+    - Generic municipal energy totals remain context only.
+    - Never infer transport use from totals or residuals.
+  F176:
+    - Admit only Galicia rows explicitly labelled transport or transporte.
+    - Preserve carrier, unit, geography, period and member locator.
+    - Never infer transport from demand/generation totals.
+  F179:
+    - Admit only explicitly automotive or road-transport fuel/use rows.
+    - Preserve producer geography, fuel/use label, period and native unit.
+    - Product sales/supply are not end-use consumption unless producer says so.
+producer_reacquisition: false
+rights_adjudication: false
+consumer_joins: false
+valid_empty_is_success: true
