@@ -1,0 +1,85 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "ffe86d4f772fd4191f04be074de1cb324ec6cf81",
+  "acquisition_timestamp": "2026-09-21T13:50:04.042406Z",
+  "adapter": "ine_json",
+  "assets": [
+    {
+      "bytes": 529568,
+      "format": "JSON",
+      "name": "0012934-metadata.json",
+      "role": "native",
+      "sha256": "65c488ba628b418d24a168b3a28fe8b46d7f9cd70882765d083b076b2e3955ba",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindicaMeta.jsp?varcd=0012934&lang=PT"
+    },
+    {
+      "bytes": 4110052,
+      "format": "JSON",
+      "name": "0012934-chunk-00001.json",
+      "role": "native",
+      "sha256": "255444a175a14db46a1798fef9c8c4f62fe78e31edbfe6c799a62e31bee52ee8",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0012934&lang=PT&Dim1=S7A2024&Dim2=11%2C111%2C112%2C119%2C11A%2C11B%2C11C%2C11D%2C11E&Dim4=T"
+    },
+    {
+      "bytes": 115196,
+      "format": "JSON",
+      "name": "ine-plan-and-coverage.json",
+      "role": "recomposed",
+      "sha256": "85c751dc8538b0ddd2b5fe75d4d73d929ffbf35ebef3fad651642469bf163980",
+      "source_url": null
+    },
+    {
+      "bytes": 223589,
+      "format": "JSONL.GZ",
+      "name": "observations.jsonl.gz",
+      "role": "recomposed",
+      "sha256": "5e02cd6ae78364351f94f55fbad410d4467e73f3023fff82503ee51bbb696aab",
+      "source_url": null
+    },
+    {
+      "bytes": 975,
+      "format": "JSON",
+      "name": "composition-manifest.json",
+      "role": "recomposed",
+      "sha256": "76bf1bed8cc1f686ca56d25e9e4d619e4c45047dadac2cd750661bb13f6e132d",
+      "source_url": null
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "INE native JSON",
+  "limitations": "INE requests are metadata-defined and recursively partitioned below the 40,000-cell contract and URL-length bound. Cod=7 or saturated responses trigger further splitting. Raw chunks remain native; recomposed JSONL is derived without replacing missing or confidential values with zero.",
+  "native_asset_fingerprint": "8956fa957cd9a1df694ce586d4e154991092f0e9d8c65d59162c2b245f31e528",
+  "primary_repair": true,
+  "producer": "INE Portugal",
+  "product_key": "ine.pt::0012934",
+  "raw_native": {
+    "classification": "CAE Rev.3 × forma jurídica",
+    "geography": "NUTS 2024 — Norte and eight NUTS III"
+  },
+  "repair_authorization": {
+    "path": "statistics/recovery-20260920/simple-runtime/outputs/orchestrator/20260921T1433PT-primary-repair-authorisation.json",
+    "ref": "f560edbb80350671215887a09221856229128e58"
+  },
+  "request_id": "MN-PRIMARY-REPAIR-F106-20260921T1436PT",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": null,
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2024",
+  "source_set_id": "F106",
+  "source_url": "https://www.ine.pt/xurl/indx/0012934/PT",
+  "title": "INE 0012934 — Estabelecimentos por NUTS 2024 × CAE × forma jurídica",
+  "validation_result": "PASS_INE_PARTITIONED_RECOMPOSED_COMPLETE"
+}
