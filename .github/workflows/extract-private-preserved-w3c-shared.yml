@@ -32,3 +32,11 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/mn-w3c"
           python -m mn_public_acquisition.run_w3c_shared recovery_specs/w3c-shared-aviation-ports.yml --out "$RUNNER_TEMP/mn-w3c/result.json"
+      - name: Preserve bounded result diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w3c-shared-result-${{ github.run_id }}
+          path: ${{ runner.temp }}/mn-w3c/result.json
+          if-no-files-found: ignore
+          retention-days: 3
