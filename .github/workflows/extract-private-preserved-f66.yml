@@ -1,0 +1,290 @@
+name: Extract F66 private-preserved CAOP ingress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extraction_requests/F66-739d9b5aa830c8e6d9d8b5a4e35152ab225bbc785f29366d6d4be2e47f3cbff0.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-f66-private-extraction-739d9b5aa830c8e6d9d8
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PRIVATE_REPO: r-sousa/EU-transp-weekly
+      PRIVATE_BRANCH: mobilidade-norte-recovery-20260919
+      SOURCE_SET_ID: F66
+      FINGERPRINT: 739d9b5aa830c8e6d9d8b5a4e35152ab225bbc785f29366d6d4be2e47f3cbff0
+      RELEASE_TAG: mn-src-f66-739d9b5aa830c8e6d9d8
+      PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+      PUBLIC_TOKEN: ${{ github.token }}
+      PUBLIC_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify credential gate and extract fingerprint-pinned assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/f66-in" "$RUNNER_TEMP/f66-out"
+          python - <<'PY'
+          import csv, hashlib, io, json, os, pathlib, sys, urllib.error, urllib.parse, urllib.request
+          from datetime import datetime, timezone
+
+          source_id=os.environ['SOURCE_SET_ID']
+          fp=os.environ['FINGERPRINT']
+          release_tag=os.environ['RELEASE_TAG']
+          private_repo=os.environ['PRIVATE_REPO']
+          private_branch=os.environ['PRIVATE_BRANCH']
+          read_token=os.environ.get('PRIVATE_SINK_TOKEN','').strip() or os.environ.get('PRIVATE_READ_TOKEN','').strip()
+          write_token=os.environ.get('PRIVATE_SINK_TOKEN','').strip()
+          public_token=os.environ['PUBLIC_TOKEN']
+          public_repo=os.environ['PUBLIC_REPO']
+          request_path=pathlib.Path(f'extraction_requests/F66-{fp}.json')
+          request=json.loads(request_path.read_text(encoding='utf-8')) if request_path.exists() else {
+              'source_set_id':'F66','native_asset_fingerprint':fp,'release_tag':release_tag,'mission_generation':39
+          }
+          if request.get('source_set_id') != source_id or request.get('native_asset_fingerprint') != fp or request.get('release_tag') != release_tag or int(request.get('mission_generation',-1)) != 39:
+              raise SystemExit('REQUEST_IDENTITY_MISMATCH')
+
+          public_result_path=pathlib.Path(os.environ['RUNNER_TEMP'])/'f66-out'/'public-result.json'
+          if not read_token:
+              public_result_path.write_text(json.dumps({
+                  'schema_version':'1.0.0','source_set_id':source_id,'native_asset_fingerprint':fp,
+                  'status':'BLOCKED','gate':'MN_PRIVATE_READ_CREDENTIAL_MISSING','producer_reacquisition':False
+              },indent=2,sort_keys=True)+"\n",encoding='utf-8')
+              raise SystemExit('MN_PRIVATE_READ_CREDENTIAL_MISSING')
+          if not write_token:
+              public_result_path.write_text(json.dumps({
+                  'schema_version':'1.0.0','source_set_id':source_id,'native_asset_fingerprint':fp,
+                  'status':'BLOCKED','gate':'MN_PRIVATE_WRITE_CREDENTIAL_MISSING','private_read_credential_present':True,
+                  'producer_reacquisition':False
+              },indent=2,sort_keys=True)+"\n",encoding='utf-8')
+              raise SystemExit('MN_PRIVATE_WRITE_CREDENTIAL_MISSING')
+
+          expected={
+            'layer-metadata.json':(578708029,13217,'343d31afa856899ce5b27618189a7fca4a3399a2a5e27a3e44ede512b93895a3'),
+            'features-000000.geojson':(578708052,48468135,'9ecdcef7593a91e730137ce5480297d418fbd97396144569ec82d9f696fbfa1c'),
+            'features.geojson':(578708154,45964257,'892c5d7ea10d5d488c21223f74e6b98377d52ae4c6255baca21673e6b0064d38'),
+            'composition-manifest.json':(578708257,783,'5e748bc286745f2b8351a4740f25d6c0e031bd4f4ab177e2d90a2be1498ca7f6')
+          }
+          headers={'Authorization':'Bearer '+read_token,'Accept':'application/octet-stream','User-Agent':'MobilidadeNorte-F66Extractor/1.0','X-GitHub-Api-Version':'2022-11-28'}
+          in_dir=pathlib.Path(os.environ['RUNNER_TEMP'])/'f66-in'
+          verified=[]
+          for name,(asset_id,size,sha) in expected.items():
+              url=f'https://api.github.com/repos/{private_repo}/releases/assets/{asset_id}'
+              req=urllib.request.Request(url,headers=headers)
+              try:
+                  with urllib.request.urlopen(req,timeout=180) as r:
+                      data=r.read()
+              except urllib.error.HTTPError as e:
+                  raise SystemExit(f'PRIVATE_ASSET_READ_FAILED:{name}:HTTP_{e.code}')
+              got_sha=hashlib.sha256(data).hexdigest()
+              if len(data)!=size or got_sha!=sha:
+                  raise SystemExit(f'ASSET_VERIFICATION_FAILED:{name}:bytes={len(data)}:sha256={got_sha}')
+              (in_dir/name).write_bytes(data)
+              verified.append({'name':name,'asset_id':asset_id,'bytes':size,'sha256':sha,'verified':True})
+
+          # No parsing before all four source assets have passed byte/hash verification.
+          metadata=json.loads((in_dir/'layer-metadata.json').read_text(encoding='utf-8'))
+          feature_collection=json.loads((in_dir/'features.geojson').read_text(encoding='utf-8'))
+          composition=json.loads((in_dir/'composition-manifest.json').read_text(encoding='utf-8'))
+          if feature_collection.get('type')!='FeatureCollection' or not isinstance(feature_collection.get('features'),list):
+              raise SystemExit('RECOMPOSED_GEOJSON_NOT_FEATURECOLLECTION')
+          features=feature_collection['features']
+          object_id_field=metadata.get('objectIdField') or metadata.get('objectIdFieldName') or metadata.get('objectIdFieldName'.lower())
+          fields=metadata.get('fields') or []
+          field_names=[f.get('name') for f in fields if isinstance(f,dict) and f.get('name')]
+          if not object_id_field:
+              for f in fields:
+                  if isinstance(f,dict) and str(f.get('type','')).lower().endswith('oid'):
+                      object_id_field=f.get('name'); break
+
+          out_dir=pathlib.Path(os.environ['RUNNER_TEMP'])/'f66-out'
+          csv_path=out_dir/'f66_caop_source_native_ingress.csv'
+          null_counts={k:0 for k in field_names}
+          absent_counts={k:0 for k in field_names}
+          geometry_types={}
+          top_level_ids=0
+          object_ids=0
+          with csv_path.open('w',encoding='utf-8',newline='') as fh:
+              w=csv.writer(fh,lineterminator='\n')
+              w.writerow(['feature_index','geojson_id','object_id_field','object_id_value','geometry_type','geometry_present','geometry_sha256','source_properties_json','null_property_keys_json','absent_metadata_fields_json'])
+              for i,feat in enumerate(features):
+                  if not isinstance(feat,dict): raise SystemExit(f'INVALID_FEATURE:{i}')
+                  props=feat.get('properties')
+                  if props is None: props={}
+                  if not isinstance(props,dict): raise SystemExit(f'INVALID_PROPERTIES:{i}')
+                  geom=feat.get('geometry')
+                  geom_type=(geom or {}).get('type') if isinstance(geom,dict) else None
+                  geometry_types[str(geom_type)] = geometry_types.get(str(geom_type),0)+1
+                  geom_bytes=json.dumps(geom,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode('utf-8')
+                  geom_sha=hashlib.sha256(geom_bytes).hexdigest()
+                  geojson_id=feat.get('id')
+                  if geojson_id is not None: top_level_ids += 1
+                  oid=props.get(object_id_field) if object_id_field else None
+                  if oid is not None: object_ids += 1
+                  nulls=sorted(k for k,v in props.items() if v is None)
+                  absent=sorted(k for k in field_names if k not in props)
+                  for k in nulls:
+                      if k in null_counts: null_counts[k]+=1
+                  for k in absent: absent_counts[k]+=1
+                  props_json=json.dumps(props,ensure_ascii=False,sort_keys=True,separators=(',',':'))
+                  w.writerow([i, '' if geojson_id is None else geojson_id, object_id_field or '', '' if oid is None else oid,
+                              '' if geom_type is None else geom_type, geom is not None, geom_sha, props_json,
+                              json.dumps(nulls,ensure_ascii=False,separators=(',',':')),
+                              json.dumps(absent,ensure_ascii=False,separators=(',',':'))])
+
+          csv_bytes=csv_path.read_bytes()
+          csv_sha=hashlib.sha256(csv_bytes).hexdigest()
+          crs={
+              'acquisition_outSR':'EPSG:4326',
+              'geojson_crs_member':feature_collection.get('crs'),
+              'service_extent_spatial_reference':(metadata.get('extent') or {}).get('spatialReference') if isinstance(metadata.get('extent'),dict) else None,
+              'rule':'geometry is not copied, simplified or remapped in compact ingress; exact source geometry remains hash-addressed in verified features.geojson'
+          }
+          ingress={
+              'schema_version':'1.0.0','source_set_id':source_id,'native_asset_fingerprint':fp,'private_release_tag':release_tag,
+              'mission_generation':39,'classification':'DGT administrative geography','geography':'Portuguese municipalities as exposed by DGT CAOP service',
+              'source_period_or_edition':'current public service','source_assets':verified,
+              'extraction':{
+                  'input_feature_asset':'features.geojson','feature_count':len(features),'object_id_field':object_id_field,
+                  'geojson_top_level_id_nonnull':top_level_ids,'object_id_nonnull':object_ids,
+                  'source_field_definitions':fields,'geometry_types':geometry_types,'crs':crs,
+                  'null_counts_by_metadata_field':null_counts,'absent_counts_by_metadata_field':absent_counts,
+                  'properties_preservation':'Each source properties object is serialized canonically and losslessly in source_properties_json, including JSON null values.',
+                  'geometry_preservation':'Each exact geometry object is represented only by its canonical JSON SHA-256 and type in the compact ingress; source geometry remains in verified private source asset. No simplification, transformation or crosswalk is performed.',
+                  'composition_manifest':composition
+              },
+              'outputs':{
+                  'csv_name':csv_path.name,'csv_bytes':len(csv_bytes),'csv_sha256':csv_sha
+              },
+              'rights':{'state_unchanged':True,'public_redistribution_gate':'not_cleared'},
+              'producer_reacquisition':False,'consumer_joins':False,'crosswalks_invented':False
+          }
+          ingress_path=out_dir/'f66_caop_source_native_ingress.json'
+          ingress_path.write_text(json.dumps(ingress,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding='utf-8')
+          ingress_sha=hashlib.sha256(ingress_path.read_bytes()).hexdigest()
+          ingress['outputs'].update({'json_name':ingress_path.name,'json_bytes':ingress_path.stat().st_size,'json_sha256':ingress_sha})
+          # Re-write JSON once with self-independent output hash omitted from its own content to avoid recursion; receipt carries exact final JSON hash.
+          ingress_path.write_text(json.dumps({k:v for k,v in ingress.items() if k!='self_sha256'},ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding='utf-8')
+          ingress_sha=hashlib.sha256(ingress_path.read_bytes()).hexdigest()
+
+          out_base='statistics/recovery-20260920/simple-runtime/outputs/W2C/20260921T2026PT-G39-F66-extraction-ingress'
+          extraction_handoff=f'statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/F66/{fp}-extraction.json'
+          receipt={
+              'schema_version':'4.0.0','worker':'W2C','mission_generation':39,'package':'F66_DGT_CAOP_EXTRACTION_INGRESS',
+              'source_set_id':source_id,'native_asset_fingerprint':fp,'private_release_tag':release_tag,
+              'status':'PASS_PRIVATE_PRESERVED_BYTES_VERIFIED_AND_SOURCE_NATIVE_INGRESS_EMITTED',
+              'source_asset_verification':verified,'all_assets_verified_before_parse':True,
+              'normalized_feature_rows':len(features),'object_id_field':object_id_field,'geometry_types':geometry_types,
+              'crs_role':'EPSG:4326 acquisition geometry; geometry not simplified/remapped in ingress',
+              'source_attributes_preserved':True,'missingness_preserved':True,'administrative_classification_preserved':True,
+              'producer_reacquisition':False,'rights_state_changed':False,'consumer_joins':False,'crosswalks_invented':False,
+              'outputs':[
+                  {'path':out_base+'/'+csv_path.name,'bytes':len(csv_bytes),'sha256':csv_sha},
+                  {'path':out_base+'/'+ingress_path.name,'bytes':ingress_path.stat().st_size,'sha256':ingress_sha}
+              ],
+              'canonical_extraction_receipt_path':extraction_handoff
+          }
+          receipt_path=out_dir/'extraction-receipt.json'
+          receipt_path.write_text(json.dumps(receipt,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding='utf-8')
+          receipt_sha=hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+          receipt['receipt_sha256']=receipt_sha
+          receipt_path.write_text(json.dumps(receipt,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding='utf-8')
+          receipt_sha=hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+
+          def api_request(method,url,token,body=None,accept='application/vnd.github+json'):
+              hdr={'Authorization':'Bearer '+token,'Accept':accept,'User-Agent':'MobilidadeNorte-F66Extractor/1.0','X-GitHub-Api-Version':'2022-11-28'}
+              data=None
+              if body is not None:
+                  data=json.dumps(body).encode('utf-8'); hdr['Content-Type']='application/json'
+              req=urllib.request.Request(url,headers=hdr,data=data,method=method)
+              with urllib.request.urlopen(req,timeout=180) as r:
+                  raw=r.read(); return json.loads(raw) if raw else None
+
+          def private_get(path):
+              return api_request('GET',f'https://api.github.com/repos/{private_repo}/contents/{urllib.parse.quote(path,safe="/")}?ref={urllib.parse.quote(private_branch)}',read_token)
+          def private_put(path,data_bytes,message,sha=None):
+              import base64
+              body={'message':message,'branch':private_branch,'content':base64.b64encode(data_bytes).decode('ascii')}
+              if sha: body['sha']=sha
+              return api_request('PUT',f'https://api.github.com/repos/{private_repo}/contents/{urllib.parse.quote(path,safe="/")}',write_token,body)
+
+          # Re-check current mission before private writes.
+          team=private_get('statistics/recovery-20260920/simple-runtime/team-missions.json')
+          import base64
+          team_obj=json.loads(base64.b64decode(team['content']).decode('utf-8'))
+          if int(team_obj.get('mission_generation',-1)) != 39:
+              raise SystemExit('MISSION_GENERATION_CHANGED_BEFORE_WRITE')
+
+          private_put(out_base+'/'+csv_path.name,csv_path.read_bytes(),'result(mn): W2C F66 source-native extraction CSV')
+          private_put(out_base+'/'+ingress_path.name,ingress_path.read_bytes(),'result(mn): W2C F66 source-native extraction metadata')
+          private_put(out_base+'/extraction-receipt.json',receipt_path.read_bytes(),'receipt(mn): W2C F66 extraction ingress')
+          private_put(extraction_handoff,receipt_path.read_bytes(),'receipt(mn): F66 canonical extraction handoff')
+
+          worker_path='statistics/recovery-20260920/simple-runtime/worker-W2C.json'
+          worker_raw=private_get(worker_path)
+          worker=json.loads(base64.b64decode(worker_raw['content']).decode('utf-8'))
+          worker.update({
+              'schema_version':'4.0.0','mission_generation':39,'updated_at':datetime.now(timezone.utc).isoformat().replace('+00:00','Z'),
+              'status':'READY_NEXT_WAKEUP','elastic_state':'STANDBY_EXTRACTION_INGRESS','current_task':None,
+              'last_output':out_base+'/extraction-receipt.json','blocker':None,
+              'window':{
+                  'mission':'Generation 39 F66 DGT CAOP fingerprint-pinned extraction ingress only.',
+                  'material_packages':1,'source_id':'F66','native_asset_fingerprint':fp,
+                  'source_assets_verified':4,'source_binaries_read':4,'producer_requests_sent':0,'producer_reacquisitions':0,
+                  'normalized_feature_rows':len(features),'consumer_joins':0,'rights_adjudications':0,
+                  'result':'PASS_PRIVATE_PRESERVED_BYTES_VERIFIED_AND_SOURCE_NATIVE_INGRESS_EMITTED',
+                  'outputs':[out_base+'/'+csv_path.name,out_base+'/'+ingress_path.name,out_base+'/extraction-receipt.json',extraction_handoff],
+                  'next_cursor':['Await a new orchestrator extraction-ingress assignment; do not self-toggle scheduler state.']
+              }
+          })
+          worker_bytes=(json.dumps(worker,ensure_ascii=False,indent=2,sort_keys=False)+"\n").encode('utf-8')
+          private_put(worker_path,worker_bytes,'state(mn): W2C complete G39 F66 extraction ingress',worker_raw['sha'])
+
+          public_result={
+              'schema_version':'1.0.0','source_set_id':source_id,'native_asset_fingerprint':fp,
+              'status':'PASS_PRIVATE_EXTRACTION_INGRESS','feature_rows':len(features),
+              'private_release_tag':release_tag,'source_assets_verified':4,
+              'private_output_base':out_base,'private_extraction_receipt':extraction_handoff,
+              'producer_reacquisition':False,'rights_state_changed':False,
+              'private_receipt_sha256':receipt_sha
+          }
+          public_result_path.write_text(json.dumps(public_result,indent=2,sort_keys=True)+"\n",encoding='utf-8')
+          PY
+
+      - name: Persist sanitized public extraction receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,pathlib,urllib.parse,urllib.request
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'f66-out'/'public-result.json'
+          if not p.exists():
+              raise SystemExit(0)
+          dest=f"extraction_receipts/F66/{os.environ['FINGERPRINT']}.json"
+          api=f"https://api.github.com/repos/{os.environ['PUBLIC_REPO']}/contents/{urllib.parse.quote(dest,safe='/')}"
+          headers={'Authorization':'Bearer '+os.environ['PUBLIC_TOKEN'],'Accept':'application/vnd.github+json','User-Agent':'MobilidadeNorte-F66Extractor/1.0','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'}
+          body={'message':'receipt(mn): F66 private-preserved extraction ingress','branch':'main','content':base64.b64encode(p.read_bytes()).decode('ascii')}
+          # idempotent overwrite only if a previous receipt exists.
+          try:
+              req=urllib.request.Request(api,headers=headers,method='GET')
+              with urllib.request.urlopen(req,timeout=60) as r: old=json.load(r)
+              body['sha']=old['sha']
+          except Exception:
+              pass
+          req=urllib.request.Request(api,headers=headers,data=json.dumps(body).encode(),method='PUT')
+          with urllib.request.urlopen(req,timeout=120) as r:
+              print(json.load(r)['commit']['sha'])
+          PY
