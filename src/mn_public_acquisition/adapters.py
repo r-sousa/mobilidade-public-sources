@@ -105,13 +105,13 @@ def repair_incomplete_chain_session(host: str) -> requests.Session:
     return s
 
 
-def session(*, system_ca: bool = False) -> requests.Session:
+def session(*, system_ca: bool = False, read_retries: int = 3) -> requests.Session:
     s = requests.Session()
     s.headers.update({"User-Agent": UA})
     retry = Retry(
         total=4,
         connect=4,
-        read=3,
+        read=read_retries,
         status=3,
         backoff_factor=1.0,
         status_forcelist=(429, 500, 502, 503, 504),
@@ -281,7 +281,7 @@ def ine_json(spec: dict, work: Path) -> dict:
     indicator = str(spec["parameters"]["indicator"]).zfill(7)
     target_year = spec["parameters"].get("year")
     base = "https://www.ine.pt/ine/json_indicador"
-    s = session()
+    s = session(read_retries=0)
     assets = []
     meta_url = f"{base}/pindicaMeta.jsp?" + urllib.parse.urlencode({"varcd": indicator, "lang": "PT"})
     mp = work / "payload" / f"{indicator}-metadata.json"
