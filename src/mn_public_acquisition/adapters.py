@@ -6,9 +6,12 @@ import re
 import time
 import urllib.parse
 import zipfile
+import ssl
 from pathlib import Path
 
 import requests
+from cryptography import x509
+from cryptography.hazmat.primitives import serialization
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -31,6 +34,75 @@ def sha256(path: Path) -> str:
 def safe_name(url: str, fallback: str) -> str:
     name = Path(urllib.parse.unquote(urllib.parse.urlparse(url).path)).name or fallback
     return re.sub(r"[^A-Za-z0-9._-]+", "_", name)[:180] or fallback
+
+
+def repair_incomplete_chain_session(host: str) -> requests.Session:
+    """Build a verified session for servers that omit intermediate CA certs.
+
+    The data request itself remains fully TLS-verified. We retrieve only the
+    public leaf certificate without verification, follow its CA-Issuers AIA
+    links, and retry against the system trust store plus those intermediates.
+    """
+    pem = ssl.get_server_certificate((host, 443))
+    cert = x509.load_pem_x509_certificate(pem.encode("ascii"))
+    chain_pems = []
+    seen = set()
+
+    for _ in range(3):
+        try:
+            aia = cert.extensions.get_extension_for_class(
+                x509.AuthorityInformationAccess
+            ).value
+        except x509.ExtensionNotFound:
+            break
+
+        issuer_urls = [
+            d.access_location.value
+            for d in aia
+            if d.access_method == x509.AuthorityInformationAccessOID.CA_ISSUERS
+            and isinstance(d.access_location, x509.UniformResourceIdentifier)
+        ]
+        if not issuer_urls:
+            break
+
+        next_cert = None
+        for url in issuer_urls:
+            if url in seen:
+                continue
+            seen.add(url)
+            r = requests.get(url, timeout=60)
+            r.raise_for_status()
+            raw = r.content
+            try:
+                next_cert = x509.load_der_x509_certificate(raw)
+            except ValueError:
+                next_cert = x509.load_pem_x509_certificate(raw)
+            chain_pems.append(
+                next_cert.public_bytes(serialization.Encoding.PEM).decode("ascii")
+            )
+            break
+        if next_cert is None:
+            break
+        cert = next_cert
+        if cert.issuer == cert.subject:
+            break
+
+    if not chain_pems:
+        raise RuntimeError(f"Could not discover issuer chain for {host}")
+
+    bundle = Path("/tmp") / f"mn-ca-{host.replace('.', '_')}.pem"
+    system = Path("/etc/ssl/certs/ca-certificates.crt")
+    if not system.is_file():
+        raise RuntimeError("System CA bundle unavailable")
+    bundle.write_text(
+        system.read_text(encoding="utf-8", errors="ignore")
+        + "\n"
+        + "\n".join(chain_pems),
+        encoding="utf-8",
+    )
+    s = session()
+    s.verify = str(bundle)
+    return s
 
 
 def session(*, system_ca: bool = False) -> requests.Session:
@@ -347,7 +419,11 @@ def ige_table(spec: dict, work: Path) -> dict:
 
     s = session(system_ca=True)
     p = work / "payload" / f"IGE-{code}.{fmt}"
-    rec = download(s, url, p, work)
+    try:
+        rec = download(s, url, p, work)
+    except requests.exceptions.SSLError:
+        s = repair_incomplete_chain_session("www.ige.gal")
+        rec = download(s, url, p, work)
     rec["format"] = fmt.upper()
 
     if fmt == "json":
