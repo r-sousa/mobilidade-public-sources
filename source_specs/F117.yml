@@ -13,6 +13,7 @@ source:
 raw_native:
   geography: Portugal reporter × origin country
   classification: NC8
+  acquisition_scope: 2024 × Spain partner × complete producer-native NC8 level-6 members; national diagnostic slice
 reuse:
   status: not_verified
   public_redistribution_gate: not_cleared
@@ -22,7 +23,13 @@ reuse:
 parameters:
   indicator: "0005719"
   year: 2024
-  max_cells_per_chunk: 10000
+  dimension_codes:
+    "2": ["ES"]
+  dimension_levels:
+    "3": ["6"]
+  max_cells_per_chunk: 5000
+  max_url_length: 900
+  require_category_coverage: true
   spacing_seconds: 2
   preserved_metadata:
     repository: r-sousa/EU-transp-weekly
