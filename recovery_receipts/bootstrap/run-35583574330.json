@@ -1,0 +1,166 @@
+{
+  "complete": false,
+  "failures": [
+    {
+      "error": "GTFS package missing required files: ['agency.txt', 'routes.txt', 'stop_times.txt', 'stops.txt', 'trips.txt']",
+      "source_set_id": "F12"
+    }
+  ],
+  "private_release_tag": "data-20260915-9d994478fdb13e04",
+  "private_repository": "r-sousa/EU-transp-weekly",
+  "results": [
+    {
+      "source_set_id": "F01",
+      "status": "SKIPPED_ALREADY_PUBLIC_DIRECT_SOURCE"
+    },
+    {
+      "bytes": 60858,
+      "public_release": {
+        "asset_id": 578706477,
+        "asset_name": "F02-001.zip",
+        "id": 392831339,
+        "tag": "mn-recovered-f02-43cd4c2fe09373b515af",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f02-43cd4c2fe09373b515af"
+      },
+      "sha256": "43cd4c2fe09373b515af4f597feb9a38e4d031336efc2e5b3d580b0c7c8e4d9f",
+      "source_set_id": "F02",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    },
+    {
+      "bytes": 78677,
+      "public_release": {
+        "asset_id": 578707658,
+        "asset_name": "F03-001.zip",
+        "id": 392831792,
+        "tag": "mn-recovered-f03-0156ca52ca4d6f928dab",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f03-0156ca52ca4d6f928dab"
+      },
+      "sha256": "0156ca52ca4d6f928dab126ef95c91ced8110eaeeb22e0001b27a243d1600e1e",
+      "source_set_id": "F03",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    },
+    {
+      "bytes": 42435,
+      "public_release": {
+        "asset_id": 578707755,
+        "asset_name": "F04-001.zip",
+        "id": 392831827,
+        "tag": "mn-recovered-f04-1a1bbc3e964951571c60",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f04-1a1bbc3e964951571c60"
+      },
+      "sha256": "1a1bbc3e964951571c6096ab2220419a28bb8d5f9612134d2c4372b38f7e31f5",
+      "source_set_id": "F04",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    },
+    {
+      "error": "GTFS package missing required files: ['agency.txt', 'routes.txt', 'stop_times.txt', 'stops.txt', 'trips.txt']",
+      "source_set_id": "F12",
+      "status": "FAILED"
+    },
+    {
+      "bytes": 29003,
+      "public_release": {
+        "asset_id": 578707930,
+        "asset_name": "F19-001.zip",
+        "id": 392831872,
+        "tag": "mn-recovered-f19-cdc1b33fd090ad85cdad",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f19-cdc1b33fd090ad85cdad"
+      },
+      "sha256": "cdc1b33fd090ad85cdad7157990eddf0133f958fc311a234782ec3ccb758039f",
+      "source_set_id": "F19",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    },
+    {
+      "bytes": 225817357,
+      "public_release": {
+        "asset_id": 578708141,
+        "asset_name": "F20-001.zip",
+        "id": 392831953,
+        "tag": "mn-recovered-f20-557d7c3be67261adf880",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f20-557d7c3be67261adf880"
+      },
+      "sha256": "557d7c3be67261adf880dc624988743f8f284197e95db6fd72105c543da509c6",
+      "source_set_id": "F20",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    },
+    {
+      "bytes": 5349570,
+      "public_release": {
+        "asset_id": 578708474,
+        "asset_name": "F21-001.zip",
+        "id": 392832068,
+        "tag": "mn-recovered-f21-db3012e619e1d4c836fb",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f21-db3012e619e1d4c836fb"
+      },
+      "sha256": "db3012e619e1d4c836fb4a61ca28f5d319ad8858c912f7b4e2c2918df75373e0",
+      "source_set_id": "F21",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    },
+    {
+      "bytes": 2842317,
+      "public_release": {
+        "asset_id": 578708598,
+        "asset_name": "F22-001.zip",
+        "id": 392832106,
+        "tag": "mn-recovered-f22-a141ea0c940558263dfe",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f22-a141ea0c940558263dfe"
+      },
+      "sha256": "a141ea0c940558263dfe6672b9cf6d61d6e998ed92f268a392699f092d18feb5",
+      "source_set_id": "F22",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    },
+    {
+      "bytes": 5594937,
+      "public_release": {
+        "asset_id": 578708754,
+        "asset_name": "F23-001.zip",
+        "id": 392832140,
+        "tag": "mn-recovered-f23-5d228b19d3b323ac73f8",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f23-5d228b19d3b323ac73f8"
+      },
+      "sha256": "5d228b19d3b323ac73f8b87c9d497dd0a5f7dc8883b7651310044c70e27ca1f6",
+      "source_set_id": "F23",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    },
+    {
+      "bytes": 11299,
+      "public_release": {
+        "asset_id": 578708893,
+        "asset_name": "F24-001.zip",
+        "id": 392832184,
+        "tag": "mn-recovered-f24-ab3798c057b9e612ee3c",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f24-ab3798c057b9e612ee3c"
+      },
+      "sha256": "ab3798c057b9e612ee3ce7ca3650699adab40af07ce3ba25293833d7d7b110cf",
+      "source_set_id": "F24",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    },
+    {
+      "bytes": 6412587,
+      "public_release": {
+        "asset_id": 578708988,
+        "asset_name": "F25-001.zip",
+        "id": 392832227,
+        "tag": "mn-recovered-f25-38467dabd1fbe8bdd9b4",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f25-38467dabd1fbe8bdd9b4"
+      },
+      "sha256": "38467dabd1fbe8bdd9b4828d9dd31cf1f25dd2ec6861202bed6b327febb97a96",
+      "source_set_id": "F25",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    },
+    {
+      "bytes": 8832060,
+      "public_release": {
+        "asset_id": 578709172,
+        "asset_name": "F26-001.zip",
+        "id": 392832278,
+        "tag": "mn-recovered-f26-ce20b0ac122b77b16a84",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f26-ce20b0ac122b77b16a84"
+      },
+      "sha256": "ce20b0ac122b77b16a84bb1ca4aee3a288f54ea856a7ff7c935a08ab13ea8380",
+      "source_set_id": "F26",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    }
+  ],
+  "schema_version": "1.0.0"
+}
