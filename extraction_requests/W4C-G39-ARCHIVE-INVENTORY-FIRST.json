@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "worker": "W4C",
+  "mission_generation": 39,
+  "mode": "ARCHIVE_INVENTORY_FIRST",
+  "release_tag": "source-rhomolo-mm-2024-f36c666af69512fe897a",
+  "asset_id": 565922694,
+  "asset_name": "RHOMOLO_MM_2024_source_recovery_final.zip",
+  "asset_bytes": 9357521,
+  "asset_sha256": "013ced7e4c5564f3e4219272219325475cd000ec90011fe2c6a0e2652e0840e8",
+  "source_set_ids": ["F169", "F170", "F176", "F179"],
+  "producer_reacquisition": false
+}
