@@ -1,0 +1,46 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "bc7d7f10236dcc84e9d7e1c08d5dd6ab1997ff18",
+  "acquisition_timestamp": "2026-09-21T02:38:07.448409Z",
+  "adapter": "eurostat",
+  "assets": [
+    {
+      "bytes": 42285,
+      "format": "JSON-stat/JSON",
+      "name": "tran_r_rago.json",
+      "sha256": "54921560492f54576da1d3bb9402bca02bde0932581d265cfbb3a3e18c19f868",
+      "source_url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/tran_r_rago?format=JSON&lang=EN&sinceTimePeriod=2024"
+    }
+  ],
+  "cadence": "monthly",
+  "disposition": {
+    "bytes_persisted": false,
+    "intended_sink": "private",
+    "status": "PROBE_ONLY_NO_PERSISTENCE"
+  },
+  "expected_format": "JSON-stat/JSON",
+  "limitations": "Producer-native API response preserved; no consumer normalization performed.",
+  "native_asset_fingerprint": "54690c8fc00232401f07e3c331b1b0d3911b54d6ff494fdcdaa58ef908d40fda",
+  "producer": "Eurostat",
+  "product_key": "eurostat::tran_r_rago",
+  "raw_native": {
+    "classification": "Eurostat rail-goods dimensions",
+    "geography": "NUTS2 loading/unloading region as exposed by Eurostat"
+  },
+  "request_id": "push-35554819707",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": null,
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_yet_cleared"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2024+",
+  "source_set_id": "F148",
+  "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tran_r_rago/default/table?lang=en",
+  "title": "Eurostat tran_r_rago — Railway goods by loading/unloading NUTS2 region",
+  "validation_result": "PASS_JSON_MATERIALIZED"
+}
