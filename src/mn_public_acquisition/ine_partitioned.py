@@ -4,6 +4,8 @@ import email.utils
 import hashlib
 import json
 import math
+import os
+import zipfile
 import threading
 import time
 import urllib.parse
@@ -398,6 +400,67 @@ def _fetch(session: requests.Session, url: str, *, spacing: float, attempts: int
     raise RuntimeError("INE fetch exhausted attempts")
 
 
+def _preserved_metadata_bytes(pms: dict, work: Path) -> tuple[bytes, str] | None:
+    pm = pms.get("preserved_metadata")
+    if not pm:
+        return None
+
+    token = (
+        os.environ.get("MN_PRIVATE_READ_TOKEN", "")
+        or os.environ.get("MN_PRIVATE_SINK_TOKEN", "")
+    )
+    if not token:
+        raise INESemanticError("Preserved INE metadata requires private repository read token")
+
+    from .private_bootstrap import download_release_asset, release_by_tag, sha256_path
+
+    repo = str(pm.get("repository") or "r-sousa/EU-transp-weekly")
+    tag = str(pm["release_tag"])
+    asset_name = str(pm["asset_name"])
+    member_path = str(pm["member_path"])
+
+    release = release_by_tag(repo, tag, token)
+    asset = next((x for x in release.get("assets", []) if x.get("name") == asset_name), None)
+    if not asset:
+        raise INESemanticError(f"Preserved metadata archive asset not found: {asset_name}")
+
+    archive = work / "private-metadata" / asset_name
+    download_release_asset(repo, asset, token, archive)
+    expected_archive_sha = str(pm.get("archive_sha256") or "")
+    actual_archive_sha = sha256_path(archive)
+    if expected_archive_sha and actual_archive_sha != expected_archive_sha:
+        raise INESemanticError(
+            f"Preserved metadata archive digest mismatch: {actual_archive_sha}"
+        )
+
+    with zipfile.ZipFile(archive) as z:
+        try:
+            body = z.read(member_path)
+        except KeyError as e:
+            raise INESemanticError(
+                f"Preserved metadata member not found: {member_path}"
+            ) from e
+
+    archive.unlink(missing_ok=True)
+    expected_bytes = pm.get("member_bytes")
+    if expected_bytes is not None and len(body) != int(expected_bytes):
+        raise INESemanticError(
+            f"Preserved metadata member byte-count mismatch: {len(body)}"
+        )
+    expected_sha = str(pm.get("member_sha256") or "")
+    actual_sha = hashlib.sha256(body).hexdigest()
+    if expected_sha and actual_sha != expected_sha:
+        raise INESemanticError(
+            f"Preserved metadata member digest mismatch: {actual_sha}"
+        )
+
+    provenance = (
+        f"https://github.com/{repo}/releases/tag/{tag}"
+        f"#member={urllib.parse.quote(member_path, safe='/')}"
+    )
+    return body, provenance
+
+
 def acquire(spec: dict, work: Path) -> dict:
     pms = spec["parameters"]
     indicator = str(pms["indicator"]).zfill(7)
@@ -405,10 +468,14 @@ def acquire(spec: dict, work: Path) -> dict:
     s = requests.Session()
     s.headers.update({"User-Agent": UA, "Accept": "application/json"})
 
-    meta_url = BASE + "/pindicaMeta.jsp?" + urllib.parse.urlencode(
-        {"varcd": indicator, "lang": "PT"}
-    )
-    meta_bytes, final_meta_url = _fetch(s, meta_url, spacing=spacing, attempts=3)
+    preserved_meta = _preserved_metadata_bytes(pms, work)
+    if preserved_meta is not None:
+        meta_bytes, final_meta_url = preserved_meta
+    else:
+        meta_url = BASE + "/pindicaMeta.jsp?" + urllib.parse.urlencode(
+            {"varcd": indicator, "lang": "PT"}
+        )
+        meta_bytes, final_meta_url = _fetch(s, meta_url, spacing=spacing, attempts=3)
     meta_obj = json.loads(meta_bytes.decode("utf-8-sig"))
     meta_path = work / "payload" / f"{indicator}-metadata.json"
     meta_path.parent.mkdir(parents=True, exist_ok=True)
