@@ -1,7 +1,8 @@
 {
   "schema_version": "1.0.0",
   "worker": "W3C",
-  "mission_generation": 45,
+  "mission_generation": 39,
+  "execution_revision": 2,
   "package": "W3B_P115_P122_SHARED_RHOMOLO_AVIATION_PORTS_EXTRACTION",
   "release_tag": "source-rhomolo-mm-2024-f36c666af69512fe897a",
   "archive_sha256": "013ced7e4c5564f3e4219272219325475cd000ec90011fe2c6a0e2652e0840e8",
