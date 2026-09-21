@@ -99,11 +99,25 @@ def _persist_composition_evidence(receipt: dict, token: str, repo: str, branch: 
     return {"status": "CREATED", "path": dest, "commit": p.json()["commit"]["sha"]}
 
 
+def _public_view(receipt: dict) -> dict:
+    out = json.loads(json.dumps(receipt))
+    if out.get("sink") == "private":
+        d = out.get("disposition") or {}
+        preserved = bool(d.get("bytes_persisted")) or d.get("status") == "PRIVATE_SINK_PRESERVED"
+        out["disposition"] = {
+            "status": "PRIVATE_SINK_PRESERVED" if preserved else "PROBE_ONLY_NO_PERSISTENCE",
+            "intended_sink": "private",
+            "bytes_persisted": preserved,
+            "private_receipt_written": bool(d.get("private_receipt")),
+        }
+    return out
+
+
 def persist(path: Path) -> dict:
     token = os.environ["GITHUB_TOKEN"]
     repo = os.environ["GITHUB_REPOSITORY"]
     branch = os.environ.get("GITHUB_REF_NAME", "main")
-    receipt = json.loads(path.read_text(encoding="utf-8"))
+    receipt = _public_view(json.loads(path.read_text(encoding="utf-8")))
 
     sid = receipt["source_set_id"]
     fp = receipt["native_asset_fingerprint"]
