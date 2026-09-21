@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from mn_public_acquisition.chunking import compose_json_record_pages
-from mn_public_acquisition.ine_partitioned import _plan, _request_url, MAX_CELLS
+from mn_public_acquisition.ine_partitioned import _plan, _request_url, _coordinate, _member_label_map, MAX_CELLS
 
 
 class ChunkingTests(unittest.TestCase):
