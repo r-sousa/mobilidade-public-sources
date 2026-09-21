@@ -59,7 +59,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if grep -RInE '(DATACOMEX_PASSWORD|AENA_PASSWORD|MN_PRIVATE_SINK_TOKEN|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY)'               --exclude-dir=.git --exclude='validate.yml' .; then
-            echo "Forbidden credential/private-key material or obsolete public-sink secret reference found" >&2
+          if grep -RInE '(DATACOMEX_PASSWORD|AENA_PASSWORD|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|github_pat_[A-Za-z0-9_]+|gh[pousr]_[A-Za-z0-9]+)' \
+              --exclude-dir=.git --exclude='validate.yml' .; then
+            echo "Forbidden producer credential, private-key material, or token-like literal found" >&2
             exit 1
           fi
+          echo "Secret-name references such as MN_PRIVATE_SINK_TOKEN are permitted; secret values remain forbidden."
