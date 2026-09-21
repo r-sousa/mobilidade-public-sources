@@ -1,0 +1,22 @@
+{
+  "acquisition_code_commit": "8727fd25cb8834cb058663334ae8860f00a007b3",
+  "limitations": "Complete producer feature query is preserved as native layer metadata and ordered GeoJSON pages, then deterministically recomposed to one FeatureCollection; no geometry simplification or classification remapping.",
+  "native_asset_fingerprint": "739d9b5aa830c8e6d9d8b5a4e35152ab225bbc785f29366d6d4be2e47f3cbff0",
+  "recomposed_assets": [
+    {
+      "bytes": 783,
+      "format": "JSON",
+      "name": "composition-manifest.json",
+      "sha256": "5e748bc286745f2b8351a4740f25d6c0e031bd4f4ab177e2d90a2be1498ca7f6"
+    },
+    {
+      "bytes": 45964257,
+      "format": "GeoJSON",
+      "name": "features.geojson",
+      "sha256": "892c5d7ea10d5d488c21223f74e6b98377d52ae4c6255baca21673e6b0064d38"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_set_id": "F66",
+  "validation_result": "PASS_ARCGIS_COMPLETE_FEATURE_QUERY_RECOMPOSED"
+}
