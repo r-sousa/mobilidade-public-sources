@@ -1,0 +1,354 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "cb17016d9bb5abc1c4f8e67e65446f5e8638e801",
+  "acquisition_timestamp": "2026-09-21T06:55:41.941480Z",
+  "adapter": "opendatasoft",
+  "assets": [
+    {
+      "bytes": 14256,
+      "format": "JSON",
+      "name": "records-000000.json",
+      "sha256": "689a2f3965167b59b87b6169a4da948d3fd45e1056323c791df62df4fde64115",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=0"
+    },
+    {
+      "bytes": 13958,
+      "format": "JSON",
+      "name": "records-000100.json",
+      "sha256": "f9e711e0bceb2c1aa04f3a9f048293d208923637bba4111a04bff80300e51a3d",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=100"
+    },
+    {
+      "bytes": 13574,
+      "format": "JSON",
+      "name": "records-000200.json",
+      "sha256": "2b6e1d025aafe8b9b0341cd59638eccdcf0877e1d1be24c8acdb3c55d690c7f5",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=200"
+    },
+    {
+      "bytes": 14110,
+      "format": "JSON",
+      "name": "records-000300.json",
+      "sha256": "cbeed6e6055e9f36242908b9fcea1fd8ddbc941370a2f3340ab591c5805965de",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=300"
+    },
+    {
+      "bytes": 13789,
+      "format": "JSON",
+      "name": "records-000400.json",
+      "sha256": "0e6834c87c8cf8b14246457e41959331fc369c95498500d105cba4ff848e301a",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=400"
+    },
+    {
+      "bytes": 14124,
+      "format": "JSON",
+      "name": "records-000500.json",
+      "sha256": "554c02ecac991720378dba3b5e87f8e44ca5ecc13249980e3fc54df48c2cbaa2",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=500"
+    },
+    {
+      "bytes": 13794,
+      "format": "JSON",
+      "name": "records-000600.json",
+      "sha256": "259fbe18b111943519e93718b4e904ac6dc54056cda2f0fde03f102bfdbcf39e",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=600"
+    },
+    {
+      "bytes": 14159,
+      "format": "JSON",
+      "name": "records-000700.json",
+      "sha256": "a718898550dfd6c624a8693bb4074ea345dca53e8f82545dae7e34425f237874",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=700"
+    },
+    {
+      "bytes": 14018,
+      "format": "JSON",
+      "name": "records-000800.json",
+      "sha256": "39af3f79af5d994e939c20d24e141495dadec3a0067f28dacde87ac3f41d2b7d",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=800"
+    },
+    {
+      "bytes": 13849,
+      "format": "JSON",
+      "name": "records-000900.json",
+      "sha256": "6c36a5a11eec07853d2397def14587dbc791e21cc22da30a795b37b33cb3877e",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=900"
+    },
+    {
+      "bytes": 14083,
+      "format": "JSON",
+      "name": "records-001000.json",
+      "sha256": "0e34d327d49e0a39f3b704a91cdb8fd62808809b08ff3266cf375752a039977c",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=1000"
+    },
+    {
+      "bytes": 14249,
+      "format": "JSON",
+      "name": "records-001100.json",
+      "sha256": "2f0f5986495ac5340d7828095b8070607a5ddaed94a0c5d427c6da337b26e5ae",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=1100"
+    },
+    {
+      "bytes": 14306,
+      "format": "JSON",
+      "name": "records-001200.json",
+      "sha256": "970b8ff478d9be823ba4128d67ec817279623b08d0110dfd1c98a3d3b8e71d49",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=1200"
+    },
+    {
+      "bytes": 13881,
+      "format": "JSON",
+      "name": "records-001300.json",
+      "sha256": "f1299174d6ce885a9867fb4d09a77cbe7e62342d36a3f9602d501eed0e083aeb",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=1300"
+    },
+    {
+      "bytes": 13434,
+      "format": "JSON",
+      "name": "records-001400.json",
+      "sha256": "25848bb11ff45f1b122f5601b920a86f4301b7ff0350f045206999e266ddd9cb",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=1400"
+    },
+    {
+      "bytes": 14278,
+      "format": "JSON",
+      "name": "records-001500.json",
+      "sha256": "208374e759f6f947dad0a2c04391357084b0ca15acc1c4dd38a5952d70edc4f8",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=1500"
+    },
+    {
+      "bytes": 13979,
+      "format": "JSON",
+      "name": "records-001600.json",
+      "sha256": "7044ef6b0a83233fb0512c1c2837d59fb8fcb4a6c546c6de4eecc9fc614304ea",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=1600"
+    },
+    {
+      "bytes": 13645,
+      "format": "JSON",
+      "name": "records-001700.json",
+      "sha256": "5833e80fbb6333c5ca132451367b45b21937ecbff2767b0f557ec1afe28bf4ba",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=1700"
+    },
+    {
+      "bytes": 14169,
+      "format": "JSON",
+      "name": "records-001800.json",
+      "sha256": "124187c054806144db81f3f620f2f2dc24ebe63b22853787ea0d1b32dc7ab448",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=1800"
+    },
+    {
+      "bytes": 13779,
+      "format": "JSON",
+      "name": "records-001900.json",
+      "sha256": "3442d139a7e29d87e9f678881162f48fa5e242d7df46b30ebdbb2169fb011f94",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=1900"
+    },
+    {
+      "bytes": 14058,
+      "format": "JSON",
+      "name": "records-002000.json",
+      "sha256": "0467bd77a096c37ccf01c219c9b0fc392285d70506e607bd964adc7cbab1c432",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=2000"
+    },
+    {
+      "bytes": 13817,
+      "format": "JSON",
+      "name": "records-002100.json",
+      "sha256": "6a8454499249d5c272cd15d8f6cead4649f4a210120c533bb257da48023a3810",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=2100"
+    },
+    {
+      "bytes": 14150,
+      "format": "JSON",
+      "name": "records-002200.json",
+      "sha256": "34029fcd8ddb5804d0765e2b5b25da7cd9152351cd223908732cf8e3150b9ddf",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=2200"
+    },
+    {
+      "bytes": 14053,
+      "format": "JSON",
+      "name": "records-002300.json",
+      "sha256": "e61bf4dd1d13ea410042e7c9da01aab556d09fd424a077930a19518613ece648",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=2300"
+    },
+    {
+      "bytes": 13805,
+      "format": "JSON",
+      "name": "records-002400.json",
+      "sha256": "b8a8fbe4d96527e92e87a603818396147a3a8545e96234c7927ba154874d7905",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=2400"
+    },
+    {
+      "bytes": 13899,
+      "format": "JSON",
+      "name": "records-002500.json",
+      "sha256": "f3aea8149c45e65a29e12a367d61f1c01805c193b2c64cfc31a9ca6c7895580a",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=2500"
+    },
+    {
+      "bytes": 13988,
+      "format": "JSON",
+      "name": "records-002600.json",
+      "sha256": "fa5dd5bb963c35f022d2d5fba9ec563e56682f6ea0f505a75be7cb8f899549fe",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=2600"
+    },
+    {
+      "bytes": 14227,
+      "format": "JSON",
+      "name": "records-002700.json",
+      "sha256": "de8baafc6eda91362ff21bec95c2f4ced0fb0db57f38477817f7cc14f7290bd4",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=2700"
+    },
+    {
+      "bytes": 13906,
+      "format": "JSON",
+      "name": "records-002800.json",
+      "sha256": "7abdf5d16e005c190e5019a05670f34d09b942fa98dbc171bc7b6f50266d7e28",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=2800"
+    },
+    {
+      "bytes": 13447,
+      "format": "JSON",
+      "name": "records-002900.json",
+      "sha256": "399b43bb4242bb1b0f6bf921418fa04007a87ae2eed794a38c3ad2b923bdcc1c",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=2900"
+    },
+    {
+      "bytes": 14156,
+      "format": "JSON",
+      "name": "records-003000.json",
+      "sha256": "59f59caeb3507f1309203c3a7a7be3b6c9385da29fdbf153c32c73899110ef31",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=3000"
+    },
+    {
+      "bytes": 14016,
+      "format": "JSON",
+      "name": "records-003100.json",
+      "sha256": "8df8f153b35d02e15ca3820b99962e5e02433c9ebcf9fdba01e989c30ccb078a",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=3100"
+    },
+    {
+      "bytes": 13572,
+      "format": "JSON",
+      "name": "records-003200.json",
+      "sha256": "c189876d2737249d2d96f72ad6e061ea32265f0520b305a202d2211ebac0fc69",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=3200"
+    },
+    {
+      "bytes": 14129,
+      "format": "JSON",
+      "name": "records-003300.json",
+      "sha256": "7ca692842e0573e46c5cd17703b95aacc9a6c2d035acd6f758e8115b39775de3",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=3300"
+    },
+    {
+      "bytes": 13782,
+      "format": "JSON",
+      "name": "records-003400.json",
+      "sha256": "56e83945cfbbeca0210c0f7e7695b3bf1ffcc798aae17dcde94b17228bc84687",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=3400"
+    },
+    {
+      "bytes": 14108,
+      "format": "JSON",
+      "name": "records-003500.json",
+      "sha256": "f76838def7261f818ee974ea0644eaea17608e63f58762de9cb4aebdce48d8a2",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=3500"
+    },
+    {
+      "bytes": 13795,
+      "format": "JSON",
+      "name": "records-003600.json",
+      "sha256": "420dfa20d91a1a588b3a3957ddeb527f03ccb8885d00ecb90f03b9dc21d17eae",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=3600"
+    },
+    {
+      "bytes": 14243,
+      "format": "JSON",
+      "name": "records-003700.json",
+      "sha256": "ff120382a3243b38a185aca1d53ed381abfa2b2410e03712aae47ab6f8cea7e8",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=3700"
+    },
+    {
+      "bytes": 13862,
+      "format": "JSON",
+      "name": "records-003800.json",
+      "sha256": "a1c68c6914f9b97219691ff0dd0e8d7a4f746aee5d01d3ec24a76da38240d382",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=3800"
+    },
+    {
+      "bytes": 14004,
+      "format": "JSON",
+      "name": "records-003900.json",
+      "sha256": "1d85a5ff6048bd992d34186927ec9707754ec4d2fc39a535b62ecdd979de006b",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=3900"
+    },
+    {
+      "bytes": 13780,
+      "format": "JSON",
+      "name": "records-004000.json",
+      "sha256": "568150d04e8b7607c82e5ccc5643a577c2729b2915d8af3363ee490f5b44fc7a",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=4000"
+    },
+    {
+      "bytes": 14004,
+      "format": "JSON",
+      "name": "records-004100.json",
+      "sha256": "e94d1c363779a5dae0c29640c8ecdded2ba3580b6fcf2991615ecb610b86d77b",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=4100"
+    },
+    {
+      "bytes": 14329,
+      "format": "JSON",
+      "name": "records-004200.json",
+      "sha256": "bfff53ce748d6405ba3d59c82bb4f49fc6f4e33fa334b33a8a36597c62136162",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=4200"
+    },
+    {
+      "bytes": 13826,
+      "format": "JSON",
+      "name": "records-004300.json",
+      "sha256": "182a4407388292b1e842703d87b980ca98115729211334ef7fb2c27aac68d452",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=4300"
+    },
+    {
+      "bytes": 13410,
+      "format": "JSON",
+      "name": "records-004400.json",
+      "sha256": "0eabb9cc6f64bc40929d1189b92be40704378f903050be50e11f12fd903b56e0",
+      "source_url": "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/consumo-de-electricidad-mensual-en-castilla-y-leon/records?limit=100&offset=4400"
+    }
+  ],
+  "cadence": "monthly",
+  "disposition": {
+    "bytes_persisted": false,
+    "intended_sink": "private",
+    "status": "PROBE_ONLY_NO_PERSISTENCE"
+  },
+  "expected_format": "OpenDataSoft native JSON pages",
+  "limitations": "Exact API pages preserved; null/missing producer fields are not coerced.",
+  "native_asset_fingerprint": "154ee6d02c30e10dc3a98ae02fdbc93d4126b83b42640978d3261ecdaa8b2966",
+  "producer": "Junta de Castilla y León Open Data",
+  "product_key": "mobilidade-source-id::F181",
+  "raw_native": {
+    "classification": "supplier and residential/services/industrial type",
+    "geography": "Castilla y León provinces"
+  },
+  "request_id": "push-35570534374",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://datos.gob.es/es/catalogo/a07002862-consumo-de-electricidad-mensual-en-castilla-y-leon1",
+    "license": "CC BY 4.0 reported by the public catalogue; canonical reuse state remains unchanged",
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": null,
+  "source_set_id": "F181",
+  "source_url": "https://analisis.datosabiertos.jcyl.es/explore/dataset/consumo-de-electricidad-mensual-en-castilla-y-leon/analyze/",
+  "title": "Junta de Castilla y León — Consumo de electricidad mensual",
+  "validation_result": "PASS_OPENDATASOFT_PAGINATED_NATIVE_JSON"
+}
