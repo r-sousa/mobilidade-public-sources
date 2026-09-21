@@ -1,58 +1,75 @@
-# Private control plane and canonical sink
+# Private canonical sink
 
-The public repository does **not** hold a credential for `r-sousa/EU-transp-weekly`.
+The preferred control direction is:
 
-The direction of control is:
+`EU-transp-weekly orchestrator → public request file → public acquisition runner → private sink + sanitized public receipt`
 
-`private orchestrator → repository_dispatch → public acquisition runner → sanitized public receipt → private acceptance/preservation`
+This allows genuinely public producer acquisition to use free public GitHub-hosted runners while the private repository remains canonical.
 
-## Secret location
+## Optional sink secret
 
-A dispatch credential, if a PAT is used initially, belongs **only in the private repository**:
+Configure this secret **only in** `r-sousa/mobilidade-public-sources`:
 
-`r-sousa/EU-transp-weekly → Settings → Secrets and variables → Actions → New repository secret`
+`MN_PRIVATE_SINK_TOKEN`
 
-Suggested name:
+Use a fine-grained personal access token restricted to:
 
-`MN_PUBLIC_ACQUISITION_TOKEN`
+- repository: `r-sousa/EU-transp-weekly` only;
+- repository permission: **Contents — Read and write**;
+- no Administration, Actions, Secrets, Packages, Issues, Pull requests or organisation/account-wide permissions.
 
-Recommended initial credential: a fine-grained PAT restricted to the single repository
-`r-sousa/mobilidade-public-sources`.
+The token value must never appear in chat, source files, logs, receipts, Releases or Actions artifacts.
 
-Minimum repository permission for the current `repository_dispatch` design:
+## Behaviour with the secret
 
-- **Contents: Read and write** on `r-sousa/mobilidade-public-sources`;
-- Metadata read access is implicit.
+For a source spec with `sink: private` the public runner:
 
-Do not grant access to any other repository and do not grant Administration, Secrets,
-Packages, Issues, Pull requests or organisation/account-wide permissions.
-
-A GitHub App installation token is preferable later for shorter-lived credentials and
-narrower audit/revocation boundaries.
-
-## Public runner behaviour
-
-For a source whose canonical sink is private, the public runner:
-
-1. acquires the genuinely public producer response;
+1. acquires the genuinely public producer bytes;
 2. validates native format/semantics;
-3. computes SHA-256 and byte counts;
-4. deletes the plaintext with the ephemeral runner workspace;
-5. persists only a sanitized receipt under `receipts/Fxx/<fingerprint>.json`.
+3. calculates SHA-256 and native source-object fingerprint;
+4. creates or reuses an idempotent private prerelease in `EU-transp-weekly`;
+5. uploads and downloads-back-verifies each exact native asset;
+6. writes an immutable private receipt under:
 
-No producer bytes with unresolved redistribution status are uploaded as public
-Releases or Actions artifacts.
+   `statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/Fxx/<fingerprint>.json`
 
-## Private reconciliation
+7. writes only a sanitized receipt to this public repository.
 
-The private orchestrator reads the public receipt and remains the only authority that
-may accept it. When preservation is warranted, the private side reacquires the same
-producer URL, verifies that SHA-256 and byte count match the public evidence, and then
-creates/reuses the canonical private source object and immutable receipt.
+No canonical source-set manifest is changed by the public runner.
 
-This deliberately trades one repeated download for a stronger security boundary:
-no private-repository credential or producer credential is ever present in the public
-execution plane.
+## Behaviour without the secret
 
-A future encrypted-spool or GitHub-App broker may remove the repeated download without
-weakening this boundary, but it is not required for the initial architecture.
+Acquisition still runs successfully in receipt-only mode:
+
+- producer bytes are acquired/validated/hashed ephemerally;
+- a sanitized public receipt is persisted;
+- plaintext source bytes disappear with the runner workspace;
+- the private orchestrator records `PUBLIC_ACQUISITION_VERIFIED_RECEIPT_ONLY`.
+
+This fallback is safe, but byte-dependent normalization remains pending.
+
+## Request without private Actions
+
+The private orchestrator need not call a private GitHub Action. It may create exactly one request file in this public repository:
+
+```json
+{
+  "source_set_id": "F148",
+  "request_id": "MN-PRIVATE-CTRL-F148-20260921T0910"
+}
+```
+
+Any `requests/**.json` push triggers the generic public acquisition workflow.
+
+## Governance
+
+A private-sink receipt is preservation evidence, not analytical acceptance.
+
+Only the private Mobilidade Norte orchestrator may:
+
+- accept source evidence canonically;
+- change rights/reuse state;
+- update `Fxx` manifests/catalogues;
+- authorize consumer/publication/Site promotion.
+
+Public availability and successful acquisition never imply redistribution permission.
