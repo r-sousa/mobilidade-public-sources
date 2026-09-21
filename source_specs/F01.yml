@@ -1,0 +1,27 @@
+schema_version: 1.0.0
+source_set_id: F01
+title: Eurostat road_go_na_rl3g
+producer: Eurostat
+product_key: eurostat::road_go_na_rl3g
+adapter: eurostat
+access: public
+sink: public_release
+cadence: monthly
+expected_format: JSON-stat/JSON
+source:
+  landing_url: https://ec.europa.eu/eurostat/databrowser/view/road_go_na_rl3g/default/table
+raw_native:
+  geography: Eurostat geography codes exposed by the table
+  classification: NST 2007
+reuse:
+  status: verified
+  public_redistribution_gate: asset_check_required
+  evidence_url: https://ec.europa.eu/eurostat/about-us/policies/copyright
+  license: Eurostat reuse policy
+  asset_check: eurostat_official_output
+parameters:
+  dataset_code: road_go_na_rl3g
+  query:
+    lang: EN
+    freq: A
+    sinceTimePeriod: "2019"
