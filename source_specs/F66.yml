@@ -1,0 +1,28 @@
+schema_version: 1.0.0
+source_set_id: F66
+title: CAOP — administrative boundaries
+producer: Direção-Geral do Território
+product_key: mobilidade-source-id::F66
+adapter: arcgis_feature_service
+access: public
+sink: private
+cadence: annual
+expected_format: GeoJSON
+source:
+  landing_url: https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop
+raw_native:
+  geography: Portuguese municipalities as exposed by DGT CAOP service
+  classification: DGT administrative geography
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop
+  license: null
+  asset_check: null
+parameters:
+  layer_url: https://services5.arcgis.com/P8zUOXUFNtLWM31w/ArcGIS/rest/services/caop_dico/FeatureServer/1
+  where: "1=1"
+  out_fields: "*"
+  out_sr: 4326
+  page_size: 1000
+  period: current public service
