@@ -1,0 +1,3 @@
+schema_version: 1.0.0
+source_set_id: F02
+reason: bounded_private_read_bridge_validation
