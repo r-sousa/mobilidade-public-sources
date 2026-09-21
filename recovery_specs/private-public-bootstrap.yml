@@ -1,0 +1,83 @@
+schema_version: 1.0.0
+private_repository: r-sousa/EU-transp-weekly
+private_branch: mobilidade-norte-recovery-20260919
+private_release_tag: data-20260915-9d994478fdb13e04
+policy:
+  canonical_candidate_index: statistics/public-export/byte-redistribution-candidates.json
+  rule: publish only if canonical candidate is present and the asset-level check passes
+  unresolved_rights: audit_only_no_public_bytes
+items:
+  F01:
+    disposition: already_public_direct_source
+    note: Direct producer acquisition already exists in mobilidade-public-sources; do not duplicate the private consolidated package.
+  F02:
+    asset: F02-001.zip
+    sha256: 43cd4c2fe09373b515af4f597feb9a38e4d031336efc2e5b3d580b0c7c8e4d9f
+    producer: Eurostat
+    product_code: road_go_na_ru3g
+    asset_check: eurostat_package
+  F03:
+    asset: F03-001.zip
+    sha256: 0156ca52ca4d6f928dab126ef95c91ced8110eaeeb22e0001b27a243d1600e1e
+    producer: Eurostat
+    product_code: road_go_ia_lgtt
+    asset_check: eurostat_package
+  F04:
+    asset: F04-001.zip
+    sha256: 1a1bbc3e964951571c6096ab2220419a28bb8d5f9612134d2c4372b38f7e31f5
+    producer: Eurostat
+    product_code: avia_par_pt
+    asset_check: eurostat_package
+  F12:
+    asset: F12-001.zip
+    sha256: 56e9a84dbdba0a7ac604b02f56f38964d114390eb3cdd3019d4e1b4342611b87
+    producer: STCP
+    asset_check: gtfs_cc0_package
+  F19:
+    asset: F19-001.zip
+    sha256: cdc1b33fd090ad85cdad7157990eddf0133f958fc311a234782ec3ccb758039f
+    producer: INE
+    indicator: "0012349"
+    asset_check: ine_ccby_package
+  F20:
+    asset: F20-001.zip
+    sha256: 557d7c3be67261adf880dc624988743f8f284197e95db6fd72105c543da509c6
+    producer: INE
+    indicator: "0012087"
+    asset_check: ine_ccby_package
+  F21:
+    asset: F21-001.zip
+    sha256: db3012e619e1d4c836fb4a61ca28f5d319ad8858c912f7b4e2c2918df75373e0
+    producer: INE
+    indicator: "0013838"
+    asset_check: ine_ccby_package
+  F22:
+    asset: F22-001.zip
+    sha256: a141ea0c940558263dfe6672b9cf6d61d6e998ed92f268a392699f092d18feb5
+    producer: INE
+    indicator: "0013863"
+    asset_check: ine_ccby_package
+  F23:
+    asset: F23-001.zip
+    sha256: 5d228b19d3b323ac73f8b87c9d497dd0a5f7dc8883b7651310044c70e27ca1f6
+    producer: INE
+    indicator: "0013872"
+    asset_check: ine_ccby_package
+  F24:
+    asset: F24-001.zip
+    sha256: ab3798c057b9e612ee3ce7ca3650699adab40af07ce3ba25293833d7d7b110cf
+    producer: Eurostat
+    product_code: nama_10r_3gva
+    asset_check: eurostat_package
+  F25:
+    asset: F25-001.zip
+    sha256: 38467dabd1fbe8bdd9b4828d9dd31cf1f25dd2ec6861202bed6b327febb97a96
+    producer: INE
+    indicator: "0012340"
+    asset_check: ine_ccby_package
+  F26:
+    asset: F26-001.zip
+    sha256: ce20b0ac122b77b16a84bb1ca4aee3a288f54ea856a7ff7c935a08ab13ea8380
+    producer: INE
+    indicator: "0012882"
+    asset_check: ine_ccby_package
