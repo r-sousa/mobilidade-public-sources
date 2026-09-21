@@ -1,0 +1,25 @@
+schema_version: 1.0.0
+mode: w3c_f166_aena_monthly
+mission_generation: 39
+private_repository: r-sousa/EU-transp-weekly
+private_branch: mobilidade-norte-recovery-20260919
+fingerprint: 164d246dbb187d6aea641d7c8624bb7cbb55d9dd0f0f2213715dfc8ba03e7cab
+release_tag: mn-src-f166-164d246dbb187d6aea64
+handoff_path: statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P114-GEN39-F166-AENA-PRIVATE-BYTES-EXTRACTION-HANDOFF.json
+handoff_blob_sha: ad10f73305ddfafaeea948a57d1907af4fa064ad
+assets:
+  - id: 578707095
+    name: landing.html
+    bytes: 83237
+    sha256: 9304b497ea570f6499a4dec12569032f325f32b2e5aef2a0e6a48a6edc01ab0f
+  - id: 578707130
+    name: Satellite
+    bytes: 48581
+    sha256: 657c07334d9721bc6d54aa18db070848cf6c48b23ba7646ac2e6821030e78343
+  - id: 578707153
+    name: series-manifest.json
+    bytes: 579
+    sha256: cc698d97d695a5f558f26b08cef50a2bff0ffb481fe5394259a063c6588f237e
+producer_reacquisition: false
+rights_adjudication: false
+consumer_joins: false
