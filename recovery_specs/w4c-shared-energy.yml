@@ -1,0 +1,44 @@
+schema_version: 1.0.0
+mode: private_member_extraction_batch
+mission_generation: 39
+private_repository: r-sousa/EU-transp-weekly
+private_branch: mobilidade-norte-recovery-20260919
+release_tag: source-rhomolo-mm-2024-f36c666af69512fe897a
+asset:
+  id: 565922694
+  name: RHOMOLO_MM_2024_source_recovery_final.zip
+  bytes: 9357521
+  sha256: 013ced7e4c5564f3e4219272219325475cd000ec90011fe2c6a0e2652e0840e8
+members:
+  F169:
+    path: snapshots/F169.html
+    guards:
+      - Admit only rows explicitly labelled transport/transportes/mobility by the producer.
+      - Preserve Portugal/national geography as published; never allocate national totals to Norte.
+      - Keep publication/edition period distinct from observation period.
+      - Generic national energy totals are not mobility observations.
+  F170:
+    path: snapshots/F170.html
+    guards:
+      - Admit only municipality rows whose producer sector label explicitly denotes transport/mobility.
+      - Preserve producer municipality and sector labels source-natively.
+      - Total municipal gas consumption is not transport energy.
+      - Do not infer transport use from geography, adjacent rows or vehicle-fuel assumptions.
+  F176:
+    path: snapshots/F176.pdf
+    guards:
+      - Admit only Galicia rows explicitly labelled transport/transporte or equivalent producer transport category.
+      - Preserve Galicia geography, carrier/category, native unit, period, notes and page/line locator.
+      - Do not infer transport energy from total demand, generation or residuals.
+      - No cross-carrier summation unless producer-compatible.
+  F179:
+    path: snapshots/F179.pdf
+    guards:
+      - Admit only rows explicitly identifying automotive/road-transport fuel or use.
+      - Preserve producer fuel/use label, geography, period, native unit, revision notes and page/line locator.
+      - Product sales or hydrocarbon supply are not end-use consumption unless producer explicitly defines them that way.
+      - Do not allocate Spain-wide or provincial totals to Norte.
+producer_reacquisition: false
+rights_adjudication: false
+consumer_joins: false
+valid_empty_is_success: true
