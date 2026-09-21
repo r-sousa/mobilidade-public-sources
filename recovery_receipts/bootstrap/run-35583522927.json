@@ -1,0 +1,22 @@
+{
+  "complete": true,
+  "failures": [],
+  "private_release_tag": "data-20260915-9d994478fdb13e04",
+  "private_repository": "r-sousa/EU-transp-weekly",
+  "results": [
+    {
+      "bytes": 60858,
+      "public_release": {
+        "asset_id": 578706477,
+        "asset_name": "F02-001.zip",
+        "id": 392831339,
+        "tag": "mn-recovered-f02-43cd4c2fe09373b515af",
+        "url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-recovered-f02-43cd4c2fe09373b515af"
+      },
+      "sha256": "43cd4c2fe09373b515af4f597feb9a38e4d031336efc2e5b3d580b0c7c8e4d9f",
+      "source_set_id": "F02",
+      "status": "RECOVERED_AND_PUBLICLY_PRESERVED"
+    }
+  ],
+  "schema_version": "1.0.0"
+}
