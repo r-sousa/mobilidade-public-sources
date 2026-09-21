@@ -1,0 +1,16 @@
+schema_version: 1.0.0
+mode: w3c_f30_ige4580
+mission_generation: 39
+private_repository: r-sousa/EU-transp-weekly
+private_branch: mobilidade-norte-recovery-20260919
+release_tag: mn-src-f30-92525a31c1907715c00f
+asset:
+  id: 578707824
+  name: IGE-4580.json
+  bytes: 49196
+  sha256: 448a35ae8c0c6aba4f3f8a084d57bc1c1d0cbc31004072d44b87840e7fef5dc4
+handoff_path: statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P124-GEN39-F30-IGE-4580-EXTRACTION-HANDOFF.json
+handoff_blob_sha: f724206c2e2978321ff10902d68b9e4d1930fd34
+producer_reacquisition: false
+rights_adjudication: false
+consumer_joins: false
