@@ -38,9 +38,10 @@ def load_spec(path: Path) -> dict:
 
 
 def fingerprint(records: list[dict]) -> str:
+    native = [r for r in records if r.get("role", "native") != "recomposed"]
     material = [
         {"name": r["name"], "sha256": r["sha256"], "bytes": int(r["bytes"])}
-        for r in sorted(records, key=lambda x: x["name"])
+        for r in sorted(native, key=lambda x: x["name"])
     ]
     return hashlib.sha256(
         json.dumps(material, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -89,7 +90,8 @@ def run(spec_path: Path, *, probe_only: bool = False, receipt_out: Path | None =
                     "sha256": r["sha256"],
                     "bytes": r["bytes"],
                     "format": r.get("format"),
-                    "source_url": r.get("source_url")
+                    "source_url": r.get("source_url"),
+                    "role": r.get("role", "native")
                 }
                 for r in records
             ],
