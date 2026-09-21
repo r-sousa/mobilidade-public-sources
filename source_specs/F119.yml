@@ -24,3 +24,9 @@ parameters:
   year: 2024
   max_cells_per_chunk: 10000
   spacing_seconds: 2
+  preserved_metadata:
+    repository: r-sousa/EU-transp-weekly
+    release_tag: source-rhomolo-mm-2024-f36c666af69512fe897a
+    asset_name: RHOMOLO_MM_2024_source_snapshots.zip
+    archive_sha256: 60d6e818aa81c1e710a6b41953e68fee6f50abe494e7363f8f175f7b8e568084
+    member_path: F119_INE_0008152_metadata.json
