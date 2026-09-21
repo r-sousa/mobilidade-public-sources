@@ -64,3 +64,19 @@ F12 reached a public runner but the official Porto Digital host failed DNS resol
 - verify private orchestrator discovery/reconciliation of the receipt;
 - repair any producer-specific adapter issues exposed by those live runs;
 - only then assess legacy private workflow retirement readiness.
+
+
+## Chunking and recomposition validation
+
+Live public-runner validation now covers:
+
+- **F181 / OpenDataSoft** — paginated native JSON pages recomposed deterministically to `records.jsonl.gz`; native receipt remains immutable and a separate composition receipt records the derived object.
+- **F66 / ArcGIS** — complete Feature Layer query recomposed from producer pages into one GeoJSON FeatureCollection with count-based completeness evidence.
+- **F166 / HTML/file-series discovery** — official public landing page and linked spreadsheet acquired, validated and represented as an ordered file-series composition.
+- **INE partitioning contract** — private proven rules ported: 40,000-cell cap, URL-length bound, Dim2-first splitting, Cod=7 resplitting, >=2 s request spacing and deterministic recomposition. Unit/CI tests pass. The latest live F85 retry was stopped by a producer connection timeout at the metadata endpoint; this is not interpreted as an adapter failure.
+
+Spanish international/intracommunity trade F31-F34 is explicitly assigned to the file-series model, with the already preserved private `source-jcyl-trade-f7f11ec207492ce6ea7a` package taking precedence over new producer downloads.
+
+## Open-data catalogues
+
+`dados.gov.pt`, `datos.gob.es` and `data.europa.eu` have all passed catalogue probes. They are registered as `CATALOGUE_RESOLVER_NOT_CANONICAL_SOURCE`: they discover publisher datasets/distributions and hand the resolved producer resource to an acquisition adapter; they do not create duplicate Fxx identities.
