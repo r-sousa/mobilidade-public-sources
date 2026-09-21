@@ -271,8 +271,13 @@ def _ine_resolve_label(meta, dim_num: int, wanted: str) -> str:
 
     matches = exact if exact else contains
     if len(matches) != 1:
+        sample = [
+            {"code": code, "member": item}
+            for code, item in list(members.items())[:8]
+        ]
         raise RuntimeError(
-            f"INE label resolution for Dim{dim_num} {wanted!r} returned {len(matches)} matches"
+            f"INE label resolution for Dim{dim_num} {wanted!r} returned {len(matches)} matches; "
+            f"sample={json.dumps(sample, ensure_ascii=False)}"
         )
     return matches[0]
 
@@ -327,7 +332,14 @@ def ine_json(spec: dict, work: Path) -> dict:
 
     if not periods:
         wanted = label_contains if label_contains else target_year
-        raise RuntimeError(f"INE metadata exposed no Dim1 member for requested period {wanted}")
+        sample = [
+            {"code": code, "member": item}
+            for code, item in list(dim1.items())[:8]
+        ]
+        raise RuntimeError(
+            f"INE metadata exposed no Dim1 member for requested period {wanted}; "
+            f"sample={json.dumps(sample, ensure_ascii=False)}"
+        )
     if target_year is None and len(periods) > 24:
         raise RuntimeError(
             "Unbounded INE acquisition refused: specify a target year or a bounded period selection"
@@ -339,6 +351,17 @@ def ine_json(spec: dict, work: Path) -> dict:
         if dim <= 1:
             raise RuntimeError("dimension_labels may only target Dim2 and higher")
         selections[dim] = _ine_resolve_label(obj, dim, str(label))
+
+    print(json.dumps(
+        {
+            "ine_resolution": {
+                "indicator": indicator,
+                "periods": periods,
+                "dimension_codes": {f"Dim{k}": v for k, v in sorted(selections.items())}
+            }
+        },
+        ensure_ascii=False
+    ), flush=True)
 
     spacing = max(2.0, float(spec["parameters"].get("spacing_seconds", 2)))
     for i, period in enumerate(periods):
