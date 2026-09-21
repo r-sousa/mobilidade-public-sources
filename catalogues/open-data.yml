@@ -1,0 +1,14 @@
+schema_version: 1.0.0
+catalogues:
+  - name: Portugal — dados.gov.pt
+    provider: dados_gov_pt
+    endpoint: https://dados.gov.pt
+    query: transporte
+    page_size: 3
+  - name: Spain — datos.gob.es
+    provider: datos_gob_es
+    endpoint: https://datos.gob.es
+    page_size: 3
+  - name: Europe — data.europa.eu
+    provider: data_europa_eu
+    endpoint: https://data.europa.eu/sparql
