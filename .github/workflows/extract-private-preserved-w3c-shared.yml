@@ -1,0 +1,34 @@
+name: Extract W3C shared preserved aviation and ports
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extraction_requests/W3C-G45-P115-P122-source-rhomolo-mm-2024.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mn-w3c-shared-aviation-ports
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Run exact W3C shared extraction
+        run: |
+          mkdir -p "$RUNNER_TEMP/mn-w3c"
+          python -m mn_public_acquisition.run_w3c_shared recovery_specs/w3c-shared-aviation-ports.yml --out "$RUNNER_TEMP/mn-w3c/result.json"
