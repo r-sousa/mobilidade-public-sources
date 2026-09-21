@@ -1,0 +1,60 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "cd068a81b511aabf1dbf9c1f54e73349afb86713",
+  "acquisition_timestamp": "2026-09-21T02:38:16.460180Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 380682,
+      "format": "XLSX",
+      "name": "ANSR_2024_30D__Anexo-ao-Relatorio-Anual-de-Sinistralidade-a-30-dias-fiscalizacao-e-contraordenacoes-rodoviarias-2024.xlsx",
+      "sha256": "05669b08fe5e5ee9b8f61bbd96bf37e34f965dc66f48ad039e6cc0875c158f7a",
+      "source_url": "https://observatorioansr.pt/wp-content/uploads/2026/03/Anexo-ao-Relatorio-Anual-de-Sinistralidade-a-30-dias-fiscalizacao-e-contraordenacoes-rodoviarias-2024.xlsx"
+    },
+    {
+      "bytes": 239515,
+      "format": "XLSX",
+      "name": "ANSR_2024_24H__Anexo-ao-Relatorio-Anual-de-Sinistralidade-24h-e-fiscalizacao-rodoviaria-2024.xlsx",
+      "sha256": "58b5dd37ae2c8fa0e6d66cdae904164b7e66a77710fec50349c920c958be4383",
+      "source_url": "https://observatorioansr.pt/wp-content/uploads/2025/08/Anexo-ao-Relatorio-Anual-de-Sinistralidade-24h-e-fiscalizacao-rodoviaria-2024.xlsx"
+    },
+    {
+      "bytes": 242715,
+      "format": "XLSX",
+      "name": "ANSR_2025_24H__Anexo-ao-Relatorio-Anual-de-Sinistralidade-24h-e-fiscalizacao-rodoviaria-de-2025.xlsx",
+      "sha256": "c095dacc279446fbaee6deba63899035e8234013141c1517baeccf15ab9d5055",
+      "source_url": "https://observatorioansr.pt/wp-content/uploads/2026/07/Anexo-ao-Relatorio-Anual-de-Sinistralidade-24h-e-fiscalizacao-rodoviaria-de-2025.xlsx"
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": false,
+    "intended_sink": "private",
+    "status": "PROBE_ONLY_NO_PERSISTENCE"
+  },
+  "expected_format": "XLSX",
+  "limitations": "Preserve 24h and 30-day casualty windows as distinct producer concepts.",
+  "native_asset_fingerprint": "948bdef5e3d285a869c8fe15580dcc84d812104cd726436bfa9f12bff58c3681",
+  "producer": "Autoridade Nacional de Segurança Rodoviária",
+  "product_key": "mobilidade-source-id::F49",
+  "raw_native": {
+    "classification": "ANSR 24h and 30-day casualty windows kept distinct",
+    "geography": "ANSR workbook-native geographies"
+  },
+  "request_id": "push-35554827067",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": null,
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2024-2025",
+  "source_set_id": "F49",
+  "source_url": "https://observatorioansr.pt/sinistralidade/",
+  "title": "ANSR — annual road-safety annexes",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
