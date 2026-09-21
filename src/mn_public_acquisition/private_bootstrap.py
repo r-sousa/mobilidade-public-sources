@@ -377,10 +377,13 @@ def main() -> None:
     args = ap.parse_args()
 
     cfg = yaml.safe_load(args.config.read_text(encoding="utf-8"))
-    private_token = os.environ.get("MN_PRIVATE_READ_TOKEN", "")
+    private_token = (
+        os.environ.get("MN_PRIVATE_READ_TOKEN", "")
+        or os.environ.get("MN_PRIVATE_SINK_TOKEN", "")
+    )
     public_token = os.environ.get("GITHUB_TOKEN", "")
     if not private_token:
-        raise SystemExit("MN_PRIVATE_READ_TOKEN_MISSING")
+        raise SystemExit("MN_PRIVATE_READ_OR_SINK_TOKEN_MISSING")
     if not public_token:
         raise SystemExit("GITHUB_TOKEN_MISSING")
 
