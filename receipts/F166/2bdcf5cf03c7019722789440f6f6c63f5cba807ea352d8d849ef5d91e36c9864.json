@@ -1,0 +1,63 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "b87766ca8f041078cac5b29baa8cbe9926883d6c",
+  "acquisition_timestamp": "2026-09-21T07:22:26.424339Z",
+  "adapter": "html_assets",
+  "assets": [
+    {
+      "bytes": 83236,
+      "format": "HTML",
+      "name": "landing.html",
+      "role": "native",
+      "sha256": "62fa8d3f1c374123eafa2b9cfbfe51a3f828d899b614e863bdf1539fecf78834",
+      "source_url": "https://www.aena.es/es/estadisticas/informes-mensuales.html?anio=2026"
+    },
+    {
+      "bytes": 55558,
+      "format": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "name": "Satellite",
+      "role": "native",
+      "sha256": "b55e404f9e802392c48f661df784e38cb8b96c3e71cb5e8a58ad0f12ff9506df",
+      "source_url": "https://www.aena.es/sites/Satellite?blobcol=urldata&blobkey=id&blobtable=MungoBlobs&blobwhere=1576873282373&ssbinary=true"
+    },
+    {
+      "bytes": 579,
+      "format": "JSON",
+      "name": "series-manifest.json",
+      "role": "recomposed",
+      "sha256": "7024bd54859c202b2e07446c881a66b9823daa47d0b4bf5ae5c976d75b156fdb",
+      "source_url": null
+    }
+  ],
+  "cadence": "monthly",
+  "disposition": {
+    "bytes_persisted": false,
+    "intended_sink": "private",
+    "status": "PROBE_ONLY_NO_PERSISTENCE"
+  },
+  "expected_format": "XLS",
+  "limitations": "Producer landing HTML and selected linked assets are preserved natively. Multiple linked files are recomposed as an ordered logical series manifest; heterogeneous files are not row-concatenated without a product-specific semantic assembler.",
+  "native_asset_fingerprint": "2bdcf5cf03c7019722789440f6f6c63f5cba807ea352d8d849ef5d91e36c9864",
+  "producer": "Aena",
+  "product_key": "mobilidade-source-id::F166",
+  "raw_native": {
+    "classification": "passengers, operations and freight as published by Aena",
+    "geography": "Aena airport network"
+  },
+  "request_id": "push-35572639634",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.aena.es/es/estadisticas/informes-mensuales.html",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2026",
+  "source_set_id": "F166",
+  "source_url": "https://www.aena.es/es/estadisticas/informes-mensuales.html?anio=2026",
+  "title": "Aena — Informes mensuales de tráfico",
+  "validation_result": "PASS_HTML_ASSET_DISCOVERY_SERIES_COMPOSED"
+}
