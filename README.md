@@ -25,7 +25,9 @@ The source-object identity is `source_set_id + native_asset_fingerprint`, where 
 - `.github/workflows/acquire.yml` — generic source acquisition workflow;
 - `docs/PRIVATE-SINK.md` — minimum cross-repository credential contract;
 - `docs/MIGRATION-INVENTORY.md` — preparatory inventory for legacy private workflows;
-- `docs/PILOT-STATUS.md` — current validation evidence.
+- `docs/PILOT-STATUS.md` — current validation evidence;
+- `docs/CHUNKING-CONTRACT.md` — adapter-specific chunk planning and deterministic recomposition;
+- `catalogues/` — open-data discovery/resolution portals kept separate from Fxx source identity.
 
 ## Governance boundary
 
@@ -57,7 +59,14 @@ bytes.
 - static GTFS feeds;
 - CKAN-discovered GTFS feeds;
 - IGE table API, including verified repair for incomplete TLS certificate chains;
-- OpenDataSoft-compatible pagination support (available for products that require it).
+- OpenDataSoft-compatible pagination with deterministic JSONL recomposition;
+- ArcGIS Feature Layer pagination with complete GeoJSON recomposition;
+- HTML/download discovery for producer file series, with ordered series manifests;
+- open-data catalogue resolvers for `dados.gov.pt`, `datos.gob.es` and `data.europa.eu` (catalogue role only, never automatic Fxx identity).
+
+Chunking is adapter-specific rather than universal. INE uses the proven 40,000-cell contract,
+OpenDataSoft and ArcGIS use producer pagination, and heterogeneous file series are not blindly
+row-concatenated. Producer-native chunks remain distinct from recomposed/derived outputs.
 
 The public runner preserves producer-native bytes during validation and does not perform
 consumerization.
