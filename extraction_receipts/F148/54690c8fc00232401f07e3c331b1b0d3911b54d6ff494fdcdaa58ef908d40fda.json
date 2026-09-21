@@ -1,37 +1,11 @@
 {
+  "completed_at_utc": "2026-09-21T20:05:18.866359+00:00",
+  "native_asset_fingerprint": "54690c8fc00232401f07e3c331b1b0d3911b54d6ff494fdcdaa58ef908d40fda",
+  "private_canonical_receipt": "statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/F148/54690c8fc00232401f07e3c331b1b0d3911b54d6ff494fdcdaa58ef908d40fda-extraction.json",
+  "private_output_bytes_exposed_publicly": false,
+  "producer_reacquisition": false,
+  "rights_state_changed": false,
   "schema_version": "1.0.0",
   "source_set_id": "F148",
-  "native_asset_fingerprint": "54690c8fc00232401f07e3c331b1b0d3911b54d6ff494fdcdaa58ef908d40fda",
-  "private_release_tag": "mn-src-f148-54690c8fc00232401f07",
-  "status": "STAGED_NOT_EXECUTED_RUNNER_WIRING_PENDING",
-  "adapter": {
-    "path": "src/mn_public_acquisition/extract_f148.py",
-    "commit": "f949dc316e0a3c85d80387e57fe2df33a761f24e",
-    "validation_workflow_run": 35647314978,
-    "validation_conclusion": "success"
-  },
-  "request": {
-    "path": "extraction_requests/F148-54690c8fc00232401f07e3c331b1b0d3911b54d6ff494fdcdaa58ef908d40fda.json",
-    "commit": "64a09b61e8cff361e32a5180d50a435f75315ef2"
-  },
-  "expected_private_asset": {
-    "asset_id": 578699470,
-    "name": "tran_r_rago.json",
-    "bytes": 42285,
-    "sha256": "54921560492f54576da1d3bb9402bca02bde0932581d265cfbb3a3e18c19f868"
-  },
-  "credential_gate": {
-    "status": "NOT_MISSING_ON_PUBLIC_REPOSITORY_EXECUTION_PLANE",
-    "evidence": "Existing F66 private-preserved extraction ingress completed successfully on the same public repository runner using the configured private-read/private-sink bridge; no secret value is exposed or copied here."
-  },
-  "blocker": {
-    "class": "F148_PUBLIC_RUNNER_EXTRACTION_TRIGGER_WIRING_NOT_AVAILABLE_FROM_CURRENT_CONNECTED_WRITE_SURFACE",
-    "detail": "The deterministic no-network F148 transformation adapter and fingerprint-pinned extraction request are committed and the adapter compiles/tests under the public validation workflow. No existing public workflow consumes the F148 extraction_requests path, and this work window could not safely add a new credential-bearing workflow definition through the connected write surface. Therefore the private asset was not read and no numeric/source-native extraction is claimed."
-  },
-  "producer_reacquisition": false,
-  "private_hosted_actions_used": false,
-  "public_redistribution": false,
-  "rights_state_changed": false,
-  "numeric_extraction_performed": false,
-  "next_action": "Run the staged F148 adapter on the public runner through an orchestrator-supported private-read execution wrapper, then write only compact private outputs plus the canonical -extraction receipt. Do not reacquire Eurostat."
+  "status": "PASS_PRIVATE_PRESERVED_EXTRACTION_EXECUTED"
 }
