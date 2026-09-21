@@ -1,0 +1,25 @@
+schema_version: 1.0.0
+source_set_id: F56
+title: CP — static GTFS
+producer: CP — Comboios de Portugal
+product_key: mobilidade-source-id::F56
+adapter: gtfs_static
+access: public
+sink: private
+cadence: feed-update
+expected_format: GTFS/ZIP
+source:
+  landing_url: https://www.cp.pt/passageiros/pt/consultar-horarios/dados-abertos
+raw_native:
+  geography: CP scheduled rail network
+  classification: GTFS
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: null
+  license: null
+  asset_check: null
+parameters:
+  url: https://publico.cp.pt/gtfs/gtfs.zip
+  filename: cp-gtfs.zip
+  period: current feed
