@@ -1,0 +1,16 @@
+{
+  "acquisition_code_commit": "9153e33c3649769d657bbccc594e01af0619d8ef",
+  "limitations": "Producer landing HTML and selected linked assets are preserved natively. Multiple linked files are recomposed as an ordered logical series manifest; heterogeneous files are not row-concatenated without a product-specific semantic assembler.",
+  "native_asset_fingerprint": "164d246dbb187d6aea641d7c8624bb7cbb55d9dd0f0f2213715dfc8ba03e7cab",
+  "recomposed_assets": [
+    {
+      "bytes": 579,
+      "format": "JSON",
+      "name": "series-manifest.json",
+      "sha256": "cc698d97d695a5f558f26b08cef50a2bff0ffb481fe5394259a063c6588f237e"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_set_id": "F166",
+  "validation_result": "PASS_HTML_ASSET_DISCOVERY_SERIES_COMPOSED"
+}
