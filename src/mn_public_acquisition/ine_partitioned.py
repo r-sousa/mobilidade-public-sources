@@ -7,6 +7,7 @@ import math
 import threading
 import time
 import urllib.parse
+import unicodedata
 from pathlib import Path
 from typing import Any
 
@@ -181,7 +182,65 @@ def _flatten(obj: Any) -> list[dict]:
     return rows
 
 
-def _coordinate(row: dict, dim: str, labels: dict[str, str], allowed: list[str]) -> str:
+def _norm_label(value: str) -> str:
+    text = unicodedata.normalize("NFKD", str(value))
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    return " ".join(text.casefold().replace("-", " ").replace("_", " ").split())
+
+
+def _member_label_map(meta: Any) -> dict[str, dict[str, set[str]]]:
+    result: dict[str, dict[str, set[str]]] = {}
+    for dim_num in range(1, 10):
+        items = _dimension_items(meta, dim_num)
+        if not items:
+            if dim_num > 4:
+                break
+            continue
+        by_code: dict[str, set[str]] = {}
+        for code, item in items.items():
+            vals = set()
+            for k, value in item.items():
+                if not isinstance(value, (str, int, float)):
+                    continue
+                key = str(k).casefold()
+                if "cod" in key or key in {"dim_num", "ord", "order"}:
+                    continue
+                text = _norm_label(str(value))
+                if text:
+                    vals.add(text)
+            by_code[code] = vals
+        result[f"Dim{dim_num}"] = by_code
+    return result
+
+
+def _response_label_candidates(row: dict, dim_num: int) -> set[str]:
+    vals = set()
+    if dim_num == 2:
+        preferred = ("geodsg", "geo_dsg", "geodesignacao", "geonome", "geo_nome")
+        for key in preferred:
+            if row.get(key) is not None:
+                vals.add(_norm_label(str(row[key])))
+        for key, value in row.items():
+            k = str(key).casefold()
+            if "geo" in k and any(x in k for x in ("dsg", "des", "nome", "name", "label")):
+                if isinstance(value, (str, int, float)):
+                    vals.add(_norm_label(str(value)))
+    else:
+        prefix = f"dim_{dim_num}"
+        for key, value in row.items():
+            k = str(key).casefold()
+            if k.startswith(prefix) and k != prefix and isinstance(value, (str, int, float)):
+                vals.add(_norm_label(str(value)))
+    return {x for x in vals if x}
+
+
+def _coordinate(
+    row: dict,
+    dim: str,
+    labels: dict[str, str],
+    allowed: list[str],
+    member_labels: dict[str, dict[str, set[str]]],
+) -> str:
     if dim == "Dim1":
         value = str(row["period"])
         matches = [
@@ -191,25 +250,43 @@ def _coordinate(row: dict, dim: str, labels: dict[str, str], allowed: list[str])
         if len(matches) != 1:
             raise INESemanticError(f"INE returned unrequested period {value!r}")
         return matches[0]
+
     n = int(dim[3:])
     key = "geocod" if n == 2 else f"dim_{n}"
     if row.get(key) is None:
         raise INESemanticError(f"INE observation lacks {key}")
     value = str(row[key])
-    if value not in allowed:
-        raise INESemanticError(f"INE ignored {dim} filter: {value}")
-    return value
+    if value in allowed:
+        return value
+
+    response_labels = _response_label_candidates(row, n)
+    if response_labels:
+        matches = []
+        for code in allowed:
+            producer_labels = member_labels.get(dim, {}).get(code, set())
+            if response_labels & producer_labels:
+                matches.append(code)
+        if len(matches) == 1:
+            return matches[0]
+
+    raise INESemanticError(
+        f"INE ignored {dim} filter: returned_code={value!r}; "
+        f"response_labels={sorted(response_labels)!r}; requested={allowed!r}"
+    )
 
 
 def _validate_rows(
-    rows: list[dict], selection: dict[str, list[str]], labels: dict[str, str]
+    rows: list[dict],
+    selection: dict[str, list[str]],
+    labels: dict[str, str],
+    member_labels: dict[str, dict[str, set[str]]],
 ) -> tuple[list[dict], dict[str, list[str]]]:
     observed = {k: set() for k in selection}
     unique = {}
     for row in rows:
         coords = []
         for dim, allowed in selection.items():
-            value = _coordinate(row, dim, labels, allowed)
+            value = _coordinate(row, dim, labels, allowed, member_labels)
             observed[dim].add(value)
             coords.append((dim, value))
         key = tuple(coords)
@@ -346,6 +423,7 @@ def acquire(spec: dict, work: Path) -> dict:
     all_dims = _dimensions(meta_obj)
     dims = {k: list(v) for k, v in all_dims.items()}
     labels = _period_labels(meta_obj)
+    member_labels = _member_label_map(meta_obj)
 
     target_year = pms.get("year")
     period_contains = pms.get("period_label_contains")
@@ -404,7 +482,7 @@ def acquire(spec: dict, work: Path) -> dict:
                 raise INERowLimitError(
                     f"INE response reached chunk threshold {len(rows)} >= {max_cells}"
                 )
-            rows, observed = _validate_rows(rows, selection, labels)
+            rows, observed = _validate_rows(rows, selection, labels, member_labels)
 
             omitted = [
                 dim for dim, values in selection.items()
