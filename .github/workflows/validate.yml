@@ -34,6 +34,9 @@ jobs:
       - run: python -m pip install --disable-pip-version-check -r requirements.txt
       - name: Compile runtime
         run: python -m compileall -q src
+
+      - name: Test chunk planning and recomposition
+        run: python -m unittest discover -s tests -v
       - name: Validate every source spec
         run: |
           python - <<'PY'
