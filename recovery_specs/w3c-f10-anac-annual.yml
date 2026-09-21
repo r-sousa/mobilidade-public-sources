@@ -1,0 +1,17 @@
+schema_version: 1.0.0
+mode: w3c_f10_anac_annual
+mission_generation: 39
+private_repository: r-sousa/EU-transp-weekly
+private_branch: mobilidade-norte-recovery-20260919
+fingerprint: source-mobilidade-core-cache-20260918-48eb5412c2ad076b4763::F10
+release_tag: source-mobilidade-core-cache-20260918-48eb5412c2ad076b4763
+handoff_path: statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P123-GEN39-F10-ANAC-ANNUAL-REPORTS-EXTRACTION-HANDOFF.json
+handoff_blob_sha: 1d44f19663e8598543028ed4eef4b6cc028bf51d
+asset:
+  id: 573616244
+  name: F10-cached-source-and-extraction.zip
+  bytes: 42210518
+  sha256: 1ed30746316ed60ec4a7327a425a072d28e031eb289cc51a993e3e1d9e536df7
+producer_reacquisition: false
+rights_adjudication: false
+consumer_joins: false
