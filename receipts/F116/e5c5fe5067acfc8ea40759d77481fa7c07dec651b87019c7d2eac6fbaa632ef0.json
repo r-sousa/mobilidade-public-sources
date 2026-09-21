@@ -1,0 +1,173 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "e0a553e74b0abc81b9cceee447a1d16743cbe3e1",
+  "acquisition_timestamp": "2026-09-21T13:58:40.141325Z",
+  "adapter": "ine_json",
+  "assets": [
+    {
+      "bytes": 157377,
+      "format": "JSON",
+      "name": "0008563-metadata.json",
+      "role": "native",
+      "sha256": "edd8034bff57999919c8ac6dd3689bf287575c318bdb1f08728182bdcd16455a",
+      "source_url": "https://github.com/r-sousa/EU-transp-weekly/releases/tag/source-rhomolo-mm-2024-f36c666af69512fe897a#member=F116_INE_0008563_metadata.json"
+    },
+    {
+      "bytes": 108964,
+      "format": "JSON",
+      "name": "0008563-chunk-00001.json",
+      "role": "native",
+      "sha256": "c59018e9a59c61b6e0f258764ab5a1e4bf147e1338ba4cf44bd1ffc758d45756",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202401&Dim2=11"
+    },
+    {
+      "bytes": 108936,
+      "format": "JSON",
+      "name": "0008563-chunk-00002.json",
+      "role": "native",
+      "sha256": "80f24dcf9a95aa8908873acd4c669e7f7dc4c47fef5e5c8064d6338e5440d489",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202402&Dim2=11"
+    },
+    {
+      "bytes": 108988,
+      "format": "JSON",
+      "name": "0008563-chunk-00003.json",
+      "role": "native",
+      "sha256": "97da12daea107a47010f6900248bb7737aa7c398cc1f8ce773346eb555dd1c6e",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202403&Dim2=11"
+    },
+    {
+      "bytes": 109009,
+      "format": "JSON",
+      "name": "0008563-chunk-00004.json",
+      "role": "native",
+      "sha256": "fd781425eefdd472b9696a3f29fa22a8dc128dff1f23243c2086f7343fceafe5",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202404&Dim2=11"
+    },
+    {
+      "bytes": 109028,
+      "format": "JSON",
+      "name": "0008563-chunk-00005.json",
+      "role": "native",
+      "sha256": "4bfb5f42419b3775cf467e05a5f4526822a2c198cb84cb16735ef90055beace4",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202405&Dim2=11"
+    },
+    {
+      "bytes": 109008,
+      "format": "JSON",
+      "name": "0008563-chunk-00006.json",
+      "role": "native",
+      "sha256": "6c8a2a1e88601fe7c7045f82237d1261f106df11769793c85a0f2d97a67ca8ca",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202406&Dim2=11"
+    },
+    {
+      "bytes": 109063,
+      "format": "JSON",
+      "name": "0008563-chunk-00007.json",
+      "role": "native",
+      "sha256": "24d69fadfe74fe06429e90921f5b43c81157d59390168282280a8dd144dd3f55",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202407&Dim2=11"
+    },
+    {
+      "bytes": 108953,
+      "format": "JSON",
+      "name": "0008563-chunk-00008.json",
+      "role": "native",
+      "sha256": "4fb031a17f5580b9de8195dbab98741e879663e7586785988effef468a424007",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202408&Dim2=11"
+    },
+    {
+      "bytes": 109046,
+      "format": "JSON",
+      "name": "0008563-chunk-00009.json",
+      "role": "native",
+      "sha256": "e4f5dad90992b1e7aefecfa7dc1cc547753fbd618b47250ae313d1dc6c605aea",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202409&Dim2=11"
+    },
+    {
+      "bytes": 109081,
+      "format": "JSON",
+      "name": "0008563-chunk-00010.json",
+      "role": "native",
+      "sha256": "87f31b666db3fba0e8c53b4d497caf251cd6f5633ecbeb2c7e449070194b2e41",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202410&Dim2=11"
+    },
+    {
+      "bytes": 108983,
+      "format": "JSON",
+      "name": "0008563-chunk-00011.json",
+      "role": "native",
+      "sha256": "27cd3e4fa5d8533e4686d1d7f9bb45157c792a3c8164eea049d2ce12cb14d752",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202411&Dim2=11"
+    },
+    {
+      "bytes": 108998,
+      "format": "JSON",
+      "name": "0008563-chunk-00012.json",
+      "role": "native",
+      "sha256": "5b011a8f8c2d2b19d4edc5dc086a7f81ab983ee518f069c6832aa0f49a4280b1",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0008563&lang=PT&Dim1=S3A202412&Dim2=11"
+    },
+    {
+      "bytes": 58698,
+      "format": "JSON",
+      "name": "ine-plan-and-coverage.json",
+      "role": "recomposed",
+      "sha256": "1bcca448ab1659bb8af5063a280655e866f63997da0b955920bd2faa3f514395",
+      "source_url": null
+    },
+    {
+      "bytes": 109657,
+      "format": "JSONL.GZ",
+      "name": "observations.jsonl.gz",
+      "role": "recomposed",
+      "sha256": "098d7c9dca2967dfa126fe865d501cf79250305ae091e35f5dd547f539bd1a55",
+      "source_url": null
+    },
+    {
+      "bytes": 4108,
+      "format": "JSON",
+      "name": "composition-manifest.json",
+      "role": "recomposed",
+      "sha256": "96a1ad9c535147b9fcad29103012289be2cbcfdf9b4aa2896f45c61488074f46",
+      "source_url": null
+    }
+  ],
+  "cadence": "monthly",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "INE native JSON",
+  "limitations": "INE requests are metadata-defined and recursively partitioned below the 40,000-cell contract and URL-length bound. Cod=7 or saturated responses trigger further splitting. Raw chunks remain native; recomposed JSONL is derived without replacing missing or confidential values with zero.",
+  "native_asset_fingerprint": "e5c5fe5067acfc8ea40759d77481fa7c07dec651b87019c7d2eac6fbaa632ef0",
+  "primary_repair": true,
+  "producer": "INE Portugal",
+  "product_key": "ine.pt::0008563",
+  "raw_native": {
+    "classification": "tipo de comércio × NC2 producer hierarchy",
+    "geography": "NUTS 2013 — Norte, location of operator headquarters"
+  },
+  "repair_authorization": {
+    "path": "statistics/recovery-20260920/simple-runtime/outputs/orchestrator/20260921T1433PT-primary-repair-authorisation.json",
+    "ref": "f560edbb80350671215887a09221856229128e58"
+  },
+  "request_id": "MN-PRIMARY-REPAIR-F116-20260921T1500PT",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": null,
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2024",
+  "source_set_id": "F116",
+  "source_url": "https://www.ine.pt/xurl/indx/0008563/PT",
+  "title": "INE 0008563 — Importações mensais por NUTS 2013 × tipo de comércio × NC2",
+  "validation_result": "PASS_INE_PARTITIONED_RECOMPOSED_COMPLETE"
+}
