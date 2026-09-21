@@ -21,6 +21,7 @@ reuse:
   asset_check: eurostat_official_output
 parameters:
   dataset_code: road_go_na_rl3g
+  period: "2019+"
   query:
     lang: EN
     freq: A
