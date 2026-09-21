@@ -114,14 +114,19 @@ jobs:
           print(s["source_set_id"])
           PY
             )
-            sink=$(python - "$spec" <<'PY'
+            read -r sink preserved_skip <<<"$(python - "$spec" <<'PY'
           import sys, yaml
-          print(yaml.safe_load(open(sys.argv[1], encoding="utf-8"))["sink"])
+          s=yaml.safe_load(open(sys.argv[1], encoding="utf-8"))
+          print(s["sink"], "1" if (s.get("parameters") or {}).get("preserved_first_skip_primary") else "0")
           PY
-            )
+            )"
             receipt="$RUNNER_TEMP/receipts/${sid}.json"
             echo "::group::${spec}"
-            if [[ "$sink" == "private" ]]; then
+            if [[ "$preserved_skip" == "1" ]]; then
+              echo "PRESERVED_FIRST_SKIP_PRIMARY $spec"
+              echo "::endgroup::"
+              continue
+            elif [[ "$sink" == "private" ]]; then
               if python -m mn_public_acquisition.core "$spec" --probe-only --receipt-out "$receipt"; then
                 echo "ACQUIRE_PASS_PRIVATE_PULL $spec"
               else
