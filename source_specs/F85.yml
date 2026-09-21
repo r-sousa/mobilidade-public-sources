@@ -1,4 +1,4 @@
-# bounded exact-slice timeout probe 2026-09-21
+# bounded year + metadata-resolved slice probe 2026-09-21
 schema_version: 1.0.0
 source_set_id: F85
 title: INE — Inquérito às Despesas das Famílias 2022/2023 — transport expenditure route
@@ -23,7 +23,6 @@ reuse:
 parameters:
   indicator: "0013516"
   year: 2023
-  period_label_contains: "2022/2023"
   dimension_labels:
     "2": Norte
     "3": Transportes
