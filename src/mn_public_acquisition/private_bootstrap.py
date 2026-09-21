@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import gzip
 import hashlib
 import io
 import json
@@ -106,6 +107,15 @@ def archive_evidence(path: Path, *, nested_limit: int = 80_000_000) -> dict:
             if ext == ".zip" and info.file_size <= nested_limit:
                 try:
                     nested = io.BytesIO(z.read(info))
+                    if zipfile.is_zipfile(nested):
+                        with zipfile.ZipFile(nested) as nz:
+                            nested_names.extend(nz.namelist())
+                except Exception:
+                    pass
+            elif name.lower().endswith(".zip.gz") and info.file_size <= nested_limit:
+                try:
+                    raw_nested = gzip.decompress(z.read(info))
+                    nested = io.BytesIO(raw_nested)
                     if zipfile.is_zipfile(nested):
                         with zipfile.ZipFile(nested) as nz:
                             nested_names.extend(nz.namelist())
