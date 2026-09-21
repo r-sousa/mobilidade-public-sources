@@ -47,7 +47,7 @@ def fingerprint(records: list[dict]) -> str:
     ).hexdigest()
 
 
-def run(spec_path: Path, *, probe_only: bool = False) -> dict:
+def run(spec_path: Path, *, probe_only: bool = False, receipt_out: Path | None = None) -> dict:
     spec = load_spec(spec_path)
     with tempfile.TemporaryDirectory(prefix=f"mn-{spec['source_set_id']}-") as td:
         work = Path(td)
@@ -67,6 +67,7 @@ def run(spec_path: Path, *, probe_only: bool = False) -> dict:
         fp = fingerprint(records)
         receipt = {
             "schema_version": "1.0.0",
+            "request_id": os.environ.get("MN_REQUEST_ID") or None,
             "source_set_id": spec["source_set_id"],
             "title": spec["title"],
             "producer": spec["producer"],
@@ -107,6 +108,12 @@ def run(spec_path: Path, *, probe_only: bool = False) -> dict:
         else:
             receipt["disposition"] = disposition(spec, work, records, receipt)
 
+        if receipt_out is not None:
+            receipt_out.parent.mkdir(parents=True, exist_ok=True)
+            receipt_out.write_text(
+                json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8"
+            )
         print(json.dumps(receipt, ensure_ascii=False, indent=2))
         return receipt
 
@@ -119,8 +126,9 @@ def main() -> None:
         action="store_true",
         help="Acquire, validate and hash in the ephemeral runner without persisting source bytes."
     )
+    p.add_argument("--receipt-out", type=Path)
     args = p.parse_args()
-    run(args.spec, probe_only=args.probe_only)
+    run(args.spec, probe_only=args.probe_only, receipt_out=args.receipt_out)
 
 
 if __name__ == "__main__":
