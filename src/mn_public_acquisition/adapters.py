@@ -371,6 +371,22 @@ def static_http(spec: dict, work: Path) -> dict:
     }
 
 
+def gtfs_static(spec: dict, work: Path) -> dict:
+    url = spec["parameters"]["url"]
+    s = session()
+    p = work / "payload" / (spec["parameters"].get("filename") or "gtfs.zip")
+    rec = download(s, url, p, work)
+    validate_gtfs(p)
+    rec["format"] = "GTFS/ZIP"
+    return {
+        "acquired_at": now(),
+        "assets": [rec],
+        "validation_result": "PASS_STATIC_GTFS_VALIDATED",
+        "source_period_or_edition": spec["parameters"].get("period"),
+        "limitations": "Scheduled supply only; producer-native GTFS files and missingness are preserved."
+    }
+
+
 def ckan_gtfs(spec: dict, work: Path) -> dict:
     s = session()
     api = spec["parameters"]["package_show_url"]
@@ -512,6 +528,7 @@ ADAPTERS = {
     "eurostat": eurostat,
     "ine_json": ine_json,
     "static_http": static_http,
+    "gtfs_static": gtfs_static,
     "ckan_gtfs": ckan_gtfs,
     "ige_table": ige_table,
     "opendatasoft": opendatasoft,
