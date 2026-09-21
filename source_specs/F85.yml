@@ -1,4 +1,4 @@
-# adapter probe after runtime repair 2026-09-21
+# adapter probe with exact survey-period label 2026-09-21
 schema_version: 1.0.0
 source_set_id: F85
 title: INE — Inquérito às Despesas das Famílias 2022/2023 — transport expenditure route
@@ -23,4 +23,5 @@ reuse:
 parameters:
   indicator: "0013516"
   year: 2023
+  period_label_contains: "2022/2023"
   spacing_seconds: 2
