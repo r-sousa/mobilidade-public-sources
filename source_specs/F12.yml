@@ -1,0 +1,23 @@
+schema_version: 1.0.0
+source_set_id: F12
+title: STCP — horários, paragens e rotas
+producer: STCP / Porto Digital
+product_key: mobilidade-source-id::F12
+adapter: ckan_gtfs
+access: public
+sink: public_release
+cadence: feed-update
+expected_format: GTFS/ZIP
+source:
+  landing_url: https://opendata.porto.digital/dataset/horarios-paragens-e-rotas-em-formato-gtfs-stcp
+raw_native:
+  geography: STCP scheduled network
+  classification: GTFS
+reuse:
+  status: verified
+  public_redistribution_gate: asset_check_required
+  evidence_url: https://opendata.porto.digital/dataset/horarios-paragens-e-rotas-em-formato-gtfs-stcp
+  license: CC0-1.0
+  asset_check: ckan_declared_cc0
+parameters:
+  package_show_url: https://opendata.porto.digital/api/3/action/package_show?id=horarios-paragens-e-rotas-em-formato-gtfs-stcp
