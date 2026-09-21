@@ -1,0 +1,208 @@
+name: Extract F148 private-preserved rail-freight ingress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extraction_requests/F148-54690c8fc00232401f07e3c331b1b0d3911b54d6ff494fdcdaa58ef908d40fda.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-f148-private-extraction-54690c8fc00232401f07
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PRIVATE_REPO: r-sousa/EU-transp-weekly
+      PRIVATE_BRANCH: mobilidade-norte-recovery-20260919
+      SOURCE_SET_ID: F148
+      FINGERPRINT: 54690c8fc00232401f07e3c331b1b0d3911b54d6ff494fdcdaa58ef908d40fda
+      RELEASE_TAG: mn-src-f148-54690c8fc00232401f07
+      ASSET_ID: '578699470'
+      ASSET_NAME: tran_r_rago.json
+      ASSET_BYTES: '42285'
+      ASSET_SHA256: 54921560492f54576da1d3bb9402bca02bde0932581d265cfbb3a3e18c19f868
+      PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+      PUBLIC_TOKEN: ${{ github.token }}
+      PUBLIC_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read exact private asset, verify and extract source-native ingress
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/f148-in" "$RUNNER_TEMP/f148-out"
+          python - <<'PY'
+          import hashlib, json, os, pathlib, urllib.error, urllib.request
+
+          fp=os.environ['FINGERPRINT']
+          req_path=pathlib.Path(f'extraction_requests/F148-{fp}.json')
+          req=json.loads(req_path.read_text(encoding='utf-8'))
+          expected={
+              'source_set_id': os.environ['SOURCE_SET_ID'],
+              'native_asset_fingerprint': fp,
+              'release_tag': os.environ['RELEASE_TAG'],
+              'asset_id': int(os.environ['ASSET_ID']),
+              'asset_name': os.environ['ASSET_NAME'],
+              'asset_bytes': int(os.environ['ASSET_BYTES']),
+              'asset_sha256': os.environ['ASSET_SHA256'],
+          }
+          for key,val in expected.items():
+              if req.get(key) != val:
+                  raise SystemExit(f'REQUEST_IDENTITY_MISMATCH:{key}:{req.get(key)!r}:{val!r}')
+          if req.get('producer_reacquisition') is not False:
+              raise SystemExit('PRODUCER_REACQUISITION_MUST_BE_FALSE')
+
+          token=(os.environ.get('MN_PRIVATE_SINK_TOKEN') or os.environ.get('PRIVATE_SINK_TOKEN') or os.environ.get('PRIVATE_READ_TOKEN') or '').strip()
+          if not token:
+              raise SystemExit('MN_PRIVATE_READ_CREDENTIAL_MISSING')
+          url=f"https://api.github.com/repos/{os.environ['PRIVATE_REPO']}/releases/assets/{os.environ['ASSET_ID']}"
+          headers={
+              'Authorization':'Bearer '+token,
+              'Accept':'application/octet-stream',
+              'User-Agent':'MobilidadeNorte-F148Extractor/1.0',
+              'X-GitHub-Api-Version':'2022-11-28'
+          }
+          try:
+              with urllib.request.urlopen(urllib.request.Request(url,headers=headers),timeout=180) as r:
+                  data=r.read()
+          except urllib.error.HTTPError as exc:
+              raise SystemExit(f'PRIVATE_ASSET_READ_FAILED:HTTP_{exc.code}')
+          got_sha=hashlib.sha256(data).hexdigest()
+          if len(data) != int(os.environ['ASSET_BYTES']) or got_sha != os.environ['ASSET_SHA256']:
+              raise SystemExit(f'ASSET_VERIFICATION_FAILED:bytes={len(data)}:sha256={got_sha}')
+          (pathlib.Path(os.environ['RUNNER_TEMP'])/'f148-in'/os.environ['ASSET_NAME']).write_bytes(data)
+          print(json.dumps({'asset_verified':True,'bytes':len(data),'sha256':got_sha},sort_keys=True))
+          PY
+
+          PYTHONPATH=src python src/mn_public_acquisition/extract_f148.py \
+            "$RUNNER_TEMP/f148-in/tran_r_rago.json" \
+            --output-dir "$RUNNER_TEMP/f148-out"
+
+      - name: Persist compact extraction to canonical private repository and receipt surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64, hashlib, json, os, pathlib, urllib.error, urllib.parse, urllib.request
+          from datetime import datetime, timezone
+
+          private_repo=os.environ['PRIVATE_REPO']
+          private_branch=os.environ['PRIVATE_BRANCH']
+          public_repo=os.environ['PUBLIC_REPO']
+          fp=os.environ['FINGERPRINT']
+          release_tag=os.environ['RELEASE_TAG']
+          source_id=os.environ['SOURCE_SET_ID']
+          private_token=(os.environ.get('PRIVATE_SINK_TOKEN') or '').strip()
+          public_token=(os.environ.get('PUBLIC_TOKEN') or '').strip()
+          if not private_token:
+              raise SystemExit('MN_PRIVATE_WRITE_CREDENTIAL_MISSING')
+          if not public_token:
+              raise SystemExit('PUBLIC_TOKEN_MISSING')
+
+          out_dir=pathlib.Path(os.environ['RUNNER_TEMP'])/'f148-out'
+          csv_path=out_dir/'f148_tran_r_rago_source_native_ingress.csv'
+          json_path=out_dir/'f148_tran_r_rago_source_native_ingress.json'
+          adapter_receipt_path=out_dir/'extraction-receipt.json'
+          adapter_receipt=json.loads(adapter_receipt_path.read_text(encoding='utf-8'))
+
+          def sha256(data): return hashlib.sha256(data).hexdigest()
+          csv_bytes=csv_path.read_bytes(); json_bytes=json_path.read_bytes()
+          if adapter_receipt.get('status') != 'PASS_NATIVE_BYTES_VERIFIED_AND_SOURCE_NATIVE_INGRESS_EMITTED':
+              raise SystemExit('ADAPTER_RECEIPT_NOT_PASS')
+          if adapter_receipt.get('native_asset_fingerprint') != fp:
+              raise SystemExit('ADAPTER_FINGERPRINT_MISMATCH')
+
+          base='statistics/recovery-20260920/simple-runtime/outputs/W3C/G39-F148-54690c8f-extraction-ingress'
+          canonical_receipt=f'statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/F148/{fp}-extraction.json'
+          now=datetime.now(timezone.utc).isoformat()
+          receipt={
+              'schema_version':'4.0.0',
+              'worker_lane':'W3C',
+              'starting_mission_generation':39,
+              'phase':'CLEANUP_NORMALIZATION_COMPLETENESS',
+              'source_set_id':source_id,
+              'native_asset_fingerprint':fp,
+              'private_release_tag':release_tag,
+              'private_release_asset':{
+                  'asset_id':int(os.environ['ASSET_ID']),
+                  'name':os.environ['ASSET_NAME'],
+                  'bytes':int(os.environ['ASSET_BYTES']),
+                  'sha256':os.environ['ASSET_SHA256'],
+                  'verified_before_parse':True
+              },
+              'status':'PASS_PRIVATE_PRESERVED_BYTES_VERIFIED_AND_SOURCE_NATIVE_INGRESS_EMITTED',
+              'producer_reacquisition':False,
+              'rights_state_changed':False,
+              'semantic_guards':{
+                  'producer_native_dimensions_preserved':True,
+                  'loading_unloading_roles_preserved':True,
+                  'time_unit_status_flags_missingness_preserved':True,
+                  'direction_inferred':False,
+                  'od_cells_synthesized':False,
+                  'mirror_reporters_averaged':False,
+                  'observed_vs_modelled_preserved':True
+              },
+              'adapter_receipt':adapter_receipt,
+              'outputs':[
+                  {'path':base+'/'+csv_path.name,'bytes':len(csv_bytes),'sha256':sha256(csv_bytes)},
+                  {'path':base+'/'+json_path.name,'bytes':len(json_bytes),'sha256':sha256(json_bytes)}
+              ],
+              'canonical_extraction_receipt_path':canonical_receipt,
+              'completed_at_utc':now
+          }
+          receipt_bytes=(json.dumps(receipt,ensure_ascii=False,indent=2,sort_keys=True)+'\n').encode('utf-8')
+
+          def api(method,url,token,body=None,accept='application/vnd.github+json'):
+              headers={'Authorization':'Bearer '+token,'Accept':accept,'User-Agent':'MobilidadeNorte-F148Extractor/1.0','X-GitHub-Api-Version':'2022-11-28'}
+              data=None
+              if body is not None:
+                  data=json.dumps(body).encode('utf-8'); headers['Content-Type']='application/json'
+              req=urllib.request.Request(url,headers=headers,data=data,method=method)
+              try:
+                  with urllib.request.urlopen(req,timeout=180) as r:
+                      raw=r.read(); return json.loads(raw) if raw else None
+              except urllib.error.HTTPError as exc:
+                  detail=exc.read().decode('utf-8','replace')
+                  raise RuntimeError(f'GITHUB_API_{method}_FAILED:{exc.code}:{url}:{detail[:500]}')
+
+          def get_content(repo,path,branch,token):
+              url=f'https://api.github.com/repos/{repo}/contents/{urllib.parse.quote(path,safe="/")}?ref={urllib.parse.quote(branch)}'
+              try:
+                  return api('GET',url,token)
+              except RuntimeError as exc:
+                  if ':404:' in str(exc): return None
+                  raise
+
+          def put_content(repo,path,branch,token,data_bytes,message):
+              existing=get_content(repo,path,branch,token)
+              body={'message':message,'branch':branch,'content':base64.b64encode(data_bytes).decode('ascii')}
+              if existing and existing.get('sha'): body['sha']=existing['sha']
+              url=f'https://api.github.com/repos/{repo}/contents/{urllib.parse.quote(path,safe="/")}'
+              return api('PUT',url,token,body)
+
+          put_content(private_repo,base+'/'+csv_path.name,private_branch,private_token,csv_bytes,'result(mn): F148 source-native extraction CSV')
+          put_content(private_repo,base+'/'+json_path.name,private_branch,private_token,json_bytes,'result(mn): F148 source-native extraction JSON')
+          put_content(private_repo,base+'/extraction-receipt.json',private_branch,private_token,receipt_bytes,'receipt(mn): F148 extraction ingress')
+          put_content(private_repo,canonical_receipt,private_branch,private_token,receipt_bytes,'receipt(mn): F148 canonical extraction handoff')
+
+          public_receipt_path=f'extraction_receipts/F148/{fp}.json'
+          public_receipt={
+              'schema_version':'1.0.0','source_set_id':source_id,'native_asset_fingerprint':fp,
+              'status':'PASS_PRIVATE_PRESERVED_EXTRACTION_EXECUTED',
+              'private_output_bytes_exposed_publicly':False,
+              'producer_reacquisition':False,
+              'rights_state_changed':False,
+              'private_canonical_receipt':canonical_receipt,
+              'completed_at_utc':now
+          }
+          put_content(public_repo,public_receipt_path,'main',public_token,(json.dumps(public_receipt,indent=2,sort_keys=True)+'\n').encode('utf-8'),'receipt(mn): F148 private-preserved extraction execution')
+          PY
