@@ -1,0 +1,31 @@
+schema_version: 1.0.0
+source_set_id: F150
+title: APDL Leixões — Movimento de Mercadorias Anual
+producer: APDL
+product_key: mobilidade-source-id::F150
+adapter: static_http
+access: public
+sink: private
+cadence: annual
+expected_format: HTML
+source:
+  landing_url: https://leixoes.apdl.pt/estatisticas/carga/movimento-de-mercadorias-anual/
+raw_native:
+  geography: Porto de Leixões
+  classification: producer-native cargo categories
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: null
+  license: null
+  asset_check: null
+parameters:
+  period: current published annual table
+  limitations: Preserve the producer HTML table and category labels exactly; no consumer transformation in this repository.
+  assets:
+    - key: APDL_LEIXOES_GOODS_ANNUAL
+      format: HTML
+      min_bytes: 500
+      filename: F150-movimento-mercadorias-anual.html
+      contains: Movimento de Mercadorias Anual
+      url: https://leixoes.apdl.pt/estatisticas/carga/movimento-de-mercadorias-anual/

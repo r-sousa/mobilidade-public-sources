@@ -1,0 +1,30 @@
+schema_version: 1.0.0
+source_set_id: F181
+title: Junta de Castilla y León — Consumo de electricidad mensual
+producer: Junta de Castilla y León Open Data
+product_key: mobilidade-source-id::F181
+adapter: static_http
+access: public
+sink: private
+cadence: monthly
+expected_format: JSON
+source:
+  landing_url: https://datosabiertos.jcyl.es/web/jcyl/set/es/energia/consumo-electricidad-mensual/1284978851890
+raw_native:
+  geography: Castilla y León provinces
+  classification: supplier and residential/services/industrial type
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://datos.gob.es/es/catalogo/a07002862-consumo-de-electricidad-mensual-en-castilla-y-leon1
+  license: CC BY 4.0 reported by the public catalogue; canonical reuse state remains unchanged
+  asset_check: null
+parameters:
+  period: current producer export
+  limitations: Preserve publisher-native nulls and categories; no public redistribution is inferred here.
+  assets:
+    - key: JCYL_ELECTRICITY_MONTHLY
+      format: JSON
+      min_bytes: 100
+      filename: consumo-electricidad-mensual.json
+      url: https://datosabiertos.jcyl.es/web/jcyl/risp/es/energia/consumo-electricidad-mensual/1284978851890.json

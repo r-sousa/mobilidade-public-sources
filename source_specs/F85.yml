@@ -1,0 +1,25 @@
+schema_version: 1.0.0
+source_set_id: F85
+title: INE — Inquérito às Despesas das Famílias 2022/2023 — transport expenditure route
+producer: INE Portugal
+product_key: mobilidade-source-id::F85
+adapter: ine_json
+access: public
+sink: private
+cadence: edition
+expected_format: INE native JSON
+source:
+  landing_url: https://www.ine.pt/
+raw_native:
+  geography: INE geography exposed by indicator 0013516
+  classification: INE indicator-native household expenditure dimensions
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: null
+  license: null
+  asset_check: null
+parameters:
+  indicator: "0013516"
+  year: 2023
+  spacing_seconds: 2
