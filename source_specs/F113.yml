@@ -1,0 +1,28 @@
+schema_version: 1.0.0
+source_set_id: F113
+title: INE 0008168 — Importações por NUTS 2013 × tipo de comércio × NC2
+producer: INE Portugal
+product_key: ine.pt::0008168
+adapter: ine_json
+access: public
+sink: private
+cadence: annual
+expected_format: INE native JSON
+source:
+  landing_url: https://www.ine.pt/xurl/indx/0008168/PT
+raw_native:
+  geography: NUTS 2013 — Norte, location of operator headquarters
+  classification: tipo de comércio × NC2 producer hierarchy
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: null
+  license: null
+  asset_check: null
+parameters:
+  indicator: "0008168"
+  year: 2024
+  dimension_codes:
+    "2": ["11"]
+  max_cells_per_chunk: 5000
+  spacing_seconds: 2
