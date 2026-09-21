@@ -33,7 +33,7 @@ def safe_name(url: str, fallback: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]+", "_", name)[:180] or fallback
 
 
-def session() -> requests.Session:
+def session(*, system_ca: bool = False) -> requests.Session:
     s = requests.Session()
     s.headers.update({"User-Agent": UA})
     retry = Retry(
@@ -49,6 +49,10 @@ def session() -> requests.Session:
     adapter = HTTPAdapter(max_retries=retry)
     s.mount("https://", adapter)
     s.mount("http://", adapter)
+    if system_ca:
+        bundle = Path("/etc/ssl/certs/ca-certificates.crt")
+        if bundle.is_file():
+            s.verify = str(bundle)
     return s
 
 
@@ -138,6 +142,40 @@ def _ine_guard(obj) -> None:
         raise RuntimeError("INE response contains zero observation records")
 
 
+def _ine_dimension_members(meta, dim_num: int) -> dict[str, dict]:
+    rec = _ine_record(meta)
+    dims = rec.get("Dimensoes", rec.get("dimensoes"))
+    found: dict[str, dict] = {}
+
+    if isinstance(dims, dict):
+        cats = dims.get("Categoria_Dim")
+        if isinstance(cats, list) and cats and isinstance(cats[0], dict):
+            for values in cats[0].values():
+                if not isinstance(values, list) or not values or not isinstance(values[0], dict):
+                    continue
+                item = values[0]
+                if str(item.get("dim_num")) != str(dim_num):
+                    continue
+                code = item.get("categ_cod")
+                if code is not None:
+                    found[str(code)] = item
+            if found:
+                return found
+
+    if isinstance(dims, list):
+        target = f"dim{dim_num}".lower()
+        for d in dims:
+            if not isinstance(d, dict) or str(d.get("Dim", "")).lower() != target:
+                continue
+            members = d.get("Membros")
+            if not isinstance(members, list):
+                continue
+            for item in members:
+                if isinstance(item, dict) and item.get("Codigo") is not None:
+                    found[str(item["Codigo"])] = item
+    return found
+
+
 def ine_json(spec: dict, work: Path) -> dict:
     indicator = str(spec["parameters"]["indicator"]).zfill(7)
     target_year = spec["parameters"].get("year")
@@ -167,7 +205,17 @@ def ine_json(spec: dict, work: Path) -> dict:
     walk(obj)
     periods = sorted(x for x in found if target_year is None or str(target_year) in x)
     if not periods:
-        raise RuntimeError(f"INE metadata exposed no period code for requested year {target_year}")
+        dim1 = _ine_dimension_members(obj, 1)
+        if target_year is None:
+            periods = sorted(dim1)
+        else:
+            year = str(target_year)
+            periods = sorted(
+                code for code, item in dim1.items()
+                if year in code or year in json.dumps(item, ensure_ascii=False)
+            )
+    if not periods:
+        raise RuntimeError(f"INE metadata exposed no Dim1 member for requested year {target_year}")
     if target_year is None and len(periods) > 24:
         raise RuntimeError(
             "Unbounded INE acquisition refused: specify a target year or a bounded period selection"
@@ -297,7 +345,7 @@ def ige_table(spec: dict, work: Path) -> dict:
     if selection:
         url += "/" + selection
 
-    s = session()
+    s = session(system_ca=True)
     p = work / "payload" / f"IGE-{code}.{fmt}"
     rec = download(s, url, p, work)
     rec["format"] = fmt.upper()
