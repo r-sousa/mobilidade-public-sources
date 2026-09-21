@@ -1,0 +1,88 @@
+name: Mobilidade Norte public source acquisition
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'source_specs/**.yml'
+      - 'source_specs/**.yaml'
+  workflow_dispatch:
+    inputs:
+      spec:
+        description: 'Optional source spec path; blank runs all specs'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-public-acquisition-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+      GITHUB_TOKEN: ${{ github.token }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install acquisition runtime
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+
+      - name: Resolve source specifications
+        shell: bash
+        env:
+          REQUESTED_SPEC: ${{ inputs.spec }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${REQUESTED_SPEC:-}" ]]; then
+            test -f "$REQUESTED_SPEC"
+            printf '%s\n' "$REQUESTED_SPEC" > "$RUNNER_TEMP/specs.txt"
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" \
+              | grep -E '^source_specs/.*\.ya?ml$' \
+              | sort -u > "$RUNNER_TEMP/specs.txt" || true
+          else
+            find source_specs -type f \( -name '*.yml' -o -name '*.yaml' \) \
+              | sort > "$RUNNER_TEMP/specs.txt"
+          fi
+          test -s "$RUNNER_TEMP/specs.txt"
+          cat "$RUNNER_TEMP/specs.txt"
+
+      - name: Acquire, validate, hash and dispatch
+        shell: bash
+        run: |
+          set -euo pipefail
+          overall=0
+          while IFS= read -r spec; do
+            echo "::group::${spec}"
+            if python -m mn_public_acquisition.core "$spec"; then
+              echo "PASS $spec"
+            else
+              echo "FAIL $spec"
+              overall=1
+            fi
+            echo "::endgroup::"
+          done < "$RUNNER_TEMP/specs.txt"
+          exit "$overall"
+
+      - name: Security invariant
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git status --porcelain | grep -E '(payload|token|cookie)'; then
+            echo "Unexpected persistent acquisition material in public checkout" >&2
+            exit 1
+          fi
