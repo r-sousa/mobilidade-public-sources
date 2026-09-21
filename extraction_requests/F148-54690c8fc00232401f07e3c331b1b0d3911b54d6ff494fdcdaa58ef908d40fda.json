@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F148",
+  "native_asset_fingerprint": "54690c8fc00232401f07e3c331b1b0d3911b54d6ff494fdcdaa58ef908d40fda",
+  "release_tag": "mn-src-f148-54690c8fc00232401f07",
+  "asset_id": 578699470,
+  "asset_name": "tran_r_rago.json",
+  "asset_bytes": 42285,
+  "asset_sha256": "54921560492f54576da1d3bb9402bca02bde0932581d265cfbb3a3e18c19f868",
+  "mission_generation": 39,
+  "request_id": "MN-W3C-G39-F148-EXTRACTION-INGRESS",
+  "producer_reacquisition": false,
+  "public_redistribution": false,
+  "adapter": "mn_public_acquisition.extract_f148",
+  "purpose": "fingerprint-pinned private Release byte readback and source-native compact extraction ingress only",
+  "private_output_root": "statistics/recovery-20260920/simple-runtime/outputs/W3C/",
+  "canonical_extraction_receipt": "statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/F148/54690c8fc00232401f07e3c331b1b0d3911b54d6ff494fdcdaa58ef908d40fda-extraction.json",
+  "semantic_guards": {
+    "preserve_all_eurostat_dimensions": true,
+    "preserve_loading_unloading_roles": true,
+    "preserve_reporter": true,
+    "preserve_time_unit_status_flags_missingness": true,
+    "infer_direction": false,
+    "synthesize_od_cells": false,
+    "average_mirror_reporters": false,
+    "consumer_joins": false,
+    "rights_state_change": false
+  }
+}
