@@ -1,3 +1,5 @@
 schema_version: 1.0.0
-source_set_id: F12
-reason: retry_preserved_gtfs_after_nested_gzip_zip_support
+source_set_id: F169
+mode: w4c_shared_energy
+config: recovery_specs/w4c-shared-energy.yml
+reason: generation39_w4c_shared_archive_f169_f170_f176_f179
