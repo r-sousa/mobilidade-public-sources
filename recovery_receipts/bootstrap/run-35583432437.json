@@ -1,0 +1,19 @@
+{
+  "complete": false,
+  "failures": [
+    {
+      "error": "Eurostat package does not expose expected product token road_go_na_ru3g",
+      "source_set_id": "F02"
+    }
+  ],
+  "private_release_tag": "data-20260915-9d994478fdb13e04",
+  "private_repository": "r-sousa/EU-transp-weekly",
+  "results": [
+    {
+      "error": "Eurostat package does not expose expected product token road_go_na_ru3g",
+      "source_set_id": "F02",
+      "status": "FAILED"
+    }
+  ],
+  "schema_version": "1.0.0"
+}
