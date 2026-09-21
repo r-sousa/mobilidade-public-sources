@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F148",
+  "request_id": "MN-PRESERVED-GATE-F148-20260921T1038",
+  "requested_by": "mobilidade-public-sources/preserved-state-validation",
+  "reason": "prove preserved-state acknowledgement blocks unnecessary primary reacquisition",
+  "canonical_private_branch": "mobilidade-norte-recovery-20260919"
+}
