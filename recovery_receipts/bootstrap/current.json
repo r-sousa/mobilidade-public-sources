@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0",
+  "updated_at": "2026-09-21",
+  "state": "RIGHTS_CLEARED_PRIVATE_PRESERVATION_BOOTSTRAP_COMPLETE",
+  "private_source": {
+    "repository": "r-sousa/EU-transp-weekly",
+    "release_tag": "data-20260915-9d994478fdb13e04"
+  },
+  "coverage": {
+    "already_public_direct": [
+      "F01"
+    ],
+    "recovered_from_private": [
+      "F02",
+      "F03",
+      "F04",
+      "F12",
+      "F19",
+      "F20",
+      "F21",
+      "F22",
+      "F23",
+      "F24",
+      "F25",
+      "F26"
+    ],
+    "total_rights_cleared_source_sets": 13,
+    "recovered_asset_bytes": 271291725
+  },
+  "rules": {
+    "unresolved_rights": "remain_private_preserved_first_no_public_bytes",
+    "primary_source_ingestion": "deferred_until_preserved_release_and_middle_tier_review",
+    "canonical_rights_state": "unchanged"
+  },
+  "evidence": {
+    "bounded_F02_run": 35583522927,
+    "batch_run": 35583574330,
+    "F12_completion_run": 35583850815
+  }
+}
