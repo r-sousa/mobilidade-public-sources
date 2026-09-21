@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F113",
+  "request_id": "MN-PRIMARY-REPAIR-F113-20260921T1436PT",
+  "requested_by": "EU-transp-weekly/Mobilidade-Norte-Orchestrator",
+  "reason": "repair preserved INE error-response-only source using public runner after preserved-state review",
+  "primary_repair": true,
+  "repair_authorization_path": "statistics/recovery-20260920/simple-runtime/outputs/orchestrator/20260921T1433PT-primary-repair-authorisation.json",
+  "repair_authorization_ref": "f560edbb80350671215887a09221856229128e58",
+  "canonical_private_branch": "mobilidade-norte-recovery-20260919"
+}
