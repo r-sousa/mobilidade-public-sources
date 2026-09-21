@@ -11,7 +11,7 @@ The private repository `r-sousa/EU-transp-weekly` remains the canonical governan
 Disposition is fail-closed:
 
 - **public_release** — allowed only when the private canonical state already records reuse as verified **and** the declared asset-level check passes;
-- **private** — the public runner acquires and validates the public producer bytes ephemerally, writes only a sanitized SHA-256 receipt, and deletes plaintext with the runner workspace; the private control plane later decides whether to reacquire/verify/preserve canonically;
+- **private** — the public runner acquires and validates the public producer bytes. If the optional narrowly scoped `MN_PRIVATE_SINK_TOKEN` is configured, it uploads the exact bytes directly to an immutable private `EU-transp-weekly` Release and writes a canonical private receipt. Without that secret it falls back to sanitized receipt-only mode and deletes plaintext with the runner workspace;
 - **controlled/authenticated** — does not execute here. DataComex authenticated access, Aena detailed/custom authenticated access, MFA/account/payment/terms-controlled sources and all credential-bearing sessions remain private.
 
 The source-object identity is `source_set_id + native_asset_fingerprint`, where the fingerprint is SHA-256 over the ordered producer-native asset records `(name, sha256, byte_count)`. Rerunning unchanged source bytes reuses the same durable object and receipt.
@@ -39,12 +39,14 @@ Public availability is not equivalent to redistribution permission. Missing/conf
 
 ## Control plane
 
-The private repository instructs this public execution plane with the GitHub
-`repository_dispatch` event type `mn-source-acquire`. The payload contains only a
-canonical `source_set_id` and optional `request_id`; it never contains credentials.
+The private control plane can instruct this execution plane either with `repository_dispatch`
+or, without consuming private Actions, by creating one tiny `requests/**.json` file containing
+only a canonical `source_set_id` and unique `request_id`. The public push workflow then runs
+on the free public hosted runner.
 
-All dispatch credentials remain in `r-sousa/EU-transp-weekly`. This public repository
-contains no token capable of reading or writing the private repository.
+Producer credentials remain private. The optional `MN_PRIVATE_SINK_TOKEN` is not a producer
+credential; it is a single-repository GitHub token used only to deliver unresolved-rights public
+source bytes into the private canonical preservation layer.
 
 For private-sink sources, successful acquisition evidence is written to
 `receipts/Fxx/<native_asset_fingerprint>.json`. These receipts contain metadata,
