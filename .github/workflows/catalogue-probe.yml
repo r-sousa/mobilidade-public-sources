@@ -1,0 +1,54 @@
+name: Probe open-data catalogues
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'catalogues/**'
+      - 'src/mn_public_acquisition/catalogues.py'
+      - '.github/workflows/catalogue-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check requests PyYAML
+      - name: Probe catalogue resolvers
+        run: |
+          mkdir -p "$RUNNER_TEMP/catalogue"
+          python -m mn_public_acquisition.catalogues catalogues/open-data.yml --out "$RUNNER_TEMP/catalogue/probe.json"
+      - name: Persist metadata-only catalogue probe
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import base64,json,os,urllib.request
+          from pathlib import Path
+          repo=os.environ["GITHUB_REPOSITORY"]
+          branch="main"
+          src=Path(os.environ["RUNNER_TEMP"])/"catalogue/probe.json"
+          obj=json.loads(src.read_text())
+          path="catalogue_receipts/open-data-portals.json"
+          api=f"https://api.github.com/repos/{repo}/contents/{path}"
+          headers={"Authorization":"Bearer "+os.environ["GH_TOKEN"],"Accept":"application/vnd.github+json","User-Agent":"MN-catalogue-probe"}
+          try:
+            with urllib.request.urlopen(urllib.request.Request(api+"?ref="+branch,headers=headers),timeout=60) as r:
+              cur=json.load(r); sha=cur["sha"]
+          except Exception:
+            sha=None
+          body={"message":"Record open-data catalogue resolver probe","branch":branch,"content":base64.b64encode(src.read_bytes()).decode()}
+          if sha: body["sha"]=sha
+          req=urllib.request.Request(api,data=json.dumps(body).encode(),method="PUT",headers={**headers,"Content-Type":"application/json"})
+          with urllib.request.urlopen(req,timeout=60) as r: print(json.load(r)["commit"]["sha"])
+          PY
