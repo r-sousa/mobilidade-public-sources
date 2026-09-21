@@ -436,10 +436,20 @@ def _preserved_metadata_bytes(pms: dict, work: Path) -> tuple[bytes, str] | None
     with zipfile.ZipFile(archive) as z:
         try:
             body = z.read(member_path)
-        except KeyError as e:
-            raise INESemanticError(
-                f"Preserved metadata member not found: {member_path}"
-            ) from e
+        except KeyError:
+            wanted_name = Path(member_path).name
+            matches = [name for name in z.namelist() if Path(name).name == wanted_name]
+            if len(matches) != 1:
+                hint = [
+                    name for name in z.namelist()
+                    if ("F116" in name or "0008563" in name or wanted_name in name)
+                ][:20]
+                raise INESemanticError(
+                    f"Preserved metadata member not found uniquely: {member_path}; "
+                    f"basename_matches={matches[:20]!r}; hints={hint!r}"
+                )
+            member_path = matches[0]
+            body = z.read(member_path)
 
     archive.unlink(missing_ok=True)
     expected_bytes = pm.get("member_bytes")
