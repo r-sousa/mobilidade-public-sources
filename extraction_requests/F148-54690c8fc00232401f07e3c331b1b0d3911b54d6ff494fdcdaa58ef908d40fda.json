@@ -9,6 +9,8 @@
   "asset_sha256": "54921560492f54576da1d3bb9402bca02bde0932581d265cfbb3a3e18c19f868",
   "mission_generation": 39,
   "request_id": "MN-W3C-G39-F148-EXTRACTION-INGRESS",
+  "execution_revision": 2,
+  "execution_route": "extract-private-preserved-f148-v1",
   "producer_reacquisition": false,
   "public_redistribution": false,
   "adapter": "mn_public_acquisition.extract_f148",
