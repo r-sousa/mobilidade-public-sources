@@ -26,3 +26,11 @@ parameters:
     "2": ["11"]
   max_cells_per_chunk: 5000
   spacing_seconds: 2
+  preserved_metadata:
+    repository: r-sousa/EU-transp-weekly
+    release_tag: source-rhomolo-2024-release2-869769b3829dd3017824
+    asset_name: RHOMOLO_2024_institutional_source_snapshots.zip
+    archive_sha256: 7716fc40fda89acc2a8a91bcfbde12ba6b890d185f928674ce69ea160360a724
+    member_path: ine/0008168_metadata.json
+    member_bytes: 116061
+    member_sha256: 77e50130705c8ff165241093527ba882b9694670d201ad574fd500e6a620bee2
