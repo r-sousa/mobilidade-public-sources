@@ -133,9 +133,24 @@ def write_immutable_receipt(
     g = requests.get(url, params={"ref": branch}, headers=headers(token), timeout=90)
     if g.status_code == 200:
         existing = base64.b64decode(g.json()["content"])
-        if existing != expected:
+        if existing == expected:
+            return {"path": path, "status": "IDENTICAL_ALREADY_PRESENT"}
+        try:
+            prior = json.loads(existing.decode("utf-8"))
+        except Exception as e:
+            raise RuntimeError(f"IMMUTABLE_RECEIPT_CONFLICT: {path}") from e
+        same_object = (
+            prior.get("source_set_id") == receipt.get("source_set_id")
+            and prior.get("native_asset_fingerprint") == receipt.get("native_asset_fingerprint")
+            and prior.get("assets") == receipt.get("assets")
+        )
+        if not same_object:
             raise RuntimeError(f"IMMUTABLE_RECEIPT_CONFLICT: {path}")
-        return {"path": path, "status": "IDENTICAL_ALREADY_PRESENT"}
+        return {
+            "path": path,
+            "status": "SOURCE_OBJECT_ALREADY_RECEIPTED",
+            "first_acquisition_timestamp": prior.get("acquisition_timestamp")
+        }
     if g.status_code != 404:
         raise RuntimeError(f"Receipt lookup failed: {g.status_code} {g.text[:500]}")
 
@@ -245,18 +260,50 @@ def disposition(spec: dict, work: Path, records: list[dict], receipt: dict) -> d
         )
 
         final = {**receipt, "disposition": result}
+        rel = release_for_tag(repo, result["release_tag"], token)
+        existing_assets = req(
+            "GET", f"{API}/repos/{repo}/releases/{rel['id']}/assets?per_page=100", token
+        ).json()
+        prior_receipt_asset = next(
+            (a for a in existing_assets if a["name"] == "acquisition-receipt.json"),
+            None
+        )
+        if prior_receipt_asset:
+            prior_response = requests.get(
+                f"{API}/repos/{repo}/releases/assets/{prior_receipt_asset['id']}",
+                headers=headers(token, "application/octet-stream"),
+                timeout=120, allow_redirects=True
+            )
+            if not prior_response.ok:
+                raise RuntimeError("Cannot verify existing acquisition receipt")
+            prior = prior_response.json()
+            same_object = (
+                prior.get("source_set_id") == receipt.get("source_set_id")
+                and prior.get("native_asset_fingerprint") == receipt.get("native_asset_fingerprint")
+                and prior.get("assets") == receipt.get("assets")
+            )
+            if not same_object:
+                raise RuntimeError("IMMUTABLE_PUBLIC_RECEIPT_CONFLICT")
+            result["receipt_asset"] = {
+                "id": prior_receipt_asset["id"],
+                "name": prior_receipt_asset["name"],
+                "sha256": prior_receipt_asset.get("digest", "").removeprefix("sha256:"),
+                "status": "SOURCE_OBJECT_ALREADY_RECEIPTED",
+                "first_acquisition_timestamp": prior.get("acquisition_timestamp")
+            }
+            return result
+
         rp = work / "acquisition-receipt.json"
         rp.write_bytes(receipt_bytes(final))
         rr_sha = hashlib.sha256(rp.read_bytes()).hexdigest()
-
-        rel = release_for_tag(repo, result["release_tag"], token)
         a = upload_or_verify(
             repo, rel, rp, rp.name, token, rr_sha, rp.stat().st_size
         )
         result["receipt_asset"] = {
             "id": a["id"],
             "name": a["name"],
-            "sha256": rr_sha
+            "sha256": rr_sha,
+            "status": "CREATED"
         }
         return result
 
