@@ -73,34 +73,29 @@ def probe_data_europa(cfg:dict)->dict:
     s=sess()
     endpoint=cfg["endpoint"].rstrip("/")
     q="""PREFIX dcat: <http://www.w3.org/ns/dcat#>
-PREFIX dct: <http://purl.org/dc/terms/>
-SELECT ?dataset ?title ?publisher ?distribution ?accessURL ?downloadURL
-WHERE {
-  ?dataset a dcat:Dataset .
-  OPTIONAL { ?dataset dct:title ?title . FILTER(lang(?title) = "" || langMatches(lang(?title), "en")) }
-  OPTIONAL { ?dataset dct:publisher ?publisher . }
-  OPTIONAL {
-    ?dataset dcat:distribution ?distribution .
-    OPTIONAL { ?distribution dcat:accessURL ?accessURL . }
-    OPTIONAL { ?distribution dcat:downloadURL ?downloadURL . }
-  }
-} LIMIT 5"""
-    r=s.get(endpoint,params={"query":q,"format":"application/sparql-results+json"},
-            headers={"Accept":"application/sparql-results+json"},timeout=180)
+SELECT ?dataset WHERE { ?dataset a dcat:Dataset . } LIMIT 5"""
+    r=s.post(
+        endpoint,
+        data={"query":q},
+        headers={"Accept":"application/sparql-results+json"},
+        timeout=180
+    )
     r.raise_for_status()
     obj=r.json()
     rows=((obj.get("results") or {}).get("bindings") or []) if isinstance(obj,dict) else []
     if not rows:
         raise RuntimeError("data.europa.eu SPARQL returned no DCAT datasets")
-    sample=[]
-    for row in rows:
-        sample.append({k:v.get("value") for k,v in row.items() if isinstance(v,dict)})
+    datasets=[
+        row["dataset"]["value"]
+        for row in rows
+        if isinstance(row,dict) and isinstance(row.get("dataset"),dict) and row["dataset"].get("value")
+    ]
     return {
         "status":"PASS",
         "catalogue_role":"DISCOVERY_AND_DISTRIBUTION_RESOLVER",
         "format":"DCAT-AP/SPARQL",
         "endpoint":endpoint,
-        "sample":sample
+        "sample_dataset_uris":datasets
     }
 
 
