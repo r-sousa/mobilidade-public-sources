@@ -248,6 +248,33 @@ def _ine_dimension_members(meta, dim_num: int) -> dict[str, dict]:
     return found
 
 
+def _ine_resolve_label(meta, dim_num: int, wanted: str) -> str:
+    members = _ine_dimension_members(meta, dim_num)
+    if not members:
+        raise RuntimeError(f"INE metadata exposes no members for Dim{dim_num}")
+
+    needle = str(wanted).strip().casefold()
+    exact = []
+    contains = []
+    for code, item in members.items():
+        strings = []
+        for value in item.values():
+            if isinstance(value, (str, int, float)):
+                strings.append(str(value).strip())
+        folded = [s.casefold() for s in strings]
+        if needle in folded:
+            exact.append(code)
+        elif any(needle in s for s in folded):
+            contains.append(code)
+
+    matches = exact if exact else contains
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"INE label resolution for Dim{dim_num} {wanted!r} returned {len(matches)} matches"
+        )
+    return matches[0]
+
+
 def ine_json(spec: dict, work: Path) -> dict:
     indicator = str(spec["parameters"]["indicator"]).zfill(7)
     target_year = spec["parameters"].get("year")
@@ -304,13 +331,20 @@ def ine_json(spec: dict, work: Path) -> dict:
             "Unbounded INE acquisition refused: specify a target year or a bounded period selection"
         )
 
+    selections = {}
+    for k, label in (spec["parameters"].get("dimension_labels") or {}).items():
+        dim = int(k)
+        if dim <= 1:
+            raise RuntimeError("dimension_labels may only target Dim2 and higher")
+        selections[dim] = _ine_resolve_label(obj, dim, str(label))
+
     spacing = max(2.0, float(spec["parameters"].get("spacing_seconds", 2)))
     for i, period in enumerate(periods):
         if i:
             time.sleep(spacing)
-        url = f"{base}/pindica.jsp?" + urllib.parse.urlencode(
-            {"op": "2", "varcd": indicator, "lang": "PT", "Dim1": period}
-        )
+        params = {"op": "2", "varcd": indicator, "lang": "PT", "Dim1": period}
+        params.update({f"Dim{dim}": code for dim, code in sorted(selections.items())})
+        url = f"{base}/pindica.jsp?" + urllib.parse.urlencode(params)
         p = work / "payload" / f"{indicator}-{period}.json"
         rec = download(s, url, p, work)
         data_obj = json.loads(p.read_text(encoding="utf-8-sig"))
@@ -323,7 +357,11 @@ def ine_json(spec: dict, work: Path) -> dict:
         "assets": assets,
         "validation_result": "PASS_INE_METADATA_AND_NATIVE_JSON",
         "source_period_or_edition": str(target_year) if target_year is not None else None,
-        "limitations": "Raw INE metadata and bounded period responses preserved; missing/confidential values are not transformed."
+        "limitations": (
+            "Raw INE metadata and bounded producer-native responses preserved; "
+            "requested dimension labels are resolved against producer metadata before acquisition; "
+            "missing/confidential values are not transformed."
+        )
     }
 
 
