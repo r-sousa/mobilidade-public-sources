@@ -9,8 +9,10 @@ import zipfile
 from pathlib import Path
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-UA = "MobilidadeNorte-PublicAcquisition/0.1 (+source-preservation)"
+UA = "MobilidadeNorte-PublicAcquisition/0.2 (+source-preservation)"
 TIMEOUT = 600
 
 
@@ -34,6 +36,19 @@ def safe_name(url: str, fallback: str) -> str:
 def session() -> requests.Session:
     s = requests.Session()
     s.headers.update({"User-Agent": UA})
+    retry = Retry(
+        total=4,
+        connect=4,
+        read=3,
+        status=3,
+        backoff_factor=1.0,
+        status_forcelist=(429, 500, 502, 503, 504),
+        allowed_methods=frozenset({"GET"}),
+        raise_on_status=False
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    s.mount("https://", adapter)
+    s.mount("http://", adapter)
     return s
 
 
@@ -47,6 +62,8 @@ def download(s: requests.Session, url: str, path: Path, work: Path) -> dict:
                     f.write(chunk)
         ctype = r.headers.get("content-type")
         final_url = r.url
+    if path.stat().st_size == 0:
+        raise RuntimeError(f"Empty source response: {url}")
     return {
         "path": str(path.relative_to(work)),
         "name": path.name,
@@ -84,6 +101,8 @@ def eurostat(spec: dict, work: Path) -> dict:
     obj = json.loads(p.read_text(encoding="utf-8-sig"))
     if isinstance(obj, dict) and isinstance(obj.get("warning"), dict) and obj["warning"].get("status") == 413:
         raise RuntimeError("Eurostat returned asynchronous-response warning; use a bounded or bulk route")
+    if not isinstance(obj, dict) or "value" not in obj:
+        raise RuntimeError("Eurostat response is not a materialized JSON-stat dataset")
     rec["format"] = "JSON-stat/JSON"
     return {
         "acquired_at": now(),
@@ -92,6 +111,31 @@ def eurostat(spec: dict, work: Path) -> dict:
         "source_period_or_edition": spec["parameters"].get("period"),
         "limitations": "Producer-native API response preserved; no consumer normalization performed."
     }
+
+
+def _ine_record(obj):
+    if isinstance(obj, list) and obj and isinstance(obj[0], dict):
+        return obj[0]
+    if isinstance(obj, dict):
+        return obj
+    raise RuntimeError("Unexpected INE response shape")
+
+
+def _ine_guard(obj) -> None:
+    rec = _ine_record(obj)
+    success = rec.get("Sucesso", rec.get("sucesso"))
+    if isinstance(success, dict):
+        false_part = success.get("Falso", success.get("false"))
+        if false_part is not None:
+            raise RuntimeError(f"INE semantic failure: {false_part}")
+    if success is False or (isinstance(success, str) and success.strip().lower() in {"false", "falso", "0"}):
+        raise RuntimeError("INE semantic failure")
+    dados = rec.get("Dados", rec.get("dados"))
+    if not isinstance(dados, dict):
+        raise RuntimeError("INE response has no Dados object")
+    rows = sum(len(v) for v in dados.values() if isinstance(v, list))
+    if rows <= 0:
+        raise RuntimeError("INE response contains zero observation records")
 
 
 def ine_json(spec: dict, work: Path) -> dict:
@@ -108,20 +152,28 @@ def ine_json(spec: dict, work: Path) -> dict:
     obj = json.loads(mp.read_text(encoding="utf-8-sig"))
     period_re = re.compile(r"S7[A-Za-z0-9._-]*20\d{2}[A-Za-z0-9._-]*")
     found = set()
+
     def walk(x):
         if isinstance(x, dict):
             for k, v in x.items():
-                walk(str(k)); walk(v)
+                walk(str(k))
+                walk(v)
         elif isinstance(x, list):
             for v in x:
                 walk(v)
         elif isinstance(x, str):
             found.update(period_re.findall(x))
+
     walk(obj)
     periods = sorted(x for x in found if target_year is None or str(target_year) in x)
     if not periods:
         raise RuntimeError(f"INE metadata exposed no period code for requested year {target_year}")
-    spacing = float(spec["parameters"].get("spacing_seconds", 2))
+    if target_year is None and len(periods) > 24:
+        raise RuntimeError(
+            "Unbounded INE acquisition refused: specify a target year or a bounded period selection"
+        )
+
+    spacing = max(2.0, float(spec["parameters"].get("spacing_seconds", 2)))
     for i, period in enumerate(periods):
         if i:
             time.sleep(spacing)
@@ -131,11 +183,10 @@ def ine_json(spec: dict, work: Path) -> dict:
         p = work / "payload" / f"{indicator}-{period}.json"
         rec = download(s, url, p, work)
         data_obj = json.loads(p.read_text(encoding="utf-8-sig"))
-        blob = json.dumps(data_obj, ensure_ascii=False).lower()
-        if '"sucesso": false' in blob or ('"falso"' in blob and '"sucesso"' in blob):
-            raise RuntimeError(f"INE semantic failure for period {period}")
+        _ine_guard(data_obj)
         rec["format"] = "JSON"
         assets.append(rec)
+
     return {
         "acquired_at": now(),
         "assets": assets,
@@ -155,13 +206,31 @@ def static_http(spec: dict, work: Path) -> dict:
         p = work / "payload" / name
         rec = download(s, url, p, work)
         fmt = (item.get("format") or Path(name).suffix.lstrip(".") or "binary").upper()
+
+        min_bytes = int(item.get("min_bytes", 1))
+        if p.stat().st_size < min_bytes:
+            raise RuntimeError(f"{name} smaller than minimum expected size {min_bytes}")
+
         if fmt == "XLSX":
             validate_xlsx(p)
         elif fmt == "JSON":
             json.loads(p.read_text(encoding="utf-8-sig"))
+        elif fmt in {"HTML", "HTM"}:
+            text = p.read_text(encoding="utf-8", errors="replace")
+            if "<html" not in text.lower() and "<table" not in text.lower():
+                raise RuntimeError(f"{name} is not recognizable HTML/table content")
+            marker = item.get("contains")
+            if marker and marker.lower() not in text.lower():
+                raise RuntimeError(f"{name} does not contain required marker {marker!r}")
+        elif fmt in {"CSV", "TSV"}:
+            head = p.read_bytes()[:500].lower()
+            if b"<html" in head or b"<!doctype" in head:
+                raise RuntimeError(f"{name} returned HTML instead of tabular data")
+
         rec["format"] = fmt
         rec["name"] = f"{key}__{name}" if key != name else name
         assets.append(rec)
+
     return {
         "acquired_at": now(),
         "assets": assets,
@@ -220,19 +289,32 @@ def ckan_gtfs(spec: dict, work: Path) -> dict:
 
 def ige_table(spec: dict, work: Path) -> dict:
     code = str(spec["parameters"]["table_code"])
-    fmt = spec["parameters"].get("format", "csv").lower()
+    fmt = spec["parameters"].get("format", "json").lower()
     if fmt not in {"csv", "json"}:
         raise ValueError("IGE table adapter supports csv or json")
-    selection = str(spec["parameters"].get("selection", "")).lstrip("/")
-    url = f"https://www.ige.gal/igebdt/igeapi/{fmt}/datos/{code}/" + selection
+    selection = str(spec["parameters"].get("selection", "")).strip("/")
+    url = f"https://www.ige.gal/igebdt/igeapi/{fmt}/datos/{code}"
+    if selection:
+        url += "/" + selection
+
     s = session()
     p = work / "payload" / f"IGE-{code}.{fmt}"
     rec = download(s, url, p, work)
     rec["format"] = fmt.upper()
+
     if fmt == "json":
-        json.loads(p.read_text(encoding="utf-8-sig"))
-    elif p.stat().st_size < 20:
-        raise RuntimeError("IGE CSV response unexpectedly small")
+        obj = json.loads(p.read_text(encoding="utf-8-sig"))
+        if not isinstance(obj, dict) or not isinstance(obj.get("variables"), list) or not isinstance(obj.get("datos"), list):
+            raise RuntimeError("IGE response does not match the documented table JSON structure")
+        if not obj["datos"]:
+            raise RuntimeError("IGE table returned zero rows")
+    else:
+        if p.stat().st_size < 20:
+            raise RuntimeError("IGE CSV response unexpectedly small")
+        head = p.read_bytes()[:500].lower()
+        if b"<html" in head or b"<!doctype" in head:
+            raise RuntimeError("IGE CSV route returned HTML instead of CSV")
+
     return {
         "acquired_at": now(),
         "assets": [rec],
@@ -245,12 +327,13 @@ def ige_table(spec: dict, work: Path) -> dict:
 def opendatasoft(spec: dict, work: Path) -> dict:
     base = spec["parameters"]["base_url"].rstrip("/")
     dataset = spec["parameters"]["dataset_id"]
-    limit = int(spec["parameters"].get("page_size", 100))
+    limit = min(100, int(spec["parameters"].get("page_size", 100)))
     s = session()
     assets = []
     offset = 0
     total = None
     observed = 0
+
     while total is None or offset < total:
         url = f"{base}/api/explore/v2.1/catalog/datasets/{urllib.parse.quote(dataset)}/records"
         r = s.get(url, params={"limit": limit, "offset": offset}, timeout=180)
@@ -275,8 +358,12 @@ def opendatasoft(spec: dict, work: Path) -> dict:
         if not rows or len(rows) < limit:
             break
         offset += len(rows)
+
     if total is not None and observed < total:
         raise RuntimeError(f"OpenDataSoft pagination incomplete: {observed}/{total}")
+    if not assets or observed <= 0:
+        raise RuntimeError("OpenDataSoft dataset returned zero records")
+
     return {
         "acquired_at": now(),
         "assets": assets,
