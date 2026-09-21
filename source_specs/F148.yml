@@ -21,5 +21,7 @@ reuse:
   asset_check: null
 parameters:
   dataset_code: tran_r_rago
+  period: "2024+"
   query:
     lang: EN
+    sinceTimePeriod: "2024"
