@@ -69,6 +69,15 @@ def run(spec_path: Path, *, probe_only: bool = False, receipt_out: Path | None =
         receipt = {
             "schema_version": "1.0.0",
             "request_id": os.environ.get("MN_REQUEST_ID") or None,
+            "primary_repair": os.environ.get("MN_PRIMARY_REPAIR") == "1",
+            "repair_authorization": (
+                {
+                    "path": os.environ.get("MN_REPAIR_AUTH_PATH"),
+                    "ref": os.environ.get("MN_REPAIR_AUTH_REF"),
+                }
+                if os.environ.get("MN_PRIMARY_REPAIR") == "1"
+                else None
+            ),
             "source_set_id": spec["source_set_id"],
             "title": spec["title"],
             "producer": spec["producer"],
