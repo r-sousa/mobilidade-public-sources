@@ -16,6 +16,9 @@ from cryptography.hazmat.primitives import serialization
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+from .chunking import compose_geojson_pages, compose_json_record_pages, series_manifest
+from .ine_partitioned import acquire as ine_partitioned_acquire
+
 UA = "MobilidadeNorte-PublicAcquisition/0.2 (+source-preservation)"
 TIMEOUT = 600
 
@@ -572,7 +575,8 @@ def opendatasoft(spec: dict, work: Path) -> dict:
             "sha256": sha256(p),
             "bytes": p.stat().st_size,
             "source_url": r.url,
-            "format": "JSON"
+            "format": "JSON",
+            "role": "native"
         })
         observed += len(rows)
         if not rows or len(rows) < limit:
@@ -584,12 +588,16 @@ def opendatasoft(spec: dict, work: Path) -> dict:
     if not assets or observed <= 0:
         raise RuntimeError("OpenDataSoft dataset returned zero records")
 
+    recomposed = compose_json_record_pages(work, assets, results_key="results")
     return {
         "acquired_at": now(),
-        "assets": assets,
-        "validation_result": "PASS_OPENDATASOFT_PAGINATED_NATIVE_JSON",
+        "assets": [*assets, *recomposed],
+        "validation_result": "PASS_OPENDATASOFT_PAGINATED_RECOMPOSED",
         "source_period_or_edition": None,
-        "limitations": "Exact API pages preserved; null/missing producer fields are not coerced."
+        "limitations": (
+            "Exact API pages are preserved as native chunks and deterministically recomposed "
+            "to JSONL without coercing null/missing producer fields."
+        )
     }
 
 
@@ -743,7 +751,8 @@ def arcgis_feature_service(spec: dict, work: Path) -> dict:
         "sha256": sha256(mp),
         "bytes": mp.stat().st_size,
         "source_url": mr.url,
-        "format": "JSON"
+        "format": "JSON",
+        "role": "native"
     }]
 
     where = str(pms.get("where", "1=1"))
@@ -799,7 +808,8 @@ def arcgis_feature_service(spec: dict, work: Path) -> dict:
             "sha256": sha256(pp),
             "bytes": pp.stat().st_size,
             "source_url": qr.url,
-            "format": "GeoJSON"
+            "format": "GeoJSON",
+            "role": "native"
         })
         observed += len(features)
         offset += len(features)
@@ -807,21 +817,23 @@ def arcgis_feature_service(spec: dict, work: Path) -> dict:
     if observed != total:
         raise RuntimeError(f"ArcGIS completeness mismatch: observed {observed}, expected {total}")
 
+    recomposed = compose_geojson_pages(work, assets[1:])
     return {
         "acquired_at": now(),
-        "assets": assets,
-        "validation_result": "PASS_ARCGIS_COMPLETE_FEATURE_QUERY",
+        "assets": [*assets, *recomposed],
+        "validation_result": "PASS_ARCGIS_COMPLETE_FEATURE_QUERY_RECOMPOSED",
         "source_period_or_edition": pms.get("period"),
         "limitations": (
-            "Complete producer feature query preserved as layer metadata plus ordered "
-            "GeoJSON pages; no geometry simplification or classification remapping."
+            "Complete producer feature query is preserved as native layer metadata and ordered "
+            "GeoJSON pages, then deterministically recomposed to one FeatureCollection; "
+            "no geometry simplification or classification remapping."
         )
     }
 
 
 ADAPTERS = {
     "eurostat": eurostat,
-    "ine_json": ine_json,
+    "ine_json": ine_partitioned_acquire,
     "static_http": static_http,
     "gtfs_static": gtfs_static,
     "ckan_gtfs": ckan_gtfs,
