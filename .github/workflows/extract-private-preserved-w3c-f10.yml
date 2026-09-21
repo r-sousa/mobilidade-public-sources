@@ -1,0 +1,42 @@
+name: Extract W3C F10 ANAC preserved archive
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extraction_requests/W3C-G39-F10-ANAC-ANNUAL.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mn-w3c-f10-anac-annual
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Extract F10 archive
+        run: |
+          mkdir -p "$RUNNER_TEMP/mn-w3c-f10"
+          python -m mn_public_acquisition.run_w3c_f10 recovery_specs/w3c-f10-anac-annual.yml --out "$RUNNER_TEMP/mn-w3c-f10/result.json"
+      - name: Preserve bounded result diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w3c-f10-result-${{ github.run_id }}
+          path: ${{ runner.temp }}/mn-w3c-f10/result.json
+          if-no-files-found: ignore
+          retention-days: 3
