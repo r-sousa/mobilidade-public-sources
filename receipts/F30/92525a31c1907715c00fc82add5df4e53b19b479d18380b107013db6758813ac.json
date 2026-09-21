@@ -1,0 +1,46 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "12f2193cfd5e9d85a966053784865a35ad645042",
+  "acquisition_timestamp": "2026-09-21T02:36:19.561656Z",
+  "adapter": "ige_table",
+  "assets": [
+    {
+      "bytes": 49196,
+      "format": "JSON",
+      "name": "IGE-4580.json",
+      "sha256": "448a35ae8c0c6aba4f3f8a084d57bc1c1d0cbc31004072d44b87840e7fef5dc4",
+      "source_url": "https://www.ige.gal/igebdt/igeapi/json/datos/4580"
+    }
+  ],
+  "cadence": "producer-update",
+  "disposition": {
+    "bytes_persisted": false,
+    "intended_sink": "private",
+    "status": "PROBE_ONLY_NO_PERSISTENCE"
+  },
+  "expected_format": "JSON",
+  "limitations": "Producer-native DatoN/DatoT semantics are preserved; confidential/missing markers are not converted to zero.",
+  "native_asset_fingerprint": "92525a31c1907715c00fc82add5df4e53b19b479d18380b107013db6758813ac",
+  "producer": "Instituto Galego de Estatística",
+  "product_key": "ige.gal::4580",
+  "raw_native": {
+    "classification": "IGE table 4580 native dimensions",
+    "geography": "IGE table-native geographies"
+  },
+  "request_id": "push-35554698314",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.ige.gal/web/mostrar_paxina.jsp?paxina=004015",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": null,
+  "source_set_id": "F30",
+  "source_url": "https://www.ige.gal/igebdt/selector.jsp?COD=4580",
+  "title": "IGE 4580 — Tráfico comercial nos aeroportos",
+  "validation_result": "PASS_IGE_NATIVE_API_RESPONSE"
+}
