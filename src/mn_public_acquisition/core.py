@@ -47,7 +47,7 @@ def fingerprint(records: list[dict]) -> str:
     ).hexdigest()
 
 
-def run(spec_path: Path) -> dict:
+def run(spec_path: Path, *, probe_only: bool = False) -> dict:
     spec = load_spec(spec_path)
     with tempfile.TemporaryDirectory(prefix=f"mn-{spec['source_set_id']}-") as td:
         work = Path(td)
@@ -55,6 +55,7 @@ def run(spec_path: Path) -> dict:
         records = result["assets"]
         if not records:
             raise RuntimeError("Acquisition produced no native source assets")
+
         for r in records:
             p = work / r["path"]
             if not p.is_file():
@@ -62,6 +63,7 @@ def run(spec_path: Path) -> dict:
             actual = sha256_file(p)
             if actual != r["sha256"] or p.stat().st_size != int(r["bytes"]):
                 raise RuntimeError(f"Local integrity mismatch: {r['name']}")
+
         fp = fingerprint(records)
         receipt = {
             "schema_version": "1.0.0",
@@ -95,7 +97,16 @@ def run(spec_path: Path) -> dict:
             "limitations": result.get("limitations"),
             "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE"
         }
-        receipt["disposition"] = disposition(spec, work, records, receipt)
+
+        if probe_only:
+            receipt["disposition"] = {
+                "status": "PROBE_ONLY_NO_PERSISTENCE",
+                "intended_sink": spec["sink"],
+                "bytes_persisted": False
+            }
+        else:
+            receipt["disposition"] = disposition(spec, work, records, receipt)
+
         print(json.dumps(receipt, ensure_ascii=False, indent=2))
         return receipt
 
@@ -103,8 +114,13 @@ def run(spec_path: Path) -> dict:
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("spec", type=Path)
+    p.add_argument(
+        "--probe-only",
+        action="store_true",
+        help="Acquire, validate and hash in the ephemeral runner without persisting source bytes."
+    )
     args = p.parse_args()
-    run(args.spec)
+    run(args.spec, probe_only=args.probe_only)
 
 
 if __name__ == "__main__":
