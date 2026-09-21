@@ -1,0 +1,13 @@
+{
+  "complete": false,
+  "failures": [
+    {
+      "error": "ARCHIVE_MEMBER_MISSING:F169:snapshots/F169.html",
+      "source_set_id": "W4C_SHARED"
+    }
+  ],
+  "private_release_tag": "source-rhomolo-mm-2024-f36c666af69512fe897a",
+  "private_repository": "r-sousa/EU-transp-weekly",
+  "results": [],
+  "schema_version": "1.0.0"
+}
