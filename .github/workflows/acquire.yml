@@ -40,6 +40,21 @@ jobs:
       - name: Install acquisition runtime
         run: python -m pip install --disable-pip-version-check -r requirements.txt
 
+      - name: Validate all source specifications
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from mn_public_acquisition.core import load_spec
+          specs = sorted(Path("source_specs").glob("*.y*ml"))
+          if not specs:
+              raise SystemExit("No source specifications found")
+          for path in specs:
+              spec = load_spec(path)
+              print(f"VALID {path}: {spec['source_set_id']} {spec['adapter']} -> {spec['sink']}")
+          PY
+
       - name: Resolve source specifications
         shell: bash
         env:
@@ -54,7 +69,7 @@ jobs:
               | grep -E '^source_specs/.*\.ya?ml$' \
               | sort -u > "$RUNNER_TEMP/specs.txt" || true
           else
-            find source_specs -type f \( -name '*.yml' -o -name '*.yaml' \) \
+            find source_specs -maxdepth 1 -type f \( -name '*.yml' -o -name '*.yaml' \) \
               | sort > "$RUNNER_TEMP/specs.txt"
           fi
           test -s "$RUNNER_TEMP/specs.txt"
@@ -67,7 +82,20 @@ jobs:
           overall=0
           while IFS= read -r spec; do
             echo "::group::${spec}"
-            if python -m mn_public_acquisition.core "$spec"; then
+            sink=$(python - "$spec" <<'PY'
+          import sys, yaml
+          print(yaml.safe_load(open(sys.argv[1], encoding="utf-8"))["sink"])
+          PY
+            )
+            if [[ "$sink" == "private" && -z "${MN_PRIVATE_SINK_TOKEN:-}" ]]; then
+              echo "PROBE_ONLY_PRIVATE_SINK_NOT_CONFIGURED $spec"
+              if python -m mn_public_acquisition.core "$spec" --probe-only; then
+                echo "PROBE_PASS $spec"
+              else
+                echo "PROBE_FAIL $spec"
+                overall=1
+              fi
+            elif python -m mn_public_acquisition.core "$spec"; then
               echo "PASS $spec"
             else
               echo "FAIL $spec"
