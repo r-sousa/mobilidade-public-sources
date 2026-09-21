@@ -1,0 +1,26 @@
+schema_version: 1.0.0
+source_set_id: F117
+title: INE 0005719 — Importações anuais por país de origem × NC8
+producer: INE Portugal
+product_key: ine.pt::0005719
+adapter: ine_json
+access: public
+sink: private
+cadence: annual
+expected_format: INE native JSON
+source:
+  landing_url: https://www.ine.pt/xurl/indx/0005719/PT
+raw_native:
+  geography: Portugal reporter × origin country
+  classification: NC8
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: null
+  license: null
+  asset_check: null
+parameters:
+  indicator: "0005719"
+  year: 2024
+  max_cells_per_chunk: 10000
+  spacing_seconds: 2
