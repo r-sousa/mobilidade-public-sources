@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F166",
+  "request_id": "MN-PRIVATE-SINK-F166-20260921T1033",
+  "requested_by": "EU-transp-weekly/Mobilidade-Norte-Orchestrator",
+  "reason": "drain existing public receipt-only backlog into canonical private preservation",
+  "canonical_private_branch": "mobilidade-norte-recovery-20260919"
+}
