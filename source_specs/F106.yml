@@ -1,0 +1,29 @@
+schema_version: 1.0.0
+source_set_id: F106
+title: INE 0012934 — Estabelecimentos por NUTS 2024 × CAE × forma jurídica
+producer: INE Portugal
+product_key: ine.pt::0012934
+adapter: ine_json
+access: public
+sink: private
+cadence: annual
+expected_format: INE native JSON
+source:
+  landing_url: https://www.ine.pt/xurl/indx/0012934/PT
+raw_native:
+  geography: NUTS 2024 — Norte and eight NUTS III
+  classification: CAE Rev.3 × forma jurídica
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: null
+  license: null
+  asset_check: null
+parameters:
+  indicator: "0012934"
+  year: 2024
+  dimension_codes:
+    "2": ["11","111","112","119","11A","11B","11C","11D","11E"]
+    "4": ["T"]
+  max_cells_per_chunk: 20000
+  spacing_seconds: 2
