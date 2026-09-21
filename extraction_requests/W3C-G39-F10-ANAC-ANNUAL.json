@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "request_id": "W3C-G39-F10-ANAC-ANNUAL",
+  "mission_generation": 39,
+  "source_set_id": "F10",
+  "private_release_tag": "source-mobilidade-core-cache-20260918-48eb5412c2ad076b4763",
+  "asset": "F10-cached-source-and-extraction.zip",
+  "handoff_path": "statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P123-GEN39-F10-ANAC-ANNUAL-REPORTS-EXTRACTION-HANDOFF.json",
+  "execution_revision": 1,
+  "producer_reacquisition": false,
+  "rights_adjudication": false,
+  "consumer_joins": false
+}
