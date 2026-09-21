@@ -275,9 +275,18 @@ def ine_json(spec: dict, work: Path) -> dict:
             found.update(period_re.findall(x))
 
     walk(obj)
+    label_contains = spec["parameters"].get("period_label_contains")
     periods = sorted(x for x in found if target_year is None or str(target_year) in x)
-    if not periods:
-        dim1 = _ine_dimension_members(obj, 1)
+    dim1 = _ine_dimension_members(obj, 1)
+
+    if label_contains and dim1:
+        needle = str(label_contains).lower()
+        periods = sorted(
+            code for code, item in dim1.items()
+            if needle in code.lower()
+            or needle in json.dumps(item, ensure_ascii=False).lower()
+        )
+    elif not periods and dim1:
         if target_year is None:
             periods = sorted(dim1)
         else:
@@ -286,8 +295,10 @@ def ine_json(spec: dict, work: Path) -> dict:
                 code for code, item in dim1.items()
                 if year in code or year in json.dumps(item, ensure_ascii=False)
             )
+
     if not periods:
-        raise RuntimeError(f"INE metadata exposed no Dim1 member for requested year {target_year}")
+        wanted = label_contains if label_contains else target_year
+        raise RuntimeError(f"INE metadata exposed no Dim1 member for requested period {wanted}")
     if target_year is None and len(periods) > 24:
         raise RuntimeError(
             "Unbounded INE acquisition refused: specify a target year or a bounded period selection"
