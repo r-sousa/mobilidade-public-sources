@@ -23,7 +23,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: mn-public-acquisition-${{ github.ref }}
+  group: mn-public-acquisition-${{ github.event.client_payload.source_set_id || inputs.source_set_id || github.sha }}
   cancel-in-progress: false
 
 jobs:
