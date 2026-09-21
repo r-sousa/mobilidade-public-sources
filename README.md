@@ -11,7 +11,7 @@ The private repository `r-sousa/EU-transp-weekly` remains the canonical governan
 Disposition is fail-closed:
 
 - **public_release** — allowed only when the private canonical state already records reuse as verified **and** the declared asset-level check passes;
-- **private** — public runner may acquire the public producer bytes, but the bytes are delivered only to the private canonical repository;
+- **private** — the public runner acquires and validates the public producer bytes ephemerally, writes only a sanitized SHA-256 receipt, and deletes plaintext with the runner workspace; the private control plane later decides whether to reacquire/verify/preserve canonically;
 - **controlled/authenticated** — does not execute here. DataComex authenticated access, Aena detailed/custom authenticated access, MFA/account/payment/terms-controlled sources and all credential-bearing sessions remain private.
 
 The source-object identity is `source_set_id + native_asset_fingerprint`, where the fingerprint is SHA-256 over the ordered producer-native asset records `(name, sha256, byte_count)`. Rerunning unchanged source bytes reuses the same durable object and receipt.
@@ -34,3 +34,30 @@ A successful acquisition receipt is **changed-route evidence**, not canonical ac
 **acquisition != validation != acceptance != reuse clearance != preservation != publication != Site ingestion**
 
 Public availability is not equivalent to redistribution permission. Missing/confidential values are preserved as supplied by the producer and are never manufactured as zeros.
+
+## Control plane
+
+The private repository instructs this public execution plane with the GitHub
+`repository_dispatch` event type `mn-source-acquire`. The payload contains only a
+canonical `source_set_id` and optional `request_id`; it never contains credentials.
+
+All dispatch credentials remain in `r-sousa/EU-transp-weekly`. This public repository
+contains no token capable of reading or writing the private repository.
+
+For private-sink sources, successful acquisition evidence is written to
+`receipts/Fxx/<native_asset_fingerprint>.json`. These receipts contain metadata,
+source URLs, hashes, byte counts and validation state — never unresolved-rights source
+bytes.
+
+## Implemented adapter families
+
+- Eurostat Statistics API / JSON-stat;
+- INE Portugal bounded JSON/API with metadata-verified dimension selection;
+- static HTTP assets (HTML, JSON, XLSX and related formats);
+- static GTFS feeds;
+- CKAN-discovered GTFS feeds;
+- IGE table API, including verified repair for incomplete TLS certificate chains;
+- OpenDataSoft-compatible pagination support (available for products that require it).
+
+The public runner preserves producer-native bytes during validation and does not perform
+consumerization.
