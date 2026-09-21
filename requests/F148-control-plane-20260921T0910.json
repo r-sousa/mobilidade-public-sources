@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F148",
+  "request_id": "MN-PRIVATE-CTRL-F148-20260921T0910",
+  "requested_by": "EU-transp-weekly/Mobilidade-Norte-Orchestrator",
+  "reason": "validate request-file control path after public acquisition plane adoption",
+  "canonical_private_branch": "mobilidade-norte-recovery-20260919"
+}
