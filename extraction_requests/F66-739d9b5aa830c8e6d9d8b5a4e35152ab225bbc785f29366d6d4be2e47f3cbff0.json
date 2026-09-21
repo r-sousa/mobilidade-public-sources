@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F66",
+  "native_asset_fingerprint": "739d9b5aa830c8e6d9d8b5a4e35152ab225bbc785f29366d6d4be2e47f3cbff0",
+  "release_tag": "mn-src-f66-739d9b5aa830c8e6d9d8",
+  "mission_generation": 39,
+  "request_id": "MN-W2C-G39-F66-EXTRACT-20260921T2026PT",
+  "producer_reacquisition": false,
+  "purpose": "fingerprint-pinned source-native compact extraction ingress only"
+}
