@@ -649,7 +649,8 @@ def html_assets(spec: dict, work: Path) -> dict:
         "sha256": sha256(lp),
         "bytes": lp.stat().st_size,
         "source_url": r.url,
-        "format": "HTML"
+        "format": "HTML",
+        "role": "native"
     }
 
     parser = _LinkCollector()
@@ -714,16 +715,23 @@ def html_assets(spec: dict, work: Path) -> dict:
             validate_xlsx(p)
         rec["format"] = ctype or (ext.lstrip(".").upper() if ext else "BINARY")
         rec["link_text"] = label
+        rec["role"] = "native"
         assets.append(rec)
 
+    recomposed = series_manifest(
+        work,
+        assets[1:],
+        series_key=str(pms.get("series_key") or spec["product_key"])
+    )
     return {
         "acquired_at": now(),
-        "assets": assets,
-        "validation_result": "PASS_HTML_ASSET_DISCOVERY",
+        "assets": [*assets, *recomposed],
+        "validation_result": "PASS_HTML_ASSET_DISCOVERY_SERIES_COMPOSED",
         "source_period_or_edition": pms.get("period"),
         "limitations": (
-            "Producer landing HTML and selected linked assets are preserved natively; "
-            "discovery rules are declarative and do not infer reuse permission."
+            "Producer landing HTML and selected linked assets are preserved natively. "
+            "Multiple linked files are recomposed as an ordered logical series manifest; "
+            "heterogeneous files are not row-concatenated without a product-specific semantic assembler."
         )
     }
 
