@@ -1,0 +1,53 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "4c07a0ab2dc26f98c3796ce3297fde91fecdc117",
+  "acquisition_timestamp": "2026-09-21T06:55:49.546484Z",
+  "adapter": "arcgis_feature_service",
+  "assets": [
+    {
+      "bytes": 13217,
+      "format": "JSON",
+      "name": "layer-metadata.json",
+      "sha256": "343d31afa856899ce5b27618189a7fca4a3399a2a5e27a3e44ede512b93895a3",
+      "source_url": "https://services5.arcgis.com/P8zUOXUFNtLWM31w/ArcGIS/rest/services/caop_dico/FeatureServer/1?f=json"
+    },
+    {
+      "bytes": 48468135,
+      "format": "GeoJSON",
+      "name": "features-000000.geojson",
+      "sha256": "9ecdcef7593a91e730137ce5480297d418fbd97396144569ec82d9f696fbfa1c",
+      "source_url": "https://services5.arcgis.com/P8zUOXUFNtLWM31w/ArcGIS/rest/services/caop_dico/FeatureServer/1/query?f=geojson&where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&resultOffset=0&resultRecordCount=1000&orderByFields=FID+ASC"
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": false,
+    "intended_sink": "private",
+    "status": "PROBE_ONLY_NO_PERSISTENCE"
+  },
+  "expected_format": "GeoJSON",
+  "limitations": "Complete producer feature query preserved as layer metadata plus ordered GeoJSON pages; no geometry simplification or classification remapping.",
+  "native_asset_fingerprint": "739d9b5aa830c8e6d9d8b5a4e35152ab225bbc785f29366d6d4be2e47f3cbff0",
+  "producer": "Direção-Geral do Território",
+  "product_key": "mobilidade-source-id::F66",
+  "raw_native": {
+    "classification": "DGT administrative geography",
+    "geography": "Portuguese municipalities as exposed by DGT CAOP service"
+  },
+  "request_id": "push-35570529544",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "current public service",
+  "source_set_id": "F66",
+  "source_url": "https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop",
+  "title": "CAOP — administrative boundaries",
+  "validation_result": "PASS_ARCGIS_COMPLETE_FEATURE_QUERY"
+}
