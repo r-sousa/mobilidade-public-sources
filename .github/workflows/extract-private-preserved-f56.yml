@@ -1,0 +1,209 @@
+name: Extract F56 private-preserved CP GTFS ingress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extraction_requests/F56-027feab3ec70efed3aa14ab72e9d941c5e4f3437279df29f256710125c4a8fa6.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mn-f56-private-extraction-027feab3ec70efed3aa1
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PRIVATE_REPO: r-sousa/EU-transp-weekly
+      PRIVATE_BRANCH: mobilidade-norte-recovery-20260919
+      SOURCE_SET_ID: F56
+      FINGERPRINT: 027feab3ec70efed3aa14ab72e9d941c5e4f3437279df29f256710125c4a8fa6
+      RELEASE_TAG: mn-src-f56-027feab3ec70efed3aa1
+      ASSET_ID: '578707176'
+      ASSET_NAME: cp-gtfs.zip
+      ASSET_BYTES: '301583'
+      ASSET_SHA256: 538e9d29a09b074ebca5b5910e638c683e1e06c71063fda040fdef722eaff44e
+      PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify preserved asset, extract source-native GTFS, and hand off privately
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv, hashlib, io, json, os, pathlib, shutil, subprocess, sys, urllib.error, urllib.request, zipfile
+          from datetime import datetime, timezone
+
+          source_id=os.environ['SOURCE_SET_ID']
+          fp=os.environ['FINGERPRINT']
+          release_tag=os.environ['RELEASE_TAG']
+          asset_id=int(os.environ['ASSET_ID'])
+          asset_name=os.environ['ASSET_NAME']
+          expected_bytes=int(os.environ['ASSET_BYTES'])
+          expected_sha=os.environ['ASSET_SHA256']
+          private_repo=os.environ['PRIVATE_REPO']
+          private_branch=os.environ['PRIVATE_BRANCH']
+          read_token=(os.environ.get('PRIVATE_SINK_TOKEN') or os.environ.get('PRIVATE_READ_TOKEN') or '').strip()
+          write_token=(os.environ.get('PRIVATE_SINK_TOKEN') or '').strip()
+          req_path=pathlib.Path(f'extraction_requests/F56-{fp}.json')
+          if not req_path.exists(): raise SystemExit('EXTRACTION_REQUEST_MISSING')
+          request=json.loads(req_path.read_text(encoding='utf-8'))
+          if request.get('source_set_id')!=source_id or request.get('native_asset_fingerprint')!=fp or request.get('release_tag')!=release_tag or int(request.get('mission_generation',-1))!=39:
+              raise SystemExit('REQUEST_IDENTITY_MISMATCH')
+          if not read_token: raise SystemExit('MN_PRIVATE_READ_CREDENTIAL_MISSING')
+          if not write_token: raise SystemExit('MN_PRIVATE_WRITE_CREDENTIAL_MISSING')
+
+          headers={'Authorization':'Bearer '+read_token,'Accept':'application/octet-stream','User-Agent':'MobilidadeNorte-F56Extractor/1.0','X-GitHub-Api-Version':'2022-11-28'}
+          req=urllib.request.Request(f'https://api.github.com/repos/{private_repo}/releases/assets/{asset_id}',headers=headers)
+          try:
+              with urllib.request.urlopen(req,timeout=180) as r: zip_bytes=r.read()
+          except urllib.error.HTTPError as e:
+              raise SystemExit(f'PRIVATE_ASSET_READ_FAILED:HTTP_{e.code}')
+          got_sha=hashlib.sha256(zip_bytes).hexdigest()
+          if len(zip_bytes)!=expected_bytes or got_sha!=expected_sha:
+              raise SystemExit(f'ASSET_VERIFICATION_FAILED:bytes={len(zip_bytes)}:sha256={got_sha}')
+
+          now=datetime.now(timezone.utc)
+          stamp=now.strftime('%Y%m%dT%H%M%SZ')
+          temp=pathlib.Path(os.environ.get('RUNNER_TEMP','/tmp'))/f'f56-{stamp}'
+          out=temp/'out'; native=out/'native'; native.mkdir(parents=True,exist_ok=True)
+          inventory=[]; required_presence={k:False for k in ['routes.txt','trips.txt','stops.txt','stop_times.txt','calendar.txt','calendar_dates.txt']}
+          key_fields={'routes.txt':['route_id'],'trips.txt':['route_id','service_id','trip_id'],'stops.txt':['stop_id'],
+                      'stop_times.txt':['trip_id','stop_id','stop_sequence'],'calendar.txt':['service_id','start_date','end_date'],
+                      'calendar_dates.txt':['service_id','date','exception_type']}
+          total_rows=0
+          with zipfile.ZipFile(io.BytesIO(zip_bytes)) as z:
+              members=[i for i in z.infolist() if not i.is_dir()]
+              if not members: raise SystemExit('GTFS_ZIP_EMPTY')
+              for zi in members:
+                  name=zi.filename
+                  p=pathlib.PurePosixPath(name)
+                  if p.is_absolute() or '..' in p.parts: raise SystemExit('UNSAFE_ZIP_MEMBER:'+name)
+                  data=z.read(zi)
+                  member_sha=hashlib.sha256(data).hexdigest()
+                  rec={'file':name,'source_bytes':len(data),'source_sha256':member_sha,'rows':None,'columns':None,'blank_counts':None,'key_nonblank_counts':None}
+                  base=p.name
+                  if base in required_presence: required_presence[base]=True
+                  if base.lower().endswith('.txt'):
+                      try: text=data.decode('utf-8-sig')
+                      except UnicodeDecodeError as e: raise SystemExit(f'GTFS_UTF8_DECODE_FAILED:{name}:{e.start}')
+                      rdr=csv.reader(io.StringIO(text,newline=''))
+                      try: header=next(rdr)
+                      except StopIteration: header=[]
+                      rows=list(rdr)
+                      width=len(header)
+                      if any(len(r)!=width for r in rows): raise SystemExit('GTFS_RAGGED_ROWS:'+name)
+                      blanks={h:0 for h in header}
+                      for r in rows:
+                          for i,v in enumerate(r):
+                              if v=='': blanks[header[i]]+=1
+                      keys=key_fields.get(base,[])
+                      key_nonblank={k:0 for k in keys}
+                      idx={h:i for i,h in enumerate(header)}
+                      for k in keys:
+                          if k not in idx: raise SystemExit(f'GTFS_KEY_COLUMN_MISSING:{base}:{k}')
+                          key_nonblank[k]=sum(1 for r in rows if r[idx[k]]!='')
+                      dst=native/(base[:-4]+'.csv')
+                      with dst.open('w',encoding='utf-8',newline='') as fh:
+                          w=csv.writer(fh,lineterminator='\n'); w.writerow(header); w.writerows(rows)
+                      out_bytes=dst.read_bytes()
+                      rec.update({'rows':len(rows),'columns':header,'blank_counts':blanks,'key_nonblank_counts':key_nonblank,
+                                  'canonical_csv':dst.name,'canonical_csv_bytes':len(out_bytes),'canonical_csv_sha256':hashlib.sha256(out_bytes).hexdigest()})
+                      total_rows += len(rows)
+                  inventory.append(rec)
+
+          # calendar.txt is optional in modern GTFS if calendar_dates.txt is present; require the identity/supply core and at least one service calendar mechanism.
+          mandatory=['routes.txt','trips.txt','stops.txt','stop_times.txt']
+          missing_core=[x for x in mandatory if not required_presence[x]]
+          if missing_core: raise SystemExit('GTFS_CORE_FILE_MISSING:'+','.join(missing_core))
+          if not (required_presence['calendar.txt'] or required_presence['calendar_dates.txt']): raise SystemExit('GTFS_SERVICE_CALENDAR_MISSING')
+
+          inv_csv=out/'f56_gtfs_file_inventory.csv'
+          with inv_csv.open('w',encoding='utf-8',newline='') as fh:
+              w=csv.writer(fh,lineterminator='\n'); w.writerow(['file','source_bytes','source_sha256','rows','columns_json','blank_counts_json','key_nonblank_counts_json','canonical_csv','canonical_csv_bytes','canonical_csv_sha256'])
+              for r in inventory:
+                  w.writerow([r['file'],r['source_bytes'],r['source_sha256'],'' if r['rows'] is None else r['rows'],json.dumps(r['columns'],ensure_ascii=False,separators=(',',':')),json.dumps(r['blank_counts'],ensure_ascii=False,separators=(',',':')),json.dumps(r['key_nonblank_counts'],ensure_ascii=False,separators=(',',':')),r.get('canonical_csv',''),r.get('canonical_csv_bytes',''),r.get('canonical_csv_sha256','')])
+
+          inventory_by={pathlib.PurePosixPath(x['file']).name:x for x in inventory}
+          ingress={
+            'schema_version':'4.0.1','worker':'W2C','mission_generation':39,'package':'F56_CP_STATIC_GTFS_EXTRACTION_INGRESS',
+            'source_set_id':source_id,'native_asset_fingerprint':fp,'private_release_tag':release_tag,
+            'source_asset':{'name':asset_name,'asset_id':asset_id,'bytes':expected_bytes,'sha256':expected_sha,'verified_before_parse':True},
+            'semantics':{'evidence_class':'PROGRAMMED_SUPPLY','observed_operation_inferred':False,'passengers_or_demand_inferred':False,
+                         'native_missingness':'blank GTFS field values preserved as blank strings in canonical CSV outputs'},
+            'gtfs':{'file_inventory':inventory,'total_source_native_rows':total_rows,'required_presence':required_presence,
+                    'identifier_contract':{'route':'route_id','trip':'trip_id','stop':'stop_id','service':'service_id','stop_sequence':'stop_sequence'},
+                    'calendar_contract':'calendar.txt and/or calendar_dates.txt preserved source-native; dates and exception types are not reinterpreted'},
+            'producer_reacquisition':False,'consumer_joins':False,'rights_adjudication':False,'crosswalks_invented':False
+          }
+          ingress_path=out/'f56_gtfs_source_native_ingress.json'
+          ingress_path.write_text(json.dumps(ingress,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+
+          output_files=[inv_csv,ingress_path]+sorted(native.glob('*.csv'))
+          output_meta=[]
+          for p in output_files:
+              b=p.read_bytes(); output_meta.append({'relative_path':str(p.relative_to(out)),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})
+          out_base=f'statistics/recovery-20260920/simple-runtime/outputs/W2C/{stamp}-G39-F56-extraction-ingress'
+          handoff=f'statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/F56/{fp}-extraction.json'
+          receipt={
+            'schema_version':'4.0.1','worker':'W2C','mission_generation':39,'package':'F56_CP_STATIC_GTFS_EXTRACTION_INGRESS',
+            'source_set_id':source_id,'native_asset_fingerprint':fp,'private_release_tag':release_tag,
+            'status':'PASS_PRIVATE_PRESERVED_BYTES_VERIFIED_AND_GTFS_SOURCE_NATIVE_INGRESS_EMITTED',
+            'asset_verified_before_parse':True,'asset':{'id':asset_id,'name':asset_name,'bytes':expected_bytes,'sha256':expected_sha},
+            'gtfs_member_count':len(inventory),'gtfs_total_rows':total_rows,'programmed_supply_only':True,
+            'route_trip_stop_service_identities_preserved':True,'service_calendars_dates_preserved':True,'native_missingness_preserved':True,
+            'observed_operation_inferred':False,'passengers_or_demand_inferred':False,'producer_reacquisition':False,
+            'consumer_joins':False,'rights_adjudication':False,'outputs':[{'path':out_base+'/'+x['relative_path'],**{k:v for k,v in x.items() if k!='relative_path'}} for x in output_meta],
+            'canonical_extraction_receipt_path':handoff
+          }
+          receipt_path=out/'extraction-receipt.json'; receipt_path.write_text(json.dumps(receipt,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+
+          # Verify CURRENT generation immediately before private writes.
+          def gh_get_json(url,token):
+              h={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','User-Agent':'MobilidadeNorte-F56Extractor/1.0','X-GitHub-Api-Version':'2022-11-28'}
+              with urllib.request.urlopen(urllib.request.Request(url,headers=h),timeout=120) as r: return json.loads(r.read())
+          import base64
+          team=gh_get_json(f'https://api.github.com/repos/{private_repo}/contents/statistics/recovery-20260920/simple-runtime/team-missions.json?ref={private_branch}',read_token)
+          team_obj=json.loads(base64.b64decode(team['content']).decode('utf-8'))
+          if int(team_obj.get('mission_generation',-1))!=39: raise SystemExit('MISSION_GENERATION_CHANGED_BEFORE_WRITE')
+
+          clone=temp/'private'
+          env=os.environ.copy(); env['GIT_TERMINAL_PROMPT']='0'
+          url=f'https://x-access-token:{write_token}@github.com/{private_repo}.git'
+          subprocess.run(['git','clone','--depth','1','--branch',private_branch,url,str(clone)],check=True,env=env,stdout=subprocess.DEVNULL)
+          team_clone=json.loads((clone/'statistics/recovery-20260920/simple-runtime/team-missions.json').read_text(encoding='utf-8'))
+          if int(team_clone.get('mission_generation',-1))!=39: raise SystemExit('MISSION_GENERATION_CHANGED_AFTER_CLONE')
+          dst=clone/out_base; dst.mkdir(parents=True,exist_ok=True)
+          for p in output_files+[receipt_path]:
+              rel=p.relative_to(out); q=dst/rel; q.parent.mkdir(parents=True,exist_ok=True); shutil.copy2(p,q)
+          hp=clone/handoff; hp.parent.mkdir(parents=True,exist_ok=True); shutil.copy2(receipt_path,hp)
+          worker_path=clone/'statistics/recovery-20260920/simple-runtime/worker-W2C.json'
+          worker={
+            'schema_version':'4.0.1','worker':'W2C','team':'W2','partner':'C','mission_generation':39,
+            'updated_at':now.isoformat().replace('+00:00','Z'),'status':'READY_CONTINUE_WINDOW','elastic_state':'STANDBY_EXTRACTION_INGRESS','current_task':None,
+            'last_output':out_base+'/extraction-receipt.json','window':{
+              'mission':'Generation-39 cleanup extraction ingress; F56 completed via public runner from exact private preserved Release bytes.',
+              'material_packages':1,'source_id':'F56','native_asset_fingerprint':fp,'producer_requests_sent':0,'producer_reacquisitions':0,
+              'private_preserved_asset_verified':True,'gtfs_member_count':len(inventory),'gtfs_total_rows':total_rows,'semantics':'PROGRAMMED_SUPPLY_ONLY',
+              'observed_operation_inferred':False,'passengers_or_demand_inferred':False,'consumer_joins':0,'rights_adjudications':0,
+              'result':'PASS_F56_SOURCE_NATIVE_GTFS_EXTRACTION_INGRESS','outputs':[out_base+'/'+x['relative_path'] for x in output_meta]+[out_base+'/extraction-receipt.json',handoff],
+              'next_cursor':['Continue the same work window with the next non-overlapping fingerprint-pinned W2 extraction package if its exact preserved-byte contract is executable.','Do not repeat F66 or reacquire CP.']
+            },'blocker':None
+          }
+          worker_path.write_text(json.dumps(worker,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          subprocess.run(['git','-C',str(clone),'config','user.name','mobilidade-public-sources[bot]'],check=True)
+          subprocess.run(['git','-C',str(clone),'config','user.email','actions@users.noreply.github.com'],check=True)
+          paths=[out_base,handoff,'statistics/recovery-20260920/simple-runtime/worker-W2C.json']
+          subprocess.run(['git','-C',str(clone),'add','--']+paths,check=True)
+          subprocess.run(['git','-C',str(clone),'commit','-m','result(mn): W2C F56 source-native GTFS extraction ingress'],check=True,stdout=subprocess.DEVNULL)
+          # Do not rewrite credentials into git config; the clone URL is process-local and runner-temporary.
+          subprocess.run(['git','-C',str(clone),'push','origin',private_branch],check=True,env=env,stdout=subprocess.DEVNULL)
+          print(json.dumps({'status':'PASS','source_set_id':source_id,'fingerprint':fp,'output_base':out_base,'gtfs_member_count':len(inventory),'gtfs_total_rows':total_rows},sort_keys=True))
+          PY
