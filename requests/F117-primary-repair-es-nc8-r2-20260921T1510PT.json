@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F117",
+  "request_id": "MN-PRIMARY-REPAIR-F117-ES-NC8-R2-20260921T1510PT",
+  "requested_by": "EU-transp-weekly/Mobilidade-Norte-Orchestrator",
+  "reason": "retry bounded national diagnostic repair after schema alignment: 2024 Spain partner × complete NC8 level-6 members",
+  "primary_repair": true,
+  "repair_authorization_path": "statistics/recovery-20260920/simple-runtime/outputs/orchestrator/20260921T1433PT-primary-repair-authorisation.json",
+  "repair_authorization_ref": "f560edbb80350671215887a09221856229128e58",
+  "canonical_private_branch": "mobilidade-norte-recovery-20260919"
+}
