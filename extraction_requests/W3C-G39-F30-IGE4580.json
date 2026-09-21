@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "worker": "W3C",
+  "mission_generation": 39,
+  "execution_revision": 1,
+  "package": "P124_F30_IGE4580_EXTRACTION",
+  "release_tag": "mn-src-f30-92525a31c1907715c00f",
+  "asset_id": 578707824,
+  "asset_name": "IGE-4580.json",
+  "asset_bytes": 49196,
+  "asset_sha256": "448a35ae8c0c6aba4f3f8a084d57bc1c1d0cbc31004072d44b87840e7fef5dc4",
+  "producer_reacquisition": false,
+  "rights_adjudication": false,
+  "consumer_joins": false
+}
