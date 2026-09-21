@@ -34,7 +34,8 @@
       "additionalProperties": false,
       "properties": {
         "geography": {"type": ["string", "null"]},
-        "classification": {"type": ["string", "null"]}
+        "classification": {"type": ["string", "null"]},
+        "acquisition_scope": {"type": ["string", "null"]}
       }
     },
     "reuse": {
