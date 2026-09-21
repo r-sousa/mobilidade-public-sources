@@ -1,0 +1,22 @@
+{
+  "acquisition_code_commit": "445c32eb67db4e3652ed32498c4c8c4c8b9f7953",
+  "limitations": "Exact API pages are preserved as native chunks and deterministically recomposed to JSONL without coercing null/missing producer fields.",
+  "native_asset_fingerprint": "154ee6d02c30e10dc3a98ae02fdbc93d4126b83b42640978d3261ecdaa8b2966",
+  "recomposed_assets": [
+    {
+      "bytes": 15297,
+      "format": "JSON",
+      "name": "composition-manifest.json",
+      "sha256": "f0c15a48c1457dfa302c185faca0ab881943b69c8f35272f514e372638ac5109"
+    },
+    {
+      "bytes": 39107,
+      "format": "JSONL.GZ",
+      "name": "records.jsonl.gz",
+      "sha256": "9157683ae891d5c86994107536d19c63f74fdf663d73ad24597489ef137c0c67"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_set_id": "F181",
+  "validation_result": "PASS_OPENDATASOFT_PAGINATED_RECOMPOSED"
+}
