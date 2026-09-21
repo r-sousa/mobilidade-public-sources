@@ -1,0 +1,34 @@
+schema_version: 1.0.0
+source_set_id: F49
+title: ANSR — annual road-safety annexes
+producer: Autoridade Nacional de Segurança Rodoviária
+product_key: mobilidade-source-id::F49
+adapter: static_http
+access: public
+sink: private
+cadence: annual
+expected_format: XLSX
+source:
+  landing_url: https://observatorioansr.pt/sinistralidade/
+raw_native:
+  geography: ANSR workbook-native geographies
+  classification: ANSR 24h and 30-day casualty windows kept distinct
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: null
+  license: null
+  asset_check: null
+parameters:
+  period: "2024-2025"
+  limitations: Preserve 24h and 30-day casualty windows as distinct producer concepts.
+  assets:
+    - key: ANSR_2024_30D
+      format: XLSX
+      url: https://observatorioansr.pt/wp-content/uploads/2026/03/Anexo-ao-Relatorio-Anual-de-Sinistralidade-a-30-dias-fiscalizacao-e-contraordenacoes-rodoviarias-2024.xlsx
+    - key: ANSR_2024_24H
+      format: XLSX
+      url: https://observatorioansr.pt/wp-content/uploads/2025/08/Anexo-ao-Relatorio-Anual-de-Sinistralidade-24h-e-fiscalizacao-rodoviaria-2024.xlsx
+    - key: ANSR_2025_24H
+      format: XLSX
+      url: https://observatorioansr.pt/wp-content/uploads/2026/07/Anexo-ao-Relatorio-Anual-de-Sinistralidade-24h-e-fiscalizacao-rodoviaria-de-2025.xlsx
