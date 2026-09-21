@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yaml
 
-from .extract_w4c_shared import run
+from .extract_w4c_shared_v2 import run
 
 
 def main() -> None:
