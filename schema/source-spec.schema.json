@@ -16,7 +16,7 @@
     "producer": {"type": "string", "minLength": 1},
     "product_key": {"type": "string", "minLength": 1},
     "adapter": {
-      "enum": ["eurostat", "ine_json", "static_http", "ckan_gtfs", "ige_table", "opendatasoft"]
+      "enum": ["eurostat", "ine_json", "static_http", "gtfs_static", "ckan_gtfs", "ige_table", "opendatasoft"]
     },
     "access": {"enum": ["public", "controlled"]},
     "sink": {"enum": ["public_release", "private"]},
