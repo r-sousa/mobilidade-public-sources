@@ -1,0 +1,25 @@
+schema_version: 1.0.0
+source_set_id: F148
+title: Eurostat tran_r_rago — Railway goods by loading/unloading NUTS2 region
+producer: Eurostat
+product_key: eurostat::tran_r_rago
+adapter: eurostat
+access: public
+sink: private
+cadence: monthly
+expected_format: JSON-stat/JSON
+source:
+  landing_url: https://ec.europa.eu/eurostat/databrowser/view/tran_r_rago/default/table?lang=en
+raw_native:
+  geography: NUTS2 loading/unloading region as exposed by Eurostat
+  classification: Eurostat rail-goods dimensions
+reuse:
+  status: not_yet_cleared
+  public_redistribution_gate: not_cleared
+  evidence_url: null
+  license: null
+  asset_check: null
+parameters:
+  dataset_code: tran_r_rago
+  query:
+    lang: EN
