@@ -1,0 +1,53 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "952e9fab3f5323fd33fd05c0690a67e24eaf6850",
+  "acquisition_timestamp": "2026-09-21T02:42:09.193617Z",
+  "adapter": "ine_json",
+  "assets": [
+    {
+      "bytes": 7939,
+      "format": "JSON",
+      "name": "0013516-metadata.json",
+      "sha256": "deadce1ce22b278cc7be7289249739eeeebb9054bd83bef9972770a70598fadf",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindicaMeta.jsp?varcd=0013516&lang=PT"
+    },
+    {
+      "bytes": 864,
+      "format": "JSON",
+      "name": "0013516-7A2023_4.json",
+      "sha256": "1d5001194578a85caf16e6dea7bbb4047654a22e4949917593409440a2114ed4",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0013516&lang=PT&Dim1=7A2023_4&Dim2=11&Dim3=07&Dim4=T"
+    }
+  ],
+  "cadence": "edition",
+  "disposition": {
+    "bytes_persisted": false,
+    "intended_sink": "private",
+    "status": "PROBE_ONLY_NO_PERSISTENCE"
+  },
+  "expected_format": "INE native JSON",
+  "limitations": "Raw INE metadata and bounded producer-native responses preserved; requested dimension labels are resolved against producer metadata before acquisition; missing/confidential values are not transformed.",
+  "native_asset_fingerprint": "18e8794ae965a5da9f4641461dbd72520ecc37567fdf0d219516725f48a69431",
+  "producer": "INE Portugal",
+  "product_key": "mobilidade-source-id::F85",
+  "raw_native": {
+    "classification": "INE indicator-native household expenditure dimensions",
+    "geography": "INE geography exposed by indicator 0013516"
+  },
+  "request_id": "push-35555027399",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": null,
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2023",
+  "source_set_id": "F85",
+  "source_url": "https://www.ine.pt/",
+  "title": "INE — Inquérito às Despesas das Famílias 2022/2023 — transport expenditure route",
+  "validation_result": "PASS_INE_METADATA_AND_NATIVE_JSON"
+}
