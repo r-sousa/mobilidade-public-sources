@@ -307,7 +307,34 @@ def disposition(spec: dict, work: Path, records: list[dict], receipt: dict) -> d
         }
         return result
 
-    raise RuntimeError(
-        "Private disposition is pull-controlled by the canonical private repository. "
-        "The public runner must use --probe-only and persist only a sanitized public receipt."
-    )
+    if spec["sink"] == "private":
+        token = os.environ.get("MN_PRIVATE_SINK_TOKEN", "")
+        if not token:
+            raise RuntimeError("MN_PRIVATE_SINK_TOKEN unavailable for private sink")
+
+        repo = os.environ.get("MN_PRIVATE_REPO", PRIVATE_REPO)
+        branch = os.environ.get("MN_PRIVATE_BRANCH", PRIVATE_BRANCH)
+        result = release_disposition(
+            spec, work, records, receipt, repo, token, branch, False
+        )
+        private_receipt = {
+            **receipt,
+            "disposition": {
+                **result,
+                "status": "PRIVATE_SINK_PRESERVED",
+                "bytes_persisted": True,
+            },
+        }
+        receipt_path = (
+            "statistics/recovery-20260920/simple-runtime/"
+            f"public-acquisition-receipts/{receipt['source_set_id']}/"
+            f"{receipt['native_asset_fingerprint']}.json"
+        )
+        result["private_receipt"] = write_immutable_receipt(
+            repo, branch, receipt_path, private_receipt, token
+        )
+        result["status"] = "PRIVATE_SINK_PRESERVED"
+        result["bytes_persisted"] = True
+        return result
+
+    raise RuntimeError(f"Unsupported sink: {spec['sink']}")
