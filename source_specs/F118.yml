@@ -13,7 +13,7 @@ source:
 raw_native:
   geography: Portugal reporter × destination country
   classification: NC8
-  acquisition_scope: 2024 × Spain partner × complete producer-native NC8 level-6 members; national diagnostic slice
+  acquisition_scope: 2024 × Spain partner × producer-native NC2 chapter level within the NC8 source hierarchy; national diagnostic slice
 reuse:
   status: not_verified
   public_redistribution_gate: not_cleared
@@ -26,9 +26,9 @@ parameters:
   dimension_codes:
     "2": ["ES"]
   dimension_levels:
-    "3": ["6"]
+    "3": ["3"]
   max_cells_per_chunk: 5000
-  max_url_length: 900
+  max_url_length: 700
   require_category_coverage: true
   spacing_seconds: 2
   preserved_metadata:
