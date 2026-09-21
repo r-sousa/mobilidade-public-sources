@@ -7,6 +7,7 @@ import time
 import urllib.parse
 import zipfile
 import ssl
+from html.parser import HTMLParser
 from pathlib import Path
 
 import requests
@@ -592,6 +593,232 @@ def opendatasoft(spec: dict, work: Path) -> dict:
     }
 
 
+
+class _LinkCollector(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.links = []
+        self._href = None
+        self._text = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() == "a":
+            self._href = dict(attrs).get("href")
+            self._text = []
+
+    def handle_data(self, data):
+        if self._href is not None:
+            self._text.append(data)
+
+    def handle_endtag(self, tag):
+        if tag.lower() == "a" and self._href is not None:
+            self.links.append({
+                "href": self._href,
+                "text": " ".join(" ".join(self._text).split())
+            })
+            self._href = None
+            self._text = []
+
+
+def html_assets(spec: dict, work: Path) -> dict:
+    """Discover and acquire downloadable public assets from a producer landing page."""
+    pms = spec["parameters"]
+    landing = pms.get("landing_url") or spec["source"]["landing_url"]
+    s = session(system_ca=bool(pms.get("system_ca", False)))
+    r = s.get(landing, timeout=180, allow_redirects=True)
+    r.raise_for_status()
+    raw = r.content
+    text = raw.decode(r.encoding or "utf-8", errors="replace")
+    if "<html" not in text.lower() and "<a " not in text.lower():
+        raise RuntimeError("Landing route did not return recognizable HTML")
+
+    lp = work / "payload" / "landing.html"
+    lp.parent.mkdir(parents=True, exist_ok=True)
+    lp.write_bytes(raw)
+    landing_rec = {
+        "path": str(lp.relative_to(work)),
+        "name": "landing.html",
+        "sha256": sha256(lp),
+        "bytes": lp.stat().st_size,
+        "source_url": r.url,
+        "format": "HTML"
+    }
+
+    parser = _LinkCollector()
+    parser.feed(text)
+    href_re = re.compile(pms.get("include_href_regex", ".*"), re.I)
+    text_re = re.compile(pms.get("include_text_regex", ".*"), re.I)
+    allowed_exts = {
+        x.lower() if x.startswith(".") else "." + x.lower()
+        for x in pms.get(
+            "allowed_extensions",
+            ["pdf", "xls", "xlsx", "csv", "zip", "json", "geojson"]
+        )
+    }
+    allowed_hosts = [x.lower() for x in pms.get("allowed_host_suffixes", [])]
+    max_assets = max(1, int(pms.get("max_assets", 10)))
+    ctype_re = re.compile(pms.get("content_type_regex", ".*"), re.I)
+
+    candidates = []
+    seen = set()
+    for link in parser.links:
+        href = (link.get("href") or "").strip()
+        label = (link.get("text") or "").strip()
+        if not href:
+            continue
+        url = urllib.parse.urljoin(r.url, href)
+        parsed = urllib.parse.urlparse(url)
+        if parsed.scheme not in {"http", "https"}:
+            continue
+        if allowed_hosts and not any(parsed.hostname and parsed.hostname.lower().endswith(x) for x in allowed_hosts):
+            continue
+        ext = Path(parsed.path).suffix.lower()
+        if ext not in allowed_exts and not href_re.search(url):
+            continue
+        if not href_re.search(url) or not text_re.search(label):
+            continue
+        if url in seen:
+            continue
+        seen.add(url)
+        candidates.append((url, label))
+        if len(candidates) >= max_assets:
+            break
+
+    if not candidates:
+        raise RuntimeError("Landing page exposed no downloadable asset matching the declared rules")
+
+    assets = [landing_rec]
+    for i, (url, label) in enumerate(candidates, 1):
+        ext = Path(urllib.parse.urlparse(url).path).suffix
+        fallback = f"asset-{i:03d}{ext or '.bin'}"
+        name = safe_name(url, fallback)
+        p = work / "payload" / name
+        rec = download(s, url, p, work)
+        ctype = rec.get("content_type") or ""
+        if not ctype_re.search(ctype):
+            raise RuntimeError(
+                f"Discovered asset {url} content type {ctype!r} failed declared check"
+            )
+        head = p.read_bytes()[:16]
+        if "pdf" in ctype.lower() and not head.startswith(b"%PDF"):
+            raise RuntimeError(f"Discovered PDF asset failed signature check: {url}")
+        if "spreadsheet" in ctype.lower() and head.startswith(b"PK"):
+            validate_xlsx(p)
+        rec["format"] = ctype or (ext.lstrip(".").upper() if ext else "BINARY")
+        rec["link_text"] = label
+        assets.append(rec)
+
+    return {
+        "acquired_at": now(),
+        "assets": assets,
+        "validation_result": "PASS_HTML_ASSET_DISCOVERY",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "Producer landing HTML and selected linked assets are preserved natively; "
+            "discovery rules are declarative and do not infer reuse permission."
+        )
+    }
+
+
+def arcgis_feature_service(spec: dict, work: Path) -> dict:
+    """Acquire a complete public ArcGIS Feature Layer query as native GeoJSON pages."""
+    pms = spec["parameters"]
+    layer_url = pms["layer_url"].rstrip("/")
+    s = session(system_ca=bool(pms.get("system_ca", False)))
+
+    mr = s.get(layer_url, params={"f": "json"}, timeout=180)
+    mr.raise_for_status()
+    meta = mr.json()
+    if meta.get("error"):
+        raise RuntimeError(f"ArcGIS layer metadata error: {meta['error']}")
+    if not meta.get("geometryType") or not isinstance(meta.get("fields"), list):
+        raise RuntimeError("ArcGIS route is not a queryable feature layer")
+
+    mp = work / "payload" / "layer-metadata.json"
+    mp.parent.mkdir(parents=True, exist_ok=True)
+    mp.write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    assets = [{
+        "path": str(mp.relative_to(work)),
+        "name": mp.name,
+        "sha256": sha256(mp),
+        "bytes": mp.stat().st_size,
+        "source_url": mr.url,
+        "format": "JSON"
+    }]
+
+    where = str(pms.get("where", "1=1"))
+    cr = s.get(
+        layer_url + "/query",
+        params={"f": "json", "where": where, "returnCountOnly": "true"},
+        timeout=180
+    )
+    cr.raise_for_status()
+    count_obj = cr.json()
+    if count_obj.get("error"):
+        raise RuntimeError(f"ArcGIS count query error: {count_obj['error']}")
+    total = int(count_obj.get("count", 0))
+    if total <= 0:
+        raise RuntimeError("ArcGIS query returned zero features")
+
+    page_size = min(
+        int(pms.get("page_size", meta.get("maxRecordCount") or 1000)),
+        int(meta.get("maxRecordCount") or 2000)
+    )
+    out_fields = str(pms.get("out_fields", "*"))
+    out_sr = str(pms.get("out_sr", 4326))
+    oid = meta.get("objectIdField") or meta.get("objectIdFieldName")
+    offset = 0
+    observed = 0
+
+    while offset < total:
+        params = {
+            "f": "geojson",
+            "where": where,
+            "outFields": out_fields,
+            "returnGeometry": "true",
+            "outSR": out_sr,
+            "resultOffset": offset,
+            "resultRecordCount": page_size
+        }
+        if oid:
+            params["orderByFields"] = f"{oid} ASC"
+        qr = s.get(layer_url + "/query", params=params, timeout=TIMEOUT)
+        qr.raise_for_status()
+        obj = qr.json()
+        if obj.get("error"):
+            raise RuntimeError(f"ArcGIS page query error: {obj['error']}")
+        features = obj.get("features")
+        if not isinstance(features, list) or not features:
+            raise RuntimeError(f"ArcGIS pagination stopped early at offset {offset}")
+
+        pp = work / "payload" / f"features-{offset:06d}.geojson"
+        pp.write_text(json.dumps(obj, ensure_ascii=False) + "\n", encoding="utf-8")
+        assets.append({
+            "path": str(pp.relative_to(work)),
+            "name": pp.name,
+            "sha256": sha256(pp),
+            "bytes": pp.stat().st_size,
+            "source_url": qr.url,
+            "format": "GeoJSON"
+        })
+        observed += len(features)
+        offset += len(features)
+
+    if observed != total:
+        raise RuntimeError(f"ArcGIS completeness mismatch: observed {observed}, expected {total}")
+
+    return {
+        "acquired_at": now(),
+        "assets": assets,
+        "validation_result": "PASS_ARCGIS_COMPLETE_FEATURE_QUERY",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "Complete producer feature query preserved as layer metadata plus ordered "
+            "GeoJSON pages; no geometry simplification or classification remapping."
+        )
+    }
+
+
 ADAPTERS = {
     "eurostat": eurostat,
     "ine_json": ine_json,
@@ -600,6 +827,8 @@ ADAPTERS = {
     "ckan_gtfs": ckan_gtfs,
     "ige_table": ige_table,
     "opendatasoft": opendatasoft,
+    "html_assets": html_assets,
+    "arcgis_feature_service": arcgis_feature_service,
 }
 
 
