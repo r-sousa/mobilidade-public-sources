@@ -1,0 +1,46 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "7fb8200643670ff25160600773fcd3d16b24d3aa",
+  "acquisition_timestamp": "2026-09-21T02:35:23.379672Z",
+  "adapter": "gtfs_static",
+  "assets": [
+    {
+      "bytes": 301583,
+      "format": "GTFS/ZIP",
+      "name": "cp-gtfs.zip",
+      "sha256": "538e9d29a09b074ebca5b5910e638c683e1e06c71063fda040fdef722eaff44e",
+      "source_url": "https://publico.cp.pt/gtfs/gtfs.zip"
+    }
+  ],
+  "cadence": "feed-update",
+  "disposition": {
+    "bytes_persisted": false,
+    "intended_sink": "private",
+    "status": "PROBE_ONLY_NO_PERSISTENCE"
+  },
+  "expected_format": "GTFS/ZIP",
+  "limitations": "Scheduled supply only; producer-native GTFS files and missingness are preserved.",
+  "native_asset_fingerprint": "027feab3ec70efed3aa14ab72e9d941c5e4f3437279df29f256710125c4a8fa6",
+  "producer": "CP — Comboios de Portugal",
+  "product_key": "mobilidade-source-id::F56",
+  "raw_native": {
+    "classification": "GTFS",
+    "geography": "CP scheduled rail network"
+  },
+  "request_id": "push-35554662594",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": null,
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "current feed",
+  "source_set_id": "F56",
+  "source_url": "https://www.cp.pt/passageiros/pt/consultar-horarios/dados-abertos",
+  "title": "CP — static GTFS",
+  "validation_result": "PASS_STATIC_GTFS_VALIDATED"
+}
