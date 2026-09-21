@@ -1,3 +1,3 @@
 schema_version: 1.0.0
 source_set_id: F12
-reason: diagnose_preserved_gtfs_package_structure
+reason: retry_preserved_gtfs_after_nested_gzip_zip_support
