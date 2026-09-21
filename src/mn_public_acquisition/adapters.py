@@ -454,7 +454,12 @@ def ige_table(spec: dict, work: Path) -> dict:
     rec["format"] = fmt.upper()
 
     if fmt == "json":
-        obj = json.loads(p.read_text(encoding="utf-8-sig"))
+        raw = p.read_bytes()
+        try:
+            text = raw.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            text = raw.decode("iso-8859-1")
+        obj = json.loads(text)
         if not isinstance(obj, dict) or not isinstance(obj.get("variables"), list) or not isinstance(obj.get("datos"), list):
             raise RuntimeError("IGE response does not match the documented table JSON structure")
         if not obj["datos"]:
