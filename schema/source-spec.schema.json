@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/r-sousa/mobilidade-public-sources/schema/source-spec.schema.json",
+  "title": "Mobilidade Norte public source acquisition specification",
+  "type": "object",
+  "required": [
+    "schema_version", "source_set_id", "title", "producer", "product_key",
+    "adapter", "access", "sink", "cadence", "expected_format", "source",
+    "raw_native", "reuse"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "source_set_id": {"type": "string", "pattern": "^F[0-9]{2,4}$"},
+    "title": {"type": "string", "minLength": 1},
+    "producer": {"type": "string", "minLength": 1},
+    "product_key": {"type": "string", "minLength": 1},
+    "adapter": {
+      "enum": ["eurostat", "ine_json", "static_http", "ckan_gtfs", "ige_table", "opendatasoft"]
+    },
+    "access": {"enum": ["public", "controlled"]},
+    "sink": {"enum": ["public_release", "private"]},
+    "cadence": {"type": "string", "minLength": 1},
+    "expected_format": {"type": "string", "minLength": 1},
+    "source": {
+      "type": "object",
+      "required": ["landing_url"],
+      "additionalProperties": true,
+      "properties": {"landing_url": {"type": "string", "format": "uri"}}
+    },
+    "raw_native": {
+      "type": "object",
+      "required": ["geography", "classification"],
+      "additionalProperties": false,
+      "properties": {
+        "geography": {"type": ["string", "null"]},
+        "classification": {"type": ["string", "null"]}
+      }
+    },
+    "reuse": {
+      "type": "object",
+      "required": ["status", "public_redistribution_gate"],
+      "additionalProperties": true,
+      "properties": {
+        "status": {"enum": ["verified", "not_yet_cleared", "not_verified"]},
+        "public_redistribution_gate": {
+          "enum": ["asset_check_required", "not_cleared", "private_only"]
+        },
+        "evidence_url": {"type": ["string", "null"]},
+        "license": {"type": ["string", "null"]},
+        "asset_check": {"type": ["string", "null"]}
+      }
+    },
+    "parameters": {"type": "object"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"sink": {"const": "public_release"}}},
+      "then": {
+        "properties": {
+          "access": {"const": "public"},
+          "reuse": {
+            "properties": {
+              "status": {"const": "verified"},
+              "public_redistribution_gate": {"const": "asset_check_required"}
+            }
+          }
+        }
+      }
+    }
+  ]
+}
