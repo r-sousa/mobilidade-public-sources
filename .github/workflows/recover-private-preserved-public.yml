@@ -53,28 +53,41 @@ jobs:
         run: |
           set -euo pipefail
           requested="${REQUESTED_SOURCE_SET:-}"
-          if [[ -z "$requested" && -f recovery_specs/recovery-request.yml ]]; then
-            requested=$(python - <<'PY'
+          mode=""
+          config="recovery_specs/private-public-bootstrap.yml"
+          if [[ -f recovery_specs/recovery-request.yml ]]; then
+            readarray -t request_fields < <(python - <<'PY'
           import yaml
           p=yaml.safe_load(open("recovery_specs/recovery-request.yml",encoding="utf-8")) or {}
           print(str(p.get("source_set_id") or "").strip())
+          print(str(p.get("mode") or "").strip())
+          print(str(p.get("config") or "").strip())
           PY
             )
+            if [[ -z "$requested" ]]; then requested="${request_fields[0]:-}"; fi
+            mode="${request_fields[1]:-}"
+            if [[ -n "${request_fields[2]:-}" ]]; then config="${request_fields[2]}"; fi
           fi
 
           mkdir -p "$RUNNER_TEMP/mn-recovery"
-          args=(
-            recovery_specs/private-public-bootstrap.yml
-            --out "$RUNNER_TEMP/mn-recovery/result.json"
-          )
+          echo "Recovery request: ${requested:-ALL}; mode=${mode:-bootstrap}; config=$config"
 
-          if [[ -n "$requested" && "$requested" != "ALL" ]]; then
-            [[ "$requested" =~ ^F[0-9]{2,4}$ ]]
-            args+=(--source-set "$requested")
+          if [[ "$mode" == "w4c_shared_energy" ]]; then
+            [[ "$config" == "recovery_specs/w4c-shared-energy.yml" ]]
+            python -m mn_public_acquisition.run_w4c_shared \
+              "$config" \
+              --out "$RUNNER_TEMP/mn-recovery/result.json"
+          else
+            args=(
+              "$config"
+              --out "$RUNNER_TEMP/mn-recovery/result.json"
+            )
+            if [[ -n "$requested" && "$requested" != "ALL" ]]; then
+              [[ "$requested" =~ ^F[0-9]{2,4}$ ]]
+              args+=(--source-set "$requested")
+            fi
+            python -m mn_public_acquisition.private_bootstrap "${args[@]}"
           fi
-
-          echo "Recovery request: ${requested:-ALL}"
-          python -m mn_public_acquisition.private_bootstrap "${args[@]}"
 
       - name: Persist public recovery run receipt
         if: always()
@@ -118,7 +131,7 @@ jobs:
           import json,os,pathlib
           p=pathlib.Path(os.environ["RUNNER_TEMP"])/"mn-recovery/result.json"
           with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
-              f.write("# Private-preserved → public bootstrap\n\n")
+              f.write("# Private-preserved execution\n\n")
               if not p.exists():
                   f.write("- No recovery result was produced. Check the private read secret preflight.\n")
               else:
