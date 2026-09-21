@@ -128,9 +128,11 @@ def session(*, system_ca: bool = False) -> requests.Session:
     return s
 
 
-def download(s: requests.Session, url: str, path: Path, work: Path) -> dict:
+def download(
+    s: requests.Session, url: str, path: Path, work: Path, *, timeout: int = TIMEOUT
+) -> dict:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with s.get(url, timeout=TIMEOUT, stream=True, allow_redirects=True) as r:
+    with s.get(url, timeout=timeout, stream=True, allow_redirects=True) as r:
         r.raise_for_status()
         with path.open("wb") as f:
             for chunk in r.iter_content(1024 * 1024):
@@ -283,7 +285,7 @@ def ine_json(spec: dict, work: Path) -> dict:
     assets = []
     meta_url = f"{base}/pindicaMeta.jsp?" + urllib.parse.urlencode({"varcd": indicator, "lang": "PT"})
     mp = work / "payload" / f"{indicator}-metadata.json"
-    meta = download(s, meta_url, mp, work)
+    meta = download(s, meta_url, mp, work, timeout=90)
     meta["format"] = "JSON"
     assets.append(meta)
     obj = json.loads(mp.read_text(encoding="utf-8-sig"))
@@ -346,7 +348,7 @@ def ine_json(spec: dict, work: Path) -> dict:
         params.update({f"Dim{dim}": code for dim, code in sorted(selections.items())})
         url = f"{base}/pindica.jsp?" + urllib.parse.urlencode(params)
         p = work / "payload" / f"{indicator}-{period}.json"
-        rec = download(s, url, p, work)
+        rec = download(s, url, p, work, timeout=120)
         data_obj = json.loads(p.read_text(encoding="utf-8-sig"))
         _ine_guard(data_obj)
         rec["format"] = "JSON"
