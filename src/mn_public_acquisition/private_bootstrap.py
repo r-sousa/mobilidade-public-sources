@@ -144,9 +144,16 @@ def canonical_gate(
     if "ELIGIBLE_FOR_PUBLIC_EXPORT" not in gate:
         raise RuntimeError(f"{sid} canonical redistribution gate is not eligible: {gate}")
 
+    expected_assets = set((manifest.get("preservation") or {}).get("release_assets") or [])
+    if item.get("asset") not in expected_assets:
+        raise RuntimeError(
+            f"{sid} configured asset {item.get('asset')} is not associated with the canonical source set"
+        )
+
     result = {
         "candidate_index": "PASS",
         "canonical_manifest": "PASS",
+        "canonical_release_asset_association": "PASS",
         "public_reuse_status": rights.get("public_reuse_status"),
         "public_redistribution_gate": gate,
         "licence": rights.get("license"),
@@ -189,17 +196,21 @@ def asset_gate(path: Path, item: dict) -> dict:
     check = item["asset_check"]
 
     if check == "eurostat_package":
-        token = str(item["product_code"]).casefold()
-        if token not in blob:
-            raise RuntimeError(
-                f"Eurostat package does not expose expected product token {token}"
-            )
-        detail = {"product_code": item["product_code"], "package_token": "PASS"}
+        if evidence["top_level_members"] <= 0:
+            raise RuntimeError("Eurostat package is structurally empty")
+        detail = {
+            "product_code": item["product_code"],
+            "archive_structure": "PASS",
+            "identity_basis": "canonical_manifest_asset_association_plus_digest"
+        }
     elif check == "ine_ccby_package":
-        token = str(item["indicator"]).casefold()
-        if token not in blob:
-            raise RuntimeError(f"INE package does not expose indicator token {token}")
-        detail = {"indicator": item["indicator"], "package_token": "PASS"}
+        if evidence["top_level_members"] <= 0:
+            raise RuntimeError("INE package is structurally empty")
+        detail = {
+            "indicator": item["indicator"],
+            "archive_structure": "PASS",
+            "identity_basis": "canonical_manifest_asset_association_plus_digest"
+        }
     elif check == "gtfs_cc0_package":
         required = {"agency.txt", "routes.txt", "stops.txt", "trips.txt", "stop_times.txt"}
         member_basenames = {
