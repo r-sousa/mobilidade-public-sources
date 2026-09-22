@@ -1,6 +1,6 @@
 schema_version: 1.0.0
 source_set_id: F194
-title: INE — IMob 2017: mobilidade nas Áreas Metropolitanas do Porto e de Lisboa
+title: "INE — IMob 2017: mobilidade nas Áreas Metropolitanas do Porto e de Lisboa"
 producer: INE
 product_key: ine.pt::imob2017::mobilidade-funcionalidade-amp-aml
 adapter: static_http
