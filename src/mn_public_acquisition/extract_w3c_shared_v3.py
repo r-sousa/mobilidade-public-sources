@@ -187,7 +187,7 @@ def run(cfg: dict, read_token: str, write_token: str) -> dict:
             "release_tag": tag,
             "archive": {"asset_id": asset_cfg["id"], "name": asset_cfg["name"], "bytes": asset_cfg["bytes"], "sha256": archive_sha, "verified": True},
             "inventory_map": {"path": cfg["inventory_map_path"], "blob_sha": map_blob_sha, "verified": True},
-            "w3b_handoff": {"path": spec_path if False else cfg["members"][fid]["handoff_path"], "blob_sha": result["w3b_handoff_blob_sha"], "verified": True},
+            "w3b_handoff": {"path": cfg["members"][fid]["handoff_path"], "blob_sha": result["w3b_handoff_blob_sha"], "verified": True},
             "member": {"logical_path": result["logical_member_path"], "actual_archive_path": result["actual_archive_member_path"], "bytes": result["member_bytes"], "sha256": result["member_sha256"]},
             "extraction_method": result["extraction_method"],
             "numeric_candidate_count": result["numeric_candidate_count"],
@@ -219,7 +219,7 @@ def run(cfg: dict, read_token: str, write_token: str) -> dict:
         "producer_reacquisition": False,
         "rights_adjudication": False,
         "canonical_catalogue_write": False,
-        "worker_status_write": false
+        "worker_status_write": False
     }
     family_path = f"{out_base}/family-receipt.json"
     _put_text(repo, branch, family_path, json.dumps(family, ensure_ascii=False, indent=2, sort_keys=True) + "\n", write_token, message="result(mn): W3C inventory-mapped shared archive family receipt", immutable=True)
@@ -234,5 +234,5 @@ def run(cfg: dict, read_token: str, write_token: str) -> dict:
         "complete": True,
         "family_output": family_path,
         "private_write_count": writes,
-        "worker_status_write": False,
+        "worker_status_write": False
     }
