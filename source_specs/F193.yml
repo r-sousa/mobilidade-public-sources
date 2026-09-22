@@ -1,0 +1,29 @@
+schema_version: 1.0.0
+source_set_id: F193
+title: TIP/TMP — Andante public validation statistics
+producer: TIP / TMP
+product_key: andante.pt::tip-tmp-relatorios-contas::sia-validacoes-public-aggregates
+adapter: static_http
+access: public
+sink: private
+cadence: annual
+expected_format: PDF
+source:
+  landing_url: https://andante.pt/relatorios-contas/
+raw_native:
+  geography: AMP / Sistema Intermodal Andante service universe and source-edition operator breakdown
+  classification: validation-event totals, intermodal/monomodal distinctions and operator-level validation rows
+  acquisition_scope: current annual report member first; historical backfill requires later bounded assignment
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://andante.pt/relatorios-contas/
+  license: null
+  asset_check: null
+parameters:
+  period: "2025"
+  limitations: Validations are ticketing events, not passengers/persons/journeys/trips; preserve operator taxonomy and total/intermodal/monomodal labels.
+  assets:
+    - key: TMP_RC_2025
+      format: PDF
+      url: https://andante.pt/wp-content/uploads/2026/08/TMP_RC25_Final_web-2.pdf
