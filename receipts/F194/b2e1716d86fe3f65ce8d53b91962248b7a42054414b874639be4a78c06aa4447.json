@@ -1,0 +1,51 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "c6635a1140da2270d60cb9660db4b9eb6af9ee18",
+  "acquisition_timestamp": "2026-09-22T21:14:30.352440Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 59592428,
+      "format": "PDF",
+      "name": "IMOB2017_DEFINITIVE_PUBLICATION__attachfileu.jsp",
+      "role": "native",
+      "sha256": "7ebd1743bc10ec3e6bda90c727a57262850c501d0ce50106c87e1a1519bb26fe",
+      "source_url": "https://www.ine.pt/ngt_server/attachfileu.jsp?look_parentBoui=349565256&att_display=n&att_download=y"
+    }
+  ],
+  "cadence": "one-off survey publication",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF",
+  "limitations": "Preserve AMP/AML, survey denominators, OD direction, mode/purpose/duration/distance/expenditure/opinion semantics; do not merge with F25/F26.",
+  "native_asset_fingerprint": "b2e1716d86fe3f65ce8d53b91962248b7a42054414b874639be4a78c06aa4447",
+  "primary_repair": false,
+  "producer": "INE",
+  "product_key": "ine.pt::imob2017::mobilidade-funcionalidade-amp-aml",
+  "raw_native": {
+    "acquisition_scope": "definitive official publication attachment only; no respondent microdata",
+    "classification": "IMob 2017 survey publication tables and municipality profiles",
+    "geography": "AMP and AML aggregates, municipalities and published OD interactions"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35785361453",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.ine.pt/ine_novidades/IMob2017/",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2017",
+  "source_set_id": "F194",
+  "source_url": "https://www.ine.pt/ine_novidades/IMob2017/",
+  "title": "INE — IMob 2017: mobilidade nas Áreas Metropolitanas do Porto e de Lisboa",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
