@@ -1,6 +1,6 @@
 schema_version: 1.0.0
 source_set_id: F191
-title: APA — Inventário nacional de emissões atmosféricas: transportes
+title: "APA — Inventário nacional de emissões atmosféricas: transportes"
 producer: APA via APA/REA presentation
 product_key: apambiente.pt::inventario-emissoes-atmosfericas::nec-clrtap-sector-transportes
 adapter: easychart_html
