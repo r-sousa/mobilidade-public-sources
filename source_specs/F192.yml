@@ -1,0 +1,24 @@
+schema_version: 1.0.0
+source_set_id: F192
+title: QualAr — monitorização da qualidade do ar: tráfego e NO2
+producer: APA / QualAr via APA/REA presentation
+product_key: qualar.apambiente.pt::air-quality-monitoring::traffic-no2-validated-stations
+adapter: easychart_html
+access: public
+sink: private
+cadence: annual
+expected_format: HTML + deterministic Easychart JSON/CSV
+source:
+  landing_url: https://rea.apambiente.pt/content/qualidade-do-ar-0?language=pt-pt
+raw_native:
+  geography: QualAr stations, zones and agglomerations including Norte
+  classification: pollutant x station type x zone/agglomeration with validation state
+  acquisition_scope: traffic-station/traffic-related NO2 and directly related transport-externality context only
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://rea.apambiente.pt/content/qualidade-do-ar-0?language=pt-pt
+  license: null
+  asset_check: null
+parameters:
+  scope_guard: Preserve provisional versus annually validated observations and traffic/background/industrial/rural station typology; concentrations are context, not direct transport emissions.
