@@ -86,7 +86,14 @@ include WFS, WMS and downloadable ZIP packages. For acquisition:
 - prefer `wfs` for vector feature data;
 - prefer producer ZIP/GeoPackage distributions through `static_http`/`html_assets`;
 - use `arcgis_feature_service` or `ogc_api_features` when those are the actual producer services;
+- use `easychart_html` where a public APA/REA page explicitly embeds Drupal Easychart/Highcharts
+  configuration and `setData(...)` payloads in the producer HTML;
 - do not treat WMS imagery as equivalent to vector/source observations.
+
+For REA indicator pages that use Drupal Easychart, `easychart_html` preserves the complete HTML
+as the native object and extracts only the explicitly embedded chart configuration/data. It does
+not run producer JavaScript, infer AJAX endpoints or treat a rendered chart payload as evidence
+of an upstream canonical statistical table.
 
 ## Generic bounded mechanisms
 
