@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F86",
+  "request_id": "MN-G51-F86-0010785-20260922T1712PT",
+  "requested_by": "EU-transp-weekly/Mobilidade-Norte-Orchestrator",
+  "reason": "Generation-51 bounded targeted acquisition of the exact INE 0010785 native body after source identity/grain were resolved and the prior bridge attempt failed before runner assignment; post-PR2 public runner/private-sink route is now proven operational.",
+  "targeted_gap_authority_path": "statistics/recovery-20260920/simple-runtime/team-missions.json",
+  "targeted_gap_authority_commit": "9dab22286b17e84b9692068017264bdd43f6cb9f",
+  "canonical_private_branch": "mobilidade-norte-recovery-20260919",
+  "new_source_set": false,
+  "rights_or_publication_promotion": false
+}
