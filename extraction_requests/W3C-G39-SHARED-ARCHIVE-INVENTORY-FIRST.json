@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "request_id": "w3c-g39-shared-archive-inventory-r6-20260922T0102PT",
+  "mission_generation": 39,
+  "worker": "W3C",
+  "package": "W3C_SHARED_ARCHIVE_INVENTORY_FIRST",
+  "execution_revision": 6,
+  "release_tag": "source-rhomolo-mm-2024-f36c666af69512fe897a",
+  "archive_asset_id": 565876530,
+  "archive_sha256": "60d6e818aa81c1e710a6b41953e68fee6f50abe494e7363f8f175f7b8e568084",
+  "source_set_ids": ["F162", "F163", "F164", "F165", "F149", "F152", "F153", "F168"],
+  "operation": "ARCHIVE_INVENTORY_FIRST",
+  "producer_reacquisition": false,
+  "rights_adjudication": false,
+  "numeric_rows_admitted": false
+}
