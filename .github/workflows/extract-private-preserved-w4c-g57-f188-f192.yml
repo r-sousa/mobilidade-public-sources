@@ -23,5 +23,5 @@ jobs:
       MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Verify exact private Release bytes and persist W4C source-native descendants
-        run: python scripts/extract_private_preserved_w4c_g57_f188_f192.py
+      - name: Verify exact private Release bytes and atomically persist W4C source-native descendants
+        run: python scripts/extract_private_preserved_w4c_g57_f188_f192_v2.py
