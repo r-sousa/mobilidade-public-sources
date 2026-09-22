@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-09-21",
+  "generated_at": "2026-09-22",
   "purpose": "Metadata-only acknowledgement of canonical preserved Releases and middle-tier evidence in the private Mobilidade Norte control plane.",
   "authority": {
     "canonical_repository": "r-sousa/EU-transp-weekly",
@@ -15,7 +15,7 @@
   ],
   "counts": {
     "PUBLIC_RECOVERED": 13,
-    "PRIVATE_RELEASE_PRESENT": 97,
+    "PRIVATE_RELEASE_PRESENT": 98,
     "NO_PRESERVED_DATA_ACKNOWLEDGED": 26,
     "REFERENCE_ONLY": 4,
     "MIDDLE_TIER_PRESENT": 38,
@@ -2792,6 +2792,22 @@
       "consumer_overlay_count": 0,
       "private_locator": {
         "container": "source-rhomolo-2024-release2-869769b3829dd3017824"
+      },
+      "canonical_authority": "r-sousa/EU-transp-weekly"
+    },
+    {
+      "source_set_id": "F187",
+      "title": "IMT — Relatórios de Tráfego na Rede Nacional de Autoestradas",
+      "theme": "01 Roads and traffic",
+      "audit_status": "PRIVATE_BYTES_PRESERVED_PUBLIC_RUNNER_EXTRACTION_COMPLETE",
+      "public_reuse_status": "Not newly assessed; preserve source-specific restrictions.",
+      "preservation_state": "PRIVATE_RELEASE_PRESENT",
+      "default_action": "READ_PRIVATE_RELEASE_FIRST",
+      "release_count": 1,
+      "runtime_overlay_count": 11,
+      "consumer_overlay_count": 0,
+      "private_locator": {
+        "container": "mn-src-f187-43652d12e479f222ab93"
       },
       "canonical_authority": "r-sousa/EU-transp-weekly"
     }
