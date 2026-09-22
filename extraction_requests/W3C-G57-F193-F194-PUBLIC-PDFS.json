@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "mission_generation": 57,
+  "worker": "W3C",
+  "scope": "F193_F194_PUBLIC_AGGREGATE_DISSEMINATION_EXACT_BYTE_INGRESS",
+  "producer_reacquisition": false,
+  "controlled_microdata_acquisition": false,
+  "execution_revision": 1,
+  "sources": [
+    {
+      "source_set_id": "F193",
+      "fingerprint": "6d26bedca8b9a51990be19393658d079bb4a0b5ebea52a357b1e9916224b3235",
+      "release_tag": "mn-src-f193-6d26bedca8b9a51990be",
+      "asset_id": 582275737,
+      "asset_name": "TMP_RC_2025__TMP_RC25_Final_web-2.pdf",
+      "bytes": 10758684,
+      "sha256": "2f0d2226fa4d395772ca5e7049b8e914aac582b2887de47a02083857d0c3e740"
+    },
+    {
+      "source_set_id": "F194",
+      "fingerprint": "b2e1716d86fe3f65ce8d53b91962248b7a42054414b874639be4a78c06aa4447",
+      "release_tag": "mn-src-f194-b2e1716d86fe3f65ce8d",
+      "asset_id": 582263795,
+      "asset_name": "IMOB2017_DEFINITIVE_PUBLICATION__attachfileu.jsp",
+      "bytes": 59592428,
+      "sha256": "7ebd1743bc10ec3e6bda90c727a57262850c501d0ce50106c87e1a1519bb26fe"
+    }
+  ]
+}
