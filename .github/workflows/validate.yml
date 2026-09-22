@@ -7,6 +7,8 @@ on:
       - 'src/**'
       - 'schema/**'
       - 'source_specs/**'
+      - 'preserved_state/**'
+      - 'tests/**'
       - 'requirements.txt'
       - '.github/workflows/**'
   pull_request:
@@ -14,6 +16,8 @@ on:
       - 'src/**'
       - 'schema/**'
       - 'source_specs/**'
+      - 'preserved_state/**'
+      - 'tests/**'
       - 'requirements.txt'
       - '.github/workflows/**'
 
@@ -55,6 +59,14 @@ jobs:
           if not ids:
               raise SystemExit("No source specs")
           PY
+      - name: Check public-plane quality invariants
+        run: |
+          python -m mn_public_acquisition.quality_report \
+            --check \
+            --json-out "$RUNNER_TEMP/public-quality.json" \
+            --markdown-out "$RUNNER_TEMP/public-quality.md"
+          cat "$RUNNER_TEMP/public-quality.md" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Security scan for forbidden credential names/values
         shell: bash
         run: |

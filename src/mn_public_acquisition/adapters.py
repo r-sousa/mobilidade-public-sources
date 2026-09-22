@@ -1,11 +1,13 @@
 from __future__ import annotations
 import datetime as dt
+import csv
 import hashlib
 import json
 import re
 import time
 import urllib.parse
 import zipfile
+import xml.etree.ElementTree as ET
 import ssl
 from html.parser import HTMLParser
 from pathlib import Path
@@ -170,6 +172,55 @@ def validate_gtfs(path: Path) -> None:
     missing = sorted(required - names)
     if missing:
         raise ValueError(f"GTFS archive missing required files: {missing}")
+
+
+def validate_ods(path: Path) -> None:
+    with zipfile.ZipFile(path) as z:
+        names = set(z.namelist())
+        if "mimetype" not in names or "content.xml" not in names:
+            raise ValueError(f"{path.name} is not a valid ODS package")
+        mimetype = z.read("mimetype").decode("ascii", errors="ignore").strip()
+        if mimetype != "application/vnd.oasis.opendocument.spreadsheet":
+            raise ValueError(f"{path.name} has unexpected ODS mimetype {mimetype!r}")
+
+
+def validate_xls(path: Path) -> None:
+    head = path.read_bytes()[:8]
+    if head != bytes.fromhex("D0CF11E0A1B11AE1"):
+        raise ValueError(f"{path.name} is not a legacy OLE/XLS workbook")
+
+
+def validate_avro_container(path: Path) -> None:
+    if path.read_bytes()[:4] != b"Obj\x01":
+        raise ValueError(f"{path.name} is not an Avro object container")
+
+
+def validate_xml(path: Path) -> None:
+    try:
+        ET.fromstring(path.read_bytes())
+    except ET.ParseError as e:
+        raise ValueError(f"{path.name} is not well-formed XML") from e
+
+
+def validate_xml_zip(path: Path) -> None:
+    with zipfile.ZipFile(path) as z:
+        xml_names = [
+            name for name in z.namelist()
+            if not name.endswith("/") and name.lower().endswith(".xml")
+        ]
+        if not xml_names:
+            raise ValueError(f"{path.name} contains no XML members")
+        parsed = 0
+        for name in xml_names:
+            try:
+                ET.fromstring(z.read(name))
+                parsed += 1
+            except ET.ParseError as e:
+                raise ValueError(
+                    f"{path.name} contains malformed XML member {name}"
+                ) from e
+        if parsed <= 0:
+            raise ValueError(f"{path.name} contains no parseable XML members")
 
 
 def eurostat(spec: dict, work: Path) -> dict:
@@ -411,6 +462,16 @@ def static_http(spec: dict, work: Path) -> dict:
 
         if fmt == "XLSX":
             validate_xlsx(p)
+        elif fmt == "XLS":
+            validate_xls(p)
+        elif fmt == "ODS":
+            validate_ods(p)
+        elif fmt == "AVRO":
+            validate_avro_container(p)
+        elif fmt == "XML":
+            validate_xml(p)
+        elif fmt in {"XML_ZIP", "NETEX_ZIP", "DATEX2_ZIP"}:
+            validate_xml_zip(p)
         elif fmt == "JSON":
             json.loads(p.read_text(encoding="utf-8-sig"))
         elif fmt in {"HTML", "HTM"}:
@@ -602,6 +663,46 @@ def opendatasoft(spec: dict, work: Path) -> dict:
 
 
 
+class _TableCollector(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.tables = []
+        self._table = None
+        self._row = None
+        self._cell = None
+        self._cell_parts = []
+
+    def handle_starttag(self, tag, attrs):
+        t = tag.lower()
+        if t == "table":
+            self._table = []
+        elif t == "tr" and self._table is not None:
+            self._row = []
+        elif t in {"td", "th"} and self._row is not None:
+            self._cell = {"kind": t, "text": ""}
+            self._cell_parts = []
+
+    def handle_data(self, data):
+        if self._cell is not None:
+            self._cell_parts.append(data)
+
+    def handle_endtag(self, tag):
+        t = tag.lower()
+        if t in {"td", "th"} and self._cell is not None:
+            self._cell["text"] = " ".join(" ".join(self._cell_parts).split())
+            self._row.append(self._cell)
+            self._cell = None
+            self._cell_parts = []
+        elif t == "tr" and self._row is not None:
+            if any(cell.get("text") for cell in self._row):
+                self._table.append(self._row)
+            self._row = None
+        elif t == "table" and self._table is not None:
+            if self._table:
+                self.tables.append(self._table)
+            self._table = None
+
+
 class _LinkCollector(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -661,7 +762,7 @@ def html_assets(spec: dict, work: Path) -> dict:
         x.lower() if x.startswith(".") else "." + x.lower()
         for x in pms.get(
             "allowed_extensions",
-            ["pdf", "xls", "xlsx", "csv", "zip", "json", "geojson"]
+            ["pdf", "xls", "xlsx", "ods", "csv", "zip", "json", "geojson", "gpkg", "gml", "xml", "avro"]
         )
     }
     allowed_hosts = [x.lower() for x in pms.get("allowed_host_suffixes", [])]
@@ -711,8 +812,14 @@ def html_assets(spec: dict, work: Path) -> dict:
         head = p.read_bytes()[:16]
         if "pdf" in ctype.lower() and not head.startswith(b"%PDF"):
             raise RuntimeError(f"Discovered PDF asset failed signature check: {url}")
-        if "spreadsheet" in ctype.lower() and head.startswith(b"PK"):
+        if ext.lower() == ".xlsx":
             validate_xlsx(p)
+        elif ext.lower() == ".xls":
+            validate_xls(p)
+        elif ext.lower() == ".ods":
+            validate_ods(p)
+        elif ext.lower() == ".avro":
+            validate_avro_container(p)
         rec["format"] = ctype or (ext.lstrip(".").upper() if ext else "BINARY")
         rec["link_text"] = label
         rec["role"] = "native"
@@ -839,6 +946,948 @@ def arcgis_feature_service(spec: dict, work: Path) -> dict:
     }
 
 
+def _json_path(obj, path: str | None):
+    if not path:
+        return obj
+    cur = obj
+    for part in str(path).split("."):
+        if isinstance(cur, dict) and part in cur:
+            cur = cur[part]
+        else:
+            raise RuntimeError(f"JSON path {path!r} not found at {part!r}")
+    return cur
+
+
+def rest_json(spec: dict, work: Path) -> dict:
+    """Acquire one or more bounded public REST/JSON endpoints without inventing pagination."""
+    pms = spec["parameters"]
+    declared = pms.get("requests")
+    if declared is None:
+        declared = [{
+            "key": pms.get("key", "response"),
+            "url": pms["url"],
+            "query": pms.get("query", {}),
+            "records_path": pms.get("records_path"),
+            "min_records": pms.get("min_records", 0),
+        }]
+    if not isinstance(declared, list) or not declared:
+        raise RuntimeError("rest_json requires at least one declared request")
+
+    s = session(system_ca=bool(pms.get("system_ca", False)))
+    assets = []
+    for i, item in enumerate(declared, 1):
+        url = str(item["url"])
+        key = re.sub(r"[^A-Za-z0-9._-]+", "_", str(item.get("key") or f"response-{i}"))
+        r = s.get(url, params=item.get("query") or {}, timeout=180, allow_redirects=True)
+        r.raise_for_status()
+        raw = r.content
+        obj = r.json()
+
+        expected = str(item.get("expected_top_level") or "").lower()
+        if expected == "object" and not isinstance(obj, dict):
+            raise RuntimeError(f"REST JSON {key} expected an object")
+        if expected == "array" and not isinstance(obj, list):
+            raise RuntimeError(f"REST JSON {key} expected an array")
+
+        records_path = item.get("records_path")
+        target = _json_path(obj, records_path) if records_path else obj
+        min_records = int(item.get("min_records", 0))
+        if min_records:
+            if not isinstance(target, (list, dict)):
+                raise RuntimeError(f"REST JSON {key} records target is not countable")
+            if len(target) < min_records:
+                raise RuntimeError(
+                    f"REST JSON {key} returned {len(target)} records below minimum {min_records}"
+                )
+
+        p = work / "payload" / f"{key}.json"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(raw)
+        assets.append({
+            "path": str(p.relative_to(work)),
+            "name": p.name,
+            "sha256": sha256(p),
+            "bytes": p.stat().st_size,
+            "source_url": r.url,
+            "format": "JSON",
+            "role": "native",
+        })
+
+    return {
+        "acquired_at": now(),
+        "assets": assets,
+        "validation_result": "PASS_BOUNDED_REST_JSON",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "Only explicitly declared bounded REST requests are executed. "
+            "No implicit pagination or joining of heterogeneous endpoint responses is performed."
+        ),
+    }
+
+
+def ckan_resource(spec: dict, work: Path) -> dict:
+    """Resolve and preserve arbitrary public CKAN resources, without assuming GTFS."""
+    pms = spec["parameters"]
+    api = str(pms["package_show_url"])
+    s = session(system_ca=bool(pms.get("system_ca", False)))
+
+    r = s.get(api, timeout=180)
+    r.raise_for_status()
+    obj = r.json()
+    if not obj.get("success") or not isinstance(obj.get("result"), dict):
+        raise RuntimeError("CKAN package_show did not return a successful dataset")
+
+    mp = work / "payload" / "ckan-package-show.json"
+    mp.parent.mkdir(parents=True, exist_ok=True)
+    mp.write_bytes(r.content)
+    assets = [{
+        "path": str(mp.relative_to(work)),
+        "name": mp.name,
+        "sha256": sha256(mp),
+        "bytes": mp.stat().st_size,
+        "source_url": r.url,
+        "format": "JSON",
+        "role": "native",
+    }]
+
+    result = obj["result"]
+    resources = result.get("resources") or []
+    name_re = re.compile(str(pms.get("resource_name_regex") or ".*"), re.I)
+    url_re = re.compile(str(pms.get("resource_url_regex") or ".*"), re.I)
+    formats = {str(x).upper() for x in (pms.get("formats") or [])}
+    candidates = []
+    for resource in resources:
+        name = str(resource.get("name") or resource.get("description") or "")
+        url = str(resource.get("url") or "")
+        fmt = str(resource.get("format") or "").upper()
+        if not url or not name_re.search(name) or not url_re.search(url):
+            continue
+        if formats and fmt not in formats:
+            continue
+        candidates.append(resource)
+
+    candidates.sort(
+        key=lambda x: (
+            str(x.get("last_modified") or x.get("created") or ""),
+            str(x.get("name") or ""),
+            str(x.get("url") or ""),
+        ),
+        reverse=True,
+    )
+    if pms.get("latest_only") and candidates:
+        candidates = candidates[:1]
+    max_assets = max(1, int(pms.get("max_assets", 20)))
+    candidates = candidates[:max_assets]
+    if not candidates:
+        raise RuntimeError("No CKAN resource matched the declared selection")
+
+    native_downloads = []
+    for i, resource in enumerate(candidates, 1):
+        url = str(resource["url"])
+        fmt = str(resource.get("format") or Path(urllib.parse.urlparse(url).path).suffix.lstrip(".") or "binary").upper()
+        name = safe_name(url, f"resource-{i:03d}.{fmt.lower()}")
+        p = work / "payload" / name
+        rec = download(s, url, p, work)
+        if fmt == "XLSX":
+            validate_xlsx(p)
+        elif fmt == "XLS":
+            validate_xls(p)
+        elif fmt == "ODS":
+            validate_ods(p)
+        elif fmt == "AVRO":
+            validate_avro_container(p)
+        elif fmt == "JSON":
+            json.loads(p.read_text(encoding="utf-8-sig"))
+        elif fmt in {"CSV", "TSV"}:
+            head = p.read_bytes()[:500].lower()
+            if b"<html" in head or b"<!doctype" in head:
+                raise RuntimeError(f"CKAN resource {name} returned HTML")
+        rec.update({"format": fmt, "role": "native"})
+        assets.append(rec)
+        native_downloads.append(rec)
+
+    recomposed = series_manifest(
+        work,
+        native_downloads,
+        series_key=str(pms.get("series_key") or spec["product_key"]),
+    )
+    return {
+        "acquired_at": now(),
+        "assets": [*assets, *recomposed],
+        "validation_result": "PASS_CKAN_RESOURCE_SERIES",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "CKAN metadata and matched producer resources are preserved natively. "
+            "Multiple resources are represented as an ordered series manifest and are not row-joined."
+        ),
+    }
+
+
+def ogc_api_features(spec: dict, work: Path) -> dict:
+    """Acquire OGC API - Features collection pages by following producer next links."""
+    pms = spec["parameters"]
+    collection_url = str(pms["collection_url"]).rstrip("/")
+    items_url = str(pms.get("items_url") or (collection_url + "/items"))
+    s = session(system_ca=bool(pms.get("system_ca", False)))
+
+    mr = s.get(collection_url, timeout=180, allow_redirects=True)
+    mr.raise_for_status()
+    meta = mr.json()
+    if not isinstance(meta, dict):
+        raise RuntimeError("OGC collection metadata is not a JSON object")
+    mp = work / "payload" / "collection-metadata.json"
+    mp.parent.mkdir(parents=True, exist_ok=True)
+    mp.write_bytes(mr.content)
+    assets = [{
+        "path": str(mp.relative_to(work)),
+        "name": mp.name,
+        "sha256": sha256(mp),
+        "bytes": mp.stat().st_size,
+        "source_url": mr.url,
+        "format": "JSON",
+        "role": "native",
+    }]
+
+    params = dict(pms.get("query") or {})
+    params.setdefault("limit", min(10000, int(pms.get("page_size", 1000))))
+    next_url = items_url
+    next_params = params
+    page = 0
+    observed = 0
+    matched = None
+    seen_urls = set()
+    native_pages = []
+    max_pages = max(1, int(pms.get("max_pages", 10000)))
+
+    while next_url:
+        page += 1
+        if page > max_pages:
+            raise RuntimeError("OGC API pagination exceeded declared max_pages")
+        r = s.get(next_url, params=next_params, timeout=TIMEOUT, allow_redirects=True)
+        r.raise_for_status()
+        canonical_url = r.url
+        if canonical_url in seen_urls:
+            raise RuntimeError("OGC API pagination loop detected")
+        seen_urls.add(canonical_url)
+
+        obj = r.json()
+        if obj.get("type") != "FeatureCollection" or not isinstance(obj.get("features"), list):
+            raise RuntimeError("OGC API items response is not a GeoJSON FeatureCollection")
+        if matched is None and obj.get("numberMatched") is not None:
+            matched = int(obj["numberMatched"])
+
+        pp = work / "payload" / f"features-{page:05d}.geojson"
+        pp.write_bytes(r.content)
+        rec = {
+            "path": str(pp.relative_to(work)),
+            "name": pp.name,
+            "sha256": sha256(pp),
+            "bytes": pp.stat().st_size,
+            "source_url": canonical_url,
+            "format": "GeoJSON",
+            "role": "native",
+        }
+        assets.append(rec)
+        native_pages.append(rec)
+        observed += len(obj["features"])
+
+        next_link = None
+        for link in obj.get("links") or []:
+            if str(link.get("rel") or "").lower() == "next" and link.get("href"):
+                next_link = urllib.parse.urljoin(canonical_url, str(link["href"]))
+                break
+        next_url = next_link
+        next_params = None
+
+    if not native_pages:
+        raise RuntimeError("OGC API returned no feature pages")
+    if matched is not None and observed != matched:
+        raise RuntimeError(f"OGC API completeness mismatch: observed {observed}, matched {matched}")
+
+    recomposed = compose_geojson_pages(work, native_pages)
+    return {
+        "acquired_at": now(),
+        "assets": [*assets, *recomposed],
+        "validation_result": "PASS_OGC_API_FEATURES_RECOMPOSED",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "Collection metadata and every producer GeoJSON page are preserved natively. "
+            "Pagination follows producer rel=next links; recomposition does not simplify geometries."
+        ),
+    }
+
+
+def atom_feed(spec: dict, work: Path) -> dict:
+    """Acquire downloadable assets exposed by an Atom feed."""
+    pms = spec["parameters"]
+    feed_url = str(pms["feed_url"])
+    s = session(system_ca=bool(pms.get("system_ca", False)))
+    r = s.get(feed_url, timeout=180, allow_redirects=True)
+    r.raise_for_status()
+    raw = r.content
+    try:
+        root = ET.fromstring(raw)
+    except ET.ParseError as e:
+        raise RuntimeError("ATOM feed is not valid XML") from e
+
+    fp = work / "payload" / "feed.xml"
+    fp.parent.mkdir(parents=True, exist_ok=True)
+    fp.write_bytes(raw)
+    feed_rec = {
+        "path": str(fp.relative_to(work)),
+        "name": fp.name,
+        "sha256": sha256(fp),
+        "bytes": fp.stat().st_size,
+        "source_url": r.url,
+        "format": "ATOM/XML",
+        "role": "native",
+    }
+
+    href_re = re.compile(str(pms.get("include_href_regex") or ".*"), re.I)
+    allowed_exts = {
+        x.lower() if str(x).startswith(".") else "." + str(x).lower()
+        for x in pms.get("allowed_extensions", ["zip", "gpkg", "shp", "csv", "json", "geojson", "tif", "tiff"])
+    }
+    links = []
+    seen = set()
+    for elem in root.iter():
+        if elem.tag.split("}")[-1].lower() != "link":
+            continue
+        href = str(elem.attrib.get("href") or "").strip()
+        if not href:
+            continue
+        url = urllib.parse.urljoin(r.url, href)
+        parsed = urllib.parse.urlparse(url)
+        ext = Path(parsed.path).suffix.lower()
+        if not href_re.search(url):
+            continue
+        if allowed_exts and ext not in allowed_exts:
+            continue
+        if url in seen:
+            continue
+        seen.add(url)
+        links.append(url)
+
+    max_assets = max(1, int(pms.get("max_assets", 20)))
+    links = links[:max_assets]
+    if not links:
+        raise RuntimeError("ATOM feed exposed no downloadable asset matching declared rules")
+
+    assets = [feed_rec]
+    downloads = []
+    for i, url in enumerate(links, 1):
+        ext = Path(urllib.parse.urlparse(url).path).suffix
+        name = safe_name(url, f"atom-asset-{i:03d}{ext or '.bin'}")
+        p = work / "payload" / name
+        rec = download(s, url, p, work)
+        rec.update({
+            "format": (ext.lstrip(".").upper() if ext else "BINARY"),
+            "role": "native",
+        })
+        assets.append(rec)
+        downloads.append(rec)
+
+    recomposed = series_manifest(
+        work,
+        downloads,
+        series_key=str(pms.get("series_key") or spec["product_key"]),
+    )
+    return {
+        "acquired_at": now(),
+        "assets": [*assets, *recomposed],
+        "validation_result": "PASS_ATOM_DOWNLOAD_SERIES",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "The producer Atom feed and selected linked distributions are preserved natively. "
+            "The composition output is an ordered series manifest only."
+        ),
+    }
+
+
+def bpstat_jsonstat(spec: dict, work: Path) -> dict:
+    """Acquire bounded BPstat series from the documented public JSON-stat API."""
+    pms = spec["parameters"]
+    domain_id = str(pms["domain_id"])
+    dataset_id = str(pms["dataset_id"])
+    series_ids = pms.get("series_ids")
+    if isinstance(series_ids, (str, int)):
+        series_ids = [str(series_ids)]
+    else:
+        series_ids = [str(x) for x in (series_ids or [])]
+    if not series_ids:
+        raise RuntimeError("bpstat_jsonstat requires one or more explicit series_ids")
+
+    lang = str(pms.get("lang", "PT")).upper()
+    base = (
+        "https://bpstat.bportugal.pt/data/v1/domains/"
+        + urllib.parse.quote(domain_id)
+        + "/datasets/"
+        + urllib.parse.quote(dataset_id)
+    )
+    s = session()
+    assets = []
+    for series_id in series_ids:
+        r = s.get(
+            base,
+            params={"lang": lang, "series_ids": series_id},
+            timeout=180,
+            allow_redirects=True,
+        )
+        r.raise_for_status()
+        obj = r.json()
+        if not isinstance(obj, dict) or "value" not in obj:
+            raise RuntimeError(f"BPstat series {series_id} is not a JSON-stat response")
+        if not isinstance(obj.get("value"), (list, dict)):
+            raise RuntimeError(f"BPstat series {series_id} has invalid JSON-stat values")
+
+        p = work / "payload" / f"bpstat-{domain_id}-{dataset_id}-{series_id}.json"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(r.content)
+        assets.append({
+            "path": str(p.relative_to(work)),
+            "name": p.name,
+            "sha256": sha256(p),
+            "bytes": p.stat().st_size,
+            "source_url": r.url,
+            "format": "JSON-stat/JSON",
+            "role": "native",
+        })
+
+    return {
+        "acquired_at": now(),
+        "assets": assets,
+        "validation_result": "PASS_BPSTAT_BOUNDED_JSONSTAT",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "Only explicitly identified BPstat series are acquired. "
+            "Producer JSON-stat is preserved without consumer normalization or cross-series joining."
+        ),
+    }
+
+
+def wfs(spec: dict, work: Path) -> dict:
+    """Acquire a bounded WFS feature type, preserving capabilities and producer pages."""
+    pms = spec["parameters"]
+    service_url = str(pms["service_url"])
+    version = str(pms.get("version", "2.0.0"))
+    type_name = str(pms["type_name"])
+    output_format = str(pms.get("output_format", "application/json"))
+    page_size = max(1, int(pms.get("page_size", 1000)))
+    max_pages = max(1, int(pms.get("max_pages", 10000)))
+    s = session(system_ca=bool(pms.get("system_ca", False)))
+
+    cap_params = {"SERVICE": "WFS", "REQUEST": "GetCapabilities", "VERSION": version}
+    cap = s.get(service_url, params=cap_params, timeout=180, allow_redirects=True)
+    cap.raise_for_status()
+    try:
+        cap_root = ET.fromstring(cap.content)
+    except ET.ParseError as e:
+        raise RuntimeError("WFS GetCapabilities is not valid XML") from e
+
+    feature_names = {
+        (el.text or "").strip()
+        for el in cap_root.iter()
+        if el.tag.split("}")[-1] == "Name" and (el.text or "").strip()
+    }
+    if feature_names and type_name not in feature_names:
+        local = type_name.split(":")[-1]
+        if not any(x.split(":")[-1] == local for x in feature_names):
+            raise RuntimeError(f"WFS feature type {type_name!r} absent from capabilities")
+
+    cp = work / "payload" / "wfs-capabilities.xml"
+    cp.parent.mkdir(parents=True, exist_ok=True)
+    cp.write_bytes(cap.content)
+    assets = [{
+        "path": str(cp.relative_to(work)),
+        "name": cp.name,
+        "sha256": sha256(cp),
+        "bytes": cp.stat().st_size,
+        "source_url": cap.url,
+        "format": "WFS-Capabilities/XML",
+        "role": "native",
+    }]
+
+    hits_params = {
+        "SERVICE": "WFS",
+        "REQUEST": "GetFeature",
+        "VERSION": version,
+        "TYPENAMES": type_name,
+        "RESULTTYPE": "hits",
+    }
+    hits = s.get(service_url, params=hits_params, timeout=180, allow_redirects=True)
+    hits.raise_for_status()
+    total = None
+    try:
+        hits_root = ET.fromstring(hits.content)
+        raw_total = (
+            hits_root.attrib.get("numberMatched")
+            or hits_root.attrib.get("numberOfFeatures")
+        )
+        if raw_total not in (None, "unknown"):
+            total = int(raw_total)
+    except ET.ParseError:
+        pass
+
+    native_pages = []
+    observed = 0
+    start = 0
+    page = 0
+    use_json = "json" in output_format.lower()
+
+    while total is None or start < total:
+        page += 1
+        if page > max_pages:
+            raise RuntimeError("WFS pagination exceeded declared max_pages")
+        params = {
+            "SERVICE": "WFS",
+            "REQUEST": "GetFeature",
+            "VERSION": version,
+            "TYPENAMES": type_name,
+            "OUTPUTFORMAT": output_format,
+            "COUNT": page_size,
+            "STARTINDEX": start,
+        }
+        params.update(pms.get("query") or {})
+        r = s.get(service_url, params=params, timeout=TIMEOUT, allow_redirects=True)
+        r.raise_for_status()
+
+        if use_json:
+            obj = r.json()
+            if obj.get("type") != "FeatureCollection" or not isinstance(obj.get("features"), list):
+                raise RuntimeError("WFS JSON response is not a GeoJSON FeatureCollection")
+            count = len(obj["features"])
+            if total is None and obj.get("numberMatched") not in (None, "unknown"):
+                total = int(obj["numberMatched"])
+            suffix = "geojson"
+            fmt = "GeoJSON"
+        else:
+            try:
+                root = ET.fromstring(r.content)
+            except ET.ParseError as e:
+                raise RuntimeError("WFS feature response is neither valid JSON nor XML") from e
+            count = sum(
+                1 for el in root.iter()
+                if el.tag.split("}")[-1] in {"member", "featureMember"}
+            )
+            raw_total = root.attrib.get("numberMatched") or root.attrib.get("numberOfFeatures")
+            if total is None and raw_total not in (None, "unknown"):
+                total = int(raw_total)
+            suffix = "gml"
+            fmt = "GML/XML"
+
+        if count <= 0:
+            if total in (0, None) and page == 1:
+                raise RuntimeError("WFS feature type returned zero features")
+            break
+
+        pp = work / "payload" / f"wfs-features-{start:07d}.{suffix}"
+        pp.write_bytes(r.content)
+        rec = {
+            "path": str(pp.relative_to(work)),
+            "name": pp.name,
+            "sha256": sha256(pp),
+            "bytes": pp.stat().st_size,
+            "source_url": r.url,
+            "format": fmt,
+            "role": "native",
+        }
+        assets.append(rec)
+        native_pages.append(rec)
+        observed += count
+        start += count
+
+        if count < page_size and total is None:
+            total = observed
+
+    if total is not None and observed != total:
+        raise RuntimeError(f"WFS completeness mismatch: observed {observed}, expected {total}")
+
+    recomposed = compose_geojson_pages(work, native_pages) if use_json else series_manifest(
+        work, native_pages, series_key=str(pms.get("series_key") or spec["product_key"])
+    )
+    return {
+        "acquired_at": now(),
+        "assets": [*assets, *recomposed],
+        "validation_result": (
+            "PASS_WFS_GEOJSON_RECOMPOSED"
+            if use_json else "PASS_WFS_GML_SERIES"
+        ),
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "WFS capabilities and every bounded producer feature page are preserved natively. "
+            "GeoJSON pages are deterministically recomposed; GML pages remain an ordered series."
+        ),
+    }
+
+
+def sdmx_rest(spec: dict, work: Path) -> dict:
+    """Acquire an explicitly bounded SDMX REST query and optional structure response."""
+    pms = spec["parameters"]
+    data_url = str(pms["data_url"])
+    data_params = pms.get("query") or {}
+    fmt = str(pms.get("format", "json")).lower()
+    if fmt not in {"json", "csv", "xml"}:
+        raise RuntimeError("sdmx_rest format must be json, csv or xml")
+
+    accept = {
+        "json": str(pms.get("accept") or "application/vnd.sdmx.data+json;version=2.0.0"),
+        "csv": str(pms.get("accept") or "text/csv"),
+        "xml": str(pms.get("accept") or "application/vnd.sdmx.genericdata+xml;version=2.1"),
+    }[fmt]
+    s = session()
+    headers = {"Accept": accept}
+
+    assets = []
+    structure_url = pms.get("structure_url")
+    if structure_url:
+        sr = s.get(
+            str(structure_url),
+            params=pms.get("structure_query") or {},
+            headers={"Accept": str(pms.get("structure_accept") or "application/vnd.sdmx.structure+json;version=2.0.0")},
+            timeout=180,
+            allow_redirects=True,
+        )
+        sr.raise_for_status()
+        sp = work / "payload" / "sdmx-structure.json"
+        sp.parent.mkdir(parents=True, exist_ok=True)
+        sp.write_bytes(sr.content)
+        if "json" in str(sr.headers.get("content-type") or "").lower():
+            json.loads(sr.content.decode("utf-8-sig"))
+        assets.append({
+            "path": str(sp.relative_to(work)),
+            "name": sp.name,
+            "sha256": sha256(sp),
+            "bytes": sp.stat().st_size,
+            "source_url": sr.url,
+            "format": "SDMX-Structure",
+            "role": "native",
+        })
+
+    r = s.get(
+        data_url,
+        params=data_params,
+        headers=headers,
+        timeout=TIMEOUT,
+        allow_redirects=True,
+    )
+    r.raise_for_status()
+    suffix = {"json": "json", "csv": "csv", "xml": "xml"}[fmt]
+    dp = work / "payload" / f"sdmx-data.{suffix}"
+    dp.parent.mkdir(parents=True, exist_ok=True)
+    dp.write_bytes(r.content)
+
+    if fmt == "json":
+        obj = r.json()
+        valid = (
+            isinstance(obj, dict)
+            and (
+                "dataSets" in obj
+                or "value" in obj
+                or "data" in obj
+                or "structure" in obj
+            )
+        )
+        if not valid:
+            raise RuntimeError("SDMX JSON response does not expose a recognized data container")
+    elif fmt == "csv":
+        head = dp.read_bytes()[:1000]
+        if b"<html" in head.lower() or b"<!doctype" in head.lower():
+            raise RuntimeError("SDMX CSV route returned HTML")
+        if b"," not in head and b";" not in head and b"\t" not in head:
+            raise RuntimeError("SDMX CSV response has no recognizable delimiter")
+    else:
+        try:
+            ET.fromstring(r.content)
+        except ET.ParseError as e:
+            raise RuntimeError("SDMX XML response is not valid XML") from e
+
+    assets.append({
+        "path": str(dp.relative_to(work)),
+        "name": dp.name,
+        "sha256": sha256(dp),
+        "bytes": dp.stat().st_size,
+        "source_url": r.url,
+        "format": "SDMX-" + fmt.upper(),
+        "role": "native",
+    })
+    return {
+        "acquired_at": now(),
+        "assets": assets,
+        "validation_result": "PASS_SDMX_BOUNDED_NATIVE_RESPONSE",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "Only the explicitly declared bounded SDMX query is acquired. "
+            "The adapter does not infer or enumerate unrestricted datasets."
+        ),
+    }
+
+
+def sparql_json(spec: dict, work: Path) -> dict:
+    """Acquire a bounded SPARQL SELECT/ASK result as standard SPARQL JSON."""
+    pms = spec["parameters"]
+    endpoint = str(pms["endpoint"])
+    query = str(pms["query"]).strip()
+    if not query:
+        raise RuntimeError("sparql_json requires a query")
+    forbidden = re.compile(r"\b(INSERT|DELETE|LOAD|CLEAR|CREATE|DROP|MOVE|COPY|ADD|WITH)\b", re.I)
+    if forbidden.search(query):
+        raise RuntimeError("SPARQL update operation is forbidden")
+    upper = query.lstrip().upper()
+    if not (upper.startswith("SELECT") or upper.startswith("ASK") or upper.startswith("PREFIX") or upper.startswith("BASE")):
+        raise RuntimeError("sparql_json supports read-only SELECT/ASK queries only")
+
+    s = session()
+    method = str(pms.get("method", "POST")).upper()
+    headers = {"Accept": "application/sparql-results+json"}
+    if method == "GET":
+        r = s.get(endpoint, params={"query": query}, headers=headers, timeout=TIMEOUT, allow_redirects=True)
+    elif method == "POST":
+        r = s.post(
+            endpoint,
+            data={"query": query},
+            headers=headers,
+            timeout=TIMEOUT,
+            allow_redirects=True,
+        )
+    else:
+        raise RuntimeError("sparql_json method must be GET or POST")
+    r.raise_for_status()
+    obj = r.json()
+    if not isinstance(obj, dict):
+        raise RuntimeError("SPARQL response is not a JSON object")
+    if "boolean" not in obj:
+        bindings = ((obj.get("results") or {}).get("bindings"))
+        if not isinstance(bindings, list):
+            raise RuntimeError("SPARQL JSON has neither boolean nor results.bindings")
+        max_rows = int(pms.get("max_rows", 100000))
+        if len(bindings) > max_rows:
+            raise RuntimeError(
+                f"SPARQL result {len(bindings)} exceeds declared max_rows {max_rows}"
+            )
+
+    p = work / "payload" / "sparql-results.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(r.content)
+    return {
+        "acquired_at": now(),
+        "assets": [{
+            "path": str(p.relative_to(work)),
+            "name": p.name,
+            "sha256": sha256(p),
+            "bytes": p.stat().st_size,
+            "source_url": r.url,
+            "format": "SPARQL-Results/JSON",
+            "role": "native",
+        }],
+        "validation_result": "PASS_SPARQL_JSON_BOUNDED",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "Read-only SELECT/ASK result preservation only. "
+            "Query design and semantic joining remain product-specific."
+        ),
+    }
+
+
+def html_table(spec: dict, work: Path) -> dict:
+    """Preserve public HTML table pages and deterministically extract declared tables."""
+    pms = spec["parameters"]
+    urls = pms.get("urls")
+    if urls is None:
+        urls = [pms.get("url") or spec["source"]["landing_url"]]
+    urls = [str(x) for x in urls if x]
+    if not urls:
+        raise RuntimeError("html_table requires at least one URL")
+
+    s = session(system_ca=bool(pms.get("system_ca", False)))
+    assets = []
+    extracted = []
+    required_headers = [
+        str(x).strip().casefold()
+        for x in (pms.get("required_headers") or [])
+    ]
+    min_rows = int(pms.get("min_rows", 1))
+    chosen_index = pms.get("table_index")
+
+    for page_no, url in enumerate(urls, 1):
+        r = s.get(url, timeout=180, allow_redirects=True)
+        r.raise_for_status()
+        raw = r.content
+        text = raw.decode(r.encoding or "utf-8", errors="replace")
+        parser = _TableCollector()
+        parser.feed(text)
+        if not parser.tables:
+            raise RuntimeError(f"HTML page exposed no table: {url}")
+
+        hp = work / "payload" / f"html-table-page-{page_no:03d}.html"
+        hp.parent.mkdir(parents=True, exist_ok=True)
+        hp.write_bytes(raw)
+        assets.append({
+            "path": str(hp.relative_to(work)),
+            "name": hp.name,
+            "sha256": sha256(hp),
+            "bytes": hp.stat().st_size,
+            "source_url": r.url,
+            "format": "HTML",
+            "role": "native",
+        })
+
+        candidates = parser.tables
+        if chosen_index is not None:
+            idx = int(chosen_index)
+            if idx < 0 or idx >= len(candidates):
+                raise RuntimeError(
+                    f"Declared table_index {idx} outside {len(candidates)} tables"
+                )
+            candidates = [candidates[idx]]
+
+        matched = []
+        for table in candidates:
+            header_cells = table[0] if table else []
+            headers = [cell.get("text", "") for cell in header_cells]
+            folded = [x.strip().casefold() for x in headers]
+            if required_headers and not all(
+                any(req in header for header in folded)
+                for req in required_headers
+            ):
+                continue
+            body_rows = table[1:] if any(
+                cell.get("kind") == "th" for cell in header_cells
+            ) else table
+            if len(body_rows) < min_rows:
+                continue
+            matched.append({
+                "source_url": r.url,
+                "headers": headers,
+                "rows": [
+                    [cell.get("text", "") for cell in row]
+                    for row in body_rows
+                ],
+            })
+
+        if not matched:
+            raise RuntimeError(
+                f"No HTML table matched declared header/row rules: {url}"
+            )
+        extracted.extend(matched)
+
+    jp = work / "recomposed" / "tables.json"
+    jp.parent.mkdir(parents=True, exist_ok=True)
+    jp.write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0.0",
+                "table_count": len(extracted),
+                "tables": extracted,
+            },
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        ) + "\n",
+        encoding="utf-8",
+    )
+    derived = [{
+        "path": str(jp.relative_to(work)),
+        "name": jp.name,
+        "sha256": sha256(jp),
+        "bytes": jp.stat().st_size,
+        "source_url": None,
+        "format": "JSON",
+        "role": "recomposed",
+    }]
+    return {
+        "acquired_at": now(),
+        "assets": [*assets, *derived],
+        "validation_result": "PASS_HTML_TABLE_EXTRACTED",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "Raw HTML is the native source object. Extracted tables are deterministic derived "
+            "representations and do not replace the producer page or imply reuse clearance."
+        ),
+    }
+
+
+def rest_xml(spec: dict, work: Path) -> dict:
+    """Acquire one or more bounded public XML endpoints such as DATEX II or NeTEx."""
+    pms = spec["parameters"]
+    declared = pms.get("requests")
+    if declared is None:
+        declared = [{
+            "key": pms.get("key", "response"),
+            "url": pms["url"],
+            "query": pms.get("query", {}),
+            "expected_root": pms.get("expected_root"),
+            "namespace_contains": pms.get("namespace_contains"),
+            "min_bytes": pms.get("min_bytes", 1),
+        }]
+    if not isinstance(declared, list) or not declared:
+        raise RuntimeError("rest_xml requires at least one declared request")
+
+    s = session(system_ca=bool(pms.get("system_ca", False)))
+    assets = []
+    for i, item in enumerate(declared, 1):
+        url = str(item["url"])
+        key = re.sub(
+            r"[^A-Za-z0-9._-]+",
+            "_",
+            str(item.get("key") or f"response-{i}"),
+        )
+        headers = {}
+        if item.get("accept"):
+            headers["Accept"] = str(item["accept"])
+        r = s.get(
+            url,
+            params=item.get("query") or {},
+            headers=headers,
+            timeout=TIMEOUT,
+            allow_redirects=True,
+        )
+        r.raise_for_status()
+        raw = r.content
+        if len(raw) < int(item.get("min_bytes", 1)):
+            raise RuntimeError(f"XML response {key} below declared minimum size")
+        try:
+            root = ET.fromstring(raw)
+        except ET.ParseError as e:
+            raise RuntimeError(f"XML response {key} is not well formed") from e
+
+        local = root.tag.split("}")[-1]
+        expected_root = item.get("expected_root")
+        if expected_root and local.casefold() != str(expected_root).casefold():
+            raise RuntimeError(
+                f"XML response {key} root {local!r} != {expected_root!r}"
+            )
+        namespace_contains = item.get("namespace_contains")
+        if namespace_contains and str(namespace_contains) not in str(root.tag):
+            raise RuntimeError(
+                f"XML response {key} root namespace does not contain "
+                f"{namespace_contains!r}"
+            )
+
+        p = work / "payload" / f"{key}.xml"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(raw)
+        assets.append({
+            "path": str(p.relative_to(work)),
+            "name": p.name,
+            "sha256": sha256(p),
+            "bytes": p.stat().st_size,
+            "source_url": r.url,
+            "format": "XML",
+            "role": "native",
+        })
+
+    return {
+        "acquired_at": now(),
+        "assets": assets,
+        "validation_result": "PASS_BOUNDED_REST_XML",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "Only explicitly declared bounded XML requests are acquired. "
+            "Schema/profile validation remains product-specific; the adapter preserves well-formed native XML."
+        ),
+    }
+
+
 ADAPTERS = {
     "eurostat": eurostat,
     "ine_json": ine_partitioned_acquire,
@@ -849,6 +1898,16 @@ ADAPTERS = {
     "opendatasoft": opendatasoft,
     "html_assets": html_assets,
     "arcgis_feature_service": arcgis_feature_service,
+    "rest_json": rest_json,
+    "ckan_resource": ckan_resource,
+    "ogc_api_features": ogc_api_features,
+    "atom_feed": atom_feed,
+    "bpstat_jsonstat": bpstat_jsonstat,
+    "wfs": wfs,
+    "sdmx_rest": sdmx_rest,
+    "sparql_json": sparql_json,
+    "html_table": html_table,
+    "rest_xml": rest_xml,
 }
 
 
