@@ -1,0 +1,51 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "7a239360598eafaf918de6f1b75590b9b2eb8b77",
+  "acquisition_timestamp": "2026-09-22T21:21:47.560464Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 10758684,
+      "format": "PDF",
+      "name": "TMP_RC_2025__TMP_RC25_Final_web-2.pdf",
+      "role": "native",
+      "sha256": "2f0d2226fa4d395772ca5e7049b8e914aac582b2887de47a02083857d0c3e740",
+      "source_url": "https://andante.pt/wp-content/uploads/2026/08/TMP_RC25_Final_web-2.pdf"
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF",
+  "limitations": "Validations are ticketing events, not passengers/persons/journeys/trips; preserve operator taxonomy and total/intermodal/monomodal labels.",
+  "native_asset_fingerprint": "6d26bedca8b9a51990be19393658d079bb4a0b5ebea52a357b1e9916224b3235",
+  "primary_repair": false,
+  "producer": "TIP / TMP",
+  "product_key": "andante.pt::tip-tmp-relatorios-contas::sia-validacoes-public-aggregates",
+  "raw_native": {
+    "acquisition_scope": "current annual report member first; historical backfill requires later bounded assignment",
+    "classification": "validation-event totals, intermodal/monomodal distinctions and operator-level validation rows",
+    "geography": "AMP / Sistema Intermodal Andante service universe and source-edition operator breakdown"
+  },
+  "repair_authorization": null,
+  "request_id": "MN-PUBLIC-F193-G57-20260922T2200PT-02",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://andante.pt/relatorios-contas/",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2025",
+  "source_set_id": "F193",
+  "source_url": "https://andante.pt/relatorios-contas/",
+  "title": "TIP/TMP — Andante public validation statistics",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
