@@ -1,6 +1,7 @@
 {
   "mission_generation": 57,
   "worker": "W4C",
+  "attempt": 2,
   "purpose": "exact-byte ingress only from receipt-pinned private Release assets; no producer reacquisition",
   "source_sets": ["F188", "F189", "F190", "F191", "F192"],
   "fingerprints": {
