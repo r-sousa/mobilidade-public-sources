@@ -1,6 +1,6 @@
 schema_version: 1.0.0
 source_set_id: F192
-title: QualAr — monitorização da qualidade do ar: tráfego e NO2
+title: "QualAr — monitorização da qualidade do ar: tráfego e NO2"
 producer: APA / QualAr via APA/REA presentation
 product_key: qualar.apambiente.pt::air-quality-monitoring::traffic-no2-validated-stations
 adapter: easychart_html
