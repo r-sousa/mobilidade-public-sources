@@ -1,0 +1,28 @@
+schema_version: 1.0.0
+source_set_id: F189
+title: Eurostat — Renewable energy share in transport (nrg_ind_ren)
+producer: Eurostat
+product_key: eurostat::nrg_ind_ren::renewable-share-transport
+adapter: eurostat
+access: public
+sink: private
+cadence: annual
+expected_format: JSON-stat/JSON
+source:
+  landing_url: https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en
+raw_native:
+  geography: Eurostat country geographies; Portugal retained explicitly
+  classification: nrg_ind_ren transport renewable-share indicator under RED/SHARES methodology
+  acquisition_scope: transport renewable-share indicator only
+reuse:
+  status: not_yet_cleared
+  public_redistribution_gate: not_cleared
+  evidence_url: https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en
+  license: null
+  asset_check: null
+parameters:
+  dataset_code: nrg_ind_ren
+  period: "2004+"
+  query:
+    lang: EN
+    sinceTimePeriod: "2004"
