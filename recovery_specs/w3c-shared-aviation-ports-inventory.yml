@@ -1,0 +1,56 @@
+schema_version: 1.0.0
+mode: w3c_shared_archive_inventory_first
+mission_generation: 39
+private_repository: r-sousa/EU-transp-weekly
+private_branch: mobilidade-norte-recovery-20260919
+release_tag: source-rhomolo-mm-2024-f36c666af69512fe897a
+asset:
+  id: 565876530
+  name: RHOMOLO_MM_2024_source_snapshots.zip
+  bytes: 477522937
+  sha256: 60d6e818aa81c1e710a6b41953e68fee6f50abe494e7363f8f175f7b8e568084
+members:
+  F162:
+    producer_tokens: [ANAC, Autoridade Nacional da Aviacao Civil, Autoridade Nacional da Aviação Civil]
+    product_tokens: [newsletter, trafego mensal, tráfego mensal, movimento aeroportuario, movimento aeroportuário]
+    geography_tokens: [Portugal, Porto]
+    expected_extension: .pdf
+  F163:
+    producer_tokens: [ANAC, Autoridade Nacional da Aviacao Civil, Autoridade Nacional da Aviação Civil]
+    product_tokens: [boletim estatistico trimestral, boletim estatístico trimestral, trimestral]
+    geography_tokens: [Portugal, Porto]
+    expected_extension: .pdf
+  F164:
+    producer_tokens: [INE, Instituto Nacional de Estatistica, Instituto Nacional de Estatística]
+    product_tokens: [estatisticas rapidas, estatísticas rápidas, transporte aereo, transporte aéreo]
+    geography_tokens: [Portugal, Porto]
+    expected_extension: .html
+  F165:
+    producer_tokens: [Aena]
+    product_tokens: [trafico anual, tráfico anual, definitivo, aeropuertos, aeroportos]
+    geography_tokens: [Galicia, Galicia, Vigo, Santiago, Coruna, Coruña]
+    expected_extension: .html
+  F149:
+    producer_tokens: [AMT, Autoridade da Mobilidade e dos Transportes]
+    product_tokens: [caracterizacao dos portos, caracterização dos portos, observatorio, observatório, portos do continente]
+    geography_tokens: [Portugal, Leixoes, Leixões, Viana]
+    expected_extension: .html
+  F152:
+    producer_tokens: [APDL, Administracao dos Portos do Douro Leixoes e Viana do Castelo, Administração dos Portos do Douro Leixões e Viana do Castelo]
+    product_tokens: [Viana, movimento de mercadorias, mercadorias anual, carga]
+    geography_tokens: [Viana do Castelo, Viana]
+    expected_extension: .html
+  F153:
+    producer_tokens: [APDL, Administracao dos Portos do Douro Leixoes e Viana do Castelo, Administração dos Portos do Douro Leixões e Viana do Castelo]
+    product_tokens: [Viana, movimento de navios, navios anual, navios]
+    geography_tokens: [Viana do Castelo, Viana]
+    expected_extension: .html
+  F168:
+    producer_tokens: [DGAC, Direccion General de Aviacion Civil, Dirección General de Aviación Civil, Ministerio de Transportes]
+    product_tokens: [trafico en los aeropuertos, tráfico en los aeropuertos, informe mensual, mensual]
+    geography_tokens: [Espana, España, Galicia, Vigo, Santiago, Coruna, Coruña]
+    expected_extension: .pdf
+producer_reacquisition: false
+rights_adjudication: false
+consumer_joins: false
+numeric_rows_admitted: false
