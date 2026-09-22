@@ -24,3 +24,23 @@ jobs:
         run: |
           python scripts/probe_public_web.py \
             'https://rea.apambiente.pt/content/parque-rodovi%C3%A1rio'
+      - name: Inspect Easychart markup
+        run: |
+          python - <<'PY'
+          import re, requests
+          url='https://rea.apambiente.pt/content/parque-rodovi%C3%A1rio'
+          text=requests.get(url,timeout=90).text
+          for term in ('easychart','highcharts','setData','setConfig','dataUrl','easychart-chart-','chart_data'):
+              print('===',term,'===')
+              start=0
+              shown=0
+              while shown < 20:
+                  i=text.lower().find(term.lower(),start)
+                  if i < 0:
+                      break
+                  snippet=text[max(0,i-1000):min(len(text),i+5000)]
+                  print(snippet.replace('\n',' '))
+                  print()
+                  shown += 1
+                  start=i+len(term)
+          PY
