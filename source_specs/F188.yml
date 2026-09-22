@@ -1,0 +1,24 @@
+schema_version: 1.0.0
+source_set_id: F188
+title: DGEG — Indicadores Energéticos: intensidade energética dos transportes
+producer: DGEG via APA/REA secondary presentation
+product_key: dgeg.gov.pt::indicadores-energeticos::intensidade-energetica-setorial-transportes
+adapter: easychart_html
+access: public
+sink: private
+cadence: annual
+expected_format: HTML + deterministic Easychart JSON/CSV
+source:
+  landing_url: https://rea.apambiente.pt/content/intensidade-energ%C3%A9tica-da-economia?language=pt-pt
+raw_native:
+  geography: Portugal including islands as published
+  classification: DGEG Indicadores Energéticos sector classification; transport slice only
+  acquisition_scope: transport-sector energy-intensity chart payload and required native metadata
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://rea.apambiente.pt/content/intensidade-energ%C3%A9tica-da-economia?language=pt-pt
+  license: null
+  asset_check: null
+parameters:
+  scope_guard: REA is a non-independent distribution surface of DGEG Indicadores Energéticos; preserve native unit and price-base labels and do not infer Norte values.
