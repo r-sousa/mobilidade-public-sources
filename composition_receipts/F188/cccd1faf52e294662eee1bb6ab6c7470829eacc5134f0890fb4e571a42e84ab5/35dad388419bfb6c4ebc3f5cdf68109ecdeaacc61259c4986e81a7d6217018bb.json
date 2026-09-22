@@ -1,0 +1,34 @@
+{
+  "acquisition_code_commit": "36492f023db19a67cfb6c8d5ef2cb4b80e3f2450",
+  "limitations": "Raw producer HTML is the native source object. Embedded Easychart configuration/data are extracted lexically without JavaScript execution; derived JSON/CSV mirror the chart payload and do not assert that it is the producer's upstream canonical table or that redistribution is cleared.",
+  "native_asset_fingerprint": "cccd1faf52e294662eee1bb6ab6c7470829eacc5134f0890fb4e571a42e84ab5",
+  "recomposed_assets": [
+    {
+      "bytes": 471,
+      "format": "CSV",
+      "name": "easychart-chart-1.csv",
+      "sha256": "35f991f74bddd459c0d11b2348ddc83fa2bc559088cba6378a43e487ae088209"
+    },
+    {
+      "bytes": 270,
+      "format": "CSV",
+      "name": "easychart-chart-2.csv",
+      "sha256": "568dc61a1e3bd19999f599ac9b46064e9aaaadb2ede4ba192876fb0636301aef"
+    },
+    {
+      "bytes": 309,
+      "format": "CSV",
+      "name": "easychart-chart-3.csv",
+      "sha256": "4c5e11ffc64a5623f5dda17ee1d1d581279eac8884df40708966ec15a7ab8bb7"
+    },
+    {
+      "bytes": 17627,
+      "format": "JSON",
+      "name": "easychart-charts.json",
+      "sha256": "ec5b7273f3c6cb45669a36e096f355676a030b994b55624efe25151b20c14970"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_set_id": "F188",
+  "validation_result": "PASS_EASYCHART_HTML_EXTRACTED"
+}
