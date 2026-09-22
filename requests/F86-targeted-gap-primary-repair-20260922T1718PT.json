@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F86",
+  "request_id": "MN-G51-F86-0010785-PRIMARY-REPAIR-20260922T1718PT",
+  "requested_by": "EU-transp-weekly/Mobilidade-Norte-Orchestrator",
+  "reason": "Generation-51 exact F86/INE 0010785 acquisition after preserved-first review. The first G51 request was correctly skipped because preserved_state classified F86 as MIDDLE_TIER_PRESENT; the private orchestrator has now explicitly authorized primary repair because no numeric body exists and the previous bridge failure occurred before runner assignment.",
+  "primary_repair": true,
+  "repair_authorization_path": "statistics/recovery-20260920/simple-runtime/outputs/orchestrator/20260922T1718PT-G51-F86-primary-repair-authorisation.json",
+  "repair_authorization_ref": "863cd772104a7a88132c8284c85b66f692d509fb",
+  "canonical_private_branch": "mobilidade-norte-recovery-20260919",
+  "new_source_set": false,
+  "rights_or_publication_promotion": false
+}
