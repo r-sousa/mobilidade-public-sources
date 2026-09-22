@@ -1,0 +1,26 @@
+schema_version: 1.0.0
+source_set_id: F86
+title: INE 0010785 — Consumo médio de combustível em veículos por alojamento
+producer: INE Portugal
+product_key: ine.pt::0010785
+adapter: ine_json
+access: public
+sink: private
+cadence: non-periodic
+expected_format: INE native JSON
+source:
+  landing_url: https://www.ine.pt/xurl/indx/0010785/PT
+raw_native:
+  geography: NUTS 2013 geography exposed by indicator 0010785
+  classification: fuel type × average vehicle-fuel consumption per usual-residence conventional family dwelling
+  acquisition_scope: Exact indicator 0010785 only; preserve producer-native period, NUTS vintage/geography, fuel classification, tep-per-dwelling measure, flags and missingness.
+reuse:
+  status: not_yet_cleared
+  public_redistribution_gate: not_cleared
+  evidence_url: https://dados.gov.pt/pt/datasets/consumo-medio-de-combustivel-utilizado-em-veiculos-por-alojamento-familiar-classico-de-residencia-habitual-tep
+  license: CC BY 4.0 catalogue evidence for exact indicator product; canonical payload-level confirmation still required
+  asset_check: null
+parameters:
+  indicator: "0010785"
+  max_cells_per_chunk: 20000
+  spacing_seconds: 2
