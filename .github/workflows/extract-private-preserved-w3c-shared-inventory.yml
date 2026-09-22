@@ -1,0 +1,42 @@
+name: Inventory W3C shared preserved aviation and ports archive
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extraction_requests/W3C-G39-SHARED-ARCHIVE-INVENTORY-FIRST.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mn-w3c-shared-archive-inventory
+  cancel-in-progress: false
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Run W3C archive inventory-first mapping
+        run: |
+          mkdir -p "$RUNNER_TEMP/mn-w3c-inventory"
+          python -m mn_public_acquisition.run_w3c_archive_inventory recovery_specs/w3c-shared-aviation-ports-inventory.yml --out "$RUNNER_TEMP/mn-w3c-inventory/result.json"
+      - name: Preserve bounded result diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w3c-shared-inventory-${{ github.run_id }}
+          path: ${{ runner.temp }}/mn-w3c-inventory/result.json
+          if-no-files-found: ignore
+          retention-days: 3
