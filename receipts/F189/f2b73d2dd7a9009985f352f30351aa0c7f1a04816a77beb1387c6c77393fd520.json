@@ -1,0 +1,51 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "2da5ba3aeb1a0760a50fd91f7644ca506f64ecca",
+  "acquisition_timestamp": "2026-09-22T21:20:23.677023Z",
+  "adapter": "eurostat",
+  "assets": [
+    {
+      "bytes": 46867,
+      "format": "JSON-stat/JSON",
+      "name": "nrg_ind_ren.json",
+      "role": "native",
+      "sha256": "fb69c1789f07baa359c9aa18059b876cde8a8c753069e30a1db6337f4c9cef4f",
+      "source_url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_ind_ren?format=JSON&lang=EN&sinceTimePeriod=2004"
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "JSON-stat/JSON",
+  "limitations": "Producer-native API response preserved; no consumer normalization performed.",
+  "native_asset_fingerprint": "f2b73d2dd7a9009985f352f30351aa0c7f1a04816a77beb1387c6c77393fd520",
+  "primary_repair": false,
+  "producer": "Eurostat",
+  "product_key": "eurostat::nrg_ind_ren::renewable-share-transport",
+  "raw_native": {
+    "acquisition_scope": "transport renewable-share indicator only",
+    "classification": "nrg_ind_ren transport renewable-share indicator under RED/SHARES methodology",
+    "geography": "Eurostat country geographies; Portugal retained explicitly"
+  },
+  "repair_authorization": null,
+  "request_id": "MN-PUBLIC-F189-G57-20260922T2200PT-02",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_yet_cleared"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2004+",
+  "source_set_id": "F189",
+  "source_url": "https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en",
+  "title": "Eurostat — Renewable energy share in transport (nrg_ind_ren)",
+  "validation_result": "PASS_JSON_MATERIALIZED"
+}
