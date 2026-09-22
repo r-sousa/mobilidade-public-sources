@@ -1,0 +1,13 @@
+{
+  "alternate_preserved_attempt_limit_respected": true,
+  "artifact_id": 10576315158,
+  "at": "2026-09-22T18:39:23.760987+00:00",
+  "blocker": "Gate:PRESERVED_OBJECT_RECOVERY_EXHAUSTED:primary=PRIMARY_ACTIONS_ARTIFACT_HTTP_403:{\"message\":\"Resource not accessible by personal access token\",\"documentation_url\":\"https://docs.github.com/rest/actions/artifacts#download-an-artifact\",\"status\":\"403\"};alternate_curl=curl: (22) The requested URL returned error: 403\n",
+  "mission_generation": 54,
+  "producer_reacquisition": false,
+  "raw_member_sha256": "276ad30496322e95a3a4cf5c8804cd203b841bb88827eca1f1ea8d0a9945aa07",
+  "schema_version": "1.0.0",
+  "source_set_id": "F68",
+  "status": "BLOCKED",
+  "wrapper_sha256": "9e3889f0999a7567a6442d1d44e309ae283efb7fdf0507ff4245657fb526df75"
+}
