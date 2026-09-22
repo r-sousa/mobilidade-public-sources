@@ -1,0 +1,467 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "26ed41fd6f5d1119d3cc7bf2c6ed5ab900f89ca6",
+  "acquisition_timestamp": "2026-09-22T01:26:27.109866Z",
+  "adapter": "html_assets",
+  "assets": [
+    {
+      "bytes": 411153,
+      "format": "HTML",
+      "name": "landing.html",
+      "role": "native",
+      "sha256": "f59b733f95ef30b10553d19f9d10f436ac7979aa213a56bed4e5cf83464dcc96",
+      "source_url": "https://www.imt-ip.pt/biblioteca/reportorio-geral/estatisticas-repertorio-geral/relatorios-setoriais-imt/"
+    },
+    {
+      "bytes": 162816,
+      "format": "application/vnd.ms-excel",
+      "name": "RelatoriodeTrafego-2oTrimestrede2026Dados.xls",
+      "role": "native",
+      "sha256": "beac85e3669ff7fe2a3c399fd428aba8bb2a7882d31395915ddd67cd4bf876f2",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2026/09/RelatoriodeTrafego-2oTrimestrede2026Dados.xls"
+    },
+    {
+      "bytes": 163840,
+      "format": "application/vnd.ms-excel",
+      "name": "RelatoriodeTrafego-1oTrimestrede2026Dados.xls",
+      "role": "native",
+      "sha256": "b410f582278f54878efdb86697dc2c1825bf9ec2a11dc9685a8c8c2c69b19fc1",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2026/06/RelatoriodeTrafego-1oTrimestrede2026Dados.xls"
+    },
+    {
+      "bytes": 162304,
+      "format": "application/vnd.ms-excel",
+      "name": "RelatoriodeTrafego-2025Dados-1.xls",
+      "role": "native",
+      "sha256": "07f8955bf3c1f4c273e70550d7364735e8e14c2a91319460877b4d2269f6114f",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2026/07/RelatoriodeTrafego-2025Dados-1.xls"
+    },
+    {
+      "bytes": 176128,
+      "format": "application/vnd.ms-excel",
+      "name": "RelatoriodeTrafego-4oTrimestrede2025Dados.xls",
+      "role": "native",
+      "sha256": "575f852779b2efc43e522df1193818d1f13a303bb495390806a727eca9243e15",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2026/03/RelatoriodeTrafego-4oTrimestrede2025Dados.xls"
+    },
+    {
+      "bytes": 167424,
+      "format": "application/vnd.ms-excel",
+      "name": "RelatoriodeTrafego-3oTrimestrede2025Dados.xls",
+      "role": "native",
+      "sha256": "205735f56a5e579b102da17afa3b8eee2d1754e6296fd54bd3f6ea9c31ecc81a",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2026/01/RelatoriodeTrafego-3oTrimestrede2025Dados.xls"
+    },
+    {
+      "bytes": 163328,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-2o-Trimestre-de-2025-Dados.xls",
+      "role": "native",
+      "sha256": "081dc90b06a4898354f69b30cb88442482254d45809e851717f677af5e8aa9d3",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/08/Relatorio-de-Trafego-2o-Trimestre-de-2025-Dados.xls"
+    },
+    {
+      "bytes": 162816,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-1o-Trimestre-de-2025-Dados.xls",
+      "role": "native",
+      "sha256": "931e0e19b8f4a8dc238f62b24df12177dd50047accd48ac34bdb39d5f0229004",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/06/Relatorio-de-Trafego-1o-Trimestre-de-2025-Dados.xls"
+    },
+    {
+      "bytes": 172032,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-4o-Trimestre-de-2024.xls",
+      "role": "native",
+      "sha256": "2cb585f3d2bc7482dbb846c411a24f5e0c43638e104d69ab7ea97c8eaef2b956",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Relatorio-de-Trafego-4o-Trimestre-de-2024.xls"
+    },
+    {
+      "bytes": 164352,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-3o-Trimestre-de-2024.xls",
+      "role": "native",
+      "sha256": "8fef4e868dac9bf43a1a0a2d570fe5ff5bebf8453ef5c0075bbdec8eea7f3704",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Relatorio-de-Trafego-3o-Trimestre-de-2024.xls"
+    },
+    {
+      "bytes": 169472,
+      "format": "application/vnd.ms-excel",
+      "name": "RelatoriodeTrafego-2oTrimestrede2024Dados.xls",
+      "role": "native",
+      "sha256": "ae0302ebaf375b5be8357ac8728f960b67d8fdf2a9d89f6d77996be01b548adb",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/RelatoriodeTrafego-2oTrimestrede2024Dados.xls"
+    },
+    {
+      "bytes": 172032,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-1o-Trimestre-de-2024.xls",
+      "role": "native",
+      "sha256": "5ff6af3dd2e9848da37373b029e3c82e1cdc5f845b6490935136129eb67b5e3b",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Relatorio-de-Trafego-1o-Trimestre-de-2024.xls"
+    },
+    {
+      "bytes": 173568,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-4o-Trimestre-de-2023.xls",
+      "role": "native",
+      "sha256": "21237a4baa0d94e6ca6e6456337caaaef9719d75a6811a0a7b2aad717cb75775",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Relatorio-de-Trafego-4o-Trimestre-de-2023.xls"
+    },
+    {
+      "bytes": 176640,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-3o-Trimestre-de-2023.xls",
+      "role": "native",
+      "sha256": "c55ab095d514cf6d05047b45e58c8ae9458e44674a9b93ef79fdad745f83337d",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Relatorio-de-Trafego-3o-Trimestre-de-2023.xls"
+    },
+    {
+      "bytes": 181760,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-2o-Trimestre-de-2023.xls",
+      "role": "native",
+      "sha256": "9fd4fe8c1b7f053b6c1df4468b6ffdcabcdbdc9030996762a681e730550fccb3",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Relatorio-de-Trafego-2o-Trimestre-de-2023.xls"
+    },
+    {
+      "bytes": 183296,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-1o-Trimestre-de-2023.xls",
+      "role": "native",
+      "sha256": "a36a42884f345006f0e499dd38af17702b2ee734ed818395aa548f680b5722e3",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Relatorio-de-Trafego-1o-Trimestre-de-2023.xls"
+    },
+    {
+      "bytes": 182784,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-4o-Trimestre-de-2022.xls",
+      "role": "native",
+      "sha256": "5677bb1efeba73fcf1f713af652d2482b9514d06b1dc7a017c125b616bda2267",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Relatorio-de-Trafego-4o-Trimestre-de-2022.xls"
+    },
+    {
+      "bytes": 176640,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-3o-Trimestre-de-2022.xls",
+      "role": "native",
+      "sha256": "8528c8b853cada117bd70fab318daba0c1b47102fc2651c45c1c9c40a6fa44db",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Relatorio-de-Trafego-3o-Trimestre-de-2022.xls"
+    },
+    {
+      "bytes": 181760,
+      "format": "application/vnd.ms-excel",
+      "name": "Relatorio-de-Trafego-2o-Trimestre-de-2022-Dados.xls",
+      "role": "native",
+      "sha256": "58a2fa7b2240e83e9d5ecf1f73251c188e2b8ee26526c76677d9a515bd207599",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Relatorio-de-Trafego-2o-Trimestre-de-2022-Dados.xls"
+    },
+    {
+      "bytes": 181760,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2022.xls",
+      "role": "native",
+      "sha256": "a8c7b365b528e59e4bbd6c54a448696273a2c6834eba7c6292ecf321467def15",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2022.xls"
+    },
+    {
+      "bytes": 182784,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-4o-Trimestre-de-2021.xls",
+      "role": "native",
+      "sha256": "4b54287836fe9d1f38410d2f3b8a95b736c31a4fc58384346fa59fe054d39db9",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-4o-Trimestre-de-2021.xls"
+    },
+    {
+      "bytes": 175104,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-3o-Trimestre-de-2021.xls",
+      "role": "native",
+      "sha256": "f2e1def7dac5a16a7cdabf5ef1f226cf5435d333cf49e2614b5094bfd990b3c9",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-3o-Trimestre-de-2021.xls"
+    },
+    {
+      "bytes": 181248,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-2o-Trimestre-de-2021.xls",
+      "role": "native",
+      "sha256": "13c2238368164dc77d66fdcaeabcf98064400cb8cc271825aa348be0be63744f",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-2o-Trimestre-de-2021.xls"
+    },
+    {
+      "bytes": 181248,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2021.xls",
+      "role": "native",
+      "sha256": "3451f1886ea3d46288c635ef4e9f46683132fe7b37d4a4f2dff46d02ace6ceb1",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2021.xls"
+    },
+    {
+      "bytes": 181760,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-4o-Trimestre-de-2020.xls",
+      "role": "native",
+      "sha256": "47c4eb544a81612a86142f286729af516fdcba2ced66257e0129a6f1ac44b21e",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-4o-Trimestre-de-2020.xls"
+    },
+    {
+      "bytes": 175104,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-3o-Trimestre-de-2020.xls",
+      "role": "native",
+      "sha256": "8b0d8b68c0264bbaa549a0c7457df02f2d66d9de43e1449638b012ac501fcecc",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-3o-Trimestre-de-2020.xls"
+    },
+    {
+      "bytes": 189952,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-2o-Trimestre-de-2020.xls",
+      "role": "native",
+      "sha256": "f4d9bb8cbad81b87c35343b764b1957c04a09e31f3d80ff43eddbb9336112351",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-2o-Trimestre-de-2020.xls"
+    },
+    {
+      "bytes": 179712,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-Relatorio-de-Trafego-1o-Trimestre-de-2020.xls",
+      "role": "native",
+      "sha256": "cf96e033c5bf9e7ae15f29d223e26c7d3b1e6faf94f4296c2f10c4247da0a314",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-Relatorio-de-Trafego-1o-Trimestre-de-2020.xls"
+    },
+    {
+      "bytes": 183808,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-Relatorio-de-Trafego-4o-Trimestre-de-2019.xls",
+      "role": "native",
+      "sha256": "5c37626ca600b6175a052dc91ee9164db4223baa4ac6bf4a8398d77f1984abfe",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-Relatorio-de-Trafego-4o-Trimestre-de-2019.xls"
+    },
+    {
+      "bytes": 177664,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-Relatorio-de-Trafego-3o-Trimestre-de-2019.xls",
+      "role": "native",
+      "sha256": "9a0512c99f271fab0e41ca758fa24df7dada0ab8996a20b1c5b9aef0916bb1ed",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-Relatorio-de-Trafego-3o-Trimestre-de-2019.xls"
+    },
+    {
+      "bytes": 190976,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-Relatorio-de-Trafego-2o-Trimestre-de-2019.xls",
+      "role": "native",
+      "sha256": "0d505c9a161b007f6baf9f1c715c00f98d6e8575ec7298524d54ca46a6e31406",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-Relatorio-de-Trafego-2o-Trimestre-de-2019.xls"
+    },
+    {
+      "bytes": 185344,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-Relatorio-de-Trafego-1o-Trimestre-de-2019.xls",
+      "role": "native",
+      "sha256": "dfa16403077aa4bff8dab45e55705abe7b31b888ff816e11d06c490fb7e0cece",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-Relatorio-de-Trafego-1o-Trimestre-de-2019.xls"
+    },
+    {
+      "bytes": 182784,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-Relatorio-de-Trafego-4o-Trimestre-de-2018.xls",
+      "role": "native",
+      "sha256": "7f7cd0caf4b2ca99ee2ce689d025798ab8a576b32a446a2a80766c1915bd7dbc",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-Relatorio-de-Trafego-4o-Trimestre-de-2018.xls"
+    },
+    {
+      "bytes": 177152,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-Relatorio-de-Trafego-3o-Trimestre-de-2018.xls",
+      "role": "native",
+      "sha256": "35eb2d50cbfa350ceeef214711c406559a7cb2494359c3bc2298ecd0cd560965",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-Relatorio-de-Trafego-3o-Trimestre-de-2018.xls"
+    },
+    {
+      "bytes": 182272,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-2o-Trimestre-de-2018.xls",
+      "role": "native",
+      "sha256": "382a82df4b993c598f0c2bdd948c32954954faffc9e89f6ab7a0c0227403f891",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-2o-Trimestre-de-2018.xls"
+    },
+    {
+      "bytes": 185344,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2018.xls",
+      "role": "native",
+      "sha256": "5f768a4bdcd6db08176b3853ed369ab1b35b0b26066c0227a7e35a8008d2aaa5",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2018.xls"
+    },
+    {
+      "bytes": 182784,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-4o-Trimestre-de-2017.xls",
+      "role": "native",
+      "sha256": "ac164c02eb13b9f243b4253296526831dd2ebca69639156172347badcd058698",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-4o-Trimestre-de-2017.xls"
+    },
+    {
+      "bytes": 180736,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-3o-Trimestre-de-2017.xls",
+      "role": "native",
+      "sha256": "a19f776d61bdf54727ee9b4b4d101ae6bbc9f59f832b80e75174e6a9c500cb3d",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-3o-Trimestre-de-2017.xls"
+    },
+    {
+      "bytes": 179712,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-2o-Trimestre-de-2017.xls",
+      "role": "native",
+      "sha256": "8bad52e5c9e707f7d1393443b34af453a46090cb0784d5f926f1fae6fb048a02",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-2o-Trimestre-de-2017.xls"
+    },
+    {
+      "bytes": 182272,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2017.xls",
+      "role": "native",
+      "sha256": "7927631fb298fc0148f4cced72ef3ac92393bba7c8d70f8e27f6d83b06be6929",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2017.xls"
+    },
+    {
+      "bytes": 181248,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-4o-Trimestre-de-2016.xls",
+      "role": "native",
+      "sha256": "77df21e313f4ee5b2ae3c3ba2e39e5a6ab3a4c0e4a7c535671c71384187cc3fb",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-4o-Trimestre-de-2016.xls"
+    },
+    {
+      "bytes": 179200,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-3o-Trimestre-de-2016.xls",
+      "role": "native",
+      "sha256": "f8249872ab02dd7f4ca1187c0f21735113a6e523c1521e82bf00019502a2934b",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-3o-Trimestre-de-2016.xls"
+    },
+    {
+      "bytes": 178688,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-2o-Trimestre-de-2016.xls",
+      "role": "native",
+      "sha256": "0748129e15a03d395ed2d8c157f62318800a3b42829256986c8d558eebb04c81",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-2o-Trimestre-de-2016.xls"
+    },
+    {
+      "bytes": 182272,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2016.xls",
+      "role": "native",
+      "sha256": "6fee3720dbbde9f9b280ad0bcf48a4e2c1dbd7858e712b88e09f34a4c8e15732",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2016.xls"
+    },
+    {
+      "bytes": 180736,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-4o-Trimestre-de-2015.xls",
+      "role": "native",
+      "sha256": "729dc36a04fba2f10c9c413a7a08abe67be6095182cdd154188ddebb22172f70",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-4o-Trimestre-de-2015.xls"
+    },
+    {
+      "bytes": 179200,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-3o-Trimestre-de-2015.xls",
+      "role": "native",
+      "sha256": "5af82067a4a64242476998340be436332c48647a238cc8d272312bfd27232c74",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-3o-Trimestre-de-2015.xls"
+    },
+    {
+      "bytes": 165376,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-RelatoriodeTrafego_2_Trimestrede20151.xls",
+      "role": "native",
+      "sha256": "611848c035badd994dd301c0b673b84743a07a8e3b26dab2e39948586a5b6ec7",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/04/Dados-do-RelatoriodeTrafego_2_Trimestrede20151.xls"
+    },
+    {
+      "bytes": 165376,
+      "format": "application/vnd.ms-excel",
+      "name": "DadosdoRelatoriodeTrafego_1_Trimestre20151.xls",
+      "role": "native",
+      "sha256": "dee54f8768d4fe3395d379151af8143c3b3260c8d37587dffa8422fa8ed33af0",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/04/DadosdoRelatoriodeTrafego_1_Trimestre20151.xls"
+    },
+    {
+      "bytes": 166400,
+      "format": "application/vnd.ms-excel",
+      "name": "DadosdoRelatoriodeTrafego_4_Trimestre2014.xls",
+      "role": "native",
+      "sha256": "ce50d37f0c7c17764e5ac72ea646b49bd8516a908f2ff5c8975f15313d0e3e5b",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/DadosdoRelatoriodeTrafego_4_Trimestre2014.xls"
+    },
+    {
+      "bytes": 164864,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados_Relatorio_Trafego_3_Trimestre_2014.xls",
+      "role": "native",
+      "sha256": "189ccdd3fcde599baef283e0e186cf172c1ccd1d665fbc564eed0aa1fdbdd57c",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados_Relatorio_Trafego_3_Trimestre_2014.xls"
+    },
+    {
+      "bytes": 159744,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados_Relatorio_Trafego_2_Trimestre_2014.xls",
+      "role": "native",
+      "sha256": "2cb290eab8cfa0048449d489209f5f122ae9e95fd348c1b778c4b48c1f4ae52b",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados_Relatorio_Trafego_2_Trimestre_2014.xls"
+    },
+    {
+      "bytes": 160768,
+      "format": "application/vnd.ms-excel",
+      "name": "Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2014.xls",
+      "role": "native",
+      "sha256": "24603d27581ab790d6983995aa537cdd2f9578bc165b7ee1d8b757db09ad1a6f",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/03/Dados-do-Relatorio-de-Trafego-1o-Trimestre-de-2014.xls"
+    },
+    {
+      "bytes": 16104,
+      "format": "JSON",
+      "name": "series-manifest.json",
+      "role": "recomposed",
+      "sha256": "6904f6f91b8b63c23de401a25caecbd71861fe8cb1e0e7b08c501a0b3b42e0e9",
+      "source_url": null
+    }
+  ],
+  "cadence": "quarterly and annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "XLS",
+  "limitations": "Producer landing HTML and selected linked assets are preserved natively. Multiple linked files are recomposed as an ordered logical series manifest; heterogeneous files are not row-concatenated without a product-specific semantic assembler.",
+  "native_asset_fingerprint": "43652d12e479f222ab932e5c7104c85cd8ca4b991f9a850d485b9f761d6125bd",
+  "primary_repair": false,
+  "producer": "Instituto da Mobilidade e dos Transportes, I.P. (IMT)",
+  "product_key": "imt-ip.pt::relatorios-trafego-rede-nacional-autoestradas",
+  "raw_native": {
+    "acquisition_scope": "IMT quarterly/annual motorway traffic data files exposed under Relatórios de Tráfego Trimestrais and annual report entries",
+    "classification": "TMDM/TMDA, traffic/circulation variation and source-native road/concession/subsection identifiers",
+    "geography": "motorway, concession and subsection (sublanço) as published by IMT"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35675739166",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.imt-ip.pt/biblioteca/reportorio-geral/estatisticas-repertorio-geral/relatorios-setoriais-imt/",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2014-current landing-page series",
+  "source_set_id": "F187",
+  "source_url": "https://www.imt-ip.pt/biblioteca/reportorio-geral/estatisticas-repertorio-geral/relatorios-setoriais-imt/",
+  "title": "IMT — Relatórios de Tráfego na Rede Nacional de Autoestradas",
+  "validation_result": "PASS_HTML_ASSET_DISCOVERY_SERIES_COMPOSED"
+}
