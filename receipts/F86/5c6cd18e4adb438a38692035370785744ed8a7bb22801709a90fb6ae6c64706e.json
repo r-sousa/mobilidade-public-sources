@@ -1,0 +1,86 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "b961476562df06cd1149f1938d02428b59c012ad",
+  "acquisition_timestamp": "2026-09-22T16:17:59.103014Z",
+  "adapter": "ine_json",
+  "assets": [
+    {
+      "bytes": 3013,
+      "format": "JSON",
+      "name": "0010785-metadata.json",
+      "role": "native",
+      "sha256": "ec440350eb368fedb3db2bdd4ba20b637b6f221df173e05e5e73b8f9175a720a",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindicaMeta.jsp?varcd=0010785&lang=PT"
+    },
+    {
+      "bytes": 4370,
+      "format": "JSON",
+      "name": "0010785-chunk-00001.json",
+      "role": "native",
+      "sha256": "724c3da288922b19448514ba19364b74cbf88680eaae2120dfefb05363bf2fd4",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0010785&lang=PT&Dim1=S7A2020"
+    },
+    {
+      "bytes": 1471,
+      "format": "JSON",
+      "name": "ine-plan-and-coverage.json",
+      "role": "recomposed",
+      "sha256": "3ddecf98c863560db6f8e9e32010005db370b50514a08577000dbca3922fac63",
+      "source_url": null
+    },
+    {
+      "bytes": 499,
+      "format": "JSONL.GZ",
+      "name": "observations.jsonl.gz",
+      "role": "recomposed",
+      "sha256": "42f66961d281eea3205f3b40abb838df38c30444c53f823da3615dd280d2c281",
+      "source_url": null
+    },
+    {
+      "bytes": 901,
+      "format": "JSON",
+      "name": "composition-manifest.json",
+      "role": "recomposed",
+      "sha256": "e9148367c5d878e674e22725656ec5938d9ee1643fe854e93486927715bfb6b3",
+      "source_url": null
+    }
+  ],
+  "cadence": "non-periodic",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "INE native JSON",
+  "limitations": "INE requests are metadata-defined and recursively partitioned below the 40,000-cell contract and URL-length bound. Cod=7 or saturated responses trigger further splitting. Raw chunks remain native; recomposed JSONL is derived without replacing missing or confidential values with zero.",
+  "native_asset_fingerprint": "5c6cd18e4adb438a38692035370785744ed8a7bb22801709a90fb6ae6c64706e",
+  "primary_repair": true,
+  "producer": "INE Portugal",
+  "product_key": "ine.pt::0010785",
+  "raw_native": {
+    "acquisition_scope": "Exact indicator 0010785 only; preserve producer-native period, NUTS vintage/geography, fuel classification, tep-per-dwelling measure, flags and missingness.",
+    "classification": "fuel type × average vehicle-fuel consumption per usual-residence conventional family dwelling",
+    "geography": "NUTS 2013 geography exposed by indicator 0010785"
+  },
+  "repair_authorization": {
+    "path": "statistics/recovery-20260920/simple-runtime/outputs/orchestrator/20260922T1718PT-G51-F86-primary-repair-authorisation.json",
+    "ref": "863cd772104a7a88132c8284c85b66f692d509fb"
+  },
+  "request_id": "MN-G51-F86-0010785-PRIMARY-REPAIR-20260922T1718PT",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://dados.gov.pt/pt/datasets/consumo-medio-de-combustivel-utilizado-em-veiculos-por-alojamento-familiar-classico-de-residencia-habitual-tep",
+    "license": "CC BY 4.0 catalogue evidence for exact indicator product; canonical payload-level confirmation still required",
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_yet_cleared"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": null,
+  "source_set_id": "F86",
+  "source_url": "https://www.ine.pt/xurl/indx/0010785/PT",
+  "title": "INE 0010785 — Consumo médio de combustível em veículos por alojamento",
+  "validation_result": "PASS_INE_PARTITIONED_RECOMPOSED_COMPLETE"
+}
