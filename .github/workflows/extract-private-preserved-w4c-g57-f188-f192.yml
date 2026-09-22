@@ -1,0 +1,27 @@
+name: Extract W4C G57 F188-F192 private-preserved ingress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extraction_requests/W4C-G57-F188-F192.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mn-w4c-g57-f188-f192-private-extraction
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact private Release bytes and persist W4C source-native descendants
+        run: python scripts/extract_private_preserved_w4c_g57_f188_f192.py
