@@ -1,0 +1,131 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "6005ef72d8d2de702867e9306dc11e2f7c0cbd69",
+  "acquisition_timestamp": "2026-09-22T21:21:49.762834Z",
+  "adapter": "easychart_html",
+  "assets": [
+    {
+      "bytes": 97154,
+      "format": "HTML",
+      "name": "easychart-page.html",
+      "role": "native",
+      "sha256": "3ff0a3687e04331e50cd3d170a62ba34838bb730e1d22a1098f8881a97377315",
+      "source_url": "https://rea.apambiente.pt/content/qualidade-do-ar-0?language=pt-pt"
+    },
+    {
+      "bytes": 83098,
+      "format": "JSON",
+      "name": "easychart-charts.json",
+      "role": "recomposed",
+      "sha256": "5f357f8aade8a79c47d0ee9853f82356dfae51b61b7fbb8d1d32eb8b4ce64bf7",
+      "source_url": null
+    },
+    {
+      "bytes": 708,
+      "format": "CSV",
+      "name": "easychart-chart-1.csv",
+      "role": "recomposed",
+      "sha256": "3f5771cec57aaf9dfa883d2fa369542f218374a9291c26d14ad3f473f65eb76c",
+      "source_url": null
+    },
+    {
+      "bytes": 510,
+      "format": "CSV",
+      "name": "easychart-chart-2.csv",
+      "role": "recomposed",
+      "sha256": "2374a80113271a629e160056c571d5d7f54c03cbbc7faafaa2b9f46fd51773e3",
+      "source_url": null
+    },
+    {
+      "bytes": 518,
+      "format": "CSV",
+      "name": "easychart-chart-3.csv",
+      "role": "recomposed",
+      "sha256": "799139a27fa9f2f8213672f3114ea7f5b55bba8cee0f6a7ea67382d0034322d5",
+      "source_url": null
+    },
+    {
+      "bytes": 455,
+      "format": "CSV",
+      "name": "easychart-chart-4.csv",
+      "role": "recomposed",
+      "sha256": "a8b449f4a15a383f6c74b26875a1e1e38974bcd6bff67417d9a1b8a8e66ac2ef",
+      "source_url": null
+    },
+    {
+      "bytes": 414,
+      "format": "CSV",
+      "name": "easychart-chart-5.csv",
+      "role": "recomposed",
+      "sha256": "7d6fc94e6ad03654109969a5f4ab58365f3654add17deb0221e8be712c87e926",
+      "source_url": null
+    },
+    {
+      "bytes": 422,
+      "format": "CSV",
+      "name": "easychart-chart-6.csv",
+      "role": "recomposed",
+      "sha256": "4ba77cb4c4ada90336ed31e38bf5d59548632b054d35c1dc244e9274f17eaa42",
+      "source_url": null
+    },
+    {
+      "bytes": 422,
+      "format": "CSV",
+      "name": "easychart-chart-7.csv",
+      "role": "recomposed",
+      "sha256": "5e69419a0adb288a11793767d3d7496cf319e382ee7ed8661a0f64952b3eef7a",
+      "source_url": null
+    },
+    {
+      "bytes": 309,
+      "format": "CSV",
+      "name": "easychart-chart-8.csv",
+      "role": "recomposed",
+      "sha256": "47486bf2783af93c1cb9092af3b5bc40ecf6bbd4f00b384091b6b7ae306e3316",
+      "source_url": null
+    },
+    {
+      "bytes": 157,
+      "format": "CSV",
+      "name": "easychart-chart-9.csv",
+      "role": "recomposed",
+      "sha256": "97a402950a5cbf6ff59b243db044121204cd7448f2583fb9d303d6dbef40532a",
+      "source_url": null
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "HTML + deterministic Easychart JSON/CSV",
+  "limitations": "Raw producer HTML is the native source object. Embedded Easychart configuration/data are extracted lexically without JavaScript execution; derived JSON/CSV mirror the chart payload and do not assert that it is the producer's upstream canonical table or that redistribution is cleared.",
+  "native_asset_fingerprint": "b2ce6590c2532905b4ce446c1a2ad10a3a06ca5984340e1227de73ddbb6fbf90",
+  "primary_repair": false,
+  "producer": "APA / QualAr via APA/REA presentation",
+  "product_key": "qualar.apambiente.pt::air-quality-monitoring::traffic-no2-validated-stations",
+  "raw_native": {
+    "acquisition_scope": "traffic-station/traffic-related NO2 and directly related transport-externality context only",
+    "classification": "pollutant x station type x zone/agglomeration with validation state",
+    "geography": "QualAr stations, zones and agglomerations including Norte"
+  },
+  "repair_authorization": null,
+  "request_id": "MN-PUBLIC-F192-G57-20260922T2200PT-02",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://rea.apambiente.pt/content/qualidade-do-ar-0?language=pt-pt",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": null,
+  "source_set_id": "F192",
+  "source_url": "https://rea.apambiente.pt/content/qualidade-do-ar-0?language=pt-pt",
+  "title": "QualAr — monitorização da qualidade do ar: tráfego e NO2",
+  "validation_result": "PASS_EASYCHART_HTML_EXTRACTED"
+}
