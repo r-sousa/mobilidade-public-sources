@@ -1,7 +1,7 @@
 schema_version: 4.1.0
 mission_generation: 46
 worker: W4C
-execution_attempt: 5
+execution_attempt: 6
 private_repository: r-sousa/EU-transp-weekly
 private_branch: mobilidade-norte-recovery-20260919
 release_tag: data-20260915-a25baac3ab8d65d9
@@ -13,8 +13,10 @@ corrects_prior_attempts:
   - attempt: 3
     disposition: INVALIDATED_CACHE_METADATA_LEAF_LEAKAGE_INTO_SOURCE_NATIVE_ROW_COUNT
   - attempt: 4
-    disposition: TRANSIENT_PRIVATE_SINK_BRANCH_HEAD_CONFLICT_AFTER_METADATA_SAFE_PARSE
-changed_method_reason: "Attempt 4 correctly restricted observations to the explicit preserved cache records arrays but hit an HTTP 409 private-sink branch-head race while other workers were writing. Attempt 5 uses the same exact preserved release/assets and metadata-safe parser with bounded retry only for transient 409 branch-head conflicts. Immutable non-identical path conflicts remain fatal. No producer reacquisition or semantic normalization occurs."
+    disposition: F25_METADATA_SAFE_HANDOFF_VALID_FAMILY_INCOMPLETE_AFTER_TRANSIENT_PRIVATE_SINK_RACE
+  - attempt: 5
+    disposition: PARTIAL_F25_OUTPUT_VALID_BUT_FAMILY_FAILED_ON_IMMUTABLE_EQUIVALENT_F25_HANDOFF_CONFLICT
+changed_method_reason: "Attempt 5 proved the remaining blocker was not source parsing or a transient 409: it tried to replace the already-valid metadata-safe attempt-4 F25 deterministic handoff, which is correctly immutable. Attempt 6 keeps that F25 handoff and its exact JSON/CSV/receipt immutable after strict source/scope validation, verifies both exact preserved assets again, parses/emits only the missing F26 ingress, and writes one complete family receipt. No producer reacquisition or semantic normalization occurs."
 assets:
   F25:
     id: 565831863
