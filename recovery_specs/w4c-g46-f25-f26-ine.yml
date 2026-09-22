@@ -1,7 +1,7 @@
 schema_version: 4.1.0
 mission_generation: 46
 worker: W4C
-execution_attempt: 4
+execution_attempt: 5
 private_repository: r-sousa/EU-transp-weekly
 private_branch: mobilidade-norte-recovery-20260919
 release_tag: data-20260915-a25baac3ab8d65d9
@@ -12,7 +12,9 @@ corrects_prior_attempts:
     disposition: PARTIAL_ROW_PARTS_VALID_BUT_FAMILY_INCOMPLETE_OVERSIZED_METADATA_SUMMARY
   - attempt: 3
     disposition: INVALIDATED_CACHE_METADATA_LEAF_LEAKAGE_INTO_SOURCE_NATIVE_ROW_COUNT
-changed_method_reason: "Attempt 3 established bounded outputs but QA showed the preserved cache envelope is explicitly {metadata, records}; recursive fallback admitted 37 F25 and 40 F26 metadata scalar leaves as pseudo-rows. Attempt 4 uses the same exact preserved release/assets only and admits exclusively objects from the explicit records array while preserving metadata separately as compact lineage/context. No producer reacquisition or semantic normalization occurs."
+  - attempt: 4
+    disposition: TRANSIENT_PRIVATE_SINK_BRANCH_HEAD_CONFLICT_AFTER_METADATA_SAFE_PARSE
+changed_method_reason: "Attempt 4 correctly restricted observations to the explicit preserved cache records arrays but hit an HTTP 409 private-sink branch-head race while other workers were writing. Attempt 5 uses the same exact preserved release/assets and metadata-safe parser with bounded retry only for transient 409 branch-head conflicts. Immutable non-identical path conflicts remain fatal. No producer reacquisition or semantic normalization occurs."
 assets:
   F25:
     id: 565831863
