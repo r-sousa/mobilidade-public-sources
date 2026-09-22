@@ -1,6 +1,6 @@
 schema_version: 1.0.0
 source_set_id: F188
-title: DGEG — Indicadores Energéticos: intensidade energética dos transportes
+title: "DGEG — Indicadores Energéticos: intensidade energética dos transportes"
 producer: DGEG via APA/REA secondary presentation
 product_key: dgeg.gov.pt::indicadores-energeticos::intensidade-energetica-setorial-transportes
 adapter: easychart_html
