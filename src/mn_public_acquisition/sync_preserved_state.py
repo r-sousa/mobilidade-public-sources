@@ -34,7 +34,65 @@ def private_json(path: str, token: str) -> dict:
     return json.loads(base64.b64decode(obj["content"]).decode("utf-8"))
 
 
-def build_index(inv: dict, bootstrap: dict) -> dict:
+def private_directory(path: str, token: str) -> list[dict]:
+    url = f"{API}/repos/{PRIVATE_REPO}/contents/{urllib.parse.quote(path, safe='/')}"
+    r = requests.get(url, params={"ref": PRIVATE_REF}, headers=headers(token), timeout=120)
+    if not r.ok:
+        raise RuntimeError(f"Private directory read failed {r.status_code}: {r.text[:500]}")
+    obj = r.json()
+    if not isinstance(obj, list):
+        raise RuntimeError(f"Private directory route did not return a listing: {path}")
+    return obj
+
+
+def _inventory_ids(inv: dict) -> set[str]:
+    out = set()
+    for queue in (inv.get("queues") or {}).values():
+        if not isinstance(queue, list):
+            continue
+        for row in queue:
+            if isinstance(row, dict) and str(row.get("id") or "").startswith("F"):
+                out.add(str(row["id"]))
+    final = (
+        inv.get("terminal_source_checkpoints", {})
+        .get("final_preservation_states", {})
+    )
+    for values in final.values():
+        if isinstance(values, list):
+            out.update(str(x) for x in values if str(x).startswith("F"))
+    return out
+
+
+def _manifest_overlay(manifest: dict) -> dict:
+    preservation = manifest.get("preservation") or {}
+    runtime = manifest.get("runtime_overlay") or {}
+    rights = manifest.get("rights") or {}
+    releases = preservation.get("release_tags") or []
+    paths = runtime.get("paths") or []
+    consumer_paths = runtime.get("consumer_paths") or []
+    return {
+        "id": manifest.get("source_set_id"),
+        "title": manifest.get("title"),
+        "theme": manifest.get("theme"),
+        "audit_status": preservation.get("audit_status"),
+        "public_reuse_status": rights.get("public_reuse_status"),
+        "release_count": len(releases),
+        "runtime_overlay_count": len(paths),
+        "consumer_overlay_count": len(consumer_paths),
+        "release_backed": bool(releases),
+        "runtime_only": bool(paths) and not releases,
+        "manifest_path": manifest.get("canonical_path"),
+        "release_tags": releases,
+    }
+
+
+def build_index(
+    inv: dict,
+    bootstrap: dict,
+    *,
+    source_ids: list[str] | None = None,
+    canonical_manifests: dict[str, dict] | None = None,
+) -> dict:
     by_id = {}
     for x in inv.get("queues", {}).get("release_backed", []):
         by_id[x["id"]] = {**x, "release_backed": True}
@@ -57,9 +115,23 @@ def build_index(inv: dict, bootstrap: dict) -> dict:
     mm = set(final.get("preserved_in_rhomolo_mm_release") or [])
     controlled = set(final.get("controlled_access_metadata_only_by_design") or [])
 
+    for sid, manifest in (canonical_manifests or {}).items():
+        overlay = _manifest_overlay(manifest)
+        if sid in by_id:
+            merged = dict(overlay)
+            merged.update(by_id[sid])
+            by_id[sid] = merged
+        else:
+            by_id[sid] = overlay
+
+    if source_ids is None:
+        source_ids = sorted(
+            by_id,
+            key=lambda sid: int(sid[1:]) if sid[1:].isdigit() else sid,
+        )
+
     rows = []
-    for n in range(1, 187):
-        sid = f"F{n:02d}"
+    for sid in source_ids:
         x = by_id.get(sid, {})
         locator = None
         if sid in recovered:
@@ -82,6 +154,8 @@ def build_index(inv: dict, bootstrap: dict) -> dict:
                 locator = {"container": "source-rhomolo-2024-release2-869769b3829dd3017824"}
             elif sid in mm:
                 locator = {"container": "source-rhomolo-mm-2024-f36c666af69512fe897a"}
+            elif x.get("release_tags"):
+                locator = {"container": str(x["release_tags"][0])}
         elif x.get("runtime_only") or int(x.get("runtime_overlay_count") or 0) > 0:
             state, action = "MIDDLE_TIER_PRESENT", "REVIEW_MIDDLE_TIER_FIRST"
         elif x.get("no_acquisition"):
@@ -152,7 +226,34 @@ def main() -> None:
 
     inv = private_json(PRIVATE_INVENTORY, token)
     bootstrap = json.loads(args.bootstrap.read_text(encoding="utf-8"))
-    out = build_index(inv, bootstrap)
+
+    listing = private_directory("statistics/source-sets", token)
+    canonical_ids = sorted(
+        [
+            str(item.get("name"))
+            for item in listing
+            if item.get("type") == "dir"
+            and str(item.get("name") or "").startswith("F")
+            and str(item.get("name") or "")[1:].isdigit()
+        ],
+        key=lambda sid: int(sid[1:]),
+    )
+    if not canonical_ids:
+        raise RuntimeError("No canonical Fxx source-set directories discovered")
+
+    known_ids = _inventory_ids(inv)
+    missing_from_inventory = [sid for sid in canonical_ids if sid not in known_ids]
+    canonical_manifests = {
+        sid: private_json(f"statistics/source-sets/{sid}/manifest.json", token)
+        for sid in missing_from_inventory
+    }
+
+    out = build_index(
+        inv,
+        bootstrap,
+        source_ids=canonical_ids,
+        canonical_manifests=canonical_manifests,
+    )
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(
         json.dumps(out, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
