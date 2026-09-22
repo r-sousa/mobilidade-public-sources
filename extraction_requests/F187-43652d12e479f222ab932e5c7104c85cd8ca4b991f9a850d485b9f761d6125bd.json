@@ -7,9 +7,9 @@
   "release_tag": "mn-src-f187-43652d12e479f222ab93",
   "private_receipt": "statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/F187/43652d12e479f222ab932e5c7104c85cd8ca4b991f9a850d485b9f761d6125bd.json",
   "operation": "source_native_xls_series_extraction_ingress",
-  "execution_attempt": 2,
-  "extractor_revision": "SHARDED_PRIVATE_HANDOFF_V1_1",
-  "changed_method_reason": "First deterministic run verified and parsed the fingerprint-pinned asset family but its monolithic handoff could not be pushed; this retry shards source-native rows by workbook and emits push diagnostics without changing source identity or producer route.",
+  "execution_attempt": 3,
+  "extractor_revision": "CORRECTED_PERIOD_HEADER_BOUNDARY_V2",
+  "changed_method_reason": "Post-run QA found that hyphenated Trimestre filenames were not parsed into quarters and first data-row values contaminated helper header labels. Re-read only the same exact fingerprint-pinned private Release, reverify all assets before parse, and append a corrected extraction ingress without mutating historical outputs.",
   "expected_source_family": {
     "landing_html": 1,
     "native_xls_workbooks": 51,
@@ -23,5 +23,6 @@
   "join_f05": false,
   "producer_reacquisition": false,
   "consumer_joins": false,
-  "rights_adjudication": false
+  "rights_adjudication": false,
+  "append_only_correction": true
 }
