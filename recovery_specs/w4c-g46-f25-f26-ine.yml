@@ -1,18 +1,18 @@
 schema_version: 4.1.0
 mission_generation: 46
 worker: W4C
-execution_attempt: 3
+execution_attempt: 4
 private_repository: r-sousa/EU-transp-weekly
 private_branch: mobilidade-norte-recovery-20260919
 release_tag: data-20260915-a25baac3ab8d65d9
 corrects_prior_attempts:
-  - public_request: extraction_requests/W4C-G46-F25-F26-INE.json
-    attempt: 1
+  - attempt: 1
     disposition: INVALIDATED_WRAPPER_MISPARSE_AND_OVERSIZED_SINGLE_FILE_OUTPUT
-  - public_request: extraction_requests/W4C-G46-F25-F26-INE.json
-    attempt: 2
+  - attempt: 2
     disposition: PARTIAL_ROW_PARTS_VALID_BUT_FAMILY_INCOMPLETE_OVERSIZED_METADATA_SUMMARY
-changed_method_reason: "Attempts 1-2 verified the same exact preserved bytes and established the source-native row extraction but exposed GitHub Contents API size limits. Attempt 3 uses those same exact preserved release/assets only, keeps bounded source-native JSON/CSV row parts, and reduces only the metadata summary by copying scalar producer metadata verbatim while representing large nested metadata with exact input-preservation flag, byte count and SHA-256. No producer reacquisition or semantic normalization occurs."
+  - attempt: 3
+    disposition: INVALIDATED_CACHE_METADATA_LEAF_LEAKAGE_INTO_SOURCE_NATIVE_ROW_COUNT
+changed_method_reason: "Attempt 3 established bounded outputs but QA showed the preserved cache envelope is explicitly {metadata, records}; recursive fallback admitted 37 F25 and 40 F26 metadata scalar leaves as pseudo-rows. Attempt 4 uses the same exact preserved release/assets only and admits exclusively objects from the explicit records array while preserving metadata separately as compact lineage/context. No producer reacquisition or semantic normalization occurs."
 assets:
   F25:
     id: 565831863
@@ -45,8 +45,8 @@ semantic_guards:
       - producer-native geography identifiers and labels
       - transport-mode categories
       - duration categories
-      - workplace/study-location categories
-      - employment-polarization categories
+      - workplace/study-location categories when present in producer rows or metadata
+      - employment-polarization categories when present in producer rows or metadata
       - producer measure and unit fields
       - labels, flags and missingness
     context: Censos 2021 pandemic-period context must remain explicit
