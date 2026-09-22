@@ -1,6 +1,6 @@
 schema_version: 1.0.0
 source_set_id: F190
-title: APA/SNIERPA — Inventário Nacional de Emissões de GEE: transportes
+title: "APA/SNIERPA — Inventário Nacional de Emissões de GEE: transportes"
 producer: APA / SNIERPA via APA/REA presentation
 product_key: apambiente.pt::snierpa::inventario-nacional-gee-sector-transportes
 adapter: easychart_html
