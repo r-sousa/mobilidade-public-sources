@@ -1,0 +1,76 @@
+{
+  "acquisition_code_commit": "75c1fe12bb2c151c0ebea4c69a33be3784bae2ee",
+  "limitations": "Raw producer HTML is the native source object. Embedded Easychart configuration/data are extracted lexically without JavaScript execution; derived JSON/CSV mirror the chart payload and do not assert that it is the producer's upstream canonical table or that redistribution is cleared.",
+  "native_asset_fingerprint": "7c8f8fa18c0d43ed9782b4f890e47a3ed1041c66af0acf192bfe70951941b046",
+  "recomposed_assets": [
+    {
+      "bytes": 858,
+      "format": "CSV",
+      "name": "easychart-chart-1.csv",
+      "sha256": "9323d80467a0a6853041ed6ab776c99b4309e1392041c8f8b086e3d7cb6e5756"
+    },
+    {
+      "bytes": 1551,
+      "format": "CSV",
+      "name": "easychart-chart-10.csv",
+      "sha256": "ff763a58f0ea1d51ae2be6ea448dd0fdb17725d8f371771f670e8ce9466ef8c5"
+    },
+    {
+      "bytes": 1022,
+      "format": "CSV",
+      "name": "easychart-chart-2.csv",
+      "sha256": "e1a318c328e355224703192aa0c77176033b0f1bae0ea0f3a7bfd8cfc67dc092"
+    },
+    {
+      "bytes": 2079,
+      "format": "CSV",
+      "name": "easychart-chart-3.csv",
+      "sha256": "11f61a19d734ed8f48ee82d14854982659bcf67464890a877a6fbd55a886fe82"
+    },
+    {
+      "bytes": 161,
+      "format": "CSV",
+      "name": "easychart-chart-4.csv",
+      "sha256": "aa04072c547496a8b32d534b8ae5cba0de2c0dce224a520c801870dd4fd08279"
+    },
+    {
+      "bytes": 740,
+      "format": "CSV",
+      "name": "easychart-chart-5.csv",
+      "sha256": "479f1eabf8ce6eab64afc72f9663260216d96fcf0229cb633e4a2d272d8ca2d4"
+    },
+    {
+      "bytes": 544,
+      "format": "CSV",
+      "name": "easychart-chart-6.csv",
+      "sha256": "ca89fff8861874eadfca5aaf69057c8a4138274f5c491ba8966b0bfc6c6b9780"
+    },
+    {
+      "bytes": 937,
+      "format": "CSV",
+      "name": "easychart-chart-7.csv",
+      "sha256": "12d7651a022ae06a768c11f19872cac439cc23ae1c93bb240b685128c75487e8"
+    },
+    {
+      "bytes": 140,
+      "format": "CSV",
+      "name": "easychart-chart-8.csv",
+      "sha256": "a94b61cb5cdab5a826581a2b4af51c533a53bf904f2158ac7875742664f66d40"
+    },
+    {
+      "bytes": 355,
+      "format": "CSV",
+      "name": "easychart-chart-9.csv",
+      "sha256": "c1035af6398b6e99402fb1133470818d8f9b91f423eb68d28df177490a14f7ae"
+    },
+    {
+      "bytes": 159368,
+      "format": "JSON",
+      "name": "easychart-charts.json",
+      "sha256": "2cc5fcd7d268ad4b821d3e54530fa9e544f14468088b8be97af608292cea7944"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_set_id": "F191",
+  "validation_result": "PASS_EASYCHART_HTML_EXTRACTED"
+}
