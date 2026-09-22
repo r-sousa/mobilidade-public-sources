@@ -1840,7 +1840,7 @@ def _js_call_argument(script: str, function_name: str):
     balanced before the outer call is closed.
     """
     match = re.search(
-        rf"\\b{re.escape(function_name)}\\s*\\(",
+        rf"\b{re.escape(function_name)}\s*\(",
         script,
     )
     if not match:
