@@ -1,0 +1,12 @@
+{
+  "schema_version": "4.1.0",
+  "worker": "W4C",
+  "mission_generation": 46,
+  "operation": "DETERMINISTIC_PRIVATE_PRESERVED_INE_CENSUS_PAIR_EXTRACTION",
+  "private_release": "data-20260915-a25baac3ab8d65d9",
+  "source_set_ids": ["F25", "F26"],
+  "semantic_owner_after_return": "W4B",
+  "producer_reacquisition": false,
+  "rights_adjudication": false,
+  "consumer_interpretation": false
+}
