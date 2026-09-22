@@ -1,0 +1,44 @@
+name: Extract F68 private-preserved COS ingress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extraction_requests/F68-276ad30496322e95a3a4cf5c8804cd203b841bb88827eca1f1ea8d0a9945aa07.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-f68-private-extraction-276ad30496322e95a3a4
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PRIVATE_REPO: r-sousa/EU-transp-weekly
+      PRIVATE_BRANCH: mobilidade-norte-recovery-20260919
+      PUBLIC_REPO: ${{ github.repository }}
+      PUBLIC_TOKEN: ${{ github.token }}
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install deterministic spatial extraction tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends gdal-bin zip curl
+          python -m pip install --quiet requests
+          ogr2ogr --version
+
+      - name: Extract exact F68 preserved artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/extract_f68_preserved.py
