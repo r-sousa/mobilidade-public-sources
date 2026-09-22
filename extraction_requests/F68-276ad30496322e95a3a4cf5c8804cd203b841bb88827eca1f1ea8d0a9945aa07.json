@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F68",
+  "mission_generation": 54,
+  "capture_run_id": 35415911461,
+  "artifact_id": 10576315158,
+  "artifact_name": "mn26-dgt-cos-35415911461",
+  "wrapper_bytes": 897711292,
+  "wrapper_sha256": "9e3889f0999a7567a6442d1d44e309ae283efb7fdf0507ff4245657fb526df75",
+  "raw_member": "F68-COS2023v1-S2-source.zip",
+  "raw_member_bytes": 898115957,
+  "raw_member_sha256": "276ad30496322e95a3a4cf5c8804cd203b841bb88827eca1f1ea8d0a9945aa07",
+  "inner_member": "COS2023v1-S2.gpkg",
+  "inner_uncompressed_bytes": 1559359488,
+  "expected_crs": "EPSG:3763",
+  "norte_selection": {
+    "name": "NORTE_CONSERVATIVE_EXTRACTION_ENVELOPE_NOT_ADMINISTRATIVE_BOUNDARY",
+    "wgs84_bbox": [-9.3, 40.5, -5.8, 42.3],
+    "semantics": "Extraction-only conservative rectangular envelope covering Norte; not a NUTS/admin-membership adjudication. Select intersecting source features without clipping, simplifying or transforming geometries; W2B retains later semantic normalization responsibility."
+  },
+  "guards": {
+    "producer_reacquisition": false,
+    "consumer_joins": false,
+    "rights_adjudication": false,
+    "join_F65_F67": false,
+    "canonical_catalogue_writes": false,
+    "site_drive_scheduler_changes": false
+  }
+}
