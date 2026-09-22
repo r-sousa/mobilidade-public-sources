@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'extraction_requests/W3C-G39-SHARED-ARCHIVE-INVENTORY-FIRST.json'
+      - 'extraction_requests/W3C-G39-SHARED-ARCHIVE-INVENTORY*.json'
 
 permissions:
   contents: read
