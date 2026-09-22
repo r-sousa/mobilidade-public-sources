@@ -59,6 +59,7 @@
         "sdmx_rest",
         "sparql_json",
         "html_table",
+        "easychart_html",
         "rest_xml"
       ]
     },

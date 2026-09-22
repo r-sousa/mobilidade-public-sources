@@ -1,4 +1,5 @@
 from __future__ import annotations
+import ast
 import datetime as dt
 import csv
 import hashlib
@@ -1806,6 +1807,283 @@ def html_table(spec: dict, work: Path) -> dict:
     }
 
 
+class _InlineScriptCollector(HTMLParser):
+    """Collect inline script bodies without executing producer JavaScript."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.scripts = []
+        self._capture = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() != "script":
+            return
+        attr = {str(k).lower(): str(v or "") for k, v in attrs}
+        self._capture = not bool(attr.get("src"))
+        if self._capture:
+            self.scripts.append("")
+
+    def handle_endtag(self, tag):
+        if tag.lower() == "script":
+            self._capture = False
+
+    def handle_data(self, data):
+        if self._capture and self.scripts:
+            self.scripts[-1] += data
+
+
+def _js_call_argument(script: str, function_name: str):
+    """Return the single call argument for a bounded Easychart method.
+
+    This is a lexical scanner, not a JavaScript evaluator. Parentheses inside
+    quoted strings are ignored and nested function-call parentheses are
+    balanced before the outer call is closed.
+    """
+    match = re.search(
+        rf"\b{re.escape(function_name)}\s*\(",
+        script,
+    )
+    if not match:
+        return None
+
+    start = match.end()
+    depth = 1
+    quote = None
+    escaped = False
+    for pos in range(start, len(script)):
+        ch = script[pos]
+        if quote is not None:
+            if escaped:
+                escaped = False
+                continue
+            if ch == "\\":
+                escaped = True
+                continue
+            if ch == quote:
+                quote = None
+            continue
+
+        if ch in {"'", '"'}:
+            quote = ch
+        elif ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+            if depth == 0:
+                return script[start:pos].strip()
+
+    raise RuntimeError(
+        f"Unterminated Easychart call argument for {function_name}"
+    )
+
+
+def _js_string_literal(value: str, label: str) -> str:
+    """Decode a quoted JavaScript string using Python's safe literal parser."""
+    try:
+        parsed = ast.literal_eval(value)
+    except (SyntaxError, ValueError) as exc:
+        raise RuntimeError(
+            f"Easychart {label} is not a supported quoted string literal"
+        ) from exc
+    if not isinstance(parsed, str):
+        raise RuntimeError(f"Easychart {label} is not a string")
+    return parsed
+
+
+def _json_value(value: str, label: str):
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(
+            f"Easychart {label} is not strict JSON"
+        ) from exc
+
+
+def _easychart_csv_cell(value):
+    if value is None:
+        return ""
+    if isinstance(value, (dict, list)):
+        return json.dumps(
+            value,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+    return value
+
+
+def easychart_html(spec: dict, work: Path) -> dict:
+    """Preserve HTML and extract explicitly embedded Drupal Easychart payloads.
+
+    The adapter supports the producer-rendered pattern used by Drupal Easychart:
+    a chart container, setConfigStringified()/setConfig(), and setData(). It
+    intentionally does not execute JavaScript or infer undisclosed endpoints.
+    """
+    pms = spec["parameters"]
+    url = str(pms.get("url") or spec["source"]["landing_url"])
+    min_charts = max(1, int(pms.get("min_charts", 1)))
+    max_charts = max(min_charts, int(pms.get("max_charts", 100)))
+    require_inline_data = bool(pms.get("require_inline_data", True))
+    emit_csv = bool(pms.get("emit_csv", True))
+
+    s = session(system_ca=bool(pms.get("system_ca", False)))
+    r = s.get(url, timeout=180, allow_redirects=True)
+    r.raise_for_status()
+    raw = r.content
+    text = raw.decode(r.encoding or "utf-8", errors="replace")
+    if "<html" not in text.lower() and "<script" not in text.lower():
+        raise RuntimeError("Easychart source did not return recognizable HTML")
+
+    hp = work / "payload" / "easychart-page.html"
+    hp.parent.mkdir(parents=True, exist_ok=True)
+    hp.write_bytes(raw)
+    assets = [{
+        "path": str(hp.relative_to(work)),
+        "name": hp.name,
+        "sha256": sha256(hp),
+        "bytes": hp.stat().st_size,
+        "source_url": r.url,
+        "format": "HTML",
+        "role": "native",
+    }]
+
+    parser = _InlineScriptCollector()
+    parser.feed(text)
+    chart_id_re = re.compile(
+        r"""getElementById\s*\(\s*(['"])(easychart-chart-[^'"]+)\1\s*\)""",
+        re.I,
+    )
+
+    charts = []
+    seen_ids = set()
+    for script_no, script in enumerate(parser.scripts, 1):
+        chart_ids = []
+        for match in chart_id_re.finditer(script):
+            chart_id = match.group(2)
+            if chart_id not in chart_ids:
+                chart_ids.append(chart_id)
+        if not chart_ids:
+            continue
+        if len(chart_ids) != 1:
+            raise RuntimeError(
+                f"Easychart inline script {script_no} references multiple chart containers"
+            )
+        chart_id = chart_ids[0]
+        if chart_id in seen_ids:
+            raise RuntimeError(f"Duplicate Easychart container {chart_id}")
+        seen_ids.add(chart_id)
+
+        config = None
+        config_arg = _js_call_argument(script, "setConfigStringified")
+        if config_arg is not None:
+            config_text = _js_string_literal(config_arg, "config")
+            config = _json_value(config_text, "config")
+        else:
+            config_arg = _js_call_argument(script, "setConfig")
+            if config_arg is not None:
+                config = _json_value(config_arg, "config")
+
+        data = None
+        data_arg = _js_call_argument(script, "setData")
+        if data_arg is not None:
+            data = _json_value(data_arg, "data")
+
+        data_url = None
+        data_url_arg = _js_call_argument(script, "setDataUrl")
+        if data_url_arg is not None:
+            data_url = _js_string_literal(data_url_arg, "data URL")
+
+        if config is None:
+            raise RuntimeError(f"Easychart {chart_id} has no supported embedded config")
+        if require_inline_data and data is None:
+            raise RuntimeError(
+                f"Easychart {chart_id} has no embedded setData payload"
+            )
+
+        charts.append({
+            "sequence": len(charts) + 1,
+            "container_id": chart_id,
+            "config": config,
+            "data": data,
+            "data_url": data_url,
+        })
+
+    if len(charts) < min_charts:
+        raise RuntimeError(
+            f"Easychart page exposed {len(charts)} charts below declared minimum {min_charts}"
+        )
+    if len(charts) > max_charts:
+        raise RuntimeError(
+            f"Easychart page exposed {len(charts)} charts above declared maximum {max_charts}"
+        )
+
+    jp = work / "recomposed" / "easychart-charts.json"
+    jp.parent.mkdir(parents=True, exist_ok=True)
+    jp.write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0.0",
+                "source_url": r.url,
+                "chart_count": len(charts),
+                "charts": charts,
+            },
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        ) + "\n",
+        encoding="utf-8",
+    )
+    assets.append({
+        "path": str(jp.relative_to(work)),
+        "name": jp.name,
+        "sha256": sha256(jp),
+        "bytes": jp.stat().st_size,
+        "source_url": None,
+        "format": "JSON",
+        "role": "recomposed",
+    })
+
+    if emit_csv:
+        for chart in charts:
+            data = chart["data"]
+            if not data or not isinstance(data, list):
+                continue
+            if not all(isinstance(row, list) for row in data):
+                continue
+            name = re.sub(
+                r"[^A-Za-z0-9._-]+",
+                "_",
+                chart["container_id"],
+            )
+            cp = work / "recomposed" / f"{name}.csv"
+            with cp.open("w", encoding="utf-8", newline="") as f:
+                writer = csv.writer(f, lineterminator="\n")
+                for row in data:
+                    writer.writerow([_easychart_csv_cell(v) for v in row])
+            assets.append({
+                "path": str(cp.relative_to(work)),
+                "name": cp.name,
+                "sha256": sha256(cp),
+                "bytes": cp.stat().st_size,
+                "source_url": None,
+                "format": "CSV",
+                "role": "recomposed",
+            })
+
+    return {
+        "acquired_at": now(),
+        "assets": assets,
+        "validation_result": "PASS_EASYCHART_HTML_EXTRACTED",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "Raw producer HTML is the native source object. Embedded Easychart "
+            "configuration/data are extracted lexically without JavaScript execution; "
+            "derived JSON/CSV mirror the chart payload and do not assert that it is the "
+            "producer's upstream canonical table or that redistribution is cleared."
+        ),
+    }
+
+
 def rest_xml(spec: dict, work: Path) -> dict:
     """Acquire one or more bounded public XML endpoints such as DATEX II or NeTEx."""
     pms = spec["parameters"]
@@ -1907,6 +2185,7 @@ ADAPTERS = {
     "sdmx_rest": sdmx_rest,
     "sparql_json": sparql_json,
     "html_table": html_table,
+    "easychart_html": easychart_html,
     "rest_xml": rest_xml,
 }
 

@@ -64,6 +64,7 @@ bytes.
 - OpenDataSoft-compatible pagination with deterministic JSONL recomposition;
 - ArcGIS Feature Layer pagination with complete GeoJSON recomposition;
 - HTML/download discovery for producer file series, with ordered series manifests;
+- embedded Drupal Easychart/Highcharts pages, preserving native HTML and deterministic JSON/CSV chart payloads;
 - open-data catalogue resolvers for `dados.gov.pt`, `datos.gob.es` and `data.europa.eu` (catalogue role only, never automatic Fxx identity).
 
 Chunking is adapter-specific rather than universal. INE uses the proven 40,000-cell contract,
