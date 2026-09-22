@@ -1,0 +1,91 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "3899bd1d1e8e8e1dfc35cf90297a5cf3a5ee330e",
+  "acquisition_timestamp": "2026-09-22T21:20:34.926480Z",
+  "adapter": "easychart_html",
+  "assets": [
+    {
+      "bytes": 95446,
+      "format": "HTML",
+      "name": "easychart-page.html",
+      "role": "native",
+      "sha256": "2f8577373c04981061c01d7f5ce5d045edbcdd09a756560ce37e13f50547b829",
+      "source_url": "https://rea.apambiente.pt/content/emiss%C3%B5es-de-gases-com-efeito-de-estufa?language=pt-pt"
+    },
+    {
+      "bytes": 43094,
+      "format": "JSON",
+      "name": "easychart-charts.json",
+      "role": "recomposed",
+      "sha256": "0bffd093ecbc9729d48457bbb8d4f8388500e551ce42a60fc04358ca082740f5",
+      "source_url": null
+    },
+    {
+      "bytes": 582,
+      "format": "CSV",
+      "name": "easychart-chart-1.csv",
+      "role": "recomposed",
+      "sha256": "e209414032d6ec547ad3ba99faf4592f564abba232b90c17b38bf08d2bfa609d",
+      "source_url": null
+    },
+    {
+      "bytes": 1535,
+      "format": "CSV",
+      "name": "easychart-chart-2.csv",
+      "role": "recomposed",
+      "sha256": "c0771195f03b0a879ddd50941de31087b8a24f4931dfc10cd7fb623e09bb4a96",
+      "source_url": null
+    },
+    {
+      "bytes": 190,
+      "format": "CSV",
+      "name": "easychart-chart-3.csv",
+      "role": "recomposed",
+      "sha256": "b05a78d49a7eb5d295c2288323c2feb9b5a80aa2848b89b1ef0300d99138be44",
+      "source_url": null
+    },
+    {
+      "bytes": 386,
+      "format": "CSV",
+      "name": "easychart-chart-4.csv",
+      "role": "recomposed",
+      "sha256": "5adf335204aea36e24566a708a417d4c7b945f58e436cbaba23ddb1c7b80016b",
+      "source_url": null
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "HTML + deterministic Easychart JSON/CSV",
+  "limitations": "Raw producer HTML is the native source object. Embedded Easychart configuration/data are extracted lexically without JavaScript execution; derived JSON/CSV mirror the chart payload and do not assert that it is the producer's upstream canonical table or that redistribution is cleared.",
+  "native_asset_fingerprint": "4f00e4a0598c691ddd2789110f23064bc86b121db63d6b87c00275ab695d5a55",
+  "primary_repair": false,
+  "producer": "APA / SNIERPA via APA/REA presentation",
+  "product_key": "apambiente.pt::snierpa::inventario-nacional-gee-sector-transportes",
+  "raw_native": {
+    "acquisition_scope": "transport-sector and transport-subsector inventory observations plus required native classification metadata",
+    "classification": "national GHG inventory sector/subsector classification; transport scope retained explicitly",
+    "geography": "Portugal continental + Açores + Madeira as published"
+  },
+  "repair_authorization": null,
+  "request_id": "MN-PUBLIC-F190-G57-20260922T2200PT-02",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://rea.apambiente.pt/content/emiss%C3%B5es-de-gases-com-efeito-de-estufa?language=pt-pt",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": null,
+  "source_set_id": "F190",
+  "source_url": "https://rea.apambiente.pt/content/emiss%C3%B5es-de-gases-com-efeito-de-estufa?language=pt-pt",
+  "title": "APA/SNIERPA — Inventário Nacional de Emissões de GEE: transportes",
+  "validation_result": "PASS_EASYCHART_HTML_EXTRACTED"
+}
