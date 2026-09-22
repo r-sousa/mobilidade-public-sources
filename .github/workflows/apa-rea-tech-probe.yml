@@ -1,46 +1,69 @@
-name: Temporary APA REA technology probe
+name: Temporary APA REA integration check
 
 on:
   push:
     branches: [apa-rea-tech-probe-20260922]
     paths:
-      - 'scripts/probe_public_web.py'
+      - 'src/**'
+      - 'tests/**'
+      - 'schema/**'
       - '.github/workflows/apa-rea-tech-probe.yml'
 
 permissions:
   contents: read
 
 jobs:
-  probe:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install --disable-pip-version-check requests
-      - name: Probe REA Parque rodoviario
-        run: |
-          python scripts/probe_public_web.py \
-            'https://rea.apambiente.pt/content/parque-rodovi%C3%A1rio'
-      - name: Inspect Easychart markup
+      - run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Run adapter mechanism tests
+        run: python -m unittest tests.test_adapter_mechanisms -v
+      - name: Verify live APA REA embedded charts
         run: |
           python - <<'PY'
-          import re, requests
-          url='https://rea.apambiente.pt/content/parque-rodovi%C3%A1rio'
-          text=requests.get(url,timeout=90).text
-          for term in ('easychart','highcharts','setData','setConfig','dataUrl','easychart-chart-','chart_data'):
-              print('===',term,'===')
-              start=0
-              shown=0
-              while shown < 20:
-                  i=text.lower().find(term.lower(),start)
-                  if i < 0:
-                      break
-                  snippet=text[max(0,i-1000):min(len(text),i+5000)]
-                  print(snippet.replace('\n',' '))
-                  print()
-                  shown += 1
-                  start=i+len(term)
+          import json
+          import tempfile
+          from pathlib import Path
+          from mn_public_acquisition.adapters import easychart_html
+
+          spec = {
+              "source_set_id": "F999",
+              "source": {
+                  "landing_url": "https://rea.apambiente.pt/content/parque-rodovi%C3%A1rio"
+              },
+              "parameters": {
+                  "min_charts": 9,
+                  "max_charts": 9,
+                  "emit_csv": True,
+              },
+          }
+          with tempfile.TemporaryDirectory() as td:
+              work = Path(td)
+              result = easychart_html(spec, work)
+              payload = json.loads(
+                  (work / "recomposed/easychart-charts.json").read_text(
+                      encoding="utf-8"
+                  )
+              )
+              if payload["chart_count"] != 9:
+                  raise SystemExit(
+                      f"expected 9 embedded charts, got {payload['chart_count']}"
+                  )
+              csv_count = sum(
+                  1 for a in result["assets"]
+                  if a.get("format") == "CSV"
+              )
+              print(
+                  result["validation_result"],
+                  "charts=", payload["chart_count"],
+                  "csv=", csv_count,
+              )
           PY
