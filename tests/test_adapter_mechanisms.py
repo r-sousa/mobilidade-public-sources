@@ -88,6 +88,7 @@ class AdapterMechanismTests(unittest.TestCase):
             "sdmx_rest",
             "sparql_json",
             "html_table",
+            "easychart_html",
             "rest_xml",
         ):
             self.assertIn(name, adapters.ADAPTERS)
@@ -142,6 +143,96 @@ class AdapterMechanismTests(unittest.TestCase):
         self.assertEqual(out["validation_result"], "PASS_HTML_TABLE_EXTRACTED")
         self.assertEqual(payload["table_count"], 1)
         self.assertEqual(payload["tables"][0]["rows"][0][0], "Porto")
+
+
+    def test_easychart_html_extracts_embedded_chart_payloads(self):
+        html = b"""<html><body>
+        <div id="easychart-chart-1"></div>
+        <script>
+        var container = document.getElementById('easychart-chart-1');
+        window.easychart.setConfigStringified('{"chart":{"type":"column"},"title":{"text":"Taxa"}}');
+        window.easychart.setData([[null,"PT","UE-27"],["2023","550","570"]]);
+        </script>
+        <div id="easychart-chart-2"></div>
+        <script>
+        var container = document.getElementById("easychart-chart-2");
+        window.easychart.setConfig({"chart":{"type":"pie"}});
+        window.easychart.setData([["Gasolina","100"],["Eletrico","20"]]);
+        </script>
+        </body></html>"""
+        response = FakeResponse(
+            url="https://charts.example.test/page",
+            content=html,
+            headers={"content-type": "text/html"},
+        )
+        with tempfile.TemporaryDirectory() as td, patch.object(
+            adapters, "session", return_value=SequenceSession([response])
+        ):
+            work = Path(td)
+            out = adapters.easychart_html(
+                self._spec(
+                    "easychart_html",
+                    {
+                        "url": "https://charts.example.test/page",
+                        "min_charts": 2,
+                        "max_charts": 2,
+                    },
+                ),
+                work,
+            )
+            payload = json.loads(
+                (work / "recomposed/easychart-charts.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            csv_text = (
+                work / "recomposed/easychart-chart-1.csv"
+            ).read_text(encoding="utf-8")
+
+        self.assertEqual(
+            out["validation_result"],
+            "PASS_EASYCHART_HTML_EXTRACTED",
+        )
+        self.assertEqual(payload["chart_count"], 2)
+        self.assertEqual(
+            payload["charts"][0]["data"][1],
+            ["2023", "550", "570"],
+        )
+        self.assertEqual(
+            payload["charts"][1]["config"]["chart"]["type"],
+            "pie",
+        )
+        self.assertIn(",PT,UE-27", csv_text)
+        self.assertIn("2023,550,570", csv_text)
+
+    def test_easychart_html_rejects_missing_inline_data_by_default(self):
+        html = b"""<html><body>
+        <div id="easychart-chart-1"></div>
+        <script>
+        var container = document.getElementById('easychart-chart-1');
+        window.easychart.setConfigStringified('{"chart":{"type":"column"}}');
+        window.easychart.setDataUrl('https://data.example.test/chart.csv');
+        </script>
+        </body></html>"""
+        response = FakeResponse(
+            url="https://charts.example.test/page",
+            content=html,
+            headers={"content-type": "text/html"},
+        )
+        with tempfile.TemporaryDirectory() as td, patch.object(
+            adapters, "session", return_value=SequenceSession([response])
+        ):
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "no embedded setData payload",
+            ):
+                adapters.easychart_html(
+                    self._spec(
+                        "easychart_html",
+                        {"url": "https://charts.example.test/page"},
+                    ),
+                    Path(td),
+                )
 
     def test_rest_xml_validates_root_and_namespace(self):
         xml = b"""<?xml version="1.0"?>
