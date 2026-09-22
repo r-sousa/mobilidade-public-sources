@@ -1,0 +1,24 @@
+{
+  "schema_version": "4.0.7",
+  "source_set_id": "F187",
+  "wake_mission_generation": 43,
+  "assignment_origin_generation": 42,
+  "native_asset_fingerprint": "43652d12e479f222ab932e5c7104c85cd8ca4b991f9a850d485b9f761d6125bd",
+  "release_tag": "mn-src-f187-43652d12e479f222ab93",
+  "private_receipt": "statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/F187/43652d12e479f222ab932e5c7104c85cd8ca4b991f9a850d485b9f761d6125bd.json",
+  "operation": "source_native_xls_series_extraction_ingress",
+  "expected_source_family": {
+    "landing_html": 1,
+    "native_xls_workbooks": 51,
+    "series_manifest": 1,
+    "coverage": "2014Q1-2026Q2 including 2025 annual"
+  },
+  "verify_all_receipt_assets_before_any_parse": true,
+  "evidence_class": "OBSERVED_TRAFFIC_SOURCE",
+  "preserve_schema_drift": true,
+  "harmonize_editions": false,
+  "join_f05": false,
+  "producer_reacquisition": false,
+  "consumer_joins": false,
+  "rights_adjudication": false
+}
