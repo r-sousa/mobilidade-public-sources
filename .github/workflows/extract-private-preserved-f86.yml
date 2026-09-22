@@ -1,0 +1,280 @@
+name: Extract F86 private-preserved INE observations ingress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extraction_requests/F86-5c6cd18e4adb438a38692035370785744ed8a7bb22801709a90fb6ae6c64706e.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mn-f86-private-extraction-5c6cd18e4adb438a3869
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PRIVATE_REPO: r-sousa/EU-transp-weekly
+      PRIVATE_BRANCH: mobilidade-norte-recovery-20260919
+      SOURCE_SET_ID: F86
+      MISSION_GENERATION: '53'
+      FINGERPRINT: 5c6cd18e4adb438a38692035370785744ed8a7bb22801709a90fb6ae6c64706e
+      RELEASE_TAG: mn-src-f86-5c6cd18e4adb438a3869
+      ASSET_ID: '581767380'
+      ASSET_NAME: observations.jsonl.gz
+      ASSET_BYTES: '499'
+      ASSET_SHA256: 42f66961d281eea3205f3b40abb838df38c30444c53f823da3615dd280d2c281
+      EXPECTED_ROWS: '16'
+      PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify exact preserved F86 asset and emit private source-native ingress
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64, gzip, hashlib, json, os, pathlib, shutil, subprocess, time, urllib.error, urllib.request
+          from datetime import datetime, timezone
+
+          source_id=os.environ['SOURCE_SET_ID']
+          generation=int(os.environ['MISSION_GENERATION'])
+          fp=os.environ['FINGERPRINT']
+          release_tag=os.environ['RELEASE_TAG']
+          asset_id=int(os.environ['ASSET_ID'])
+          asset_name=os.environ['ASSET_NAME']
+          expected_bytes=int(os.environ['ASSET_BYTES'])
+          expected_sha=os.environ['ASSET_SHA256']
+          expected_rows=int(os.environ['EXPECTED_ROWS'])
+          private_repo=os.environ['PRIVATE_REPO']
+          private_branch=os.environ['PRIVATE_BRANCH']
+          read_token=(os.environ.get('MN_PRIVATE_SINK_TOKEN') or os.environ.get('PRIVATE_SINK_TOKEN') or os.environ.get('MN_PRIVATE_READ_TOKEN') or os.environ.get('PRIVATE_READ_TOKEN') or '').strip()
+          write_token=(os.environ.get('MN_PRIVATE_SINK_TOKEN') or os.environ.get('PRIVATE_SINK_TOKEN') or '').strip()
+          req_path=pathlib.Path(f'extraction_requests/F86-{fp}.json')
+          if not req_path.exists():
+              raise SystemExit('EXTRACTION_REQUEST_MISSING')
+          request=json.loads(req_path.read_text(encoding='utf-8'))
+          required={
+              'source_set_id':source_id,
+              'mission_generation':generation,
+              'native_asset_fingerprint':fp,
+              'release_tag':release_tag,
+              'operation':'private_preserved_source_native_jsonl_extraction_ingress'
+          }
+          for k,v in required.items():
+              if request.get(k)!=v:
+                  raise SystemExit(f'REQUEST_IDENTITY_MISMATCH:{k}:{request.get(k)!r}!={v!r}')
+          if request.get('producer_reacquisition') is not False:
+              raise SystemExit('PRODUCER_REACQUISITION_MUST_BE_FALSE')
+          if not read_token:
+              raise SystemExit('MN_PRIVATE_READ_CREDENTIAL_MISSING')
+          if not write_token:
+              raise SystemExit('MN_PRIVATE_WRITE_CREDENTIAL_MISSING')
+
+          api_headers={
+              'Authorization':'Bearer '+read_token,
+              'Accept':'application/vnd.github+json',
+              'User-Agent':'MobilidadeNorte-F86Extractor/1.0',
+              'X-GitHub-Api-Version':'2022-11-28'
+          }
+          def gh_json(url):
+              req=urllib.request.Request(url,headers=api_headers)
+              with urllib.request.urlopen(req,timeout=120) as r:
+                  return json.loads(r.read())
+
+          # Binding authority check before any private asset read.
+          team_meta=gh_json(f'https://api.github.com/repos/{private_repo}/contents/statistics/recovery-20260920/simple-runtime/team-missions.json?ref={private_branch}')
+          team=json.loads(base64.b64decode(team_meta['content']).decode('utf-8'))
+          if int(team.get('mission_generation',-1))!=generation:
+              raise SystemExit(f'MISSION_GENERATION_CHANGED_BEFORE_READ:{team.get("mission_generation")}')
+          w4c=team.get('teams',{}).get('W4',{}).get('C',{})
+          if w4c.get('worker')!='W4C' or source_id not in json.dumps(w4c,ensure_ascii=False) or 'EXTRACTION' not in json.dumps(w4c,ensure_ascii=False).upper():
+              raise SystemExit('CURRENT_W4C_F86_EXTRACTION_ASSIGNMENT_NOT_FOUND')
+
+          # Download exact already-preserved private Release asset. No producer endpoint is contacted.
+          asset_headers={**api_headers,'Accept':'application/octet-stream'}
+          req=urllib.request.Request(f'https://api.github.com/repos/{private_repo}/releases/assets/{asset_id}',headers=asset_headers)
+          try:
+              with urllib.request.urlopen(req,timeout=180) as r:
+                  gz_bytes=r.read()
+          except urllib.error.HTTPError as e:
+              raise SystemExit(f'PRIVATE_ASSET_READ_FAILED:HTTP_{e.code}')
+          got_sha=hashlib.sha256(gz_bytes).hexdigest()
+          if len(gz_bytes)!=expected_bytes or got_sha!=expected_sha:
+              raise SystemExit(f'ASSET_VERIFICATION_FAILED:bytes={len(gz_bytes)}:sha256={got_sha}')
+
+          try:
+              raw=gzip.decompress(gz_bytes)
+          except Exception as e:
+              raise SystemExit(f'GZIP_DECOMPRESS_FAILED:{type(e).__name__}:{e}')
+          try:
+              text=raw.decode('utf-8')
+          except UnicodeDecodeError as e:
+              raise SystemExit(f'UTF8_DECODE_FAILED:{e.start}')
+          lines=[ln for ln in text.splitlines() if ln.strip()]
+          if len(lines)!=expected_rows:
+              raise SystemExit(f'ROW_COUNT_MISMATCH:{len(lines)}!={expected_rows}')
+          rows=[]
+          for i,ln in enumerate(lines,1):
+              try:
+                  obj=json.loads(ln)
+              except Exception as e:
+                  raise SystemExit(f'JSONL_PARSE_FAILED:line={i}:{type(e).__name__}:{e}')
+              if not isinstance(obj,dict):
+                  raise SystemExit(f'JSONL_ROW_NOT_OBJECT:line={i}')
+              rows.append(obj)
+
+          fields=sorted({k for r in rows for k in r.keys()})
+          null_counts={k:sum(1 for r in rows if k not in r or r.get(k) is None) for k in fields}
+          type_counts={}
+          for k in fields:
+              tc={}
+              for r in rows:
+                  if k not in r:
+                      t='MISSING_KEY'
+                  elif r[k] is None:
+                      t='null'
+                  elif isinstance(r[k],bool):
+                      t='bool'
+                  elif isinstance(r[k],int):
+                      t='int'
+                  elif isinstance(r[k],float):
+                      t='float'
+                  elif isinstance(r[k],str):
+                      t='str'
+                  elif isinstance(r[k],list):
+                      t='list'
+                  elif isinstance(r[k],dict):
+                      t='dict'
+                  else:
+                      t=type(r[k]).__name__
+                  tc[t]=tc.get(t,0)+1
+              type_counts[k]=tc
+          line_sha256=[hashlib.sha256((ln+'\n').encode('utf-8')).hexdigest() for ln in lines]
+
+          now=datetime.now(timezone.utc)
+          stamp=now.strftime('%Y%m%dT%H%M%SZ')
+          temp=pathlib.Path(os.environ.get('RUNNER_TEMP','/tmp'))/f'f86-{stamp}'
+          out=temp/'out'; out.mkdir(parents=True,exist_ok=True)
+          native_path=out/'f86-observations-source-native.jsonl'
+          # Preserve exact decompressed bytes, including producer values/status/flags/missingness representation.
+          native_path.write_bytes(raw)
+          inventory={
+              'schema_version':'4.8.0',
+              'worker':'W4C',
+              'mission_generation':generation,
+              'package':'F86_PRIVATE_PRESERVED_SOURCE_NATIVE_EXTRACTION_INGRESS',
+              'source_set_id':source_id,
+              'native_asset_fingerprint':fp,
+              'private_release_tag':release_tag,
+              'source_asset':{
+                  'id':asset_id,'name':asset_name,'bytes':expected_bytes,'sha256':expected_sha,'verified_before_parse':True
+              },
+              'decompressed':{
+                  'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'rows':len(rows),'fields':fields,
+                  'null_or_missing_counts':null_counts,'json_type_counts':type_counts,'line_sha256':line_sha256
+              },
+              'semantic_interpretation_performed':False,
+              'producer_reacquisition':False,
+              'consumer_joins':False,
+              'rights_adjudication':False,
+              'guards':[
+                  'Exact preserved bytes only; no producer reacquisition.',
+                  'No Norte/PT11 inference or relabelling.',
+                  'No unit conversion, fuel-share inference, zero coercion or consumer interpretation.',
+                  'All producer keys and values are preserved source-natively in the private JSONL descendant.'
+              ]
+          }
+          inv_path=out/'f86-extraction-inventory.json'
+          inv_path.write_text(json.dumps(inventory,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+
+          out_base=f'statistics/recovery-20260920/simple-runtime/outputs/W4C/{stamp}-G53-F86-EXTRACTION-INGRESS'
+          handoff=f'statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/F86/{fp}-extraction.json'
+          output_meta=[]
+          for p in [native_path,inv_path]:
+              b=p.read_bytes()
+              output_meta.append({'relative_path':p.name,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})
+          receipt={
+              'schema_version':'4.8.0','worker':'W4C','mission_generation':generation,
+              'package':'F86_PRIVATE_PRESERVED_SOURCE_NATIVE_EXTRACTION_INGRESS',
+              'source_set_id':source_id,'native_asset_fingerprint':fp,'private_release_tag':release_tag,
+              'status':'PASS_PRIVATE_PRESERVED_EXACT_OBSERVATION_BYTES_VERIFIED_AND_SOURCE_NATIVE_JSONL_EMITTED',
+              'asset_verified_before_parse':True,
+              'asset':{'id':asset_id,'name':asset_name,'bytes':expected_bytes,'sha256':expected_sha},
+              'source_native_rows':len(rows),
+              'decompressed_sha256':hashlib.sha256(raw).hexdigest(),
+              'fields':fields,
+              'semantic_interpretation_performed':False,
+              'producer_reacquisition':False,'consumer_joins':False,'rights_adjudication':False,
+              'publication_authorized':False,'public_redistribution_cleared':False,
+              'outputs':[{'path':out_base+'/'+x['relative_path'],'bytes':x['bytes'],'sha256':x['sha256']} for x in output_meta],
+              'canonical_extraction_receipt_path':handoff,
+              'next_owner':'W4A',
+              'next_action':'Source-native semantic normalization of the exact 16 rows under CURRENT NO_NORTE_DIMENSION guards.'
+          }
+          receipt_path=out/'extraction-receipt.json'
+          receipt_path.write_text(json.dumps(receipt,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+
+          # Re-check CURRENT generation before private write.
+          team_meta2=gh_json(f'https://api.github.com/repos/{private_repo}/contents/statistics/recovery-20260920/simple-runtime/team-missions.json?ref={private_branch}')
+          team2=json.loads(base64.b64decode(team_meta2['content']).decode('utf-8'))
+          if int(team2.get('mission_generation',-1))!=generation:
+              raise SystemExit(f'MISSION_GENERATION_CHANGED_BEFORE_WRITE:{team2.get("mission_generation")}')
+
+          clone=temp/'private'
+          env=os.environ.copy(); env['GIT_TERMINAL_PROMPT']='0'
+          clone_url=f'https://x-access-token:{write_token}@github.com/{private_repo}.git'
+          subprocess.run(['git','clone','--depth','1','--branch',private_branch,clone_url,str(clone)],check=True,env=env,stdout=subprocess.DEVNULL)
+          team_clone=json.loads((clone/'statistics/recovery-20260920/simple-runtime/team-missions.json').read_text(encoding='utf-8'))
+          if int(team_clone.get('mission_generation',-1))!=generation:
+              raise SystemExit(f'MISSION_GENERATION_CHANGED_AFTER_CLONE:{team_clone.get("mission_generation")}')
+
+          dst=clone/out_base; dst.mkdir(parents=True,exist_ok=True)
+          for p in [native_path,inv_path,receipt_path]:
+              shutil.copy2(p,dst/p.name)
+          hp=clone/handoff; hp.parent.mkdir(parents=True,exist_ok=True); shutil.copy2(receipt_path,hp)
+          worker_path=clone/'statistics/recovery-20260920/simple-runtime/worker-W4C.json'
+          worker={
+              'schema_version':'4.8.0','worker':'W4C','team':'W4','partner':'C','mission_generation':generation,
+              'updated_at':now.isoformat().replace('+00:00','Z'),'status':'WINDOW_COMPLETE_F86_EXTRACTION_INGRESS_PASS',
+              'elastic_state':'STANDBY_AFTER_GEN53_F86_EXTRACTION_HANDOFF','current_task':None,
+              'last_output':out_base+'/extraction-receipt.json',
+              'window':{
+                  'mission':'Generation-53 deterministic extraction ingress from exact fingerprint-pinned private-preserved F86 bytes.',
+                  'material_packages':1,'source_set_id':source_id,'native_asset_fingerprint':fp,
+                  'private_preserved_asset_verified':True,'source_native_rows':len(rows),
+                  'semantic_interpretation_performed':False,'producer_requests_sent':0,'producer_reacquisitions':0,
+                  'consumer_joins':0,'rights_adjudications':0,'canonical_writes':0,
+                  'result':'PASS_F86_PRIVATE_PRESERVED_SOURCE_NATIVE_EXTRACTION_INGRESS',
+                  'outputs':[out_base+'/'+x['relative_path'] for x in output_meta]+[out_base+'/extraction-receipt.json',handoff],
+                  'next_owner':'W4A','next_cursor':'W4A may normalize only this exact extraction descendant under CURRENT generation-53 semantics; W4C must not normalize or consumerize.'
+              },
+              'blocker':None
+          }
+          worker_path.write_text(json.dumps(worker,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+
+          subprocess.run(['git','-C',str(clone),'config','user.name','mobilidade-public-sources[bot]'],check=True)
+          subprocess.run(['git','-C',str(clone),'config','user.email','actions@users.noreply.github.com'],check=True)
+          add_paths=[out_base,handoff,'statistics/recovery-20260920/simple-runtime/worker-W4C.json']
+          subprocess.run(['git','-C',str(clone),'add','--']+add_paths,check=True)
+          subprocess.run(['git','-C',str(clone),'commit','-m','result(mn): W4C F86 preserved-byte extraction ingress'],check=True,stdout=subprocess.DEVNULL)
+          # Collision-safe push: preserve unrelated concurrent commits by rebasing only this non-overlapping commit.
+          pushed=False
+          for attempt in range(3):
+              p=subprocess.run(['git','-C',str(clone),'push','origin',private_branch],env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+              if p.returncode==0:
+                  pushed=True; break
+              if attempt==2:
+                  print(p.stderr,file=os.sys.stderr); break
+              subprocess.run(['git','-C',str(clone),'pull','--rebase','origin',private_branch],check=True,env=env,stdout=subprocess.DEVNULL)
+              time.sleep(2)
+          if not pushed:
+              raise SystemExit('PRIVATE_PUSH_FAILED_AFTER_REBASE_RETRIES')
+          print(json.dumps({'status':'PASS','source_set_id':source_id,'fingerprint':fp,'source_native_rows':len(rows),'output_base':out_base,'handoff':handoff},sort_keys=True))
+          PY
