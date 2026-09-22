@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yaml
 
-from .extract_w4c_ine_census_pair_v3 import run
+from .extract_w4c_ine_census_pair_v4 import run
 
 
 def main() -> None:
