@@ -1,0 +1,24 @@
+schema_version: 1.0.0
+source_set_id: F191
+title: APA — Inventário nacional de emissões atmosféricas: transportes
+producer: APA via APA/REA presentation
+product_key: apambiente.pt::inventario-emissoes-atmosfericas::nec-clrtap-sector-transportes
+adapter: easychart_html
+access: public
+sink: private
+cadence: annual
+expected_format: HTML + deterministic Easychart JSON/CSV
+source:
+  landing_url: https://rea.apambiente.pt/content/emiss%C3%B5es-antropog%C3%A9nicas?language=pt-pt
+raw_native:
+  geography: Portugal continental
+  classification: NEC/CLRTAP pollutant and activity-sector classification; transport scope retained explicitly
+  acquisition_scope: transport-sector pollutant observations and required native classification metadata
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://rea.apambiente.pt/content/emiss%C3%B5es-antropog%C3%A9nicas?language=pt-pt
+  license: null
+  asset_check: null
+parameters:
+  scope_guard: Preserve pollutant identities and inventory revisions; do not merge with F72 spatial emissions or infer Norte/island values.
