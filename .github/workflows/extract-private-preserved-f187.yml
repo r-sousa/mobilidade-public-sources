@@ -1,0 +1,29 @@
+name: Extract F187 private-preserved IMT traffic ingress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extraction_requests/F187-43652d12e479f222ab932e5c7104c85cd8ca4b991f9a850d485b9f761d6125bd.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mn-f187-private-extraction-43652d12e479f222ab93
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XLS parser
+        run: python -m pip install --disable-pip-version-check 'xlrd==2.0.1'
+      - name: Verify all private-preserved F187 assets, extract source-native XLS ingress, and hand off privately
+        run: python scripts/extract_private_preserved_f187.py
