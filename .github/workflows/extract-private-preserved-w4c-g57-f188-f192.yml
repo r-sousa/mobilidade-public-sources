@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
       MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
     steps:
       - uses: actions/checkout@v4
