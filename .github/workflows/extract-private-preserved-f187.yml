@@ -25,5 +25,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install XLS parser
         run: python -m pip install --disable-pip-version-check 'xlrd==2.0.1'
-      - name: Verify all private-preserved F187 assets, extract source-native XLS ingress, and hand off privately
-        run: python scripts/extract_private_preserved_f187.py
+      - name: Verify all private-preserved F187 assets and emit corrected source-native XLS ingress
+        run: python scripts/extract_private_preserved_f187_v2.py
