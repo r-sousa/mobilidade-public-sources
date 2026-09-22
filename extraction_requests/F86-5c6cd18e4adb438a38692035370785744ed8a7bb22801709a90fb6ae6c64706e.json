@@ -1,0 +1,30 @@
+{
+  "schema_version": "4.8.0",
+  "source_set_id": "F86",
+  "mission_generation": 53,
+  "assignment_origin_generation": 53,
+  "native_asset_fingerprint": "5c6cd18e4adb438a38692035370785744ed8a7bb22801709a90fb6ae6c64706e",
+  "release_tag": "mn-src-f86-5c6cd18e4adb438a3869",
+  "private_receipt": "statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/F86/5c6cd18e4adb438a38692035370785744ed8a7bb22801709a90fb6ae6c64706e.json",
+  "operation": "private_preserved_source_native_jsonl_extraction_ingress",
+  "asset": {
+    "id": 581767380,
+    "name": "observations.jsonl.gz",
+    "bytes": 499,
+    "sha256": "42f66961d281eea3205f3b40abb838df38c30444c53f823da3615dd280d2c281"
+  },
+  "expected_source_native_rows": 16,
+  "reason": "Generation 52 cryptographically verified the exact F86 private Release and 16 producer rows but the connected private-Release surface cannot read the preserved observation values/status/flags. Generation 53 authorizes only deterministic public-runner readback of the exact preserved asset into compact private source-native JSONL for W4A normalization.",
+  "semantic_guards": [
+    "Extraction only; no semantic normalization or consumer interpretation in the public repository.",
+    "Preserve every producer key/value/status/flag/missingness source-natively.",
+    "No Norte/PT11 inference, relabelling or downscaling.",
+    "No unit conversion, fuel-share inference, fleet-stock interpretation or zero coercion.",
+    "Publication/reuse rights remain unchanged and not cleared."
+  ],
+  "producer_reacquisition": false,
+  "consumer_joins": false,
+  "rights_adjudication": false,
+  "public_byte_persistence": false,
+  "private_sink_only": true
+}
