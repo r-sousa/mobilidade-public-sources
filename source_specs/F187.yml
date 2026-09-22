@@ -1,0 +1,35 @@
+schema_version: 1.0.0
+source_set_id: F187
+title: IMT — Relatórios de Tráfego na Rede Nacional de Autoestradas
+producer: Instituto da Mobilidade e dos Transportes, I.P. (IMT)
+product_key: imt-ip.pt::relatorios-trafego-rede-nacional-autoestradas
+adapter: html_assets
+access: public
+sink: private
+cadence: quarterly and annual
+expected_format: XLS
+source:
+  landing_url: https://www.imt-ip.pt/biblioteca/reportorio-geral/estatisticas-repertorio-geral/relatorios-setoriais-imt/
+raw_native:
+  geography: motorway, concession and subsection (sublanço) as published by IMT
+  classification: TMDM/TMDA, traffic/circulation variation and source-native road/concession/subsection identifiers
+  acquisition_scope: IMT quarterly/annual motorway traffic data files exposed under Relatórios de Tráfego Trimestrais and annual report entries
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://www.imt-ip.pt/biblioteca/reportorio-geral/estatisticas-repertorio-geral/relatorios-setoriais-imt/
+  license: null
+  asset_check: null
+parameters:
+  period: "2014-current landing-page series"
+  landing_url: https://www.imt-ip.pt/biblioteca/reportorio-geral/estatisticas-repertorio-geral/relatorios-setoriais-imt/
+  include_href_regex: "\\.xlsx?$"
+  include_text_regex: "^Dados$"
+  allowed_extensions:
+    - xls
+    - xlsx
+  allowed_host_suffixes:
+    - imt-ip.pt
+  max_assets: 64
+  content_type_regex: "(excel|spreadsheet|octet-stream)"
+  series_key: imt-ip.pt::relatorios-trafego-rede-nacional-autoestradas
