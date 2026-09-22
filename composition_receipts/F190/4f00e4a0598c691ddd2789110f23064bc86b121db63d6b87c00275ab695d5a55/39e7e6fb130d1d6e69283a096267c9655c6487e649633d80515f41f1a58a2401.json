@@ -1,0 +1,40 @@
+{
+  "acquisition_code_commit": "3899bd1d1e8e8e1dfc35cf90297a5cf3a5ee330e",
+  "limitations": "Raw producer HTML is the native source object. Embedded Easychart configuration/data are extracted lexically without JavaScript execution; derived JSON/CSV mirror the chart payload and do not assert that it is the producer's upstream canonical table or that redistribution is cleared.",
+  "native_asset_fingerprint": "4f00e4a0598c691ddd2789110f23064bc86b121db63d6b87c00275ab695d5a55",
+  "recomposed_assets": [
+    {
+      "bytes": 582,
+      "format": "CSV",
+      "name": "easychart-chart-1.csv",
+      "sha256": "e209414032d6ec547ad3ba99faf4592f564abba232b90c17b38bf08d2bfa609d"
+    },
+    {
+      "bytes": 1535,
+      "format": "CSV",
+      "name": "easychart-chart-2.csv",
+      "sha256": "c0771195f03b0a879ddd50941de31087b8a24f4931dfc10cd7fb623e09bb4a96"
+    },
+    {
+      "bytes": 190,
+      "format": "CSV",
+      "name": "easychart-chart-3.csv",
+      "sha256": "b05a78d49a7eb5d295c2288323c2feb9b5a80aa2848b89b1ef0300d99138be44"
+    },
+    {
+      "bytes": 386,
+      "format": "CSV",
+      "name": "easychart-chart-4.csv",
+      "sha256": "5adf335204aea36e24566a708a417d4c7b945f58e436cbaba23ddb1c7b80016b"
+    },
+    {
+      "bytes": 43094,
+      "format": "JSON",
+      "name": "easychart-charts.json",
+      "sha256": "0bffd093ecbc9729d48457bbb8d4f8388500e551ce42a60fc04358ca082740f5"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_set_id": "F190",
+  "validation_result": "PASS_EASYCHART_HTML_EXTRACTED"
+}
