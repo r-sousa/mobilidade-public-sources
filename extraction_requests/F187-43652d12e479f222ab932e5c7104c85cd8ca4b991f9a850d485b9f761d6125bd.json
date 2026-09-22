@@ -7,6 +7,9 @@
   "release_tag": "mn-src-f187-43652d12e479f222ab93",
   "private_receipt": "statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/F187/43652d12e479f222ab932e5c7104c85cd8ca4b991f9a850d485b9f761d6125bd.json",
   "operation": "source_native_xls_series_extraction_ingress",
+  "execution_attempt": 2,
+  "extractor_revision": "SHARDED_PRIVATE_HANDOFF_V1_1",
+  "changed_method_reason": "First deterministic run verified and parsed the fingerprint-pinned asset family but its monolithic handoff could not be pushed; this retry shards source-native rows by workbook and emits push diagnostics without changing source identity or producer route.",
   "expected_source_family": {
     "landing_html": 1,
     "native_xls_workbooks": 51,
