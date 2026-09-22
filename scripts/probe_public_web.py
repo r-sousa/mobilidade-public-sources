@@ -119,12 +119,15 @@ def main():
         markers = [name for name, tokens in TECH_TOKENS.items() if any(t in block_lower for t in tokens)]
         found_urls = uniq(URL_RE.findall(block))
         if markers or found_urls:
-            inline.append({
+            item = {
                 "index": i,
                 "bytes": len(block.encode("utf-8")),
                 "technology_markers": markers,
                 "urls": found_urls[:100],
-            })
+            }
+            if any(name in markers for name in {"drupal", "highcharts"}):
+                item["content_sample"] = block[:12000]
+            inline.append(item)
 
     selected_headers = {}
     allowed_headers = {
