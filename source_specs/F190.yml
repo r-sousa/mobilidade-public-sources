@@ -1,0 +1,24 @@
+schema_version: 1.0.0
+source_set_id: F190
+title: APA/SNIERPA — Inventário Nacional de Emissões de GEE: transportes
+producer: APA / SNIERPA via APA/REA presentation
+product_key: apambiente.pt::snierpa::inventario-nacional-gee-sector-transportes
+adapter: easychart_html
+access: public
+sink: private
+cadence: annual
+expected_format: HTML + deterministic Easychart JSON/CSV
+source:
+  landing_url: https://rea.apambiente.pt/content/emiss%C3%B5es-de-gases-com-efeito-de-estufa?language=pt-pt
+raw_native:
+  geography: Portugal continental + Açores + Madeira as published
+  classification: national GHG inventory sector/subsector classification; transport scope retained explicitly
+  acquisition_scope: transport-sector and transport-subsector inventory observations plus required native classification metadata
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://rea.apambiente.pt/content/emiss%C3%B5es-de-gases-com-efeito-de-estufa?language=pt-pt
+  license: null
+  asset_check: null
+parameters:
+  scope_guard: Preserve inventory edition/revisions and national geography; do not merge with F72 spatial emissions or infer Norte values.
