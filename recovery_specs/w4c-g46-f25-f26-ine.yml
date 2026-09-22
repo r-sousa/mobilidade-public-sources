@@ -1,0 +1,51 @@
+schema_version: 4.1.0
+mission_generation: 46
+worker: W4C
+private_repository: r-sousa/EU-transp-weekly
+private_branch: mobilidade-norte-recovery-20260919
+release_tag: data-20260915-a25baac3ab8d65d9
+assets:
+  F25:
+    id: 565831863
+    name: F25-0012340.json.gz
+    bytes: 1291317
+    sha256: c0008b65028b789980bf29c40d361096d82fdcc706ac824e9d2e007fdea40fe2
+  F26:
+    id: 565831953
+    name: F26-0012882.json.gz
+    bytes: 1560852
+    sha256: 28d100f17c8f8c8bd76335af544aa5e36c1b2589fdb1d546ffdd4b04dca6605b
+semantic_guards:
+  F25:
+    source: INE Censos 2021
+    preserve:
+      - producer-native origin municipality identifiers and labels
+      - producer-native destination municipality identifiers and labels
+      - OD directionality exactly as supplied
+      - producer measure and unit fields
+      - all category labels/codes
+      - flags and missingness
+    prohibit:
+      - symmetric-pair collapsing
+      - symmetric-pair duplication
+      - inferred trips beyond producer grain
+      - projection beyond Censos 2021
+  F26:
+    source: INE Censos 2021
+    preserve:
+      - producer-native geography identifiers and labels
+      - transport-mode categories
+      - duration categories
+      - workplace/study-location categories
+      - employment-polarization categories
+      - producer measure and unit fields
+      - labels, flags and missingness
+    context: Censos 2021 pandemic-period context must remain explicit
+    prohibit:
+      - projection to 2025 or 2026
+      - semantic normalization in W4C
+      - consumer interpretation in W4C
+producer_reacquisition: false
+rights_adjudication: false
+consumer_interpretation: false
+semantic_owner_after_return: W4B
