@@ -1,6 +1,7 @@
 schema_version: 1.0.0
 mode: w3c_shared_archive_inventory_first
 mission_generation: 39
+execution_revision: 7
 private_repository: r-sousa/EU-transp-weekly
 private_branch: mobilidade-norte-recovery-20260919
 release_tag: source-rhomolo-mm-2024-f36c666af69512fe897a
