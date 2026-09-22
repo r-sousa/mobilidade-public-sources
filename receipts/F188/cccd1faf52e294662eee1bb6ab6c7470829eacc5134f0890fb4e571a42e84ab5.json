@@ -1,0 +1,83 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "36492f023db19a67cfb6c8d5ef2cb4b80e3f2450",
+  "acquisition_timestamp": "2026-09-22T21:20:24.285894Z",
+  "adapter": "easychart_html",
+  "assets": [
+    {
+      "bytes": 52670,
+      "format": "HTML",
+      "name": "easychart-page.html",
+      "role": "native",
+      "sha256": "74f8a1fd1d4b48dac513ffc35280d199fd27e17ee1e0d57058ac8a6ea22a962a",
+      "source_url": "https://rea.apambiente.pt/content/intensidade-energ%C3%A9tica-da-economia?language=pt-pt"
+    },
+    {
+      "bytes": 17627,
+      "format": "JSON",
+      "name": "easychart-charts.json",
+      "role": "recomposed",
+      "sha256": "ec5b7273f3c6cb45669a36e096f355676a030b994b55624efe25151b20c14970",
+      "source_url": null
+    },
+    {
+      "bytes": 471,
+      "format": "CSV",
+      "name": "easychart-chart-1.csv",
+      "role": "recomposed",
+      "sha256": "35f991f74bddd459c0d11b2348ddc83fa2bc559088cba6378a43e487ae088209",
+      "source_url": null
+    },
+    {
+      "bytes": 270,
+      "format": "CSV",
+      "name": "easychart-chart-2.csv",
+      "role": "recomposed",
+      "sha256": "568dc61a1e3bd19999f599ac9b46064e9aaaadb2ede4ba192876fb0636301aef",
+      "source_url": null
+    },
+    {
+      "bytes": 309,
+      "format": "CSV",
+      "name": "easychart-chart-3.csv",
+      "role": "recomposed",
+      "sha256": "4c5e11ffc64a5623f5dda17ee1d1d581279eac8884df40708966ec15a7ab8bb7",
+      "source_url": null
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "HTML + deterministic Easychart JSON/CSV",
+  "limitations": "Raw producer HTML is the native source object. Embedded Easychart configuration/data are extracted lexically without JavaScript execution; derived JSON/CSV mirror the chart payload and do not assert that it is the producer's upstream canonical table or that redistribution is cleared.",
+  "native_asset_fingerprint": "cccd1faf52e294662eee1bb6ab6c7470829eacc5134f0890fb4e571a42e84ab5",
+  "primary_repair": false,
+  "producer": "DGEG via APA/REA secondary presentation",
+  "product_key": "dgeg.gov.pt::indicadores-energeticos::intensidade-energetica-setorial-transportes",
+  "raw_native": {
+    "acquisition_scope": "transport-sector energy-intensity chart payload and required native metadata",
+    "classification": "DGEG Indicadores Energéticos sector classification; transport slice only",
+    "geography": "Portugal including islands as published"
+  },
+  "repair_authorization": null,
+  "request_id": "MN-PUBLIC-F188-G57-20260922T2200PT-02",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://rea.apambiente.pt/content/intensidade-energ%C3%A9tica-da-economia?language=pt-pt",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": null,
+  "source_set_id": "F188",
+  "source_url": "https://rea.apambiente.pt/content/intensidade-energ%C3%A9tica-da-economia?language=pt-pt",
+  "title": "DGEG — Indicadores Energéticos: intensidade energética dos transportes",
+  "validation_result": "PASS_EASYCHART_HTML_EXTRACTED"
+}
