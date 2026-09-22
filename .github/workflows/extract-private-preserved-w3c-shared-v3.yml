@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'extraction_requests/W3C-G39-SHARED-INVENTORY-MAPPED-R8.json'
+      - 'extraction_requests/W3C-G39-SHARED-INVENTORY-MAPPED-R*.json'
 
 permissions:
   contents: read
