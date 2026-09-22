@@ -1,0 +1,106 @@
+schema_version: 1.0.0
+mode: w3c_shared_aviation_ports_inventory_mapped
+mission_generation: 39
+execution_revision: 8
+private_repository: r-sousa/EU-transp-weekly
+private_branch: mobilidade-norte-recovery-20260919
+release_tag: source-rhomolo-mm-2024-f36c666af69512fe897a
+inventory_map_path: statistics/recovery-20260920/simple-runtime/outputs/W3C/20260922T001726Z-G39-shared-archive-inventory-first-r7/member-map.json
+asset:
+  id: 565876530
+  name: RHOMOLO_MM_2024_source_snapshots.zip
+  bytes: 477522937
+  sha256: 60d6e818aa81c1e710a6b41953e68fee6f50abe494e7363f8f175f7b8e568084
+members:
+  F162:
+    producer: ANAC
+    product: Newsletter mensal de tráfego
+    logical_path: snapshots/F162.pdf
+    handoff_path: statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P115-GEN39-F162-ANAC-MONTHLY-NEWSLETTER-EXTRACTION-HANDOFF.json
+    handoff_blob_sha: d2c1bd1b66e907dd4ca0326a1905e7de8ae2afce
+    guards:
+      - Preserve newsletter month-versus-YTD semantics and do not annualize partial periods.
+      - Preserve producer airport labels, units, flags, precision and missingness.
+      - Keep passengers, aircraft movements and freight/cargo separate.
+      - Do not add overlapping ANAC, Aena or Eurostat observations.
+  F163:
+    producer: ANAC
+    product: Boletim Estatístico Trimestral
+    logical_path: snapshots/F163.pdf
+    handoff_path: statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P116-GEN39-F163-ANAC-QUARTERLY-BULLETIN-EXTRACTION-HANDOFF.json
+    handoff_blob_sha: 8b25dc6038e96d9d06963fc6b3d9c592c00f6c34
+    guards:
+      - Keep quarter-only and cumulative/YTD figures distinct.
+      - Do not infer annual totals from quarterly margins.
+      - Preserve producer airport definitions, units, flags and missingness.
+      - Treat overlapping ANAC annual, monthly and quarterly representations as alternatives or controls, never additive.
+  F164:
+    producer: INE Portugal
+    product: Estatísticas rápidas do transporte aéreo
+    logical_path: snapshots/F164.html
+    handoff_path: statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P117-GEN39-F164-INE-AIR-TRANSPORT-RAPID-STATS-EXTRACTION-HANDOFF.json
+    handoff_blob_sha: 09a1b4482af3ba79734d1151a577024dcf1f7288
+    guards:
+      - Do not follow producer links to bypass preserved-byte readback.
+      - Preserve INE period, frequency and airport definitions.
+      - Do not promote narrative approximations over exact table cells.
+      - Retain missingness where a metric is absent.
+  F165:
+    producer: Aena
+    product: Tráfico anual definitivo por aeroporto
+    logical_path: snapshots/F165.html
+    handoff_path: statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P118-GEN39-F165-AENA-ANNUAL-AIRPORT-TRAFFIC-EXTRACTION-HANDOFF.json
+    handoff_blob_sha: c551c57e9018b73e2695a6847a9abaf7ea28c824
+    guards:
+      - Keep airport-level Aena observations distinct from Galicia aggregates and Portuguese airport products.
+      - Preserve annual period, metric definition, unit and missingness.
+      - Do not fill cells from F166 monthly reports or other Aena products.
+      - Do not invoke controlled or authenticated Aena F167 content.
+  F149:
+    producer: AMT
+    product: Observatório — Caracterização dos Portos do Continente
+    logical_path: snapshots/F149.html
+    handoff_path: statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P119-GEN39-F149-AMT-PORTS-CHARACTERIZATION-EXTRACTION-HANDOFF.json
+    handoff_blob_sha: 437ba236226d3c5cddee8f85cf0802d8dce78d74
+    guards:
+      - Treat AMT compiled or control representations as alternatives to Port Authority observations of the same event, never additive.
+      - Preserve port, period, cargo grouping, units, flags and missingness.
+      - Keep tonnes, TEU, vessel counts and cargo groups distinct unless the producer explicitly publishes a compatible total.
+      - Do not synthesize cargo-group cells from totals or margins.
+  F152:
+    producer: APDL
+    product: Viana — Movimento de Mercadorias Anual
+    logical_path: snapshots/F152.html
+    handoff_path: statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P120-GEN39-F152-VIANA-CARGO-EXTRACTION-HANDOFF.json
+    handoff_blob_sha: 2e1105a5c8b75b663307b2b47d3749884a6b14b8
+    guards:
+      - Keep Viana separate from Leixões and do not create Norte aggregates.
+      - Preserve annual period, producer cargo labels, units and missingness.
+      - Do not silently rescale ambiguous HTML unit labels.
+      - Do not reconstruct joint cargo cells from independent totals or margins.
+  F153:
+    producer: APDL
+    product: Viana — Movimento de Navios Anual
+    logical_path: snapshots/F153.html
+    handoff_path: statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P121-GEN39-F153-VIANA-VESSELS-EXTRACTION-HANDOFF.json
+    handoff_blob_sha: c9f18252781b8df7d7e875172e0806cb52f16aac
+    guards:
+      - Keep Viana separate from Leixões and do not create Norte aggregates.
+      - Preserve producer section identities; never stitch unlabeled sections into one series.
+      - Preserve annual period, units, flags and missingness.
+      - Do not infer vessel counts or GT from cargo traffic.
+  F168:
+    producer: DGAC / Ministerio de Transportes
+    product: Tráfico en los aeropuertos españoles, informe mensual
+    logical_path: snapshots/F168.pdf
+    handoff_path: statistics/recovery-20260920/simple-runtime/outputs/W3B/W3B-P122-GEN39-F168-DGAC-MONTHLY-AIRPORT-TRAFFIC-EXTRACTION-HANDOFF.json
+    handoff_blob_sha: ff1ec620e202df9484beea75c13221f32943486a
+    guards:
+      - Keep month-only and cumulative/YTD values distinct.
+      - Preserve Spanish airport labels, period, units, flags and missingness.
+      - Treat DGAC and Aena observations of the same airport-period event as alternative sources or controls, never additive.
+      - Do not infer annual totals or fill absent metrics from F165 or F166.
+producer_reacquisition: false
+rights_adjudication: false
+consumer_joins: false
+valid_empty_is_success: true
