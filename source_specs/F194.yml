@@ -9,21 +9,35 @@ sink: private
 cadence: one-off survey publication
 expected_format: PDF
 source:
-  landing_url: https://www.ine.pt/ine_novidades/IMob2017/
+  landing_url: "https://www.ine.pt/xportal/xmain?xpid=INE&xpgid=ine_publicacoes&PUBLICACOESpub_boui=349495406&PUBLICACOESmodo=2&xlang=pt"
+  survey_landing_url: "https://www.ine.pt/ine_novidades/IMob2017/"
+  controlled_microdata_metadata_url: "https://www.dgeec.medu.pt/api/ficheiros/64ef20676358acfd7e9fa9fa"
+  controlled_access_platform: "https://acreditacao.dgeec.medu.pt/"
 raw_native:
-  geography: AMP and AML aggregates, municipalities and published OD interactions
-  classification: IMob 2017 survey publication tables and municipality profiles
-  acquisition_scope: definitive official publication attachment only; no respondent microdata
+  geography: "Public channel: AMP and AML aggregates, municipalities and published OD interactions. Controlled channel: separate 2017 anonymized microdata databases for AMP and AML."
+  classification: "IMob 2017 statistical operation; this public spec acquires only the definitive public aggregate dissemination asset."
+  acquisition_scope: "PUBLIC_AGGREGATE_DISSEMINATION_ONLY. The official IMob operation also has two controlled-access anonymized microdata databases (AMP and AML) under the INE-DGEEC-FCT scientific-access protocol; those are intentionally not acquired by this public repository."
 reuse:
   status: not_verified
   public_redistribution_gate: not_cleared
-  evidence_url: https://www.ine.pt/ine_novidades/IMob2017/
+  evidence_url: "https://www.ine.pt/xportal/xmain?xpid=INE&xpgid=ine_publicacoes&PUBLICACOESpub_boui=349495406&PUBLICACOESmodo=2&xlang=pt"
   license: null
   asset_check: null
 parameters:
   period: "2017"
-  limitations: Preserve AMP/AML, survey denominators, OD direction, mode/purpose/duration/distance/expenditure/opinion semantics; do not merge with F25/F26.
+  limitations: "Preserve AMP/AML, survey denominators, OD direction, mode/purpose/duration/distance/expenditure/opinion semantics; do not merge with F25/F26. A PASS for this static PDF is only a PASS for the public aggregate dissemination surface, never evidence that F194 microdata are absent or public."
+  controlled_access_companion:
+    status: "OFFICIAL_METADATA_VERIFIED_NOT_ACQUIRED"
+    databases:
+      - "Área Metropolitana do Porto"
+      - "Área Metropolitana de Lisboa"
+    access_regime: "INE-DGEEC-FCT accredited scientific access to anonymized individual statistical data"
+    metadata:
+      - "Documento Metodológico - IMob - 2017"
+      - "Desenho Registo - IMob - 2017"
+      - "Instrumento Notação - IMob - 2017"
+    mobilidade_norte_priority: "Área Metropolitana do Porto"
   assets:
     - key: IMOB2017_DEFINITIVE_PUBLICATION
       format: PDF
-      url: https://www.ine.pt/ngt_server/attachfileu.jsp?look_parentBoui=349565256&att_display=n&att_download=y
+      url: "https://www.ine.pt/ngt_server/attachfileu.jsp?look_parentBoui=349565256&att_display=n&att_download=y"
