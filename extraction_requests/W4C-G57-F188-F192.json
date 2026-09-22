@@ -1,0 +1,14 @@
+{
+  "mission_generation": 57,
+  "worker": "W4C",
+  "purpose": "exact-byte ingress only from receipt-pinned private Release assets; no producer reacquisition",
+  "source_sets": ["F188", "F189", "F190", "F191", "F192"],
+  "fingerprints": {
+    "F188": "cccd1faf52e294662eee1bb6ab6c7470829eacc5134f0890fb4e571a42e84ab5",
+    "F189": "f2b73d2dd7a9009985f352f30351aa0c7f1a04816a77beb1387c6c77393fd520",
+    "F190": "4f00e4a0598c691ddd2789110f23064bc86b121db63d6b87c00275ab695d5a55",
+    "F191": "7c8f8fa18c0d43ed9782b4f890e47a3ed1041c66af0acf192bfe70951941b046",
+    "F192": "b2ce6590c2532905b4ce446c1a2ad10a3a06ca5984340e1227de73ddbb6fbf90"
+  },
+  "output_root": "statistics/recovery-20260920/simple-runtime/outputs/W4C/20260922T2345PT-G57-F188-F192-EXACT-BYTE-INGRESS"
+}
