@@ -26,19 +26,20 @@ def _file_sha256(path: Path) -> str:
 
 
 def _candidate_map(zf: zipfile.ZipFile, inventory: list[dict], members: dict) -> dict[str, dict]:
-    searchable: dict[str, str] = {}
+    searchable: dict[str, dict[str, str]] = {}
     for row in inventory:
         path = row["internal_path"]
         if row["is_dir"]:
             continue
         suffix = Path(path).suffix.lower()
-        folded = _fold(path)
+        path_folded = _fold(path)
+        content_folded = ""
         if suffix in {".html", ".htm", ".txt", ".csv", ".json", ".xml", ".md", ".pdf"} and row["uncompressed_size"] <= 80_000_000:
             try:
-                folded += " " + _fold(_member_text(path, zf.read(path)))
+                content_folded = _fold(_member_text(path, zf.read(path)))
             except Exception:
                 pass
-        searchable[path] = folded
+        searchable[path] = {"path": path_folded, "content": content_folded, "combined": path_folded + " " + content_folded}
 
     out: dict[str, dict] = {}
     for fid, spec in members.items():
@@ -47,32 +48,50 @@ def _candidate_map(zf: zipfile.ZipFile, inventory: list[dict], members: dict) ->
         geo_tokens = [_fold(x) for x in spec.get("geography_tokens", [])]
         expected_ext = str(spec.get("expected_extension") or "").lower()
         rows = []
-        for path, folded in searchable.items():
-            literal_id = fid.casefold() in folded
+        for path, texts in searchable.items():
+            folded = texts["combined"]
+            path_literal_id = Path(path).stem.casefold() == fid.casefold()
+            content_literal_id = fid.casefold() in texts["content"]
             pm = sorted({t for t in producer_tokens if t and t in folded})
             qm = sorted({t for t in product_tokens if t and t in folded})
             gm = sorted({t for t in geo_tokens if t and t in folded})
             ext_match = bool(expected_ext and path.lower().endswith(expected_ext))
-            score = (200 if literal_id else 0) + 20 * len(pm) + 10 * len(qm) + 5 * len(gm) + (3 if ext_match else 0)
+            score = (500 if path_literal_id else 0) + (100 if content_literal_id else 0) + 20 * len(pm) + 10 * len(qm) + 5 * len(gm) + (3 if ext_match else 0)
             if score:
                 rows.append({
                     "internal_path": path,
                     "score": score,
-                    "literal_source_id_match": literal_id,
+                    "path_literal_source_id_match": path_literal_id,
+                    "content_literal_source_id_match": content_literal_id,
                     "producer_matches": pm,
                     "product_matches": qm,
                     "geography_matches": gm,
                     "extension_match": ext_match,
                 })
         rows.sort(key=lambda x: (-x["score"], x["internal_path"]))
-        literals = [r for r in rows if r["literal_source_id_match"]]
-        if len(literals) == 1:
-            chosen = literals[0]
+        path_literals = [r for r in rows if r["path_literal_source_id_match"]]
+        content_literals = [r for r in rows if r["content_literal_source_id_match"]]
+        if len(path_literals) == 1:
+            chosen = path_literals[0]
             status = "MAPPED_UNIQUE_DEFENSIBLE"
-            basis = "unique archive-internal literal source-set identity"
-        elif len(literals) > 1:
-            out[fid] = {"status": "AMBIGUOUS_ARCHIVE_MEMBER_IDENTITY", "candidate_members": literals[:25]}
+            basis = "unique exact archive-member basename source-set identity after full central-directory inventory"
+        elif len(path_literals) > 1:
+            out[fid] = {"status": "AMBIGUOUS_ARCHIVE_MEMBER_IDENTITY", "candidate_members": path_literals[:25]}
             continue
+        elif len(content_literals) == 1:
+            chosen = content_literals[0]
+            status = "MAPPED_UNIQUE_DEFENSIBLE"
+            basis = "unique archive-member content source-set identity"
+        elif len(content_literals) > 1:
+            top = rows[0] if rows else None
+            second = rows[1]["score"] if len(rows) > 1 else -1
+            if top and top["producer_matches"] and top["product_matches"] and top["score"] >= second + 25:
+                chosen = top
+                status = "MAPPED_UNIQUE_DEFENSIBLE"
+                basis = "unique high-margin preserved producer/product identity despite incidental source-id references elsewhere"
+            else:
+                out[fid] = {"status": "AMBIGUOUS_ARCHIVE_MEMBER_IDENTITY", "candidate_members": rows[:25]}
+                continue
         elif not rows:
             out[fid] = {"status": "PRESERVED_ARCHIVE_MEMBER_ABSENT", "candidate_members": []}
             continue
@@ -103,6 +122,7 @@ def run(cfg: dict, read_token: str, write_token: str) -> dict:
     repo = cfg["private_repository"]
     branch = cfg["private_branch"]
     generation = int(cfg["mission_generation"])
+    revision = int(cfg.get("execution_revision", 1))
     tag = cfg["release_tag"]
     asset_cfg = cfg["asset"]
     members = cfg["members"]
@@ -150,16 +170,17 @@ def run(cfg: dict, read_token: str, write_token: str) -> dict:
         raise RuntimeError("MISSION_GENERATION_CHANGED_BEFORE_PRIVATE_WRITE")
 
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    out_base = f"statistics/recovery-20260920/simple-runtime/outputs/W3C/{stamp}-G{generation}-shared-archive-inventory-first"
+    out_base = f"statistics/recovery-20260920/simple-runtime/outputs/W3C/{stamp}-G{generation}-shared-archive-inventory-first-r{revision}"
     inventory_path = f"{out_base}/archive-inventory.json"
     map_path = f"{out_base}/member-map.json"
     receipt_path = f"{out_base}/receipt.json"
-    canonical_receipt = f"statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/W3C/shared-archive-{asset_cfg['sha256']}-inventory.json"
+    canonical_receipt = f"statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/W3C/shared-archive-{asset_cfg['sha256']}-inventory-r{revision}.json"
 
     inv_obj = {
         "schema_version": "4.0.3",
         "worker": "W3C",
         "mission_generation": generation,
+        "execution_revision": revision,
         "release_tag": tag,
         "archive": {"asset_id": asset_cfg["id"], "name": asset_cfg["name"], "bytes": asset_cfg["bytes"], "sha256": archive_sha, "verified": True},
         "member_count": len(inventory),
@@ -169,7 +190,8 @@ def run(cfg: dict, read_token: str, write_token: str) -> dict:
         "schema_version": "4.0.3",
         "worker": "W3C",
         "mission_generation": generation,
-        "method": "ARCHIVE_INVENTORY_FIRST_THEN_PRESERVED_IDENTITY_SCORING",
+        "execution_revision": revision,
+        "method": "ARCHIVE_INVENTORY_FIRST_EXACT_BASENAME_THEN_PRESERVED_IDENTITY_SCORING",
         "release_tag": tag,
         "archive_sha256": archive_sha,
         "mappings": member_map,
@@ -182,6 +204,7 @@ def run(cfg: dict, read_token: str, write_token: str) -> dict:
         "schema_version": "4.0.3",
         "worker": "W3C",
         "mission_generation": generation,
+        "execution_revision": revision,
         "package": "W3C_SHARED_ARCHIVE_INVENTORY_FIRST",
         "status": "PASS_ARCHIVE_INVENTORY_AND_MEMBER_MAP",
         "archive": inv_obj["archive"],
@@ -209,6 +232,7 @@ def run(cfg: dict, read_token: str, write_token: str) -> dict:
         "complete": True,
         "private_repository": repo,
         "release_tag": tag,
+        "execution_revision": revision,
         "archive_sha256": archive_sha,
         "member_count": len(inventory),
         "member_statuses": statuses,
