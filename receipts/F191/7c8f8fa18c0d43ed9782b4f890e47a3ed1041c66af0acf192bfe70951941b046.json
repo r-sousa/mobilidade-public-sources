@@ -1,0 +1,139 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "75c1fe12bb2c151c0ebea4c69a33be3784bae2ee",
+  "acquisition_timestamp": "2026-09-22T21:20:58.622606Z",
+  "adapter": "easychart_html",
+  "assets": [
+    {
+      "bytes": 116080,
+      "format": "HTML",
+      "name": "easychart-page.html",
+      "role": "native",
+      "sha256": "71ce871d523f3aa12302d2b14cfe17cd68ea434cc7914bfa24a88852de083d1a",
+      "source_url": "https://rea.apambiente.pt/content/emiss%C3%B5es-antropog%C3%A9nicas?language=pt-pt"
+    },
+    {
+      "bytes": 159368,
+      "format": "JSON",
+      "name": "easychart-charts.json",
+      "role": "recomposed",
+      "sha256": "2cc5fcd7d268ad4b821d3e54530fa9e544f14468088b8be97af608292cea7944",
+      "source_url": null
+    },
+    {
+      "bytes": 858,
+      "format": "CSV",
+      "name": "easychart-chart-1.csv",
+      "role": "recomposed",
+      "sha256": "9323d80467a0a6853041ed6ab776c99b4309e1392041c8f8b086e3d7cb6e5756",
+      "source_url": null
+    },
+    {
+      "bytes": 1022,
+      "format": "CSV",
+      "name": "easychart-chart-2.csv",
+      "role": "recomposed",
+      "sha256": "e1a318c328e355224703192aa0c77176033b0f1bae0ea0f3a7bfd8cfc67dc092",
+      "source_url": null
+    },
+    {
+      "bytes": 2079,
+      "format": "CSV",
+      "name": "easychart-chart-3.csv",
+      "role": "recomposed",
+      "sha256": "11f61a19d734ed8f48ee82d14854982659bcf67464890a877a6fbd55a886fe82",
+      "source_url": null
+    },
+    {
+      "bytes": 161,
+      "format": "CSV",
+      "name": "easychart-chart-4.csv",
+      "role": "recomposed",
+      "sha256": "aa04072c547496a8b32d534b8ae5cba0de2c0dce224a520c801870dd4fd08279",
+      "source_url": null
+    },
+    {
+      "bytes": 740,
+      "format": "CSV",
+      "name": "easychart-chart-5.csv",
+      "role": "recomposed",
+      "sha256": "479f1eabf8ce6eab64afc72f9663260216d96fcf0229cb633e4a2d272d8ca2d4",
+      "source_url": null
+    },
+    {
+      "bytes": 544,
+      "format": "CSV",
+      "name": "easychart-chart-6.csv",
+      "role": "recomposed",
+      "sha256": "ca89fff8861874eadfca5aaf69057c8a4138274f5c491ba8966b0bfc6c6b9780",
+      "source_url": null
+    },
+    {
+      "bytes": 937,
+      "format": "CSV",
+      "name": "easychart-chart-7.csv",
+      "role": "recomposed",
+      "sha256": "12d7651a022ae06a768c11f19872cac439cc23ae1c93bb240b685128c75487e8",
+      "source_url": null
+    },
+    {
+      "bytes": 140,
+      "format": "CSV",
+      "name": "easychart-chart-8.csv",
+      "role": "recomposed",
+      "sha256": "a94b61cb5cdab5a826581a2b4af51c533a53bf904f2158ac7875742664f66d40",
+      "source_url": null
+    },
+    {
+      "bytes": 355,
+      "format": "CSV",
+      "name": "easychart-chart-9.csv",
+      "role": "recomposed",
+      "sha256": "c1035af6398b6e99402fb1133470818d8f9b91f423eb68d28df177490a14f7ae",
+      "source_url": null
+    },
+    {
+      "bytes": 1551,
+      "format": "CSV",
+      "name": "easychart-chart-10.csv",
+      "role": "recomposed",
+      "sha256": "ff763a58f0ea1d51ae2be6ea448dd0fdb17725d8f371771f670e8ce9466ef8c5",
+      "source_url": null
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "HTML + deterministic Easychart JSON/CSV",
+  "limitations": "Raw producer HTML is the native source object. Embedded Easychart configuration/data are extracted lexically without JavaScript execution; derived JSON/CSV mirror the chart payload and do not assert that it is the producer's upstream canonical table or that redistribution is cleared.",
+  "native_asset_fingerprint": "7c8f8fa18c0d43ed9782b4f890e47a3ed1041c66af0acf192bfe70951941b046",
+  "primary_repair": false,
+  "producer": "APA via APA/REA presentation",
+  "product_key": "apambiente.pt::inventario-emissoes-atmosfericas::nec-clrtap-sector-transportes",
+  "raw_native": {
+    "acquisition_scope": "transport-sector pollutant observations and required native classification metadata",
+    "classification": "NEC/CLRTAP pollutant and activity-sector classification; transport scope retained explicitly",
+    "geography": "Portugal continental"
+  },
+  "repair_authorization": null,
+  "request_id": "MN-PUBLIC-F191-G57-20260922T2200PT-02",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://rea.apambiente.pt/content/emiss%C3%B5es-antropog%C3%A9nicas?language=pt-pt",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": null,
+  "source_set_id": "F191",
+  "source_url": "https://rea.apambiente.pt/content/emiss%C3%B5es-antropog%C3%A9nicas?language=pt-pt",
+  "title": "APA — Inventário nacional de emissões atmosféricas: transportes",
+  "validation_result": "PASS_EASYCHART_HTML_EXTRACTED"
+}
