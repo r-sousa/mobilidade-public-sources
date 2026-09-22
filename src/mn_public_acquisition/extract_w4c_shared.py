@@ -8,6 +8,7 @@ import io
 import json
 import re
 import tempfile
+import time
 import unicodedata
 import urllib.parse
 import zipfile
@@ -62,36 +63,53 @@ def _put_text(
     expected_sha: str | None = None,
     immutable: bool = False,
 ) -> dict:
-    url = f"{API}/repos/{repo}/contents/{urllib.parse.quote(path, safe='/')}"
-    g = requests.get(url, params={"ref": branch}, headers=_headers(token), timeout=120)
-    existing_sha = None
-    if g.status_code == 200:
-        obj = g.json()
-        existing = base64.b64decode(obj["content"]).decode("utf-8")
-        if existing == text:
-            return {"path": path, "status": "IDENTICAL_ALREADY_PRESENT", "sha": obj["sha"]}
-        if immutable:
-            raise RuntimeError(f"IMMUTABLE_PRIVATE_OUTPUT_CONFLICT:{path}")
-        existing_sha = obj["sha"]
-        if expected_sha is not None and existing_sha != expected_sha:
-            raise RuntimeError(f"PRIVATE_CONTENT_STALE_SHA:{path}:{existing_sha}")
-    elif g.status_code != 404:
-        raise RuntimeError(f"PRIVATE_CONTENT_LOOKUP_FAILED:{path}:{g.status_code}:{g.text[:300]}")
-    elif expected_sha is not None:
-        raise RuntimeError(f"PRIVATE_CONTENT_EXPECTED_EXISTING:{path}")
+    """Write one UTF-8 private-repo file with collision-safe retry.
 
-    body = {
-        "message": message,
-        "branch": branch,
-        "content": base64.b64encode(text.encode("utf-8")).decode("ascii"),
-    }
-    if existing_sha:
-        body["sha"] = existing_sha
-    r = requests.put(url, headers={**_headers(token), "Content-Type": "application/json"}, json=body, timeout=120)
-    if not r.ok:
-        raise RuntimeError(f"PRIVATE_CONTENT_WRITE_FAILED:{path}:{r.status_code}:{r.text[:300]}")
-    obj = r.json()
-    return {"path": path, "status": "WRITTEN", "commit": obj["commit"]["sha"], "sha": obj["content"]["sha"]}
+    GitHub's contents API can return 409 when the branch head moves because an
+    unrelated worker commits between this function's lookup and PUT.  That is
+    not a semantic conflict.  On 409 we re-read the *same path*, accept an
+    identical immutable result, enforce expected_sha if supplied, and retry
+    only when the target path itself is still safe to write.  This never
+    overwrites a changed immutable output and therefore preserves collision-
+    first semantics while allowing concurrent append-only worker outputs.
+    """
+    url = f"{API}/repos/{repo}/contents/{urllib.parse.quote(path, safe='/')}"
+
+    for attempt in range(5):
+        g = requests.get(url, params={"ref": branch}, headers=_headers(token), timeout=120)
+        existing_sha = None
+        if g.status_code == 200:
+            obj = g.json()
+            existing = base64.b64decode(obj["content"]).decode("utf-8")
+            if existing == text:
+                return {"path": path, "status": "IDENTICAL_ALREADY_PRESENT", "sha": obj["sha"]}
+            if immutable:
+                raise RuntimeError(f"IMMUTABLE_PRIVATE_OUTPUT_CONFLICT:{path}")
+            existing_sha = obj["sha"]
+            if expected_sha is not None and existing_sha != expected_sha:
+                raise RuntimeError(f"PRIVATE_CONTENT_STALE_SHA:{path}:{existing_sha}")
+        elif g.status_code != 404:
+            raise RuntimeError(f"PRIVATE_CONTENT_LOOKUP_FAILED:{path}:{g.status_code}:{g.text[:300]}")
+        elif expected_sha is not None:
+            raise RuntimeError(f"PRIVATE_CONTENT_EXPECTED_EXISTING:{path}")
+
+        body = {
+            "message": message,
+            "branch": branch,
+            "content": base64.b64encode(text.encode("utf-8")).decode("ascii"),
+        }
+        if existing_sha:
+            body["sha"] = existing_sha
+
+        r = requests.put(url, headers={**_headers(token), "Content-Type": "application/json"}, json=body, timeout=120)
+        if r.ok:
+            obj = r.json()
+            return {"path": path, "status": "WRITTEN", "commit": obj["commit"]["sha"], "sha": obj["content"]["sha"]}
+        if r.status_code != 409 or attempt == 4:
+            raise RuntimeError(f"PRIVATE_CONTENT_WRITE_FAILED:{path}:{r.status_code}:{r.text[:300]}")
+        time.sleep(0.35 * (attempt + 1))
+
+    raise RuntimeError(f"PRIVATE_CONTENT_WRITE_RETRY_EXHAUSTED:{path}")
 
 
 class _TableParser(HTMLParser):
@@ -130,402 +148,150 @@ class _TableParser(HTMLParser):
             self._table = None
 
 
-_NUMERIC = re.compile(r"(?<!\w)[+-]?(?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,.]\d+)?(?:\s*%)?(?!\w)")
-_UNIT = re.compile(r"\b(?:tep|ktep|mtep|twh|gwh|mwh|kwh|tj|gj|mj|m3|m³|nm3|nm³|kt|toneladas?|tonnes?|litros?|litres?|kg|%)\b", re.I)
-_TRANSPORT_TERMS = ("transport", "transporte", "transportes", "mobilidade", "mobilidad", "mobility")
-_ROAD_TERMS = (
-    "transporte por carretera",
-    "road transport",
-    "automocion",
-    "automovil",
-    "automotive",
-    "carburante de automocion",
-    "uso automocion",
-)
+class _LinkParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.links: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag.lower() != "a":
+            return
+        for k, v in attrs:
+            if k.lower() == "href" and v:
+                self.links.append(v)
 
 
-def _extract_html(fid: str, data: bytes) -> tuple[list[dict], list[dict], str]:
+def _num(s: str):
+    raw = (s or "").strip().replace("\u00a0", " ")
+    if not raw or raw in {"-", "—", "..", ":"}:
+        return None
+    cleaned = re.sub(r"[^0-9,\.\-]", "", raw)
+    if not cleaned or cleaned in {"-", ".", ","}:
+        return None
+    if "," in cleaned and "." in cleaned:
+        if cleaned.rfind(",") > cleaned.rfind("."):
+            cleaned = cleaned.replace(".", "").replace(",", ".")
+        else:
+            cleaned = cleaned.replace(",", "")
+    elif "," in cleaned:
+        parts = cleaned.split(",")
+        if len(parts[-1]) == 3 and len(parts) > 1:
+            cleaned = "".join(parts)
+        else:
+            cleaned = cleaned.replace(",", ".")
+    elif cleaned.count(".") > 1:
+        cleaned = cleaned.replace(".", "")
+    try:
+        return float(cleaned)
+    except ValueError:
+        return None
+
+
+def _table_rows_html(data: bytes) -> tuple[list[list[str]], list[str]]:
     text = data.decode("utf-8", errors="replace")
-    parser = _TableParser()
-    parser.feed(text)
+    p = _TableParser()
+    p.feed(text)
+    links = _LinkParser()
+    links.feed(text)
+    rows: list[list[str]] = []
+    for table in p.tables:
+        rows.extend(table)
+    return rows, links.links
+
+
+def _pdf_pages(data: bytes) -> list[tuple[int, str]]:
+    reader = PdfReader(io.BytesIO(data))
+    pages = []
+    for idx, page in enumerate(reader.pages, 1):
+        try:
+            text = page.extract_text(extraction_mode="layout") or ""
+        except TypeError:
+            text = page.extract_text() or ""
+        pages.append((idx, " ".join(text.split())))
+    return pages
+
+
+def _metric_from_context(text: str) -> str | None:
+    f = _fold(text)
+    if any(x in f for x in ["passageir", "passenger", "pasajer"]):
+        return "PASSENGERS"
+    if any(x in f for x in ["movimento", "movements", "operacion", "operacoes", "operações", "aeronaves"]):
+        return "MOVEMENTS"
+    if any(x in f for x in ["carga", "freight", "cargo", "mercador"]):
+        return "FREIGHT"
+    if "teu" in f:
+        return "TEU"
+    if any(x in f for x in ["navio", "vessel", "buque"]):
+        return "VESSELS"
+    return None
+
+
+def _unit_from_context(text: str, metric: str | None) -> str | None:
+    f = _fold(text)
+    if "teu" in f:
+        return "TEU"
+    if any(x in f for x in ["tonelad", "tonnes", "tons", " t "]):
+        return "tonnes"
+    if metric == "PASSENGERS":
+        return "passengers"
+    if metric == "MOVEMENTS":
+        return "movements"
+    if metric == "VESSELS":
+        return "vessels"
+    return None
+
+
+def _html_extract(data: bytes) -> tuple[list[dict], list[dict], dict]:
+    rows, links = _table_rows_html(data)
     candidates: list[dict] = []
     admitted: list[dict] = []
-    for ti, table in enumerate(parser.tables, 1):
-        for ri, row in enumerate(table, 1):
-            raw = " | ".join(row)
-            folded = _fold(raw)
-            matched = [term for term in _TRANSPORT_TERMS if term in folded]
-            if not matched:
-                continue
-            rec = {
-                "table_index": ti,
-                "row_index": ri,
-                "cells": row,
-                "raw_text": raw,
-                "matched_terms": matched,
-                "numeric_tokens": _NUMERIC.findall(raw),
-                "unit_tokens": _UNIT.findall(raw),
-            }
+    for ti, row in enumerate(rows, 1):
+        context = " | ".join(row)
+        metric = _metric_from_context(context)
+        unit = _unit_from_context(context, metric)
+        nums = []
+        for ci, cell in enumerate(row):
+            val = _num(cell)
+            if val is not None:
+                nums.append({"cell_index": ci, "raw": cell, "value": val})
+        if nums:
+            rec = {"table_row_index": ti, "cells": row, "metric_context": metric, "unit_context": unit, "numeric_cells": nums}
             candidates.append(rec)
-            if _NUMERIC.search(raw):
+            if metric and unit:
                 admitted.append(rec)
-    if not candidates:
-        plain = html.unescape(re.sub(r"<[^>]+>", " ", text))
-        for li, line in enumerate(plain.splitlines(), 1):
-            raw = " ".join(line.split())
-            if not raw:
-                continue
-            folded = _fold(raw)
-            matched = [term for term in _TRANSPORT_TERMS if term in folded]
-            if matched:
-                candidates.append(
-                    {
-                        "line_no": li,
-                        "raw_text": raw,
-                        "matched_terms": matched,
-                        "numeric_tokens": _NUMERIC.findall(raw),
-                        "unit_tokens": _UNIT.findall(raw),
-                        "qa_only": True,
-                    }
-                )
-    return candidates, admitted, "stdlib_html_table_parser_v1"
+    return candidates, admitted, {"method": "stdlib_html_tables_numeric_rows_v1", "table_count": len(set(r["table_row_index"] for r in candidates)), "embedded_link_count": len(links), "external_links_followed": 0}
 
 
-def _extract_pdf(fid: str, data: bytes) -> tuple[list[dict], list[dict], str]:
-    reader = PdfReader(io.BytesIO(data), strict=False)
-    terms = _TRANSPORT_TERMS if fid == "F176" else _ROAD_TERMS
+def _pdf_extract(data: bytes) -> tuple[list[dict], list[dict], dict]:
+    pages = _pdf_pages(data)
     candidates: list[dict] = []
     admitted: list[dict] = []
-    for page_no, page in enumerate(reader.pages, 1):
-        text = page.extract_text(extraction_mode="layout") or ""
-        for line_no, line in enumerate(text.splitlines(), 1):
-            raw = " ".join(line.split())
-            if not raw:
+    line_re = re.compile(r"(?P<label>[^\n]{3,100}?)\s+(?P<value>-?[0-9][0-9 .,'’]*)\s*(?P<unit>TEU|t|toneladas?|tonnes?|passageiros?|passengers?|movimentos?|operations?|navios?|vessels?)?", re.I)
+    for page_no, text in pages:
+        for match in line_re.finditer(text):
+            label = " ".join(match.group("label").split())
+            raw_value = match.group("value")
+            val = _num(raw_value)
+            if val is None:
                 continue
-            folded = _fold(raw)
-            matched = [term for term in terms if term in folded]
-            if not matched:
-                continue
-            rec = {
-                "page": page_no,
-                "line_no": line_no,
-                "raw_text": raw,
-                "matched_terms": matched,
-                "numeric_tokens": _NUMERIC.findall(raw),
-                "unit_tokens": _UNIT.findall(raw),
-            }
+            context = f"{label} {match.group('unit') or ''}"
+            metric = _metric_from_context(context)
+            unit = _unit_from_context(context, metric)
+            rec = {"page": page_no, "label": label, "raw_value": raw_value, "value": val, "metric_context": metric, "unit_context": unit}
             candidates.append(rec)
-            if _NUMERIC.search(raw):
+            if metric and unit:
                 admitted.append(rec)
-    return candidates, admitted, "pypdf_layout_pagewise_v1"
+    return candidates, admitted, {"method": "pypdf_layout_numeric_metric_rows_v1", "page_count": len(pages), "external_links_followed": 0}
 
 
-def _csv_text(rows: list[dict]) -> str:
-    sio = io.StringIO(newline="")
-    fields = [
-        "table_index",
-        "row_index",
-        "page",
-        "line_no",
-        "raw_text",
-        "matched_terms_json",
-        "cells_json",
-        "numeric_tokens_json",
-        "unit_tokens_json",
-    ]
-    writer = csv.DictWriter(sio, fieldnames=fields, lineterminator="\n")
-    writer.writeheader()
-    for row in rows:
-        writer.writerow(
-            {
-                "table_index": row.get("table_index", ""),
-                "row_index": row.get("row_index", ""),
-                "page": row.get("page", ""),
-                "line_no": row.get("line_no", ""),
-                "raw_text": row.get("raw_text", ""),
-                "matched_terms_json": json.dumps(row.get("matched_terms", []), ensure_ascii=False, separators=(",", ":")),
-                "cells_json": json.dumps(row.get("cells", []), ensure_ascii=False, separators=(",", ":")),
-                "numeric_tokens_json": json.dumps(row.get("numeric_tokens", []), ensure_ascii=False, separators=(",", ":")),
-                "unit_tokens_json": json.dumps(row.get("unit_tokens", []), ensure_ascii=False, separators=(",", ":")),
-            }
-        )
-    return sio.getvalue()
+def _csv(rows: list[dict]) -> str:
+    buf = io.StringIO()
+    writer = csv.writer(buf, lineterminator="\n")
+    writer.writerow(["row_index", "row_json"])
+    for i, row in enumerate(rows, 1):
+        writer.writerow([i, json.dumps(row, ensure_ascii=False, sort_keys=True)])
+    return buf.getvalue()
 
 
 def run(cfg: dict, read_token: str, write_token: str) -> dict:
-    if not write_token:
-        raise RuntimeError("PRIVATE_SINK_TOKEN_REQUIRED_FOR_W4C_EXTRACTION")
-    private_repo = cfg["private_repository"]
-    branch = cfg["private_branch"]
-    generation = int(cfg["mission_generation"])
-    release_tag = cfg["release_tag"]
-    asset_cfg = cfg["asset"]
-
-    team_text, _ = _get_text(
-        private_repo,
-        branch,
-        "statistics/recovery-20260920/simple-runtime/team-missions.json",
-        read_token,
-    )
-    team = json.loads(team_text)
-    if int(team.get("mission_generation", -1)) != generation:
-        raise RuntimeError("MISSION_GENERATION_CHANGED")
-    w4c = ((team.get("teams") or {}).get("W4") or {}).get("C") or {}
-    queue_text = " ".join(w4c.get("queue") or []).lower()
-    if w4c.get("worker") != "W4C" or "f169" not in queue_text or "f179" not in queue_text:
-        raise RuntimeError("W4C_CURRENT_MISSION_NO_LONGER_AUTHORIZES_SHARED_ARCHIVE")
-
-    release = release_by_tag(private_repo, release_tag, read_token)
-    asset = next((x for x in release.get("assets", []) if int(x["id"]) == int(asset_cfg["id"])), None)
-    if not asset:
-        raise RuntimeError("PINNED_RELEASE_ASSET_ID_NOT_FOUND")
-    if asset["name"] != asset_cfg["name"] or int(asset["size"]) != int(asset_cfg["bytes"]):
-        raise RuntimeError("PINNED_RELEASE_ASSET_METADATA_MISMATCH")
-    api_digest = str(asset.get("digest") or "").removeprefix("sha256:")
-    if api_digest and api_digest != asset_cfg["sha256"]:
-        raise RuntimeError("PINNED_RELEASE_ASSET_DIGEST_METADATA_MISMATCH")
-
-    with tempfile.TemporaryDirectory(prefix="mn-w4c-shared-") as td:
-        local = Path(td) / asset_cfg["name"]
-        download_release_asset(private_repo, asset, read_token, local)
-        data = local.read_bytes()
-    actual_sha = _sha(data)
-    if len(data) != int(asset_cfg["bytes"]) or actual_sha != asset_cfg["sha256"]:
-        raise RuntimeError(f"ARCHIVE_VERIFICATION_FAILED:{len(data)}:{actual_sha}")
-
-    members = cfg["members"]
-    results: dict[str, dict] = {}
-    outputs: list[tuple[str, str, bool]] = []
-    with zipfile.ZipFile(io.BytesIO(data)) as zf:
-        names = set(zf.namelist())
-        for fid, spec in members.items():
-            member_path = spec["path"]
-            if member_path not in names:
-                raise RuntimeError(f"ARCHIVE_MEMBER_MISSING:{fid}:{member_path}")
-            member = zf.read(member_path)
-            member_sha = _sha(member)
-            if member_path.lower().endswith(".html"):
-                candidates, admitted, method = _extract_html(fid, member)
-            elif member_path.lower().endswith(".pdf"):
-                candidates, admitted, method = _extract_pdf(fid, member)
-            else:
-                raise RuntimeError(f"UNSUPPORTED_MEMBER_TYPE:{fid}:{member_path}")
-
-            status = "PASS_EXPLICIT_MOBILITY_ROWS" if admitted else "PASS_VALID_EMPTY_EXPLICIT_MOBILITY_SCOPE"
-            source_identity = {
-                "release_tag": release_tag,
-                "release_id": release.get("id"),
-                "archive_asset_id": asset_cfg["id"],
-                "archive_name": asset_cfg["name"],
-                "archive_bytes": asset_cfg["bytes"],
-                "archive_sha256": asset_cfg["sha256"],
-                "archive_verified_once_before_extraction": True,
-                "member_path": member_path,
-                "member_bytes": len(member),
-                "member_sha256": member_sha,
-            }
-            payload = {
-                "schema_version": "4.0.1",
-                "worker": "W4C",
-                "mission_generation": generation,
-                "source_set_id": fid,
-                "status": status,
-                "source_identity": source_identity,
-                "extraction_method": method,
-                "explicit_candidate_count": len(candidates),
-                "admitted_row_count": len(admitted),
-                "admitted_rows": admitted,
-                "candidate_rows_for_qa": candidates,
-                "normalization_guards": spec["guards"],
-                "producer_reacquisition": False,
-                "rights_adjudication": False,
-                "consumer_join": False,
-            }
-            jtext = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
-            ctext = _csv_text(admitted)
-            results[fid] = {
-                "source_set_id": fid,
-                "status": status,
-                "member_path": member_path,
-                "member_bytes": len(member),
-                "member_sha256": member_sha,
-                "explicit_candidate_count": len(candidates),
-                "admitted_row_count": len(admitted),
-                "extraction_method": method,
-            }
-            # Paths are filled after the common output directory stamp is known.
-            results[fid]["_json_text"] = jtext
-            results[fid]["_csv_text"] = ctext
-
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    out_base = f"statistics/recovery-20260920/simple-runtime/outputs/W4C/{stamp}-G39-W4C-shared-rhomolo-energy-extraction"
-    handoffs: dict[str, str] = {}
-    for fid, result in results.items():
-        json_path = f"{out_base}/{fid}/{fid.lower()}-source-native.json"
-        csv_path = f"{out_base}/{fid}/{fid.lower()}-source-native.csv"
-        jtext = result.pop("_json_text")
-        ctext = result.pop("_csv_text")
-        outputs.extend([(json_path, jtext, True), (csv_path, ctext, True)])
-        handoff = (
-            "statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/"
-            f"{fid}/shared-archive-{asset_cfg['sha256']}-extraction.json"
-        )
-        receipt = {
-            "schema_version": "4.0.1",
-            "worker": "W4C",
-            "mission_generation": generation,
-            "package": "W4C_SHARED_RHOMOLO_ENERGY_MEMBER_EXTRACTION",
-            "source_set_id": fid,
-            "status": result["status"],
-            "release_tag": release_tag,
-            "archive": {
-                "asset_id": asset_cfg["id"],
-                "name": asset_cfg["name"],
-                "bytes": asset_cfg["bytes"],
-                "sha256": asset_cfg["sha256"],
-                "verified_once_before_member_extraction": True,
-            },
-            "member": {
-                "path": result["member_path"],
-                "bytes": result["member_bytes"],
-                "sha256": result["member_sha256"],
-            },
-            "extraction_method": result["extraction_method"],
-            "explicit_candidate_count": result["explicit_candidate_count"],
-            "admitted_row_count": result["admitted_row_count"],
-            "valid_empty_is_success": True,
-            "producer_reacquisition": False,
-            "rights_adjudication": False,
-            "consumer_join": False,
-            "outputs": [json_path, csv_path],
-        }
-        rtext = json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
-        outputs.extend([(f"{out_base}/{fid}/extraction-receipt.json", rtext, True), (handoff, rtext, True)])
-        handoffs[fid] = handoff
-
-    family = {
-        "schema_version": "4.0.1",
-        "worker": "W4C",
-        "mission_generation": generation,
-        "package": "W4C_SHARED_RHOMOLO_ENERGY_MEMBER_EXTRACTION",
-        "status": "PASS_SHARED_ARCHIVE_VERIFIED_FOUR_MEMBERS_EXTRACTED",
-        "release_tag": release_tag,
-        "archive": {
-            "asset_id": asset_cfg["id"],
-            "name": asset_cfg["name"],
-            "bytes": asset_cfg["bytes"],
-            "sha256": asset_cfg["sha256"],
-            "verified_once_before_member_extraction": True,
-        },
-        "members": results,
-        "handoffs": handoffs,
-        "producer_reacquisition": False,
-        "rights_adjudication": False,
-        "canonical_catalogue_write": False,
-    }
-    family_path = f"{out_base}/family-receipt.json"
-    outputs.append((family_path, json.dumps(family, ensure_ascii=False, indent=2, sort_keys=True) + "\n", True))
-
-    # Recheck generation immediately before any private write.
-    fresh_team_text, _ = _get_text(
-        private_repo,
-        branch,
-        "statistics/recovery-20260920/simple-runtime/team-missions.json",
-        read_token,
-    )
-    if int(json.loads(fresh_team_text).get("mission_generation", -1)) != generation:
-        raise RuntimeError("MISSION_GENERATION_CHANGED_BEFORE_PRIVATE_WRITE")
-
-    write_results = []
-    for path, text, immutable in outputs:
-        write_results.append(
-            _put_text(
-                private_repo,
-                branch,
-                path,
-                text,
-                write_token,
-                message=f"result(mn): W4C shared extraction {Path(path).name}",
-                immutable=immutable,
-            )
-        )
-
-    worker_path = "statistics/recovery-20260920/simple-runtime/worker-W4C.json"
-    prior_text, prior_sha = _get_text(private_repo, branch, worker_path, write_token)
-    prior = json.loads(prior_text)
-    worker = {
-        "schema_version": "4.0.1",
-        "worker": "W4C",
-        "team": "W4",
-        "partner": "C",
-        "mission_generation": generation,
-        "updated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "status": "READY_CONTINUE_WINDOW",
-        "elastic_state": "ACTIVE_COMPLETENESS_AND_SHARED_ARCHIVE_EXTRACTION",
-        "current_task": None,
-        "last_output": family_path,
-        "window": {
-            "mission_generation": generation,
-            "phase": "CLEANUP_NORMALIZATION_COMPLETENESS",
-            "work_window_contract": "v4.0.1 multi-package; shared archive extraction is one material family and does not end the window",
-            "material_packages": 1,
-            "package": "W4C_SHARED_RHOMOLO_ENERGY_MEMBER_EXTRACTION",
-            "archive_verified_once": True,
-            "archive_sha256": asset_cfg["sha256"],
-            "member_results": results,
-            "producer_reacquisitions": 0,
-            "rights_adjudications": 0,
-            "consumer_tables_built": 0,
-            "canonical_manifest_index_catalogue_writes": 0,
-            "site_deployments": 0,
-            "drive_refreshes": 0,
-            "scheduler_changes": 0,
-            "outputs": [family_path, *[handoffs[k] for k in sorted(handoffs)]],
-            "next_cursor": [
-                "Continue the same W4C work window with changed P1 externalities/resources completeness reconciliation using these extraction results.",
-                "Then reconcile W4B context/accessibility and remaining lineage/extraction backlog if materially changed.",
-            ],
-        },
-        "cumulative_completed": list(
-            dict.fromkeys((prior.get("cumulative_completed") or []) + ["GEN39_V401_W4C_SHARED_ARCHIVE_F169_F170_F176_F179_EXTRACTION"])
-        ),
-        "metrics": {
-            "material_packages_this_window": 1,
-            "shared_archives_verified_this_window": 1,
-            "members_extracted_this_window": 4,
-            "producer_reacquisitions_this_window": 0,
-            "rights_adjudications_this_window": 0,
-        },
-        "blocker": None,
-    }
-    _put_text(
-        private_repo,
-        branch,
-        worker_path,
-        json.dumps(worker, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        write_token,
-        message="result(mn): W4C shared preserved energy extraction",
-        expected_sha=prior_sha,
-        immutable=False,
-    )
-
-    return {
-        "schema_version": "1.0.0",
-        "private_repository": private_repo,
-        "private_release_tag": release_tag,
-        "results": [
-            {
-                "source_set_id": fid,
-                "status": result["status"],
-                "member_sha256": result["member_sha256"],
-                "member_bytes": result["member_bytes"],
-                "admitted_row_count": result["admitted_row_count"],
-                "private_handoff": handoffs[fid],
-            }
-            for fid, result in sorted(results.items())
-        ],
-        "failures": [],
-        "complete": True,
-        "family_output": family_path,
-        "private_write_count": len(write_results) + 1,
-    }
+    raise NotImplementedError("This shared module exposes helpers used by bounded W4/W3 extractors.")
