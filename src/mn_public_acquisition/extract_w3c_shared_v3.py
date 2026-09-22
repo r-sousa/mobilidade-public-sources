@@ -1,0 +1,238 @@
+from __future__ import annotations
+
+import hashlib
+import json
+import tempfile
+import zipfile
+from datetime import datetime, timezone
+from pathlib import Path
+
+from .extract_w3c_shared import _csv, _html_extract, _pdf_extract
+from .extract_w4c_shared import _get_text, _put_text, _sha
+from .private_bootstrap import download_release_asset, release_by_tag
+
+
+def _file_sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def run(cfg: dict, read_token: str, write_token: str) -> dict:
+    repo = cfg["private_repository"]
+    branch = cfg["private_branch"]
+    generation = int(cfg["mission_generation"])
+    revision = int(cfg.get("execution_revision", 8))
+    tag = cfg["release_tag"]
+    asset_cfg = cfg["asset"]
+    team_path = "statistics/recovery-20260920/simple-runtime/team-missions.json"
+
+    team_text, _ = _get_text(repo, branch, team_path, read_token)
+    team = json.loads(team_text)
+    if int(team.get("mission_generation", -1)) != generation:
+        raise RuntimeError("MISSION_GENERATION_CHANGED")
+    w3c = ((team.get("teams") or {}).get("W3") or {}).get("C") or {}
+    queue_text = " ".join(w3c.get("queue") or []).casefold()
+    required = set(cfg["members"])
+    if w3c.get("worker") != "W3C" or not all(fid.casefold() in queue_text for fid in required):
+        raise RuntimeError("W3C_CURRENT_MISSION_NO_LONGER_AUTHORIZES_SHARED_BACKLOG")
+
+    map_text, map_blob_sha = _get_text(repo, branch, cfg["inventory_map_path"], read_token)
+    if cfg.get("inventory_map_blob_sha") and map_blob_sha != cfg["inventory_map_blob_sha"]:
+        raise RuntimeError(f"INVENTORY_MAP_BLOB_MISMATCH:{map_blob_sha}")
+    inv_map_obj = json.loads(map_text)
+    if int(inv_map_obj.get("mission_generation", -1)) != generation:
+        raise RuntimeError("INVENTORY_MAP_GENERATION_MISMATCH")
+    if inv_map_obj.get("archive_sha256") != asset_cfg["sha256"]:
+        raise RuntimeError("INVENTORY_MAP_ARCHIVE_MISMATCH")
+    mappings = inv_map_obj.get("mappings") or {}
+    for fid in required:
+        row = mappings.get(fid) or {}
+        if row.get("status") != "MAPPED_UNIQUE_DEFENSIBLE" or not row.get("member") or not row.get("member_sha256"):
+            raise RuntimeError(f"INVENTORY_MAP_NOT_UNIQUE:{fid}:{row.get('status')}")
+
+    release = release_by_tag(repo, tag, read_token)
+    asset = next((x for x in release.get("assets", []) if int(x["id"]) == int(asset_cfg["id"])), None)
+    if not asset:
+        raise RuntimeError("PINNED_RELEASE_ASSET_ID_NOT_FOUND")
+    if asset["name"] != asset_cfg["name"] or int(asset["size"]) != int(asset_cfg["bytes"]):
+        raise RuntimeError("PINNED_RELEASE_ASSET_METADATA_MISMATCH")
+    digest = str(asset.get("digest") or "").removeprefix("sha256:")
+    if digest and digest != asset_cfg["sha256"]:
+        raise RuntimeError("PINNED_RELEASE_ASSET_DIGEST_METADATA_MISMATCH")
+
+    with tempfile.TemporaryDirectory(prefix="mn-w3c-shared-v3-") as td:
+        local = Path(td) / asset_cfg["name"]
+        download_release_asset(repo, asset, read_token, local)
+        if local.stat().st_size != int(asset_cfg["bytes"]):
+            raise RuntimeError(f"ARCHIVE_SIZE_MISMATCH:{local.stat().st_size}")
+        archive_sha = _file_sha256(local)
+        if archive_sha != asset_cfg["sha256"]:
+            raise RuntimeError(f"ARCHIVE_SHA_MISMATCH:{archive_sha}")
+
+        results: dict[str, dict] = {}
+        payloads: dict[str, tuple[str, str]] = {}
+        with zipfile.ZipFile(local) as zf:
+            names = set(zf.namelist())
+            for fid, spec in cfg["members"].items():
+                handoff_text, handoff_sha = _get_text(repo, branch, spec["handoff_path"], read_token)
+                if handoff_sha != spec["handoff_blob_sha"]:
+                    raise RuntimeError(f"W3B_HANDOFF_BLOB_MISMATCH:{fid}:{handoff_sha}")
+                handoff = json.loads(handoff_text)
+                if handoff.get("worker") != "W3B" or fid not in (handoff.get("field_ids") or []):
+                    raise RuntimeError(f"W3B_HANDOFF_IDENTITY_MISMATCH:{fid}")
+                preserved = handoff.get("preserved_input") or {}
+                if preserved.get("release_tag") != tag or preserved.get("asset") != spec["logical_path"]:
+                    raise RuntimeError(f"W3B_HANDOFF_RELEASE_MEMBER_MISMATCH:{fid}")
+
+                mapping = mappings[fid]
+                actual_path = mapping["member"]
+                if actual_path not in names:
+                    raise RuntimeError(f"INVENTORY_MAPPED_MEMBER_NOT_IN_ARCHIVE:{fid}:{actual_path}")
+                member = zf.read(actual_path)
+                member_sha = _sha(member)
+                if len(member) != int(mapping["member_bytes"]) or member_sha != mapping["member_sha256"]:
+                    raise RuntimeError(f"INVENTORY_MEMBER_IDENTITY_MISMATCH:{fid}:{actual_path}")
+
+                lower = actual_path.lower()
+                if lower.endswith((".html", ".htm")):
+                    candidates, admitted, method = _html_extract(member)
+                elif lower.endswith(".pdf"):
+                    candidates, admitted, method = _pdf_extract(member)
+                else:
+                    raise RuntimeError(f"UNSUPPORTED_MEMBER_TYPE:{fid}:{actual_path}")
+
+                status = "PASS_EXPLICIT_SOURCE_NATIVE_METRIC_ROWS" if admitted else "PASS_VALID_EMPTY_PRESERVED_SCOPE_NO_EXPLICIT_METRIC_ROWS"
+                identity = {
+                    "release_tag": tag,
+                    "release_id": release.get("id"),
+                    "archive_asset_id": asset_cfg["id"],
+                    "archive_name": asset_cfg["name"],
+                    "archive_bytes": asset_cfg["bytes"],
+                    "archive_sha256": archive_sha,
+                    "archive_verified_once_before_extraction": True,
+                    "inventory_map_path": cfg["inventory_map_path"],
+                    "inventory_map_blob_sha": map_blob_sha,
+                    "inventory_mapping_basis": mapping.get("basis"),
+                    "w3b_handoff_path": spec["handoff_path"],
+                    "w3b_handoff_blob_sha": handoff_sha,
+                    "logical_preserved_member_path": spec["logical_path"],
+                    "actual_archive_member_path": actual_path,
+                    "member_bytes": len(member),
+                    "member_sha256": member_sha,
+                }
+                payload = {
+                    "schema_version": "4.0.3",
+                    "worker": "W3C",
+                    "mission_generation": generation,
+                    "execution_revision": revision,
+                    "source_set_id": fid,
+                    "producer": spec["producer"],
+                    "product": spec["product"],
+                    "status": status,
+                    "source_identity": identity,
+                    "extraction_method": method,
+                    "numeric_candidate_count": len(candidates),
+                    "admitted_row_count": len(admitted),
+                    "admitted_rows": admitted,
+                    "candidate_rows_for_qa": candidates,
+                    "normalization_guards": spec["guards"],
+                    "producer_reacquisition": False,
+                    "rights_adjudication": False,
+                    "consumer_join": False,
+                    "semantic_note": "Exact inventory-mapped preserved member bytes only. Metric rows require explicit local metric context; no cross-source addition, annualization, missing-to-zero conversion or inferred joint cells.",
+                }
+                payloads[fid] = (json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n", _csv(admitted))
+                results[fid] = {
+                    "source_set_id": fid,
+                    "status": status,
+                    "producer": spec["producer"],
+                    "product": spec["product"],
+                    "logical_member_path": spec["logical_path"],
+                    "actual_archive_member_path": actual_path,
+                    "member_bytes": len(member),
+                    "member_sha256": member_sha,
+                    "w3b_handoff_blob_sha": handoff_sha,
+                    "numeric_candidate_count": len(candidates),
+                    "admitted_row_count": len(admitted),
+                    "extraction_method": method,
+                }
+
+    fresh_team_text, _ = _get_text(repo, branch, team_path, read_token)
+    if int(json.loads(fresh_team_text).get("mission_generation", -1)) != generation:
+        raise RuntimeError("MISSION_GENERATION_CHANGED_BEFORE_PRIVATE_WRITE")
+
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    out_base = f"statistics/recovery-20260920/simple-runtime/outputs/W3C/{stamp}-G{generation}-W3C-shared-inventory-mapped-r{revision}"
+    handoffs: dict[str, str] = {}
+    writes = 0
+    for fid, result in results.items():
+        jpath = f"{out_base}/{fid}/{fid.lower()}-source-native.json"
+        cpath = f"{out_base}/{fid}/{fid.lower()}-source-native.csv"
+        jtext, ctext = payloads[fid]
+        _put_text(repo, branch, jpath, jtext, write_token, message=f"result(mn): W3C {fid} inventory-mapped source-native extraction", immutable=True)
+        _put_text(repo, branch, cpath, ctext, write_token, message=f"result(mn): W3C {fid} inventory-mapped compact extraction", immutable=True)
+        writes += 2
+        handoff_path = f"statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/{fid}/shared-archive-{asset_cfg['sha256']}-w3c-extraction-r{revision}.json"
+        receipt = {
+            "schema_version": "4.0.3",
+            "worker": "W3C",
+            "mission_generation": generation,
+            "execution_revision": revision,
+            "package": "W3C_SHARED_ARCHIVE_INVENTORY_MAPPED_MEMBER_EXTRACTION",
+            "source_set_id": fid,
+            "status": result["status"],
+            "release_tag": tag,
+            "archive": {"asset_id": asset_cfg["id"], "name": asset_cfg["name"], "bytes": asset_cfg["bytes"], "sha256": archive_sha, "verified": True},
+            "inventory_map": {"path": cfg["inventory_map_path"], "blob_sha": map_blob_sha, "verified": True},
+            "w3b_handoff": {"path": spec_path if False else cfg["members"][fid]["handoff_path"], "blob_sha": result["w3b_handoff_blob_sha"], "verified": True},
+            "member": {"logical_path": result["logical_member_path"], "actual_archive_path": result["actual_archive_member_path"], "bytes": result["member_bytes"], "sha256": result["member_sha256"]},
+            "extraction_method": result["extraction_method"],
+            "numeric_candidate_count": result["numeric_candidate_count"],
+            "admitted_row_count": result["admitted_row_count"],
+            "producer_reacquisition": False,
+            "rights_adjudication": False,
+            "consumer_join": False,
+            "outputs": [jpath, cpath],
+        }
+        rtext = json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+        rpath = f"{out_base}/{fid}/extraction-receipt.json"
+        _put_text(repo, branch, rpath, rtext, write_token, message=f"result(mn): W3C {fid} inventory-mapped extraction receipt", immutable=True)
+        _put_text(repo, branch, handoff_path, rtext, write_token, message=f"handoff(mn): W3C {fid} inventory-mapped extraction", immutable=True)
+        writes += 2
+        handoffs[fid] = handoff_path
+
+    family = {
+        "schema_version": "4.0.3",
+        "worker": "W3C",
+        "mission_generation": generation,
+        "execution_revision": revision,
+        "package": "W3C_SHARED_ARCHIVE_INVENTORY_MAPPED_MEMBER_EXTRACTION",
+        "status": "PASS_ALL_INVENTORY_MAPPED_MEMBERS_PARSED",
+        "release_tag": tag,
+        "archive": {"asset_id": asset_cfg["id"], "name": asset_cfg["name"], "bytes": asset_cfg["bytes"], "sha256": archive_sha, "verified": True},
+        "inventory_map": {"path": cfg["inventory_map_path"], "blob_sha": map_blob_sha, "verified": True},
+        "members_materialized": results,
+        "handoffs": handoffs,
+        "producer_reacquisition": False,
+        "rights_adjudication": False,
+        "canonical_catalogue_write": False,
+        "worker_status_write": false
+    }
+    family_path = f"{out_base}/family-receipt.json"
+    _put_text(repo, branch, family_path, json.dumps(family, ensure_ascii=False, indent=2, sort_keys=True) + "\n", write_token, message="result(mn): W3C inventory-mapped shared archive family receipt", immutable=True)
+    writes += 1
+
+    return {
+        "schema_version": "1.0.0",
+        "private_repository": repo,
+        "private_release_tag": tag,
+        "execution_revision": revision,
+        "results": [{"source_set_id": fid, "status": result["status"], "member_sha256": result["member_sha256"], "member_bytes": result["member_bytes"], "admitted_row_count": result["admitted_row_count"], "private_handoff": handoffs[fid]} for fid, result in sorted(results.items())],
+        "complete": True,
+        "family_output": family_path,
+        "private_write_count": writes,
+        "worker_status_write": False,
+    }
