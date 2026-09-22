@@ -1,9 +1,15 @@
 schema_version: 4.1.0
 mission_generation: 46
 worker: W4C
+execution_attempt: 2
 private_repository: r-sousa/EU-transp-weekly
 private_branch: mobilidade-norte-recovery-20260919
 release_tag: data-20260915-a25baac3ab8d65d9
+corrects_prior_attempt:
+  public_request: extraction_requests/W4C-G46-F25-F26-INE.json
+  private_f25_handoff: statistics/recovery-20260920/simple-runtime/public-acquisition-receipts/F25/c0008b65028b789980bf29c4-g46-extraction.json
+  disposition: INVALIDATED_WRAPPER_MISPARSE_AND_OVERSIZED_SINGLE_FILE_OUTPUT
+changed_method_reason: "Attempt 1 verified the exact preserved bytes but exposed the producer response wrapper as a single nested row and hit GitHub Contents API size limits on F26. Attempt 2 uses the same exact preserved release/assets only, unwraps the response envelope conservatively, detects source-native observation dictionaries without semantic interpretation, and emits bounded append-only JSON/CSV parts. No producer reacquisition occurs."
 assets:
   F25:
     id: 565831863
