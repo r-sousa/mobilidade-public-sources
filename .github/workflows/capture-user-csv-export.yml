@@ -16,96 +16,85 @@ jobs:
       SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
       RUN_ID: ${{ github.run_id }}
     steps:
-      - name: Capture exact private request, preserve bytes and readable CSV evidence
+      - name: Recover preserved encoding exactly and normalize only exported cells
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import base64,csv,hashlib,io,json,os,time,urllib.request,urllib.error,urllib.parse,datetime
-          repo='r-sousa/EU-transp-weekly'
-          branch='mobilidade-norte-recovery-20260919'
+          import base64,csv,hashlib,io,json,os,time,urllib.request,urllib.error,datetime
+          from decimal import Decimal
+          repo='r-sousa/EU-transp-weekly';branch='mobilidade-norte-recovery-20260919'
           root='statistics/recovery-20260920/simple-runtime'
-          token=os.environ['SINK_TOKEN'].strip()
-          assert token, 'Existing private sink token is required'
+          base=root+'/outputs/ORCHESTRATOR/F195-0014450-USER-CSV-0YchbUCZT'
+          source_path=base+'/run-36059125547/0014450-source-export.csv'
+          source_sha='710d9a0ada2b1d4680991bf77a6050a8e60ba269'
+          token=os.environ['SINK_TOKEN'].strip();assert token
           api='https://api.github.com/repos/'+repo
           headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
           def call(path,body=None):
-              data=None if body is None else json.dumps(body).encode()
-              req=urllib.request.Request(api+path,headers={**headers,'Content-Type':'application/json'},data=data,method='GET' if body is None else 'PUT')
-              with urllib.request.urlopen(req,timeout=40) as r:return json.load(r)
-          def get(path,ref=branch):
-              obj=call('/contents/'+path+'?ref='+ref)
-              return obj,base64.b64decode(obj['content'])
+              req=urllib.request.Request(api+path,headers={**headers,'Content-Type':'application/json'},data=None if body is None else json.dumps(body).encode(),method='GET' if body is None else 'PUT')
+              with urllib.request.urlopen(req,timeout=45) as r:return json.load(r)
+          def blob_hash(data):return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+          def get(path):
+              obj=call('/contents/'+path+'?ref='+branch)
+              data=base64.b64decode(obj['content'])
+              if blob_hash(data)!=obj['sha']:
+                  # Some text-delivery surfaces transcode legacy CSV bytes to UTF8.
+                  # Reverse that transform ONLY when the original Git blob hash proves exactness.
+                  try: alternate=data.decode('utf-8').encode('cp1252')
+                  except UnicodeError:alternate=b''
+                  assert blob_hash(alternate)==obj['sha'],'Unverified byte transformation'
+                  data=alternate
+              return obj,data
+          def enc(obj):return (json.dumps(obj,ensure_ascii=False,indent=2)+'\n').encode()
           def put(path,data):
               try:
-                  obj,existing=get(path)
-                  assert existing==data,'Immutable output collision'
-                  return {'path':path,'sha':obj['sha'],'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'readback':'PASS'}
+                  obj,old=get(path);assert old==data,'Immutable collision'
               except urllib.error.HTTPError as e:
                   if e.code!=404:raise
-              for attempt in range(3):
-                  try:
-                      out=call('/contents/'+path,{'branch':branch,'message':'F195: private user-export capture evidence','content':base64.b64encode(data).decode()})
-                      obj,actual=get(path)
-                      assert actual==data,'Private readback mismatch'
-                      return {'path':path,'sha':obj['sha'],'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'readback':'PASS'}
-                  except urllib.error.HTTPError as e:
-                      if e.code!=409 or attempt==2:raise
-                      time.sleep(attempt+1)
-          def encode(obj):return (json.dumps(obj,ensure_ascii=False,indent=2)+'\n').encode()
-          assert call('')['private'] is True,'Private-only sink required'
-          _,request_raw=get(root+'/intake-requests/F195-0014450-user-csv-0YchbUCZT.json','aa430b0c05370b4553c108aec93f53c2f224f406')
-          request=json.loads(request_raw)
-          _,team_raw=get(root+'/team-missions.json')
-          team=json.loads(team_raw)
-          assert team['mission_generation']==63,'Current-generation reassignment required'
-          assert team['task_bindings']['G63R-F195-2024']['owner']=='W2A'
-          _,worker_raw=get(root+'/worker-W2A.json')
-          assert json.loads(worker_raw).get('current_task') is None,'Do not collide with active W2A work'
-          url=request['url']
-          parsed=urllib.parse.urlsplit(url)
-          assert parsed.scheme=='https' and parsed.hostname=='www.ine.pt' and parsed.path.startswith('/clientFiles/') and parsed.path.endswith('.csv')
-          outroot=request['output_root']+'/run-'+os.environ['RUN_ID']
-          result={'request_id':request['request_id'],'run_id':int(os.environ['RUN_ID']),'mission_generation':63,'source_set_id':'F195','indicator':'0014450','expected_year':2024,'source_url':url,'at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'attempts':[],'canonical_delta':0,'rights_delta':0,'existing_42_rows_unchanged':True,'producer_api_requests':0,'files':[]}
-          raw=None
-          for attempt in range(2):
-              try:
-                  q=urllib.request.Request(url,headers={'Accept':'text/csv,text/plain;q=0.9,*/*;q=0.1','User-Agent':'MobilidadeNorte-research-capture/1.0'})
-                  with urllib.request.urlopen(q,timeout=60) as r:
-                      raw=r.read(5000001)
-                      result['attempts'].append({'attempt':attempt+1,'status':r.status,'content_type':r.headers.get('Content-Type'),'final_url':r.url,'bytes':len(raw)})
-                  if len(raw)>5000000:raise ValueError('Response exceeds bounded CSV size')
-                  if not raw.strip():raise ValueError('Empty response')
-                  break
-              except Exception as e:
-                  result['attempts'].append({'attempt':attempt+1,'error_type':type(e).__name__,'message':str(e),'status':getattr(e,'code',None)})
-                  raw=None
-                  if isinstance(e,ValueError) or getattr(e,'code',None) in (400,401,403,404,410,429):break
-                  if attempt==0:time.sleep(15)
-          if raw is None:
-              result['status']='BLOCKED_EXACT_USER_EXPORT_RETRIEVAL'
-          else:
-              result['source_sha256']=hashlib.sha256(raw).hexdigest()
-              head=raw[:3000].lower()
-              if b'<html' in head or b'<!doctype html' in head or b'cf-chl-' in head:
-                  result['status']='REJECTED_HTML_NOT_CSV'
-                  result['files'].append(put(outroot+'/rejected-response.bin',raw))
-              else:
-                  encoding=None
-                  for candidate in ['utf-8-sig','utf-16','cp1252']:
+                  for n in range(3):
                       try:
-                          text=raw.decode(candidate)
-                          encoding=candidate
-                          break
-                      except UnicodeError:pass
-                  assert encoding,'Unrecognized CSV encoding'
-                  try: dialect=csv.Sniffer().sniff(text[:16384],delimiters=';,\t')
-                  except csv.Error: dialect=csv.excel;dialect.delimiter=';' if ';' in text else '\t'
-                  rows=list(csv.reader(io.StringIO(text),dialect))
-                  result.update({'status':'ACQUIRED_READBACK_VERIFIED_SCOPE_QA_PENDING','encoding':encoding,'delimiter':dialect.delimiter,'csv_rows':len(rows),'nonempty_rows':sum(any(x.strip() for x in row) for row in rows),'max_columns':max(map(len,rows),default=0),'coverage_warning':'An export may contain selected categories only; compare actual rows with source metadata before declaring all dimensions complete.','normalization_state':'NOT_ADMITTED_PENDING_W2A_AND_INDEPENDENT_QA'})
-                  result['files'].append(put(outroot+'/0014450-source-export.csv',raw))
-                  result['files'].append(put(outroot+'/0014450-export-utf8.csv',text.encode('utf-8')))
-                  result['files'].append(put(outroot+'/0014450-csv-cells.json',encode({'encoding':encoding,'delimiter':dialect.delimiter,'rows':rows})))
-          put(outroot+'/handoff.json',encode(result))
-          print(json.dumps({'request_id':result['request_id'],'status':result['status'],'canonical_delta':0,'private_receipt_written':True}))
+                          call('/contents/'+path,{'branch':branch,'message':'F195: hash-verified CSV scope and normalization candidate','content':base64.b64encode(data).decode()});break
+                      except urllib.error.HTTPError as conflict:
+                          if conflict.code!=409 or n==2:raise
+                          time.sleep(n+1)
+                  obj,old=get(path);assert old==data,'Write readback mismatch'
+              return {'path':path,'git_blob_sha':obj['sha'],'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'readback':'PASS'}
+          assert call('')['private'] is True
+          _,team_bytes=get(root+'/team-missions.json');team=json.loads(team_bytes)
+          assert team['mission_generation']==63 and team['task_bindings']['G63R-F195-2024']['owner']=='W2A'
+          obj,raw=get(source_path);assert obj['sha']==source_sha and blob_hash(raw)==source_sha
+          assert len(raw)==3037,'Pinned preserved source size changed'
+          text=raw.decode('cp1252')
+          assert 'Inquérito às condições de vida e rendimento' in text
+          assert 'Primeiro período disponível;2024' in text
+          rows=list(csv.reader(io.StringIO(text),delimiter=';'))
+          data_rows=[(i+1,r) for i,r in enumerate(rows) if r and r[0].strip()=='2024']
+          assert len(data_rows)==1 and data_rows[0][1][1].strip()=='PT: Portugal'
+          line,row=data_rows[0]
+          assert len(row)==15 and row[-1]==''
+          sex_row=next(r for r in rows if len(r)>10 and r[2]=='HM')
+          assert [(i,c) for i,c in enumerate(sex_row) if c]==[(2,'HM'),(6,'H'),(10,'M')]
+          age_header=next(r for r in rows if len(r)>2 and r[2]=='Total')
+          assert all(not c for c in age_header[3:]),'Export is not total-age-only'
+          freq=next(r for r in rows if len(r)>10 and r[2].startswith('Todos os dias'))
+          assert freq[2:6]==freq[6:10]==freq[10:14]
+          observations=[];checks={}
+          for offset,(sex_code,sex_label) in enumerate([('T','HM'),('1','H'),('2','M')]):
+              values=[]
+              for k in range(4):
+                  raw_value=row[2+offset*4+k].strip();value=Decimal(raw_value.replace(',','.'))
+                  assert 0<=value<=100
+                  values.append(value)
+                  observations.append({'source_set_id':'F195','indicator':'0014450','reference_year':2024,'period_code':'S7A2024','geography_code':'PT','geography':'Portugal','sex_code':sex_code,'sex_label':sex_label,'age_code':'T','age_label':'Total (16 e mais anos)','frequency_code':str(k+1),'frequency_label':freq[2+k],'value':str(value),'raw_value':raw_value,'unit':'PC','power10':0,'decimal_places':1,'value_state':'OBSERVED_PUBLISHED','source_line':line,'source_column_1based':3+offset*4+k,'source_git_blob':source_sha,'source_sha256':hashlib.sha256(raw).hexdigest(),'admission':'CANDIDATE_PENDING_INDEPENDENT_QA'})
+              checks[sex_label]=str(sum(values))
+              assert abs(sum(values)-100)<=Decimal('0.2'),'Distribution check failed'
+          assert len(observations)==12
+          out=base+'/verified-total-age-v1'
+          files=[]
+          files.append(put(out+'/source-utf8.csv',text.encode()))
+          files.append(put(out+'/normalized-candidate.json',enc({'observations':observations})))
+          result={'status':'PASS_PRIVATE_CAPTURE_BYTE_IDENTITY_AND_12_CELL_CANDIDATE','run_id':int(os.environ['RUN_ID']),'at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'source_set_id':'F195','indicator':'0014450','reference_year':2024,'producer':'INE ICOR','source_path':source_path,'source_bytes':len(raw),'source_git_blob_sha':source_sha,'source_sha256':hashlib.sha256(raw).hexdigest(),'original_encoding':'cp1252','source_export_timestamp':'2026-09-24T22:00:41+01:00','source_last_update':'2025-06-05','capture_run':36059125547,'candidate_observations':12,'sex_categories':['HM','H','M'],'age_categories':['Total'],'frequency_categories':4,'geography':'Portugal only','sum_by_sex_pct':checks,'not_exported_age_groups':['16-17','18-64','65+'],'coverage':'PARTIAL_INDICATOR_EXPORTED_TOTAL_AGE_SLICE_ONLY','full_indicator_complete':False,'existing_42_rows_unchanged':True,'canonical_admission':0,'new_source_requests_this_repair':0,'public_data_publication':False,'files':files,'next_owner':'W2A','independent_qa_owner':'W1B','next_action':'Use this real numerical package for incremental QA/admission; preserve the age-breakdown residual separately rather than marking the entire member complete or refetching accepted cells.'}
+          files.append(put(out+'/handoff.json',enc(result)))
+          print(json.dumps({'status':result['status'],'candidate_observations':12,'source_requests':0,'private_readback':'PASS','canonical_admission':0}))
           PY
