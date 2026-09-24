@@ -1,0 +1,33 @@
+schema_version: 1.0.0
+source_set_id: F94
+title: CIM Ave — relatórios anuais de obrigações de serviço público
+producer: CIM Ave
+product_key: mobilidade-source-id::F94
+adapter: html_assets
+access: public
+sink: private
+cadence: annual
+expected_format: PDF series
+source:
+  landing_url: https://cim-ave.pt/projetos/mobilidade-e-transportes/
+raw_native:
+  geography: CIM Ave authority and source-native contract/operator grains
+  classification: annual OSP report-native measures, units and flags
+  acquisition_scope: bounded accepted annual family through 2025; existing accepted 2024 descendant reused
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://cim-ave.pt/projetos/mobilidade-e-transportes/
+  license: null
+  asset_check: null
+parameters:
+  period: "2019-2025 accepted family; acquire only matching report members exposed by current producer page"
+  landing_url: https://cim-ave.pt/projetos/mobilidade-e-transportes/
+  include_href_regex: "\\.pdf($|\\?)"
+  include_text_regex: "(obriga|servi[cç]o|relat[oó]rio)"
+  allowed_extensions:
+    - pdf
+  allowed_host_suffixes:
+    - cim-ave.pt
+  max_assets: 7
+  content_type_regex: "pdf"
