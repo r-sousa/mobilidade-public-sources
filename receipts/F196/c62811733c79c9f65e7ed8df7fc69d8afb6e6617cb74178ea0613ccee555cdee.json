@@ -1,0 +1,51 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "4a3bf067acb524975e6ae7c9f7f05ba0595f888a",
+  "acquisition_timestamp": "2026-09-24T03:18:01.953924Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 1859543,
+      "format": "PDF",
+      "name": "AVE_MOBILIDADE_TARIFAS_2026__F196-ave-mobilidade-tarifas-2026.pdf",
+      "role": "native",
+      "sha256": "a77a8cd4e0feae695fcd7f7f727e7045e8dc45d1819e0ac3ca7ca97396b77dbe",
+      "source_url": "https://www.avemobilidade.pt/docs/Tarifas_AVE%20MOBILIDADE.pdf"
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF",
+  "limitations": "Tariff prices are not passenger spending, demand, observed operation or service quality; preserve fare-band and title labels exactly.",
+  "native_asset_fingerprint": "c62811733c79c9f65e7ed8df7fc69d8afb6e6617cb74178ea0613ccee555cdee",
+  "primary_repair": false,
+  "producer": "Ave Mobilidade",
+  "product_key": "avemobilidade.pt::tarifas::annual-fare-table",
+  "raw_native": {
+    "acquisition_scope": "accepted 2026 edition effective 2026-01-01 only",
+    "classification": "producer-native fare band x transport-title type",
+    "geography": "CIM Ave contracted network / Ave Mobilidade fare system"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35950855673",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.avemobilidade.pt/docs/Tarifas_AVE%20MOBILIDADE.pdf",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2026 effective 2026-01-01",
+  "source_set_id": "F196",
+  "source_url": "https://www.avemobilidade.pt/",
+  "title": "Ave Mobilidade — tabela tarifária anual",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
