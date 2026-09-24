@@ -1,0 +1,142 @@
+name: F195 exact period correction candidate
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/f195-period-candidate.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-f195-period-candidate
+  cancel-in-progress: false
+jobs:
+  candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_REPO: r-sousa/EU-transp-weekly
+      MN_PRIVATE_BRANCH: mobilidade-norte-recovery-20260919
+      MN_REQUEST_ID: F195-0014450-2024-CACHED-METADATA-CANDIDATE
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Reuse exact metadata, obtain only missing candidate data and preserve privately
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64, contextlib, gzip, hashlib, io, json, os, sys, time
+          import urllib.request, urllib.error, urllib.parse
+          from pathlib import Path
+          from datetime import datetime, timezone
+          from mn_public_acquisition import core, ine_partitioned as ine
+          REPO='r-sousa/EU-transp-weekly'; BRANCH='mobilidade-norte-recovery-20260919'
+          ROOT='statistics/recovery-20260920/simple-runtime'
+          BASE=ROOT+'/outputs/ORCHESTRATOR/G63-F195-CACHE-RESCUE-v1'
+          OUT=BASE+'/period-candidate-cached-meta'
+          API='https://api.github.com/repos/'+REPO
+          WRITE=os.environ['MN_PRIVATE_SINK_TOKEN']
+          READ=os.environ.get('MN_PRIVATE_READ_TOKEN') or WRITE
+          CAP=2*1024*1024
+          def api(path,method='GET',obj=None):
+              headers={'Authorization':'Bearer '+(WRITE if method!='GET' else READ),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+              raw=None if obj is None else json.dumps(obj).encode()
+              if raw is not None: headers['Content-Type']='application/json'
+              req=urllib.request.Request(API+path,headers=headers,data=raw,method=method)
+              try:
+                  with urllib.request.urlopen(req,timeout=90) as r: return json.load(r)
+              except urllib.error.HTTPError as e: raise RuntimeError('GITHUB_HTTP_'+str(e.code)) from None
+          def get(path):
+              obj=api('/contents/'+urllib.parse.quote(path,safe='/')+'?ref='+BRANCH)
+              return obj,base64.b64decode(obj['content'])
+          def put(path,data):
+              assert path.startswith(OUT+'/') and len(data)<=CAP
+              for attempt in range(3):
+                  try: old,prior=get(path)
+                  except RuntimeError as e:
+                      if str(e)!='GITHUB_HTTP_404': raise
+                      old=None
+                  else:
+                      assert prior==data,'Output collision'
+                      return {'path':path,'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'blob_sha':old['sha'],'readback':'PASS'}
+                  body={'branch':BRANCH,'message':'F195: exact period candidate '+path.rsplit('/',1)[-1],'content':base64.b64encode(data).decode()}
+                  try: api('/contents/'+urllib.parse.quote(path,safe='/'),'PUT',body)
+                  except RuntimeError as e:
+                      if str(e)=='GITHUB_HTTP_409' and attempt<2: time.sleep(attempt+1); continue
+                      raise
+                  saved,readback=get(path); assert data==readback,'Private readback mismatch'
+                  return {'path':path,'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'blob_sha':saved['sha'],'readback':'PASS'}
+              raise RuntimeError('Write retries exhausted')
+          def jb(o): return (json.dumps(o,ensure_ascii=False,indent=2)+'\n').encode()
+          assert api('')['private'] is True
+          _,t=get(ROOT+'/team-missions.json'); assert json.loads(t)['mission_generation']==63
+          _,p=get(BASE+'/0014450-correction-proposal.json'); proposal=json.loads(p)
+          assert proposal['indicator']=='0014450' and proposal['proposed_native_reference_year']==2024
+          _,metadata=get(BASE+'/0014450-current-native-metadata.json')
+          assert hashlib.sha256(metadata).hexdigest()=='b0b32de3ff2cc26465c2dd5fe57ac1b3933088a4b8052faaa37ba4bbe385527a'
+          mo=json.loads(metadata)[0]
+          assert mo['IndicadorCod']=='0014450' and mo['PrimeiroPeriodo']==mo['UltimoPeriodo']=='2024'
+          dims=ine._dimensions(json.loads(metadata))
+          assert dims['Dim1']==['S7A2024'] and dims['Dim2']==['PT']
+          spec_path=Path('correction_specs/F195__0014450__2024.yml')
+          spec=core.load_spec(spec_path)
+          assert spec['source_set_id']=='F195' and spec['adapter']=='ine_json' and spec['sink']=='private'
+          assert str(spec['parameters']['indicator'])=='0014450' and spec['parameters']['year']==2024
+          calls=[]; outputs=[]; row_count=0
+          def cached_metadata(pms,work):
+              return metadata,'https://www.ine.pt/ine/json_indicador/pindicaMeta.jsp?varcd=0014450&lang=PT'
+          def bounded_data_fetch(session,url,*,spacing,attempts=3):
+              parsed=urllib.parse.urlsplit(url); query=urllib.parse.parse_qs(parsed.query)
+              assert parsed.scheme=='https' and parsed.netloc=='www.ine.pt'
+              assert parsed.path=='/ine/json_indicador/pindica.jsp' and query.get('varcd')==['0014450']
+              assert any('S7A2024' in v for v in query.get('Dim1',[]))
+              assert len(calls)<2,'Bounded native-category check exceeded'
+              ine._start_slot(max(2,spacing))
+              r=session.get(url,timeout=(20,90)); calls.append({'url':url,'http_status':r.status_code})
+              if r.status_code in (403,429):
+                  raise RuntimeError('INE_DATA_HTTP_'+str(r.status_code)+'_STOP_NO_RETRY')
+              r.raise_for_status()
+              assert len(r.content)<=CAP,'Unexpected response size'
+              return r.content,r.url
+          original_disposition=core.disposition
+          def private_capture(spec,work,records,receipt):
+              global row_count
+              result=original_disposition(spec,work,records,receipt)
+              for rec in records:
+                  data=(work/rec['path']).read_bytes()
+                  assert len(data)==rec['bytes'] and hashlib.sha256(data).hexdigest()==rec['sha256']
+                  name=rec['name']; assert '/' not in name and '..' not in name
+                  if name.endswith('.gz'):
+                      with gzip.GzipFile(fileobj=io.BytesIO(data)) as f: native=f.read(CAP+1)
+                      assert len(native)<=CAP
+                      rows=[json.loads(line) for line in native.decode().splitlines() if line.strip()]
+                      row_count=len(rows); name=name[:-3]
+                  else: native=data; json.loads(native)
+                  out=put(OUT+'/members/0014450-2024/'+name,native)
+                  out['source_sha256']=rec['sha256']; outputs.append(out)
+              return result
+          # The unchanged adapter still performs metadata/period/dimension validation,
+          # raw chunk preservation and recomposition; only the metadata source and
+          # denial retry policy are bounded for this explicitly approved candidate.
+          ine._preserved_metadata_bytes=cached_metadata
+          ine._fetch=bounded_data_fetch
+          core.disposition=private_capture
+          result={'task_id':'G63-F195-0014450-PERIOD-CORRECTION','source_set_id':'F195','indicator':'0014450','native_reference_year':2024,'old_registered_year':2023,'canonical_year_change':False,'canonical_admission':False,'rights_change':False,'other_member_reacquisition':False,'metadata_source':'EXACT_PRIVATE_CACHE','metadata_source_sha256':hashlib.sha256(metadata).hexdigest(),'run_id':int(os.environ['GITHUB_RUN_ID'])}
+          code=0
+          try:
+              with contextlib.redirect_stdout(io.StringIO()): receipt=core.run(spec_path)
+              outputs.append(put(OUT+'/acquisition-receipt.json',jb(receipt)))
+              result.update({'status':'PASS_CORRECTED_MEMBER_ACQUIRED_AND_PRIVATELY_READABLE_PENDING_IDENTITY_QA','native_rows_extracted':row_count,'receipt_fingerprint':receipt['native_asset_fingerprint'],'release_tag':receipt['disposition'].get('release_tag')})
+          except Exception as e:
+              result.update({'status':'BLOCKED_EXACT_CHANGED_METHOD','error_type':type(e).__name__,'error':str(e)[:250]}); code=1
+          result.update({'data_requests':calls,'outputs':outputs,'completed_at':datetime.now(timezone.utc).isoformat(),'next_owner':'W1B_IDENTITY_QA_THEN_W2A_NORMALIZATION','semantic_guard':'2024 national public-transport-use distribution is not 2023, not regional Norte and not controlled microdata.'})
+          put(OUT+'/handoff.json',jb(result))
+          print(json.dumps({'status':result['status'],'data_request_count':len(calls),'private_readback_files':len(outputs)}))
+          sys.exit(code)
+          PY
