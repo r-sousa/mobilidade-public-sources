@@ -1,0 +1,51 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "7e10d56282e96be15478b17a7c069b861b7327c8",
+  "acquisition_timestamp": "2026-09-24T03:21:42.170129Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 32039158,
+      "format": "PDF",
+      "name": "TUB_RELATORIO_CONTAS_2024__F203-tub-relatorio-contas-2024.pdf",
+      "role": "native",
+      "sha256": "616e0bb67865ee09b732f1ffe14137ae0c1b4dbe125ce4b9c56d68f86a1c76fa",
+      "source_url": "https://tub.pt/templates/frontoffice/enterprise/pdf/rl2024.pdf"
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF",
+  "limitations": "Operator KPIs are not whole-authority KPIs; overlap with F92 stays shared-lineage and non-independent.",
+  "native_asset_fingerprint": "48ed7733c45e57ecef5788bcd7fede0ae623e862b5d8107f5c3fa7ac67863b5d",
+  "primary_repair": false,
+  "producer": "Transportes Urbanos de Braga, E.M. (TUB)",
+  "product_key": "tub.pt::relatorio-e-contas::annual",
+  "raw_native": {
+    "acquisition_scope": "accepted 2024 member only",
+    "classification": "annual operator operational, service-quality, fleet and financial indicators",
+    "geography": "TUB operator / Braga service geography as source-native"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35951099827",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://tub.pt/templates/frontoffice/enterprise/pdf/rl2024.pdf",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2024",
+  "source_set_id": "F203",
+  "source_url": "https://tub.pt/",
+  "title": "TUB — Relatório e Contas (série anual)",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
