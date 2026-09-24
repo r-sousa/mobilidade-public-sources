@@ -1,0 +1,27 @@
+schema_version: 1.0.0
+source_set_id: F195
+title: INE — ICOR/EU-SILC public transport use, exact 0014450 period correction candidate
+producer: INE — Instituto Nacional de Estatística, I.P.
+product_key: ine.pt::icor-eu-silc::condicoes-vida-rendimento
+adapter: ine_json
+access: public
+sink: private
+cadence: member-update
+expected_format: INE native JSON
+source:
+  landing_url: https://www.ine.pt/xurl/indx/0014450/PT
+raw_native:
+  geography: Portugal only; no regional allocation
+  classification: ICOR sex, age group and public transport use frequency; sexenal indicator
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: null
+  license: null
+  asset_check: null
+parameters:
+  indicator: "0014450"
+  year: 2024
+  spacing_seconds: 2
+  execution_request_identity: F195-0014450-2024-CORRECTION-CANDIDATE
+# Candidate only. Final canonical year correction requires independent QA.
