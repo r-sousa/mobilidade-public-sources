@@ -1,0 +1,51 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "7209f8c144bfca157227a6d11468036e11056b49",
+  "acquisition_timestamp": "2026-09-24T03:19:55.735920Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 114438,
+      "format": "HTML",
+      "name": "CAVADO_MOBILIDADE_DEMAND_2025_09__F62-cavado-demand-jan-sep-2025.html",
+      "role": "native",
+      "sha256": "99ef006bc324fcabffd37b941605b36e1c033772a77287768814d817b51b3728",
+      "source_url": "https://www.cimcavado.pt/cavado-mobilidade-regista-aumento-de-241-no-numero-de-passageiros-entre-janeiro-e-setembro-de-2025/"
+    }
+  ],
+  "cadence": "irregular first-party publication",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "HTML",
+  "limitations": "Preserve producer term passengers from ticketing systems; do not relabel as F193 validations, unique persons or trips.",
+  "native_asset_fingerprint": "404c0486174e725ce02e2797994cab550da95511b56e041b8065b7cc442176d5",
+  "primary_repair": false,
+  "producer": "CIM Cávado",
+  "product_key": "mobilidade-source-id::F62",
+  "raw_native": {
+    "acquisition_scope": "January-September 2025 versus homologous 2024 publication only",
+    "classification": "producer-labelled passengers from ticketing systems and homologous variation",
+    "geography": "Cávado Mobilidade concession / CIM Cávado"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35950981058",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.cimcavado.pt/cavado-mobilidade-regista-aumento-de-241-no-numero-de-passageiros-entre-janeiro-e-setembro-de-2025/",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2025-01 through 2025-09 versus homologous 2024",
+  "source_set_id": "F62",
+  "source_url": "https://www.cimcavado.pt/cavado-mobilidade-regista-aumento-de-241-no-numero-de-passageiros-entre-janeiro-e-setembro-de-2025/",
+  "title": "Cávado Mobilidade — procura por bilhética publicada",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
