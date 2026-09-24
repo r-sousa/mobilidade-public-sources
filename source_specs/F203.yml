@@ -1,0 +1,31 @@
+schema_version: 1.0.0
+source_set_id: F203
+title: TUB — Relatório e Contas (série anual)
+producer: Transportes Urbanos de Braga, E.M. (TUB)
+product_key: tub.pt::relatorio-e-contas::annual
+adapter: static_http
+access: public
+sink: private
+cadence: annual
+expected_format: PDF
+source:
+  landing_url: https://tub.pt/
+raw_native:
+  geography: TUB operator / Braga service geography as source-native
+  classification: annual operator operational, service-quality, fleet and financial indicators
+  acquisition_scope: accepted 2024 member only
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://tub.pt/templates/frontoffice/enterprise/pdf/rl2024.pdf
+  license: null
+  asset_check: null
+parameters:
+  period: "2024"
+  limitations: Operator KPIs are not whole-authority KPIs; overlap with F92 stays shared-lineage and non-independent.
+  assets:
+    - key: TUB_RELATORIO_CONTAS_2024
+      format: PDF
+      min_bytes: 1000
+      filename: F203-tub-relatorio-contas-2024.pdf
+      url: https://tub.pt/templates/frontoffice/enterprise/pdf/rl2024.pdf
