@@ -1,0 +1,31 @@
+schema_version: 1.0.0
+source_set_id: F200
+title: Município de Freixo de Espada à Cinta — Relatório OSP
+producer: Município de Freixo de Espada à Cinta
+product_key: cm-freixoespadacinta.pt::relatorio-osp::annual
+adapter: static_http
+access: public
+sink: private
+cadence: annual / accepted historical member
+expected_format: PDF
+source:
+  landing_url: https://www.amt-autoridade.pt/
+raw_native:
+  geography: Município de Freixo de Espada à Cinta authority as reported for 2024
+  classification: municipal OSP report-native contract, service-period and compensation context
+  acquisition_scope: accepted 2024 member only
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://www.amt-autoridade.pt/media/5256/relatoriotransporte-1.pdf
+  license: null
+  asset_check: null
+parameters:
+  period: "2024"
+  limitations: Do not project 2024 competence to later years. Compensation/funding is not operational performance.
+  assets:
+    - key: FREIXO_OSP_2024
+      format: PDF
+      min_bytes: 1000
+      filename: F200-freixo-osp-2024.pdf
+      url: https://www.amt-autoridade.pt/media/5256/relatoriotransporte-1.pdf
