@@ -1,0 +1,32 @@
+schema_version: 1.0.0
+source_set_id: F62
+title: Cávado Mobilidade — procura por bilhética publicada
+producer: CIM Cávado
+product_key: mobilidade-source-id::F62
+adapter: static_http
+access: public
+sink: private
+cadence: irregular first-party publication
+expected_format: HTML
+source:
+  landing_url: https://www.cimcavado.pt/cavado-mobilidade-regista-aumento-de-241-no-numero-de-passageiros-entre-janeiro-e-setembro-de-2025/
+raw_native:
+  geography: Cávado Mobilidade concession / CIM Cávado
+  classification: producer-labelled passengers from ticketing systems and homologous variation
+  acquisition_scope: January-September 2025 versus homologous 2024 publication only
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://www.cimcavado.pt/cavado-mobilidade-regista-aumento-de-241-no-numero-de-passageiros-entre-janeiro-e-setembro-de-2025/
+  license: null
+  asset_check: null
+parameters:
+  period: "2025-01 through 2025-09 versus homologous 2024"
+  limitations: Preserve producer term passengers from ticketing systems; do not relabel as F193 validations, unique persons or trips.
+  assets:
+    - key: CAVADO_MOBILIDADE_DEMAND_2025_09
+      format: HTML
+      min_bytes: 1000
+      filename: F62-cavado-demand-jan-sep-2025.html
+      contains: passageiros
+      url: https://www.cimcavado.pt/cavado-mobilidade-regista-aumento-de-241-no-numero-de-passageiros-entre-janeiro-e-setembro-de-2025/
