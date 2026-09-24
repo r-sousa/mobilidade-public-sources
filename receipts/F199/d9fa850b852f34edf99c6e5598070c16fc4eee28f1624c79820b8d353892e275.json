@@ -1,0 +1,123 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "218c15df4f6706603b4bf4ae3edbfa0f8e7884b6",
+  "acquisition_timestamp": "2026-09-24T05:15:56.452233Z",
+  "adapter": "html_assets",
+  "assets": [
+    {
+      "bytes": 250397,
+      "format": "HTML",
+      "name": "landing.html",
+      "role": "native",
+      "sha256": "1b2da78ce27eb4b6e919ab61374a8d28e47ceb738a0ca33a38b66f9165bd67a0",
+      "source_url": "https://cm-barcelos.pt/viver/mobilidade/autoridade-de-transportes/?responsive=true"
+    },
+    {
+      "bytes": 677020,
+      "format": "application/pdf",
+      "name": "102194",
+      "role": "native",
+      "sha256": "64be277a45985766f0f8a2124717e6cf3f07a6ddffd934639ef06ff3a09f5638",
+      "source_url": "https://cm-barcelos.pt/wp-content/uploads/2026/06/Relatorio-Anual-Circunstanciado-Sobre-Obrigacoes-de-Servico-Publico-Ano-2025.pdf"
+    },
+    {
+      "bytes": 676313,
+      "format": "application/pdf",
+      "name": "102193",
+      "role": "native",
+      "sha256": "cb254f14d8e1961523bd3bf4c8f2d19686c12bd32c14056a0c5891c38c4998dc",
+      "source_url": "https://cm-barcelos.pt/wp-content/uploads/2026/06/Relatorio-Anual-Circunstanciado-Sobre-Obrigacoes-de-Servico-Publico-Ano-de-2024-Atualizado.pdf"
+    },
+    {
+      "bytes": 460449,
+      "format": "application/pdf",
+      "name": "93684",
+      "role": "native",
+      "sha256": "2f4fc9f7cec370037c0a4acb01b0aa00e5c8f479679581803dfc6fa4e95ed939",
+      "source_url": "https://cm-barcelos.pt/wp-content/uploads/2025/06/Relatorio-Anual-Circunstanciado-Sobre-Obrigacoes-do-Servico-Publico-Ano-2024-.pdf"
+    },
+    {
+      "bytes": 806119,
+      "format": "application/pdf",
+      "name": "82978",
+      "role": "native",
+      "sha256": "8590c218b5fb90be27e51df92594e3262880d34606626aaaede8690391d33427",
+      "source_url": "https://cm-barcelos.pt/wp-content/uploads/2024/06/Relatorio-Anual-Circunstanciado-Sobre-as-Obrigacoes-do-Servico-Publico-Ano-de-2023.pdf"
+    },
+    {
+      "bytes": 237002,
+      "format": "application/pdf",
+      "name": "78035",
+      "role": "native",
+      "sha256": "459f3df4ce294857a93f80dbf0ab90ffa3d6b8e86fb918802575f1ba2bf91d8a",
+      "source_url": "https://cm-barcelos.pt/wp-content/uploads/2024/01/Relatorio-Anual-Circunstanciado-Sobre-as-Obrigacoes-do-Servico-Publico-Ano-de-2022.pdf"
+    },
+    {
+      "bytes": 234469,
+      "format": "application/pdf",
+      "name": "88412",
+      "role": "native",
+      "sha256": "16f3cf28ab24197a4119e8cc54308205bf0a26c2cb7b51f1588d97c6f66b2786",
+      "source_url": "https://cm-barcelos.pt/wp-content/uploads/2025/02/Relatorio-Anual-Circunstanciado-Sobre-as-Obrigacoes-do-Servico-Publico-Ano-de-2021.pdf"
+    },
+    {
+      "bytes": 17870024,
+      "format": "application/pdf",
+      "name": "36022",
+      "role": "native",
+      "sha256": "a1be0d3850e23858a10bde6d7d6cbbc86094a1681419ca4f0517b9976beaee36",
+      "source_url": "https://cm-barcelos.pt/wp-content/uploads/2021/06/Relat%C3%B3rio2020.pdf"
+    },
+    {
+      "bytes": 16906516,
+      "format": "application/pdf",
+      "name": "36023",
+      "role": "native",
+      "sha256": "10be731f8a9eacbf28285f36e2b5da5275b23b7af96d1644e7485de86bcbbca6",
+      "source_url": "https://cm-barcelos.pt/wp-content/uploads/2021/06/Relat%C3%B3rio2019.pdf"
+    },
+    {
+      "bytes": 2613,
+      "format": "JSON",
+      "name": "series-manifest.json",
+      "role": "recomposed",
+      "sha256": "d19612d124973aa9d8e3e9710d3111cd508c043d1f459d7dbb3c995085560da2",
+      "source_url": null
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF series",
+  "limitations": "Producer landing HTML and selected linked assets are preserved natively. Multiple linked files are recomposed as an ordered logical series manifest; heterogeneous files are not row-concatenated without a product-specific semantic assembler.",
+  "native_asset_fingerprint": "d9fa850b852f34edf99c6e5598070c16fc4eee28f1624c79820b8d353892e275",
+  "primary_repair": false,
+  "producer": "Município de Barcelos — Autoridade de Transportes",
+  "product_key": "cm-barcelos.pt::autoridade-transportes::relatorio-anual-osp",
+  "raw_native": {
+    "acquisition_scope": "accepted 2019-2025 annual family only",
+    "classification": "annual OSP report-native measures, units, periods and flags",
+    "geography": "Município de Barcelos authority / source-native operator and contract grains"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35959147438",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://cm-barcelos.pt/viver/mobilidade/autoridade-de-transportes/?responsive=true",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2019-2025 accepted family",
+  "source_set_id": "F199",
+  "source_url": "https://cm-barcelos.pt/viver/mobilidade/autoridade-de-transportes/?responsive=true",
+  "title": "Município de Barcelos — Relatório Anual Circunstanciado OSP",
+  "validation_result": "PASS_HTML_ASSET_DISCOVERY_SERIES_COMPOSED"
+}
