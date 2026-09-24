@@ -1,0 +1,51 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "b717501a89852f094061da40b7b521aa61c07a40",
+  "acquisition_timestamp": "2026-09-24T03:21:24.415074Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 317170,
+      "format": "HTML",
+      "name": "IMT_RJSPTP_CURRENT_REGISTRY__F202-rjsptp-current-registry.html",
+      "role": "native",
+      "sha256": "08fbf7345b4d5f35435657acd0da94f5ea1777153ac4fac35ba4c0fe43ff7a76",
+      "source_url": "https://www.imt-ip.pt/rodoviario/infraestruturas-rodoviarias/rjsptp/"
+    }
+  ],
+  "cadence": "current administrative registry snapshot",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "HTML",
+  "limitations": "Administrative competence metadata only; do not infer passengers, service-km, reliability or operational performance.",
+  "native_asset_fingerprint": "920de557d487c805890b8bb62d232a58c36088bd34f8807d4d4e8579dc0cf6f9",
+  "primary_repair": false,
+  "producer": "Instituto da Mobilidade e dos Transportes, I.P. (IMT)",
+  "product_key": "imt.pt::rjsptp::delegacao-partilha-current-registry",
+  "raw_native": {
+    "acquisition_scope": "current registry HTML snapshot; linked legal instruments remain separate source-native members and are not inferred from registry text",
+    "classification": "delegation/partilha status, entities and linked legal-instrument metadata",
+    "geography": "national registry with authority/municipality and inter-authority arrangements, including Norte"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35951090757",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.imt-ip.pt/rodoviario/infraestruturas-rodoviarias/rjsptp/",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "current registry snapshot",
+  "source_set_id": "F202",
+  "source_url": "https://www.imt-ip.pt/rodoviario/infraestruturas-rodoviarias/rjsptp/",
+  "title": "IMT — RJSPTP delegação e partilha de competências",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
