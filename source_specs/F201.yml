@@ -24,7 +24,7 @@ parameters:
   period: "2018-2026 accepted annual series"
   landing_url: https://www.imt-ip.pt/fundo-mobilidade-e-transportes/financiamento-regular-das-autoridades-de-transportes/
   include_href_regex: "\\.pdf($|\\?)"
-  include_text_regex: "(2018|2019|2020|2021|2022|2023|2024|2025|2026)"
+  include_text_regex: "(Documento|Visualizar)"
   allowed_extensions:
     - pdf
   allowed_host_suffixes:
