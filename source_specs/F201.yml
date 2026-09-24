@@ -1,0 +1,34 @@
+schema_version: 1.0.0
+source_set_id: F201
+title: IMT / FSPT-FMT — Financiamento Regular das Autoridades de Transportes
+producer: Instituto da Mobilidade e dos Transportes, I.P. (IMT) / FSPT-FMT
+product_key: imt.pt::fspt-fmt::financiamento-regular-autoridades-transportes
+adapter: html_assets
+access: public
+sink: private
+cadence: annual
+expected_format: PDF series
+source:
+  landing_url: https://www.imt-ip.pt/fundo-mobilidade-e-transportes/financiamento-regular-das-autoridades-de-transportes/
+raw_native:
+  geography: municipality, CIM and metropolitan transport authority as published
+  classification: FEF percentage, fixed/variable funding components, delegation indicator, distributions and final amount to transfer
+  acquisition_scope: accepted annual series 2018-2026 only
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://www.imt-ip.pt/fundo-mobilidade-e-transportes/financiamento-regular-das-autoridades-de-transportes/
+  license: null
+  asset_check: null
+parameters:
+  period: "2018-2026 accepted annual series"
+  landing_url: https://www.imt-ip.pt/fundo-mobilidade-e-transportes/financiamento-regular-das-autoridades-de-transportes/
+  include_href_regex: "\\.pdf($|\\?)"
+  include_text_regex: "(2018|2019|2020|2021|2022|2023|2024|2025|2026)"
+  allowed_extensions:
+    - pdf
+  allowed_host_suffixes:
+    - imt-ip.pt
+    - www.imt-ip.pt
+  max_assets: 20
+  content_type_regex: "pdf"
