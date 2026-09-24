@@ -23,7 +23,7 @@ reuse:
 parameters:
   period: "2019-2025 accepted family"
   landing_url: https://cm-barcelos.pt/viver/mobilidade/autoridade-de-transportes/?responsive=true
-  include_href_regex: "\\.pdf($|\\?)"
+  include_href_regex: "(?:\\.pdf(?:$|\\?)|/downloads/\\d+(?:$|\\?))"
   include_text_regex: "(2019|2020|2021|2022|2023|2024|2025|relat[oó]rio|obriga)"
   allowed_extensions:
     - pdf
