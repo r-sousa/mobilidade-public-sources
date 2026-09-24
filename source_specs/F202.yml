@@ -1,0 +1,32 @@
+schema_version: 1.0.0
+source_set_id: F202
+title: IMT — RJSPTP delegação e partilha de competências
+producer: Instituto da Mobilidade e dos Transportes, I.P. (IMT)
+product_key: imt.pt::rjsptp::delegacao-partilha-current-registry
+adapter: static_http
+access: public
+sink: private
+cadence: current administrative registry snapshot
+expected_format: HTML
+source:
+  landing_url: https://www.imt-ip.pt/rodoviario/infraestruturas-rodoviarias/rjsptp/
+raw_native:
+  geography: national registry with authority/municipality and inter-authority arrangements, including Norte
+  classification: delegation/partilha status, entities and linked legal-instrument metadata
+  acquisition_scope: current registry HTML snapshot; linked legal instruments remain separate source-native members and are not inferred from registry text
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://www.imt-ip.pt/rodoviario/infraestruturas-rodoviarias/rjsptp/
+  license: null
+  asset_check: null
+parameters:
+  period: "current registry snapshot"
+  limitations: Administrative competence metadata only; do not infer passengers, service-km, reliability or operational performance.
+  assets:
+    - key: IMT_RJSPTP_CURRENT_REGISTRY
+      format: HTML
+      min_bytes: 1000
+      filename: F202-rjsptp-current-registry.html
+      contains: competências
+      url: https://www.imt-ip.pt/rodoviario/infraestruturas-rodoviarias/rjsptp/
