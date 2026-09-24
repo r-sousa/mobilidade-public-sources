@@ -13,54 +13,47 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 4
     env:
-      READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
       SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
       RUN_ID: ${{ github.run_id }}
+      RUN_ATTEMPT: ${{ github.run_attempt }}
     steps:
-      - name: Test permission metadata and preserve private-only diagnostic
+      - name: Verify existing token Actions read without retrieving source bytes
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import urllib.request,urllib.error,json,os,base64,datetime
+          import urllib.request, urllib.error, json, os, base64, datetime
           api='https://api.github.com/repos/r-sousa/EU-transp-weekly'
           branch='mobilidade-norte-recovery-20260919'
-          read=os.environ.get('READ_TOKEN','').strip()
-          sink=os.environ.get('SINK_TOKEN','').strip()
-          def request(path,token,method='GET',body=None):
-              headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+          token=os.environ.get('SINK_TOKEN','').strip()
+          assert token, 'Existing sink credential unavailable'
+          headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+          def request(path, method='GET', body=None):
               data=None if body is None else json.dumps(body).encode()
-              if data:headers['Content-Type']='application/json'
               try:
-                  with urllib.request.urlopen(urllib.request.Request(api+path,data=data,headers=headers,method=method),timeout=45) as r:return r.status,json.load(r)
+                  with urllib.request.urlopen(urllib.request.Request(api+path,data=data,headers={**headers,'Content-Type':'application/json'},method=method),timeout=45) as r:
+                      return r.status,json.load(r)
               except urllib.error.HTTPError as e:
-                  try:b=json.loads(e.read())
-                  except Exception:b={}
-                  return e.code,{'message':b.get('message','API request rejected')}
-          result={'task_id':'G62-F68-ACCESS-RESCUE','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'diagnostic_run_id':int(os.environ['RUN_ID']),'mission_generation':62,'read_secret_present':bool(read),'sink_secret_present':bool(sink),'source_bytes_acquired':0,'public_private_data_transfer':False,'artifact_id':10576315158,'private_probe_run_id':35939948489,'credential_checks':{}}
-          tokens={k:v for k,v in [('read',read),('sink',sink)] if v}
-          for role,token in tokens.items():
-              code,meta=request('/actions/artifacts/10576315158',token)
-              result['credential_checks'][role]={'artifact_metadata_status':code,'actions_read_verified':code==200,'message':meta.get('message') if code!=200 else None}
-              if code==200:
-                  result['credential_checks'][role]['artifact_identity_matches']=meta.get('digest')=='sha256:9e3889f0999a7567a6442d1d44e309ae283efb7fdf0507ff4245657fb526df75' and meta.get('size_in_bytes')==897711292 and not meta.get('expired')
-          for role,token in tokens.items():
-              code,notes=request('/check-runs/107445413781/annotations',token)
-              if code==200:
-                  result['private_probe_annotations']=[{k:n.get(k) for k in ['annotation_level','title','message']} for n in notes]
-                  result['annotation_credential_role']=role
-                  break
-              result.setdefault('annotation_access_status',{})[role]=code
-          result['status']='ACTIONS_READ_AVAILABLE_REPAIR_CURRENT_EXTRACTOR' if any(x.get('actions_read_verified') for x in result['credential_checks'].values()) else 'BLOCKED_PRIVATE_ACTIONS_READ_PERMISSION'
-          if sink:
-              code,repo=request('',sink)
-              assert code==200 and repo.get('private') is True,'Refuse non-private diagnostic sink'
-              data=(json.dumps(result,indent=2)+'\n').encode()
-              path='/contents/statistics/recovery-20260920/simple-runtime/outputs/ORCHESTRATOR/G62-F68-ACCESS-RESCUE/credential-probe-'+os.environ['RUN_ID']+'.json'
-              body={'branch':branch,'message':'F68: persist verified credential and private-runner diagnostic','content':base64.b64encode(data).decode()}
-              code,_=request(path,sink,'PUT',body)
-              assert code in (200,201),'Private diagnostic write failed'
-              result['private_receipt_written']=True
-          else:result['private_receipt_written']=False
-          print(json.dumps({k:result[k] for k in ['task_id','diagnostic_run_id','read_secret_present','sink_secret_present','status','source_bytes_acquired','private_receipt_written']}))
+                  return e.code,{}
+          code, repo=request('')
+          assert code==200 and repo.get('private') is True, 'Private destination verification failed'
+          code, meta=request('/actions/artifacts/10576315158')
+          exact=code==200 and meta.get('size_in_bytes')==897711292 and meta.get('digest')=='sha256:9e3889f0999a7567a6442d1d44e309ae283efb7fdf0507ff4245657fb526df75' and not meta.get('expired')
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs): return None
+          download_status=None
+          if exact:
+              try:
+                  r=urllib.request.build_opener(NoRedirect).open(urllib.request.Request(api+'/actions/artifacts/10576315158/zip',headers=headers),timeout=45)
+                  download_status=r.status
+                  r.close()
+              except urllib.error.HTTPError as e:
+                  download_status=e.code
+          result={'task_id':'G62-F68-ACCESS-RESCUE','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'diagnostic_run_id':int(os.environ['RUN_ID']),'run_attempt':int(os.environ['RUN_ATTEMPT']),'credential':'MN_PRIVATE_SINK_TOKEN','artifact_id':10576315158,'metadata_http_status':code,'artifact_identity_verified':exact,'download_authorization_http_status':download_status,'source_bytes_acquired':0,'token_or_signed_url_disclosed':False,'status':'PASS_EXISTING_TOKEN_ACTIONS_READ' if exact and download_status==302 else 'BLOCKED_ACCESS'}
+          path='/contents/statistics/recovery-20260920/simple-runtime/outputs/ORCHESTRATOR/G62-F68-ACCESS-RESCUE/permission-verified-'+os.environ['RUN_ID']+'-'+os.environ['RUN_ATTEMPT']+'.json'
+          body={'branch':branch,'message':'F68: persist user-updated existing credential permission test','content':base64.b64encode((json.dumps(result,indent=2)+'\n').encode()).decode()}
+          written,_=request(path,'PUT',body)
+          assert written in (200,201), 'Private result write failed'
+          print(result['status'])
+          assert result['status']=='PASS_EXISTING_TOKEN_ACTIONS_READ', 'Artifact-read permission not verified'
           PY
