@@ -1,0 +1,51 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "438c176e92f9ba4da4eb2299dc1ba10f0546e307",
+  "acquisition_timestamp": "2026-09-24T03:20:42.416446Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 12147,
+      "format": "PDF",
+      "name": "CIMAT_OSP_2025__F197-cimat-osp-2025.pdf",
+      "role": "native",
+      "sha256": "fef2ca6311deb34d0fe4acc211682622127b314e91c12eff70944cfc3422f4c6",
+      "source_url": "https://cimat.pt/wp-content/uploads/2026/06/Relatorio_Anual_2025.pdf"
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF",
+  "limitations": "Preserve estimated vehicle-km/circulations versus observed demand and finance; programmed supply is not observed reliability.",
+  "native_asset_fingerprint": "92c468c94a3624a951810e80a4faab112c20f47290212bff50d58c1911ffe762",
+  "primary_repair": false,
+  "producer": "CIM Alto Tâmega e Barroso — Autoridade de Transportes",
+  "product_key": "cimat.pt::autoridade-transportes::relatorio-anual-osp-sptp",
+  "raw_native": {
+    "acquisition_scope": "accepted 2025 edition published 2026 only",
+    "classification": "annual OSP report-native observed and estimated/programmed measures kept distinct",
+    "geography": "Alto Tâmega e Barroso; source-native network/line/fleet/compensation grains"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35951028527",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://cimat.pt/wp-content/uploads/2026/06/Relatorio_Anual_2025.pdf",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2025 observation/report year; publication 2026",
+  "source_set_id": "F197",
+  "source_url": "https://cimat.pt/",
+  "title": "CIM Alto Tâmega e Barroso — Relatório Anual OSP transporte de passageiros",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
