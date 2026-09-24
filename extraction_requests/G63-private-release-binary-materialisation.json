@@ -2,6 +2,11 @@
   "schema_version": "1.0.0",
   "mission_generation": 63,
   "task_id": "G63-PRIVATE-RELEASE-BINARY-MATERIALISATION",
+  "execution_attempt": {
+    "method_version": 2,
+    "supersedes_failed_run": 35971496731,
+    "changed_method": "Detect preserved native format after byte/hash verification; use page-native PDF extraction only for real PDF magic, native line extraction for non-PDF members, and strings fallback for structurally unreadable PDFs."
+  },
   "private_repository": "r-sousa/EU-transp-weekly",
   "private_branch": "mobilidade-norte-recovery-20260919",
   "private_output_base": "statistics/recovery-20260920/simple-runtime/outputs/W2C/G63/G63-PRIVATE-RELEASE-BINARY-MATERIALISATION/20260924T0842PT-v1",
