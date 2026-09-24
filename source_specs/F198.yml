@@ -9,25 +9,25 @@ sink: private
 cadence: annual
 expected_format: PDF series
 source:
-  landing_url: https://www.cm-amarante.pt/servicos/mobilidade-transportes/relatorio-anual-sobre-obrigacoes-de-servico-publico/
+  landing_url: https://www.cm-amarante.pt/servicos/mobilidade-transportes/
 raw_native:
   geography: Município de Amarante authority / source-native service, contract and operator grains
   classification: annual OSP/performance report-native measures, units, periods and flags
-  acquisition_scope: accepted 2019-2025 report family only
+  acquisition_scope: accepted missing current performance-report members 2024-2025 only; prior 2019-2023 accepted members reuse existing private preservation
 reuse:
   status: not_verified
   public_redistribution_gate: not_cleared
-  evidence_url: https://www.cm-amarante.pt/servicos/mobilidade-transportes/relatorio-anual-sobre-obrigacoes-de-servico-publico/
+  evidence_url: https://www.cm-amarante.pt/servicos/mobilidade-transportes/
   license: null
   asset_check: null
 parameters:
-  period: "2019-2025 accepted family"
-  landing_url: https://www.cm-amarante.pt/servicos/mobilidade-transportes/relatorio-anual-sobre-obrigacoes-de-servico-publico/
+  period: "2024-2025 accepted missing current members"
+  landing_url: https://www.cm-amarante.pt/servicos/mobilidade-transportes/
   include_href_regex: "\\.pdf($|\\?)"
-  include_text_regex: "(2019|2020|2021|2022|2023|2024|2025|relat[oó]rio)"
+  include_text_regex: "(2024|2025).*"
   allowed_extensions:
     - pdf
   allowed_host_suffixes:
     - cm-amarante.pt
-  max_assets: 10
+  max_assets: 2
   content_type_regex: "pdf"
