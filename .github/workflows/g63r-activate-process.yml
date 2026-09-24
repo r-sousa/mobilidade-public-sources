@@ -1,0 +1,41 @@
+name: G63R atomic process activation
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/g63r-activate-process.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: mn-g63r-atomic-bootstrap
+  cancel-in-progress: false
+jobs:
+  activate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
+      EXPECTED_PRIVATE_HEAD: 9f1e7246fcc206199631a7f9d8b0c0e4b7790c94
+    steps:
+      - name: Read pinned authorised private operation, validate syntax and execute guarded transaction
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import ast,base64,hashlib,json,os,pathlib,runpy,urllib.request
+          repo='r-sousa/EU-transp-weekly'
+          path='statistics/recovery-20260920/simple-runtime/operations/g63r-bootstrap-20260924.py'
+          ref=os.environ['EXPECTED_PRIVATE_HEAD']
+          token=os.environ.get('MN_PRIVATE_SINK_TOKEN','').strip()
+          assert token,'Existing MN_PRIVATE_SINK_TOKEN required'
+          req=urllib.request.Request('https://api.github.com/repos/'+repo+'/contents/'+path+'?ref='+ref,headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'})
+          with urllib.request.urlopen(req,timeout=60) as r:obj=json.load(r)
+          data=base64.b64decode(obj['content'])
+          assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==obj['sha']
+          ast.parse(data.decode('utf-8'),filename=path)
+          target=pathlib.Path(os.environ['RUNNER_TEMP'])/'g63r-bootstrap.py'
+          target.write_bytes(data)
+          runpy.run_path(str(target),run_name='__main__')
+          PY
