@@ -1,0 +1,67 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "032a982b1dbe4972830b0233713df9e10663ae64",
+  "acquisition_timestamp": "2026-09-24T06:22:19.505100Z",
+  "adapter": "html_assets",
+  "assets": [
+    {
+      "bytes": 578721,
+      "format": "HTML",
+      "name": "landing.html",
+      "role": "native",
+      "sha256": "0498cd464ef3b1dcc023bbb3c1b370f8bf6856ae92b53ff9e8257d9b1e314547",
+      "source_url": "https://www.cm-amarante.pt/servicos/mobilidade-transportes/"
+    },
+    {
+      "bytes": 137037,
+      "format": "application/pdf",
+      "name": "INFORMACAO-MINIMA-A-CONSTAR-NO-RELATORIO-ANUAL-RELATIVO-AO-SERVICO-PUBLICO-DE-TRANSPORTE-DE-PASSAGEIROS.pdf",
+      "role": "native",
+      "sha256": "232b49fa02438314e0477d77a348098a79e72fc20efe76529625ba37ae46e07c",
+      "source_url": "https://www.cm-amarante.pt/wp-content/uploads/2026/06/INFORMACAO-MINIMA-A-CONSTAR-NO-RELATORIO-ANUAL-RELATIVO-AO-SERVICO-PUBLICO-DE-TRANSPORTE-DE-PASSAGEIROS.pdf"
+    },
+    {
+      "bytes": 757,
+      "format": "JSON",
+      "name": "series-manifest.json",
+      "role": "recomposed",
+      "sha256": "d8c203882e1a1edf1207846009e1bd34870a29b713a2e7d86c80a96cbc1c55d0",
+      "source_url": null
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF series",
+  "limitations": "Producer landing HTML and selected linked assets are preserved natively. Multiple linked files are recomposed as an ordered logical series manifest; heterogeneous files are not row-concatenated without a product-specific semantic assembler.",
+  "native_asset_fingerprint": "c6b0af646c3522561227b8d862f6887025825588e0653aaa69b396dd372bd8a2",
+  "primary_repair": false,
+  "producer": "Município de Amarante — Autoridade de Transportes",
+  "product_key": "cm-amarante.pt::mobilidade-transportes::relatorios-desempenho-osp",
+  "raw_native": {
+    "acquisition_scope": "accepted exact current performance-report member 2025 verification only; prior accepted members reuse existing private preservation",
+    "classification": "annual OSP/performance report-native measures, units, periods and flags",
+    "geography": "Município de Amarante authority / source-native service, contract and operator grains"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35964145195",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.cm-amarante.pt/servicos/mobilidade-transportes/",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2025 accepted current member exact verification",
+  "source_set_id": "F198",
+  "source_url": "https://www.cm-amarante.pt/servicos/mobilidade-transportes/",
+  "title": "Município de Amarante — relatórios de desempenho e OSP",
+  "validation_result": "PASS_HTML_ASSET_DISCOVERY_SERIES_COMPOSED"
+}
