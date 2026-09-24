@@ -1,0 +1,33 @@
+schema_version: 1.0.0
+source_set_id: F198
+title: Município de Amarante — relatórios de desempenho e OSP
+producer: Município de Amarante — Autoridade de Transportes
+product_key: cm-amarante.pt::mobilidade-transportes::relatorios-desempenho-osp
+adapter: html_assets
+access: public
+sink: private
+cadence: annual
+expected_format: PDF series
+source:
+  landing_url: https://www.cm-amarante.pt/servicos/mobilidade-transportes/relatorio-anual-sobre-obrigacoes-de-servico-publico/
+raw_native:
+  geography: Município de Amarante authority / source-native service, contract and operator grains
+  classification: annual OSP/performance report-native measures, units, periods and flags
+  acquisition_scope: accepted 2019-2025 report family only
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://www.cm-amarante.pt/servicos/mobilidade-transportes/relatorio-anual-sobre-obrigacoes-de-servico-publico/
+  license: null
+  asset_check: null
+parameters:
+  period: "2019-2025 accepted family"
+  landing_url: https://www.cm-amarante.pt/servicos/mobilidade-transportes/relatorio-anual-sobre-obrigacoes-de-servico-publico/
+  include_href_regex: "\\.pdf($|\\?)"
+  include_text_regex: "(2019|2020|2021|2022|2023|2024|2025|relat[oó]rio)"
+  allowed_extensions:
+    - pdf
+  allowed_host_suffixes:
+    - cm-amarante.pt
+  max_assets: 10
+  content_type_regex: "pdf"
