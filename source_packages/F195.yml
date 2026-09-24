@@ -1,0 +1,47 @@
+schema_version: 1.0.0
+source_set_id: F195
+title: INE — Inquérito às Condições de Vida e Rendimento (ICOR) / Portuguese EU-SILC
+producer: INE — Instituto Nacional de Estatística, I.P.
+product_key: ine.pt::icor-eu-silc::condicoes-vida-rendimento
+adapter: ine_json
+access: public
+sink: private
+cadence: member-update
+expected_format: INE native JSON
+source:
+  landing_url: https://www.ine.pt/
+raw_native:
+  geography: INE geography exposed by each registered ICOR/EU-SILC public indicator
+  classification: INE indicator-native ICOR/EU-SILC dimensions; preserve each member separately
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: null
+  license: null
+  asset_check: null
+members:
+  - request_identity: F195-0014076-2025
+    indicator: "0014076"
+    year: 2025
+    landing_url: https://www.ine.pt/xurl/indx/0014076/PT
+    spacing_seconds: 2
+  - request_identity: F195-0014077-2025
+    indicator: "0014077"
+    year: 2025
+    landing_url: https://www.ine.pt/xurl/indx/0014077/PT
+    spacing_seconds: 2
+  - request_identity: F195-0014078-2025
+    indicator: "0014078"
+    year: 2025
+    landing_url: https://www.ine.pt/xurl/indx/0014078/PT
+    spacing_seconds: 2
+  - request_identity: F195-0014450-2023
+    indicator: "0014450"
+    year: 2023
+    landing_url: https://www.ine.pt/xurl/indx/0014450/PT
+    spacing_seconds: 2
+  - request_identity: F195-0012984-2024
+    indicator: "0012984"
+    year: 2024
+    landing_url: https://www.ine.pt/xurl/indx/0012984/PT
+    spacing_seconds: 2
