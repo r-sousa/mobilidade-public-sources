@@ -1,0 +1,28 @@
+{
+  "acquisition_code_commit": "0940f1b705e8ad174fe91d71aa15757270939d02",
+  "limitations": "INE requests are metadata-defined and recursively partitioned below the 40,000-cell contract and URL-length bound. Cod=7 or saturated responses trigger further splitting. Raw chunks remain native; recomposed JSONL is derived without replacing missing or confidential values with zero.",
+  "native_asset_fingerprint": "00393a334399b6e77bcc7e21f5633a945ca7e67ed236846a8fd25e558557f08b",
+  "recomposed_assets": [
+    {
+      "bytes": 901,
+      "format": "JSON",
+      "name": "composition-manifest.json",
+      "sha256": "fd8387ccb840ae77e5f85ffa759143db6fd0971f4e64e4867325d85cc458a833"
+    },
+    {
+      "bytes": 1583,
+      "format": "JSON",
+      "name": "ine-plan-and-coverage.json",
+      "sha256": "3dae4e88afe39ce957ab03ffd25ffd0b095596cf998a5c16eae544ab3420a4f7"
+    },
+    {
+      "bytes": 348,
+      "format": "JSONL.GZ",
+      "name": "observations.jsonl.gz",
+      "sha256": "78c73785bac08097fafbcb1a9f0b7a51d420454fdf7e86d83669419dc621543e"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_set_id": "F195",
+  "validation_result": "PASS_INE_PARTITIONED_RECOMPOSED_COMPLETE"
+}
