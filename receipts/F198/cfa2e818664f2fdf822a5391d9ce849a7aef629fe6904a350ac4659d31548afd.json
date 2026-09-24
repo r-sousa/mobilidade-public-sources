@@ -1,0 +1,107 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "dc5b81c2b26e66fc50078d0007a6f2c4459b478c",
+  "acquisition_timestamp": "2026-09-24T03:20:46.321684Z",
+  "adapter": "html_assets",
+  "assets": [
+    {
+      "bytes": 581291,
+      "format": "HTML",
+      "name": "landing.html",
+      "role": "native",
+      "sha256": "bc785dfed59fbdd3e7f38473946c2d397018afabd187fbefa552cbe4e81d589d",
+      "source_url": "https://www.cm-amarante.pt/servicos/mobilidade-transportes/relatorio-anual-sobre-obrigacoes-de-servico-publico/"
+    },
+    {
+      "bytes": 137037,
+      "format": "application/pdf",
+      "name": "INFORMACAO-MINIMA-A-CONSTAR-NO-RELATORIO-ANUAL-RELATIVO-AO-SERVICO-PUBLICO-DE-TRANSPORTE-DE-PASSAGEIROS.pdf",
+      "role": "native",
+      "sha256": "232b49fa02438314e0477d77a348098a79e72fc20efe76529625ba37ae46e07c",
+      "source_url": "https://www.cm-amarante.pt/wp-content/uploads/2026/06/INFORMACAO-MINIMA-A-CONSTAR-NO-RELATORIO-ANUAL-RELATIVO-AO-SERVICO-PUBLICO-DE-TRANSPORTE-DE-PASSAGEIROS.pdf"
+    },
+    {
+      "bytes": 696551,
+      "format": "application/pdf",
+      "name": "Relatorio-SPTP-RODOAMARANTE-2022.pdf",
+      "role": "native",
+      "sha256": "d277e33d8206b321a06524ed727df5c7a71b102468c75360385cd90d2d451dd0",
+      "source_url": "https://www.cm-amarante.pt/wp-content/uploads/2025/02/Relatorio-SPTP-RODOAMARANTE-2022.pdf"
+    },
+    {
+      "bytes": 139708,
+      "format": "application/pdf",
+      "name": "rodoamarante-2023.pdf",
+      "role": "native",
+      "sha256": "d01a10154db22a38aac8f88c29b26af92166b199be03cf1f81ab1e9219718af5",
+      "source_url": "https://www.cm-amarante.pt/wp-content/uploads/2025/02/rodoamarante-2023.pdf"
+    },
+    {
+      "bytes": 1389750,
+      "format": "application/pdf",
+      "name": "Relatorio-SPTP-RODONORTE-2019-2020.pdf",
+      "role": "native",
+      "sha256": "ebe6ff2d63670cee5af5b27901d6f487926480f934735fbad6ce4659024c1374",
+      "source_url": "https://www.cm-amarante.pt/wp-content/uploads/2025/02/Relatorio-SPTP-RODONORTE-2019-2020.pdf"
+    },
+    {
+      "bytes": 2587314,
+      "format": "application/pdf",
+      "name": "Relatorio-SPTP-Rodonorte_ValpiBus_Rodoamarante-2021.pdf",
+      "role": "native",
+      "sha256": "62a454c27a9d2860551671af48cef757fcfd4719eda48b69c1e9f974fb045e77",
+      "source_url": "https://www.cm-amarante.pt/wp-content/uploads/2025/02/Relatorio-SPTP-Rodonorte_ValpiBus_Rodoamarante-2021.pdf"
+    },
+    {
+      "bytes": 1412311,
+      "format": "application/pdf",
+      "name": "Relatorio-SPTP-VALPI-BUS-2019-2020.pdf",
+      "role": "native",
+      "sha256": "a1a6f5b4c8611cd552ab241d35e586a354b7b6dcbc24ebd3ac4624382e614bc1",
+      "source_url": "https://www.cm-amarante.pt/wp-content/uploads/2025/02/Relatorio-SPTP-VALPI-BUS-2019-2020.pdf"
+    },
+    {
+      "bytes": 2211,
+      "format": "JSON",
+      "name": "series-manifest.json",
+      "role": "recomposed",
+      "sha256": "f7f814198b2c310ebf6d13fed8664871936e6052298836099c6d8c5a952e3e1f",
+      "source_url": null
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF series",
+  "limitations": "Producer landing HTML and selected linked assets are preserved natively. Multiple linked files are recomposed as an ordered logical series manifest; heterogeneous files are not row-concatenated without a product-specific semantic assembler.",
+  "native_asset_fingerprint": "cfa2e818664f2fdf822a5391d9ce849a7aef629fe6904a350ac4659d31548afd",
+  "primary_repair": false,
+  "producer": "Município de Amarante — Autoridade de Transportes",
+  "product_key": "cm-amarante.pt::mobilidade-transportes::relatorios-desempenho-osp",
+  "raw_native": {
+    "acquisition_scope": "accepted 2019-2025 report family only",
+    "classification": "annual OSP/performance report-native measures, units, periods and flags",
+    "geography": "Município de Amarante authority / source-native service, contract and operator grains"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35951043687",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.cm-amarante.pt/servicos/mobilidade-transportes/relatorio-anual-sobre-obrigacoes-de-servico-publico/",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2019-2025 accepted family",
+  "source_set_id": "F198",
+  "source_url": "https://www.cm-amarante.pt/servicos/mobilidade-transportes/relatorio-anual-sobre-obrigacoes-de-servico-publico/",
+  "title": "Município de Amarante — relatórios de desempenho e OSP",
+  "validation_result": "PASS_HTML_ASSET_DISCOVERY_SERIES_COMPOSED"
+}
