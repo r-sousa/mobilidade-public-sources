@@ -1,0 +1,131 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "71fc52a1f3ad6ce7051d0e060af67cb9e348946d",
+  "acquisition_timestamp": "2026-09-24T05:15:55.060270Z",
+  "adapter": "html_assets",
+  "assets": [
+    {
+      "bytes": 127012,
+      "format": "HTML",
+      "name": "landing.html",
+      "role": "native",
+      "sha256": "05be83594a1398e7f3c53697061a6cc57cbf96bf950aa6b6392ae0fe6bff40de",
+      "source_url": "https://www.imt-ip.pt/fundo-mobilidade-e-transportes/financiamento-regular-das-autoridades-de-transportes/"
+    },
+    {
+      "bytes": 364699,
+      "format": "application/pdf",
+      "name": "ListagemPreliminar_FR_2026.pdf",
+      "role": "native",
+      "sha256": "8193f04f13952487e238a8e1ad43fcbe3aa9dbb7d1a2eab169c2c84ae8f9b27a",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2026/01/ListagemPreliminar_FR_2026.pdf"
+    },
+    {
+      "bytes": 656719,
+      "format": "application/pdf",
+      "name": "ListagemPreliminar_FR_2025-1-1.pdf",
+      "role": "native",
+      "sha256": "3dfe94e5539f36f00108880c3da689cb3fd94cec2af21fe7e329b60d312b445f",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/04/ListagemPreliminar_FR_2025-1-1.pdf"
+    },
+    {
+      "bytes": 443435,
+      "format": "application/pdf",
+      "name": "EstimativaPreliminarFinanciamentoRegularAtribuir_2024.pdf",
+      "role": "native",
+      "sha256": "f7d06c362c8fb9d1c32261ce980eb42dbfe428060b56610b48a0ac33ba58267e",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/04/EstimativaPreliminarFinanciamentoRegularAtribuir_2024.pdf"
+    },
+    {
+      "bytes": 446171,
+      "format": "application/pdf",
+      "name": "Financiamento-Regular-das-Autoridades-de-Transporte-2023.pdf",
+      "role": "native",
+      "sha256": "4a3206b98f1fd341352968c9a65827d96812a2092a89b296c37ccc9ec35ade63",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2026/01/Financiamento-Regular-das-Autoridades-de-Transporte-2023.pdf"
+    },
+    {
+      "bytes": 476926,
+      "format": "application/pdf",
+      "name": "Financiamento-Regular-das-Autoridades-de-Transporte-2022.pdf",
+      "role": "native",
+      "sha256": "6380f0bf243fd4516fdb82a61cedbe44568945b39f6662ed62b75871bbe6dcc4",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2026/01/Financiamento-Regular-das-Autoridades-de-Transporte-2022.pdf"
+    },
+    {
+      "bytes": 481158,
+      "format": "application/pdf",
+      "name": "Financiamento-Regular-das-Autoridades-de-Transporte-2021.pdf",
+      "role": "native",
+      "sha256": "702542a5bc526b01ea1cd8478ea6acfe1004426076c4ae0cbf05cf6df3d2aeaa",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2026/01/Financiamento-Regular-das-Autoridades-de-Transporte-2021.pdf"
+    },
+    {
+      "bytes": 630111,
+      "format": "application/pdf",
+      "name": "Financiamento-Regular-das-Autoridades-de-Transporte-2020.pdf",
+      "role": "native",
+      "sha256": "fb03d3179c3974df435cda6a12db819b415ea1d809581aa2d94bdd2750937902",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2026/01/Financiamento-Regular-das-Autoridades-de-Transporte-2020.pdf"
+    },
+    {
+      "bytes": 520469,
+      "format": "application/pdf",
+      "name": "Financiamento-Regular-das-Autoridades-de-Transporte-2019.pdf",
+      "role": "native",
+      "sha256": "10067feeae1a6b91b4ca2d918c9875e7c1e773327330d6f7b73625e9243b4917",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2026/01/Financiamento-Regular-das-Autoridades-de-Transporte-2019.pdf"
+    },
+    {
+      "bytes": 446544,
+      "format": "application/pdf",
+      "name": "Listagem-indicativa-provisoria-do-financiamento-a-atribuir-as-autoridade.pdf",
+      "role": "native",
+      "sha256": "03a9e3513b120659e263341156a481f42cd161c2aecb95c370178f9b7960aa16",
+      "source_url": "https://www.imt-ip.pt/wp-content/uploads/2025/04/Listagem-indicativa-provisoria-do-financiamento-a-atribuir-as-autoridade.pdf"
+    },
+    {
+      "bytes": 3210,
+      "format": "JSON",
+      "name": "series-manifest.json",
+      "role": "recomposed",
+      "sha256": "0364ce16210bcfc183b8c248350c5d670e1f7e4893306f6bd50b1af2e9a269df",
+      "source_url": null
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF series",
+  "limitations": "Producer landing HTML and selected linked assets are preserved natively. Multiple linked files are recomposed as an ordered logical series manifest; heterogeneous files are not row-concatenated without a product-specific semantic assembler.",
+  "native_asset_fingerprint": "9b93a0ecb937507e1fdb16dba512414d1230a3f31fcb3d55adb1c6ae74607bba",
+  "primary_repair": false,
+  "producer": "Instituto da Mobilidade e dos Transportes, I.P. (IMT) / FSPT-FMT",
+  "product_key": "imt.pt::fspt-fmt::financiamento-regular-autoridades-transportes",
+  "raw_native": {
+    "acquisition_scope": "accepted annual series 2018-2026 only",
+    "classification": "FEF percentage, fixed/variable funding components, delegation indicator, distributions and final amount to transfer",
+    "geography": "municipality, CIM and metropolitan transport authority as published"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35959158618",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.imt-ip.pt/fundo-mobilidade-e-transportes/financiamento-regular-das-autoridades-de-transportes/",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2018-2026 accepted annual series",
+  "source_set_id": "F201",
+  "source_url": "https://www.imt-ip.pt/fundo-mobilidade-e-transportes/financiamento-regular-das-autoridades-de-transportes/",
+  "title": "IMT / FSPT-FMT — Financiamento Regular das Autoridades de Transportes",
+  "validation_result": "PASS_HTML_ASSET_DISCOVERY_SERIES_COMPOSED"
+}
