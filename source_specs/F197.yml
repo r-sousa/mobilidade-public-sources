@@ -1,0 +1,31 @@
+schema_version: 1.0.0
+source_set_id: F197
+title: CIM Alto Tâmega e Barroso — Relatório Anual OSP transporte de passageiros
+producer: CIM Alto Tâmega e Barroso — Autoridade de Transportes
+product_key: cimat.pt::autoridade-transportes::relatorio-anual-osp-sptp
+adapter: static_http
+access: public
+sink: private
+cadence: annual
+expected_format: PDF
+source:
+  landing_url: https://cimat.pt/
+raw_native:
+  geography: Alto Tâmega e Barroso; source-native network/line/fleet/compensation grains
+  classification: annual OSP report-native observed and estimated/programmed measures kept distinct
+  acquisition_scope: accepted 2025 edition published 2026 only
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://cimat.pt/wp-content/uploads/2026/06/Relatorio_Anual_2025.pdf
+  license: null
+  asset_check: null
+parameters:
+  period: "2025 observation/report year; publication 2026"
+  limitations: Preserve estimated vehicle-km/circulations versus observed demand and finance; programmed supply is not observed reliability.
+  assets:
+    - key: CIMAT_OSP_2025
+      format: PDF
+      min_bytes: 1000
+      filename: F197-cimat-osp-2025.pdf
+      url: https://cimat.pt/wp-content/uploads/2026/06/Relatorio_Anual_2025.pdf
