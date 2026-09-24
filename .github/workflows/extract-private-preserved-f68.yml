@@ -4,11 +4,12 @@ on:
   push:
     branches: [main]
     paths:
+      - '.github/workflows/extract-private-preserved-f68.yml'
       - 'extraction_requests/F68-276ad30496322e95a3a4cf5c8804cd203b841bb88827eca1f1ea8d0a9945aa07.json'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: mn-f68-private-extraction-276ad30496322e95a3a4
@@ -16,18 +17,18 @@ concurrency:
 
 jobs:
   extract:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
       PRIVATE_REPO: r-sousa/EU-transp-weekly
       PRIVATE_BRANCH: mobilidade-norte-recovery-20260919
       PUBLIC_REPO: ${{ github.repository }}
-      PUBLIC_TOKEN: ${{ github.token }}
-      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
       MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          persist-credentials: false
       - name: Install deterministic spatial extraction tools
         shell: bash
         run: |
@@ -36,9 +37,36 @@ jobs:
           sudo apt-get install -y --no-install-recommends gdal-bin zip curl
           python -m pip install --quiet requests
           ogr2ogr --version
-
-      - name: Extract exact F68 preserved artifact
+      - name: Check syntax and fail-closed generation and ownership guards
         shell: bash
         run: |
           set -euo pipefail
-          python tools/extract_f68_preserved.py
+          python -m py_compile tools/extract_f68_current.py tools/extract_f68_preserved.py
+          PYTHONPATH=tools python - <<'PY'
+          import copy
+          import extract_f68_current as module
+          team={'mission_generation':62,'task_bindings':{module.TASK:{'owner':'W2C','mission_generation':62,'state':'READY'}}}
+          module.old.MISSION_GENERATION=62
+          module.read_json=lambda path: ({},team)
+          assert module.guard()==team
+          for changed in [
+              {'owner':'W4A','mission_generation':62,'state':'READY'},
+              {'owner':'W2C','mission_generation':54,'state':'READY'},
+              {'owner':'W2C','mission_generation':62,'state':'COMPLETE'},
+              {'owner':'W2C','mission_generation':62,'state':'CANCELLED'}]:
+              candidate=copy.deepcopy(team)
+              candidate['task_bindings'][module.TASK]=changed
+              module.read_json=lambda path,candidate=candidate: ({},candidate)
+              try:
+                  module.guard()
+              except module.old.Gate:
+                  pass
+              else:
+                  raise AssertionError('Invalid binding was accepted')
+          print('PASS: syntax and five ownership/generation cases; no remote operations performed by guard tests.')
+          PY
+      - name: Recover exact F68 and retain source bytes and results in the private repository only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/extract_f68_current.py
