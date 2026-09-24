@@ -1,0 +1,132 @@
+name: F195 cached JSON readback
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/f195-cached-json-readback.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-f195-cached-json-readback
+  cancel-in-progress: false
+jobs:
+  readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - name: Verify cached public-member bytes and write private readable descendants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, gzip, hashlib, io, json, os, time
+          import urllib.request, urllib.error, urllib.parse
+          from datetime import datetime, timezone
+          REPO='r-sousa/EU-transp-weekly'
+          BRANCH='mobilidade-norte-recovery-20260919'
+          ROOT='statistics/recovery-20260920/simple-runtime'
+          OUT=ROOT+'/outputs/ORCHESTRATOR/G63-F195-CACHE-RESCUE-v1'
+          API='https://api.github.com/repos/'+REPO
+          SINK=os.environ.get('SINK_TOKEN','').strip()
+          READ=os.environ.get('READ_TOKEN','').strip() or SINK
+          assert READ and SINK, 'Existing private credentials required'
+          LIMIT=2*1024*1024
+          class SafeRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,req,fp,code,msg,headers,newurl):
+                  nxt=super().redirect_request(req,fp,code,msg,headers,newurl)
+                  if nxt and urllib.parse.urlsplit(req.full_url).netloc != urllib.parse.urlsplit(newurl).netloc:
+                      nxt.remove_header('Authorization')
+                  return nxt
+          opener=urllib.request.build_opener(SafeRedirect())
+          def http(url,token=None,method='GET',body=None,accept='application/vnd.github+json'):
+              headers={'Accept':accept,'User-Agent':'MobilidadeNorte-VerifiedJsonReadback/1.0'}
+              if token: headers.update({'Authorization':'Bearer '+token,'X-GitHub-Api-Version':'2022-11-28'})
+              data=None if body is None else json.dumps(body).encode()
+              if data is not None: headers['Content-Type']='application/json'
+              req=urllib.request.Request(url,headers=headers,data=data,method=method)
+              try:
+                  with opener.open(req,timeout=90) as r:
+                      raw=r.read(LIMIT+1)
+                      assert len(raw)<=LIMIT,'Bounded JSON payload exceeded'
+                      return raw
+              except urllib.error.HTTPError as e:
+                  raise RuntimeError('HTTP_'+str(e.code)) from None
+          def content(path):
+              u=API+'/contents/'+urllib.parse.quote(path,safe='/')+'?ref='+BRANCH
+              obj=json.loads(http(u,READ))
+              return obj,base64.b64decode(obj['content'])
+          def put(path,data):
+              assert path.startswith(OUT+'/') and len(data)<=LIMIT
+              for attempt in range(3):
+                  try:
+                      old,raw=content(path)
+                  except RuntimeError as e:
+                      if str(e)!='HTTP_404': raise
+                      old=None
+                  else:
+                      assert raw==data,'Append-only output collision'
+                      return {'path':path,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),'blob_sha':old['sha'],'readback':'PASS'}
+                  body={'branch':BRANCH,'message':'F195: verified cached JSON '+path.rsplit('/',1)[-1],'content':base64.b64encode(data).decode()}
+                  try:
+                      json.loads(http(API+'/contents/'+urllib.parse.quote(path,safe='/'),SINK,'PUT',body))
+                  except RuntimeError as e:
+                      if str(e)=='HTTP_409' and attempt<2: time.sleep(attempt+1); continue
+                      raise
+                  obj,actual=content(path)
+                  assert actual==data,'Private byte readback mismatch'
+                  return {'path':path,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),'blob_sha':obj['sha'],'readback':'PASS'}
+              raise RuntimeError('Content write retry exhausted')
+          def jbytes(obj): return (json.dumps(obj,ensure_ascii=False,indent=2)+'\n').encode()
+          repo=json.loads(http(API,READ)); assert repo['private'] is True
+          _,authority=content(OUT+'/authorization.json'); auth=json.loads(authority)
+          _,teamraw=content(ROOT+'/team-missions.json'); team=json.loads(teamraw)
+          assert team['mission_generation']==63 and auth['mission_generation']==63
+          manifest_obj,manifest_raw=content(auth['source_manifest'])
+          assert manifest_obj['sha']==auth['source_manifest_blob_sha'],'Acquisition manifest changed'
+          manifest=json.loads(manifest_raw)
+          allowed={('0014076',2025),('0014077',2025),('0014078',2025),('0012984',2024)}
+          members=[m for m in manifest['members'] if (m['indicator'],m['year']) in allowed]
+          assert len(members)==4
+          emitted=[]; summary=[]
+          for m in members:
+              receipt_obj,raw=content(m['receipt_path'])
+              assert receipt_obj['sha']==m['receipt_git_blob_sha'],'Receipt changed'
+              receipt=json.loads(raw)
+              assert receipt['source_set_id']=='F195' and receipt['sink']=='private'
+              assert receipt['disposition']['repository']==REPO
+              base=OUT+'/members/'+m['indicator']+'-'+str(m['year'])
+              payloads={}
+              for asset in receipt['disposition']['assets']:
+                  name=asset['name']; assert '/' not in name and '..' not in name
+                  data=http(API+'/releases/assets/'+str(asset['id']),READ,accept='application/octet-stream')
+                  assert len(data)==asset['bytes'] and hashlib.sha256(data).hexdigest()==asset['sha256'],'Preserved asset identity mismatch'
+                  if name.endswith('.gz'):
+                      with gzip.GzipFile(fileobj=io.BytesIO(data)) as f: decoded=f.read(LIMIT+1)
+                      assert len(decoded)<=LIMIT,'Decompressed payload exceeded bound'
+                      objects=[json.loads(line) for line in decoded.decode('utf-8').splitlines() if line.strip()]
+                      dest=name[:-3]; payloads[dest]=objects
+                  else:
+                      decoded=data; objects=json.loads(decoded); dest=name; payloads[dest]=objects
+                  item=put(base+'/'+dest,decoded)
+                  item.update({'source_asset_id':asset['id'],'source_bytes':asset['bytes'],'source_sha256':asset['sha256'],'decompressed':name.endswith('.gz')})
+                  emitted.append(item)
+              summary.append({'indicator':m['indicator'],'requested_year':m['year'],'native_asset_fingerprint':m['native_asset_fingerprint'],'payloads':payloads})
+          emitted.append(put(OUT+'/readable-member-payloads.json',jbytes(summary)))
+          # A single exact metadata inspection diagnoses the failed identity/year;
+          # this is not an acquisition retry and does not silently change its year.
+          metadata_probe={'indicator':'0014450','requested_year':2023,'purpose':'EXACT_IDENTITY_PERIOD_QA','data_requests':0}
+          url='https://www.ine.pt/ine/json_indicador/pindicaMeta.jsp?varcd=0014450&lang=PT'
+          try:
+              raw=http(url,accept='application/json'); parsed=json.loads(raw)
+              metadata_probe.update({'status':'METADATA_CAPTURED_FOR_QA','source_url':url,'sha256':hashlib.sha256(raw).hexdigest(),'metadata':parsed})
+              emitted.append(put(OUT+'/0014450-current-native-metadata.json',raw))
+          except Exception as e:
+              metadata_probe.update({'status':'METADATA_QA_BLOCKED','error_type':type(e).__name__})
+          emitted.append(put(OUT+'/0014450-period-diagnosis.json',jbytes(metadata_probe)))
+          handoff={'task_id':auth['task_id'],'mission_generation':63,'source_set_id':'F195','status':'PASS_FOUR_CACHED_MEMBERS_BYTE_VERIFIED_READABLE','workflow_run_id':int(os.environ['GITHUB_RUN_ID']),'completed_at':datetime.now(timezone.utc).isoformat(),'member_count':4,'emitted':emitted,'producer_data_requests':0,'exact_metadata_qa_requests':1,'canonical_admission':False,'rights_changes':False,'public_bytes':False,'next_action':'W2A can read exact native metadata/chunks and recomposed JSONL through private repository contents. Normalize from these payloads, not by re-acquiring INE. Independently review the separate 0014450 period evidence before changing any canonical member/year.'}
+          put(OUT+'/handoff.json',jbytes(handoff))
+          print('PASS: four private cached JSON members verified and readable; no data reacquisition, no publication.')
+          PY
