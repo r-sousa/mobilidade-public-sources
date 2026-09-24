@@ -1,0 +1,111 @@
+name: Capture authorised user CSV export
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/capture-user-csv-export.yml']
+permissions:
+  contents: read
+concurrency:
+  group: mn-f195-user-csv-capture
+  cancel-in-progress: false
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+      RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Capture exact private request, preserve bytes and readable CSV evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64,csv,hashlib,io,json,os,time,urllib.request,urllib.error,urllib.parse,datetime
+          repo='r-sousa/EU-transp-weekly'
+          branch='mobilidade-norte-recovery-20260919'
+          root='statistics/recovery-20260920/simple-runtime'
+          token=os.environ['SINK_TOKEN'].strip()
+          assert token, 'Existing private sink token is required'
+          api='https://api.github.com/repos/'+repo
+          headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+          def call(path,body=None):
+              data=None if body is None else json.dumps(body).encode()
+              req=urllib.request.Request(api+path,headers={**headers,'Content-Type':'application/json'},data=data,method='GET' if body is None else 'PUT')
+              with urllib.request.urlopen(req,timeout=40) as r:return json.load(r)
+          def get(path,ref=branch):
+              obj=call('/contents/'+path+'?ref='+ref)
+              return obj,base64.b64decode(obj['content'])
+          def put(path,data):
+              try:
+                  obj,existing=get(path)
+                  assert existing==data,'Immutable output collision'
+                  return {'path':path,'sha':obj['sha'],'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'readback':'PASS'}
+              except urllib.error.HTTPError as e:
+                  if e.code!=404:raise
+              for attempt in range(3):
+                  try:
+                      out=call('/contents/'+path,{'branch':branch,'message':'F195: private user-export capture evidence','content':base64.b64encode(data).decode()})
+                      obj,actual=get(path)
+                      assert actual==data,'Private readback mismatch'
+                      return {'path':path,'sha':obj['sha'],'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'readback':'PASS'}
+                  except urllib.error.HTTPError as e:
+                      if e.code!=409 or attempt==2:raise
+                      time.sleep(attempt+1)
+          def encode(obj):return (json.dumps(obj,ensure_ascii=False,indent=2)+'\n').encode()
+          assert call('')['private'] is True,'Private-only sink required'
+          _,request_raw=get(root+'/intake-requests/F195-0014450-user-csv-0YchbUCZT.json','aa430b0c05370b4553c108aec93f53c2f224f406')
+          request=json.loads(request_raw)
+          _,team_raw=get(root+'/team-missions.json')
+          team=json.loads(team_raw)
+          assert team['mission_generation']==63,'Current-generation reassignment required'
+          assert team['task_bindings']['G63R-F195-2024']['owner']=='W2A'
+          _,worker_raw=get(root+'/worker-W2A.json')
+          assert json.loads(worker_raw).get('current_task') is None,'Do not collide with active W2A work'
+          url=request['url']
+          parsed=urllib.parse.urlsplit(url)
+          assert parsed.scheme=='https' and parsed.hostname=='www.ine.pt' and parsed.path.startswith('/clientFiles/') and parsed.path.endswith('.csv')
+          outroot=request['output_root']+'/run-'+os.environ['RUN_ID']
+          result={'request_id':request['request_id'],'run_id':int(os.environ['RUN_ID']),'mission_generation':63,'source_set_id':'F195','indicator':'0014450','expected_year':2024,'source_url':url,'at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'attempts':[],'canonical_delta':0,'rights_delta':0,'existing_42_rows_unchanged':True,'producer_api_requests':0,'files':[]}
+          raw=None
+          for attempt in range(2):
+              try:
+                  q=urllib.request.Request(url,headers={'Accept':'text/csv,text/plain;q=0.9,*/*;q=0.1','User-Agent':'MobilidadeNorte-research-capture/1.0'})
+                  with urllib.request.urlopen(q,timeout=60) as r:
+                      raw=r.read(5000001)
+                      result['attempts'].append({'attempt':attempt+1,'status':r.status,'content_type':r.headers.get('Content-Type'),'final_url':r.url,'bytes':len(raw)})
+                  if len(raw)>5000000:raise ValueError('Response exceeds bounded CSV size')
+                  if not raw.strip():raise ValueError('Empty response')
+                  break
+              except Exception as e:
+                  result['attempts'].append({'attempt':attempt+1,'error_type':type(e).__name__,'message':str(e),'status':getattr(e,'code',None)})
+                  raw=None
+                  if isinstance(e,ValueError) or getattr(e,'code',None) in (400,401,403,404,410,429):break
+                  if attempt==0:time.sleep(15)
+          if raw is None:
+              result['status']='BLOCKED_EXACT_USER_EXPORT_RETRIEVAL'
+          else:
+              result['source_sha256']=hashlib.sha256(raw).hexdigest()
+              head=raw[:3000].lower()
+              if b'<html' in head or b'<!doctype html' in head or b'cf-chl-' in head:
+                  result['status']='REJECTED_HTML_NOT_CSV'
+                  result['files'].append(put(outroot+'/rejected-response.bin',raw))
+              else:
+                  encoding=None
+                  for candidate in ['utf-8-sig','utf-16','cp1252']:
+                      try:
+                          text=raw.decode(candidate)
+                          encoding=candidate
+                          break
+                      except UnicodeError:pass
+                  assert encoding,'Unrecognized CSV encoding'
+                  try: dialect=csv.Sniffer().sniff(text[:16384],delimiters=';,\t')
+                  except csv.Error: dialect=csv.excel;dialect.delimiter=';' if ';' in text else '\t'
+                  rows=list(csv.reader(io.StringIO(text),dialect))
+                  result.update({'status':'ACQUIRED_READBACK_VERIFIED_SCOPE_QA_PENDING','encoding':encoding,'delimiter':dialect.delimiter,'csv_rows':len(rows),'nonempty_rows':sum(any(x.strip() for x in row) for row in rows),'max_columns':max(map(len,rows),default=0),'coverage_warning':'An export may contain selected categories only; compare actual rows with source metadata before declaring all dimensions complete.','normalization_state':'NOT_ADMITTED_PENDING_W2A_AND_INDEPENDENT_QA'})
+                  result['files'].append(put(outroot+'/0014450-source-export.csv',raw))
+                  result['files'].append(put(outroot+'/0014450-export-utf8.csv',text.encode('utf-8')))
+                  result['files'].append(put(outroot+'/0014450-csv-cells.json',encode({'encoding':encoding,'delimiter':dialect.delimiter,'rows':rows})))
+          put(outroot+'/handoff.json',encode(result))
+          print(json.dumps({'request_id':result['request_id'],'status':result['status'],'canonical_delta':0,'private_receipt_written':True}))
+          PY
