@@ -1,0 +1,259 @@
+{
+  "schema_version": "1.0.0",
+  "mission_generation": 63,
+  "task_id": "G63-PRIVATE-RELEASE-BINARY-MATERIALISATION",
+  "private_repository": "r-sousa/EU-transp-weekly",
+  "private_branch": "mobilidade-norte-recovery-20260919",
+  "private_output_base": "statistics/recovery-20260920/simple-runtime/outputs/W2C/G63/G63-PRIVATE-RELEASE-BINARY-MATERIALISATION/20260924T0842PT-v1",
+  "policy": {
+    "producer_reacquisition": false,
+    "canonical_admission": false,
+    "rights_change": false,
+    "public_source_bytes": false,
+    "semantic_normalization": false
+  },
+  "families": {
+    "F197": [
+      {
+        "asset_id": 585058768,
+        "asset_name": "CIMAT_OSP_2025__F197-cimat-osp-2025.pdf",
+        "bytes": 12147,
+        "sha256": "fef2ca6311deb34d0fe4acc211682622127b314e91c12eff70944cfc3422f4c6",
+        "release_id": 395287181,
+        "release_tag": "mn-src-f197-92c468c94a3624a95181",
+        "source_year": 2025,
+        "publication_year": null,
+        "revision": null,
+        "role": "analytical_member",
+        "producer_reacquisition": false
+      }
+    ],
+    "F199": [
+      {
+        "asset_id": 585209109,
+        "asset_name": "102194",
+        "bytes": 677020,
+        "sha256": "64be277a45985766f0f8a2124717e6cf3f07a6ddffd934639ef06ff3a09f5638",
+        "release_id": 395350284,
+        "release_tag": "mn-src-f199-d9fa850b852f34edf99c",
+        "source_year": 2025,
+        "publication_year": null,
+        "revision": null,
+        "role": "analytical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209143,
+        "asset_name": "102193",
+        "bytes": 676313,
+        "sha256": "cb254f14d8e1961523bd3bf4c8f2d19686c12bd32c14056a0c5891c38c4998dc",
+        "release_id": 395350284,
+        "release_tag": "mn-src-f199-d9fa850b852f34edf99c",
+        "source_year": 2024,
+        "publication_year": null,
+        "revision": null,
+        "role": "updated_analytical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209183,
+        "asset_name": "93684",
+        "bytes": 460449,
+        "sha256": "2f4fc9f7cec370037c0a4acb01b0aa00e5c8f479679581803dfc6fa4e95ed939",
+        "release_id": 395350284,
+        "release_tag": "mn-src-f199-d9fa850b852f34edf99c",
+        "source_year": 2024,
+        "publication_year": null,
+        "revision": null,
+        "role": "superseded_lineage_only",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209235,
+        "asset_name": "82978",
+        "bytes": 806119,
+        "sha256": "8590c218b5fb90be27e51df92594e3262880d34606626aaaede8690391d33427",
+        "release_id": 395350284,
+        "release_tag": "mn-src-f199-d9fa850b852f34edf99c",
+        "source_year": 2023,
+        "publication_year": null,
+        "revision": null,
+        "role": "analytical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209279,
+        "asset_name": "78035",
+        "bytes": 237002,
+        "sha256": "459f3df4ce294857a93f80dbf0ab90ffa3d6b8e86fb918802575f1ba2bf91d8a",
+        "release_id": 395350284,
+        "release_tag": "mn-src-f199-d9fa850b852f34edf99c",
+        "source_year": 2022,
+        "publication_year": null,
+        "revision": null,
+        "role": "analytical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209322,
+        "asset_name": "88412",
+        "bytes": 234469,
+        "sha256": "16f3cf28ab24197a4119e8cc54308205bf0a26c2cb7b51f1588d97c6f66b2786",
+        "release_id": 395350284,
+        "release_tag": "mn-src-f199-d9fa850b852f34edf99c",
+        "source_year": 2021,
+        "publication_year": null,
+        "revision": null,
+        "role": "analytical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209365,
+        "asset_name": "36022",
+        "bytes": 17870024,
+        "sha256": "a1be0d3850e23858a10bde6d7d6cbbc86094a1681419ca4f0517b9976beaee36",
+        "release_id": 395350284,
+        "release_tag": "mn-src-f199-d9fa850b852f34edf99c",
+        "source_year": 2020,
+        "publication_year": null,
+        "revision": null,
+        "role": "analytical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209430,
+        "asset_name": "36023",
+        "bytes": 16906516,
+        "sha256": "10be731f8a9eacbf28285f36e2b5da5275b23b7af96d1644e7485de86bcbbca6",
+        "release_id": 395350284,
+        "release_tag": "mn-src-f199-d9fa850b852f34edf99c",
+        "source_year": 2019,
+        "publication_year": null,
+        "revision": null,
+        "role": "analytical_member",
+        "producer_reacquisition": false
+      }
+    ],
+    "F201": [
+      {
+        "asset_id": 585209108,
+        "asset_name": "ListagemPreliminar_FR_2025-1-1.pdf",
+        "bytes": 656719,
+        "sha256": "3dfe94e5539f36f00108880c3da689cb3fd94cec2af21fe7e329b60d312b445f",
+        "release_id": 395350270,
+        "release_tag": "mn-src-f201-9b93a0ecb937507e1fdb",
+        "source_year": 2025,
+        "publication_year": null,
+        "revision": "PRELIMINARY",
+        "role": "historical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209137,
+        "asset_name": "EstimativaPreliminarFinanciamentoRegularAtribuir_2024.pdf",
+        "bytes": 443435,
+        "sha256": "f7d06c362c8fb9d1c32261ce980eb42dbfe428060b56610b48a0ac33ba58267e",
+        "release_id": 395350270,
+        "release_tag": "mn-src-f201-9b93a0ecb937507e1fdb",
+        "source_year": 2024,
+        "publication_year": null,
+        "revision": "PRELIMINARY_ESTIMATE",
+        "role": "historical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209170,
+        "asset_name": "Financiamento-Regular-das-Autoridades-de-Transporte-2023.pdf",
+        "bytes": 446171,
+        "sha256": "4a3206b98f1fd341352968c9a65827d96812a2092a89b296c37ccc9ec35ade63",
+        "release_id": 395350270,
+        "release_tag": "mn-src-f201-9b93a0ecb937507e1fdb",
+        "source_year": 2023,
+        "publication_year": null,
+        "revision": "SOURCE_MEMBER",
+        "role": "historical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209232,
+        "asset_name": "Financiamento-Regular-das-Autoridades-de-Transporte-2022.pdf",
+        "bytes": 476926,
+        "sha256": "6380f0bf243fd4516fdb82a61cedbe44568945b39f6662ed62b75871bbe6dcc4",
+        "release_id": 395350270,
+        "release_tag": "mn-src-f201-9b93a0ecb937507e1fdb",
+        "source_year": 2022,
+        "publication_year": null,
+        "revision": "SOURCE_MEMBER",
+        "role": "historical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209276,
+        "asset_name": "Financiamento-Regular-das-Autoridades-de-Transporte-2021.pdf",
+        "bytes": 481158,
+        "sha256": "702542a5bc526b01ea1cd8478ea6acfe1004426076c4ae0cbf05cf6df3d2aeaa",
+        "release_id": 395350270,
+        "release_tag": "mn-src-f201-9b93a0ecb937507e1fdb",
+        "source_year": 2021,
+        "publication_year": null,
+        "revision": "SOURCE_MEMBER",
+        "role": "historical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209313,
+        "asset_name": "Financiamento-Regular-das-Autoridades-de-Transporte-2020.pdf",
+        "bytes": 630111,
+        "sha256": "fb03d3179c3974df435cda6a12db819b415ea1d809581aa2d94bdd2750937902",
+        "release_id": 395350270,
+        "release_tag": "mn-src-f201-9b93a0ecb937507e1fdb",
+        "source_year": 2020,
+        "publication_year": null,
+        "revision": "SOURCE_MEMBER",
+        "role": "historical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209353,
+        "asset_name": "Financiamento-Regular-das-Autoridades-de-Transporte-2019.pdf",
+        "bytes": 520469,
+        "sha256": "10067feeae1a6b91b4ca2d918c9875e7c1e773327330d6f7b73625e9243b4917",
+        "release_id": 395350270,
+        "release_tag": "mn-src-f201-9b93a0ecb937507e1fdb",
+        "source_year": 2019,
+        "publication_year": null,
+        "revision": "SOURCE_MEMBER",
+        "role": "historical_member",
+        "producer_reacquisition": false
+      },
+      {
+        "asset_id": 585209406,
+        "asset_name": "Listagem-indicativa-provisoria-do-financiamento-a-atribuir-as-autoridade.pdf",
+        "bytes": 446544,
+        "sha256": "03a9e3513b120659e263341156a481f42cd161c2aecb95c370178f9b7960aa16",
+        "release_id": 395350270,
+        "release_tag": "mn-src-f201-9b93a0ecb937507e1fdb",
+        "source_year": 2018,
+        "publication_year": null,
+        "revision": "PROVISIONAL",
+        "role": "historical_member",
+        "producer_reacquisition": false
+      }
+    ],
+    "F203": [
+      {
+        "asset_id": 585059962,
+        "asset_name": "TUB_RELATORIO_CONTAS_2024__F203-tub-relatorio-contas-2024.pdf",
+        "bytes": 32039158,
+        "sha256": "616e0bb67865ee09b732f1ffe14137ae0c1b4dbe125ce4b9c56d68f86a1c76fa",
+        "release_id": 395287811,
+        "release_tag": "mn-src-f203-48ed7733c45e57ecef57",
+        "source_year": 2024,
+        "publication_year": null,
+        "revision": null,
+        "role": "analytical_member",
+        "producer_reacquisition": false
+      }
+    ]
+  }
+}
