@@ -1,0 +1,34 @@
+schema_version: 1.0.0
+source_set_id: F199
+title: Município de Barcelos — Relatório Anual Circunstanciado OSP
+producer: Município de Barcelos — Autoridade de Transportes
+product_key: cm-barcelos.pt::autoridade-transportes::relatorio-anual-osp
+adapter: html_assets
+access: public
+sink: private
+cadence: annual
+expected_format: PDF series
+source:
+  landing_url: https://cm-barcelos.pt/viver/mobilidade/autoridade-de-transportes/?responsive=true
+raw_native:
+  geography: Município de Barcelos authority / source-native operator and contract grains
+  classification: annual OSP report-native measures, units, periods and flags
+  acquisition_scope: accepted 2019-2025 annual family only
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://cm-barcelos.pt/viver/mobilidade/autoridade-de-transportes/?responsive=true
+  license: null
+  asset_check: null
+parameters:
+  period: "2019-2025 accepted family"
+  landing_url: https://cm-barcelos.pt/viver/mobilidade/autoridade-de-transportes/?responsive=true
+  include_href_regex: "\\.pdf($|\\?)"
+  include_text_regex: "(2019|2020|2021|2022|2023|2024|2025|relat[oó]rio|obriga)"
+  allowed_extensions:
+    - pdf
+  allowed_host_suffixes:
+    - cm-barcelos.pt
+    - www.cm-barcelos.pt
+  max_assets: 10
+  content_type_regex: "pdf"
