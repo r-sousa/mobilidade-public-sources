@@ -1,0 +1,31 @@
+schema_version: 1.0.0
+source_set_id: F196
+title: Ave Mobilidade — tabela tarifária anual
+producer: Ave Mobilidade
+product_key: avemobilidade.pt::tarifas::annual-fare-table
+adapter: static_http
+access: public
+sink: private
+cadence: annual
+expected_format: PDF
+source:
+  landing_url: https://www.avemobilidade.pt/
+raw_native:
+  geography: CIM Ave contracted network / Ave Mobilidade fare system
+  classification: producer-native fare band x transport-title type
+  acquisition_scope: accepted 2026 edition effective 2026-01-01 only
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://www.avemobilidade.pt/docs/Tarifas_AVE%20MOBILIDADE.pdf
+  license: null
+  asset_check: null
+parameters:
+  period: "2026 effective 2026-01-01"
+  limitations: Tariff prices are not passenger spending, demand, observed operation or service quality; preserve fare-band and title labels exactly.
+  assets:
+    - key: AVE_MOBILIDADE_TARIFAS_2026
+      format: PDF
+      min_bytes: 1000
+      filename: F196-ave-mobilidade-tarifas-2026.pdf
+      url: https://www.avemobilidade.pt/docs/Tarifas_AVE%20MOBILIDADE.pdf
