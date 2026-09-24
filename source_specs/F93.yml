@@ -1,0 +1,31 @@
+schema_version: 1.0.0
+source_set_id: F93
+title: CIM Cávado — relatórios anuais de obrigações de serviço público
+producer: CIM Cávado / AIT Cávado
+product_key: mobilidade-source-id::F93
+adapter: static_http
+access: public
+sink: private
+cadence: annual
+expected_format: PDF
+source:
+  landing_url: https://aitc.cimcavado.pt/documentos/
+raw_native:
+  geography: CIM Cávado authority / source-native concession and operator grains
+  classification: annual OSP report-native indicators, units, blanks and flags
+  acquisition_scope: accepted 2025 edition only; existing accepted 2024 descendants are reused
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://aitc.cimcavado.pt/wp-content/uploads/2026/07/RelatorioAnualObrigacoesServicoPublico_2025.pdf
+  license: null
+  asset_check: null
+parameters:
+  period: "2025"
+  limitations: Preserve native units and blanks; do not rescale ambiguous printed units or reopen the older Braga-Porto period conflict.
+  assets:
+    - key: CIM_CAVADO_OSP_2025
+      format: PDF
+      min_bytes: 1000
+      filename: F93-cavado-osp-2025.pdf
+      url: https://aitc.cimcavado.pt/wp-content/uploads/2026/07/RelatorioAnualObrigacoesServicoPublico_2025.pdf
