@@ -1,0 +1,82 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "0940f1b705e8ad174fe91d71aa15757270939d02",
+  "acquisition_timestamp": "2026-09-24T07:38:32.672307Z",
+  "adapter": "ine_json",
+  "assets": [
+    {
+      "bytes": 3414,
+      "format": "JSON",
+      "name": "0014078-metadata.json",
+      "role": "native",
+      "sha256": "b7bb118ebfe451f22e39f96583f092e0abce839b17488aa2e611aad25efd40b2",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindicaMeta.jsp?varcd=0014078&lang=PT"
+    },
+    {
+      "bytes": 1694,
+      "format": "JSON",
+      "name": "0014078-chunk-00001.json",
+      "role": "native",
+      "sha256": "aeb1ad72673f08e248fe318c56b99d05627a25562de75cf720bd69d15abf5618",
+      "source_url": "https://www.ine.pt/ine/json_indicador/pindica.jsp?op=2&varcd=0014078&lang=PT&Dim1=S7A2025"
+    },
+    {
+      "bytes": 1499,
+      "format": "JSON",
+      "name": "ine-plan-and-coverage.json",
+      "role": "recomposed",
+      "sha256": "23ce88334f8c1e67df31837c150eede3f0d49f0d2155de4ca680a3d3dad8c2a3",
+      "source_url": null
+    },
+    {
+      "bytes": 326,
+      "format": "JSONL.GZ",
+      "name": "observations.jsonl.gz",
+      "role": "recomposed",
+      "sha256": "8c0d0bc5de4ccb2885b7444d9f59c81e0c94bf9ce4de4f289022a79031c797b7",
+      "source_url": null
+    },
+    {
+      "bytes": 901,
+      "format": "JSON",
+      "name": "composition-manifest.json",
+      "role": "recomposed",
+      "sha256": "063e675f049cc7f200a77c6fed96fcafc3e01d2e800eddecd17397befcb148a0",
+      "source_url": null
+    }
+  ],
+  "cadence": "member-update",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "INE native JSON",
+  "limitations": "INE requests are metadata-defined and recursively partitioned below the 40,000-cell contract and URL-length bound. Cod=7 or saturated responses trigger further splitting. Raw chunks remain native; recomposed JSONL is derived without replacing missing or confidential values with zero.",
+  "native_asset_fingerprint": "facc93118cad750cd2e695513843a8f3d5b709aa868077216d71c1e317299788",
+  "primary_repair": false,
+  "producer": "INE — Instituto Nacional de Estatística, I.P.",
+  "product_key": "ine.pt::icor-eu-silc::condicoes-vida-rendimento",
+  "raw_native": {
+    "classification": "INE indicator-native ICOR/EU-SILC dimensions; preserve each member separately",
+    "geography": "INE geography exposed by each registered ICOR/EU-SILC public indicator"
+  },
+  "repair_authorization": null,
+  "request_id": "G63-F195-CONTROL-PLANE-20260924T0836PT::F195-0014078-2025",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": null,
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2025",
+  "source_set_id": "F195",
+  "source_url": "https://www.ine.pt/xurl/indx/0014078/PT",
+  "title": "INE — Inquérito às Condições de Vida e Rendimento (ICOR) / Portuguese EU-SILC",
+  "validation_result": "PASS_INE_PARTITIONED_RECOMPOSED_COMPLETE"
+}
