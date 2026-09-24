@@ -1,0 +1,51 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "1c1ef6c4d58332e63411447a412b654234c91826",
+  "acquisition_timestamp": "2026-09-24T03:21:01.589008Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 218526,
+      "format": "PDF",
+      "name": "FREIXO_OSP_2024__F200-freixo-osp-2024.pdf",
+      "role": "native",
+      "sha256": "9639c66ce21431e9ff1701be2b3aa6578d3d4cc4ac693fa055423f57db172274",
+      "source_url": "https://www.amt-autoridade.pt/media/5256/relatoriotransporte-1.pdf"
+    }
+  ],
+  "cadence": "annual / accepted historical member",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF",
+  "limitations": "Do not project 2024 competence to later years. Compensation/funding is not operational performance.",
+  "native_asset_fingerprint": "65eb74b9eaa42ebbb0e4af22cd2cf5ce34e9946424c1b31955548332eb14e8ff",
+  "primary_repair": false,
+  "producer": "Município de Freixo de Espada à Cinta",
+  "product_key": "cm-freixoespadacinta.pt::relatorio-osp::annual",
+  "raw_native": {
+    "acquisition_scope": "accepted 2024 member only",
+    "classification": "municipal OSP report-native contract, service-period and compensation context",
+    "geography": "Município de Freixo de Espada à Cinta authority as reported for 2024"
+  },
+  "repair_authorization": null,
+  "request_id": "push-35951065993",
+  "reuse": {
+    "asset_check": null,
+    "evidence_url": "https://www.amt-autoridade.pt/media/5256/relatoriotransporte-1.pdf",
+    "license": null,
+    "public_redistribution_gate": "not_cleared",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2024",
+  "source_set_id": "F200",
+  "source_url": "https://www.amt-autoridade.pt/",
+  "title": "Município de Freixo de Espada à Cinta — Relatório OSP",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
