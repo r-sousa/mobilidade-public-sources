@@ -1,0 +1,31 @@
+schema_version: 1.0.0
+source_set_id: F60
+title: Alto Minho — horários e tarifários de transporte público
+producer: CIM Alto Minho
+product_key: mobilidade-source-id::F60
+adapter: static_http
+access: public
+sink: private
+cadence: current / annual tariff edition
+expected_format: PDF
+source:
+  landing_url: https://www.cim-altominho.pt/pt/transportes-publicos/
+raw_native:
+  geography: CIM Alto Minho public transport authority
+  classification: producer-native 2026 fare table; programmed supply remains separate
+  acquisition_scope: accepted 2026 tariff member only; existing six Valença timetable descendants are reused and not reacquired
+reuse:
+  status: not_verified
+  public_redistribution_gate: not_cleared
+  evidence_url: https://www.cim-altominho.pt/fotos/editor2/cimaltominho/gca/tabela_tarifaria_cim_alto_minho_2026_vf.pdf
+  license: null
+  asset_check: null
+parameters:
+  period: "2026 tariff edition"
+  limitations: Fare values are not demand, spending, observed service or reliability. Existing programmed-supply descendants remain authoritative and are not reacquired.
+  assets:
+    - key: CIM_ALTO_MINHO_TARIFA_2026
+      format: PDF
+      min_bytes: 1000
+      filename: F60-tabela-tarifaria-2026.pdf
+      url: https://www.cim-altominho.pt/fotos/editor2/cimaltominho/gca/tabela_tarifaria_cim_alto_minho_2026_vf.pdf
