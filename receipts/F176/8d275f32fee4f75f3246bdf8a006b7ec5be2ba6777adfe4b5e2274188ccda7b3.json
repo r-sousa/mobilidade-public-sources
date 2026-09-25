@@ -1,0 +1,53 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "5c777156e40b8e266fc13f80e6af2dce97fabb94",
+  "acquisition_timestamp": "2026-09-25T14:13:08.017620Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 1240922,
+      "format": "PDF",
+      "name": "INEGA_BALANCE_2024_MAY_2026__F176-inega-balance-2024-revision-may-2026.pdf",
+      "role": "native",
+      "sha256": "a938ea8234815bb6d63deaa05f774114b6264479154a22f43e03da7c02d64393",
+      "source_url": "https://www.inega.gal/sites/default/files/publicacions/20260504_Balance_enerxetico_Galicia_2024.pdf"
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF",
+  "limitations": "Preserve March as history, do not require equal hashes or double count revisions. Mixed transport, fishing, agriculture, mining and construction totals remain context.",
+  "native_asset_fingerprint": "8d275f32fee4f75f3246bdf8a006b7ec5be2ba6777adfe4b5e2274188ccda7b3",
+  "primary_repair": true,
+  "producer": "INEGA",
+  "product_key": "mobilidade-source-id::F176",
+  "raw_native": {
+    "acquisition_scope": "2024 balance, May 2026 revision; supersedes March for current analytical use",
+    "classification": "Native INEGA energy carriers, sectors and uses",
+    "geography": "Galicia"
+  },
+  "repair_authorization": {
+    "path": "statistics/recovery-20260920/simple-runtime/decisions/20260925-user-source-disposition.json",
+    "ref": "8432432f63b648feb52e665ec39aecf18cdb0456"
+  },
+  "request_id": "MN-G63-FINAL-F176-MAY-20260925",
+  "reuse": {
+    "evidence_url": "https://www.inega.gal/sites/default/files/publicacions/20260504_Balance_enerxetico_Galicia_2024.pdf",
+    "license": null,
+    "public_redistribution_gate": "private_only",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2024; revision 2026-05",
+  "source_set_id": "F176",
+  "source_url": "https://www.inega.gal/sites/default/files/publicacions/20260504_Balance_enerxetico_Galicia_2024.pdf",
+  "title": "INEGA — Balance Enerxético de Galicia 2024, revisión maio 2026",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
