@@ -517,6 +517,16 @@ def static_http(spec: dict, work: Path) -> dict:
             validate_xml_zip(p)
         elif fmt == "JSON":
             json.loads(p.read_text(encoding="utf-8-sig"))
+        elif fmt == "ZIP":
+            if not zipfile.is_zipfile(p):
+                raise RuntimeError(f"{name} is not a valid ZIP archive")
+            required = item.get("required_members") or []
+            if required:
+                with zipfile.ZipFile(p) as z:
+                    basenames = {Path(x).name for x in z.namelist() if not x.endswith("/")}
+                missing = [x for x in required if x not in basenames]
+                if missing:
+                    raise RuntimeError(f"{name} missing required ZIP members: {missing}")
         elif fmt in {"HTML", "HTM"}:
             text = p.read_text(encoding="utf-8", errors="replace")
             if "<html" not in text.lower() and "<table" not in text.lower():
