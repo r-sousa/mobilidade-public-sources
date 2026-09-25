@@ -10,6 +10,7 @@ import urllib.parse
 import zipfile
 import xml.etree.ElementTree as ET
 import ssl
+import subprocess
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -446,6 +447,43 @@ def ine_json(spec: dict, work: Path) -> dict:
     }
 
 
+def download_curl_ipv4(url: str, path: Path, work: Path, *, timeout: int = 2400) -> dict:
+    """Fetch one public asset with curl forced to IPv4.
+
+    This is a narrowly scoped alternate transfer path for producer endpoints
+    that are reachable from ordinary clients but time out during Python/urllib3
+    connection establishment on GitHub-hosted runners.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        "curl", "--ipv4", "--fail", "--location", "--silent", "--show-error",
+        "--retry", "2", "--retry-all-errors", "--connect-timeout", "45",
+        "--max-time", str(timeout), "--user-agent", UA,
+        "--output", str(path),
+        "--write-out", "%{url_effective}\n%{content_type}\n",
+        url,
+    ]
+    proc = subprocess.run(cmd, text=True, capture_output=True, check=False)
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"curl IPv4 transfer failed ({proc.returncode}) for {url}: "
+            f"{proc.stderr.strip()[:1000]}"
+        )
+    if not path.is_file() or path.stat().st_size == 0:
+        raise RuntimeError(f"Empty source response: {url}")
+    lines = proc.stdout.splitlines()
+    final_url = lines[0].strip() if lines else url
+    ctype = lines[1].strip() if len(lines) > 1 else None
+    return {
+        "path": str(path.relative_to(work)),
+        "name": path.name,
+        "sha256": sha256(path),
+        "bytes": path.stat().st_size,
+        "source_url": final_url,
+        "content_type": ctype,
+    }
+
+
 def static_http(spec: dict, work: Path) -> dict:
     s = session()
     assets = []
@@ -454,7 +492,11 @@ def static_http(spec: dict, work: Path) -> dict:
         key = item.get("key") or safe_name(url, "source.bin")
         name = item.get("filename") or safe_name(url, f"{key}.bin")
         p = work / "payload" / name
-        rec = download(s, url, p, work)
+        transfer_mode = str(spec["parameters"].get("transfer_mode") or "requests").lower()
+        if transfer_mode == "curl_ipv4":
+            rec = download_curl_ipv4(url, p, work)
+        else:
+            rec = download(s, url, p, work)
         fmt = (item.get("format") or Path(name).suffix.lstrip(".") or "binary").upper()
 
         min_bytes = int(item.get("min_bytes", 1))
