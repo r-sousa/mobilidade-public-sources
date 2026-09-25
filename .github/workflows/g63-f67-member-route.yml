@@ -19,18 +19,18 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install --disable-pip-version-check -r requirements.txt
-      - name: Read one official distribution page and preserve its member map
+      - name: Resolve the published HTTP distribution route
         env:
           PYTHONPATH: ${{ github.workspace }}/src
           MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
         run: |
           python - <<'PY'
-          import hashlib,json,os,re
+          import hashlib,json,os
           from html.parser import HTMLParser
           from urllib.parse import urljoin
           import requests
           from mn_public_acquisition.sinks import write_immutable_receipt
-          url='https://mapas.ine.pt/download/index2021.phtml'
+          url='http://mapas.ine.pt/download/index2021.phtml'
           class Links(HTMLParser):
               def __init__(self):
                   super().__init__();self.links=[];self.text='';self.current=None
@@ -39,19 +39,25 @@ jobs:
                   if tag=='a' and attrs.get('href'):
                       self.current={'url':urljoin(url,attrs['href']),'label':'','preceding_context':self.text[-550:],'onclick':attrs.get('onclick')}
               def handle_data(self,data):
-                  data=' '.join(data.split())
-                  self.text+=' '+data
+                  data=' '.join(data.split());self.text+=' '+data
                   if self.current:self.current['label']+=' '+data
               def handle_endtag(self,tag):
                   if tag=='a' and self.current:self.links.append(self.current);self.current=None
-          r=requests.get(url,timeout=(20,120),headers={'User-Agent':'MobilidadeNorte-SourcePreservation/1.0'})
-          if r.status_code!=200:
-              raise SystemExit('F67_OFFICIAL_PAGE_HTTP_'+str(r.status_code))
-          p=Links();p.feed(r.text)
-          links=[x for x in p.links if any(t in (x['url']+' '+x['label']+' '+x['preceding_context']).lower() for t in ('2021','subsec','continente','bgri','.zip','.gpkg'))]
-          if not links:raise SystemExit('F67_NO_EXACT_MEMBER_LINK_EVIDENCE')
-          receipt={'source_set_id':'F67','native_asset_fingerprint':hashlib.sha256(r.content).hexdigest(),'assets':[],'status':'OFFICIAL_DOWNLOAD_PAGE_MEMBER_MAP_ONLY','source_url':url,'source_bytes':len(r.content),'source_page_sha256':hashlib.sha256(r.content).hexdigest(),'links':links,'scope':'Subsecções estatísticas 2021 (Polígonos), Continente; no grid or CAOP substitution','geodata_acquired':False}
-          out='statistics/recovery-20260920/simple-runtime/outputs/ORCHESTRATOR/G63-F67-FINAL-20260925/member-map-'+receipt['source_page_sha256'][:12]+'.json'
+          receipt={'source_set_id':'F67','assets':[],'source_url':url,'prior_https_run':36147025484,'geodata_acquired':False}
+          try:
+              r=requests.get(url,timeout=(20,90),headers={'User-Agent':'MobilidadeNorte-SourcePreservation/1.0'})
+              receipt.update({'http_status':r.status_code,'final_url':r.url,'source_bytes':len(r.content),'source_page_sha256':hashlib.sha256(r.content).hexdigest()})
+              if r.status_code!=200:
+                  receipt['status']='OFFICIAL_HTTP_ROUTE_UNAVAILABLE'
+              else:
+                  p=Links();p.feed(r.text)
+                  receipt['links']=[x for x in p.links if any(t in (x['url']+' '+x['label']+' '+x['preceding_context']).lower() for t in ('2021','subsec','continente','bgri','.zip','.gpkg'))]
+                  receipt['status']='OFFICIAL_MEMBER_MAP_READY' if receipt['links'] else 'NO_EXACT_MEMBER_LINK_EVIDENCE'
+          except requests.RequestException as exc:
+              receipt.update({'status':'OFFICIAL_ROUTE_NETWORK_FAILURE','error_class':type(exc).__name__})
+          receipt['native_asset_fingerprint']=hashlib.sha256(json.dumps(receipt,sort_keys=True).encode()).hexdigest()
+          out='statistics/recovery-20260920/simple-runtime/outputs/ORCHESTRATOR/G63-F67-FINAL-20260925/http-route-'+receipt['native_asset_fingerprint'][:12]+'.json'
           saved=write_immutable_receipt('r-sousa/EU-transp-weekly','mobilidade-norte-recovery-20260919',out,receipt,os.environ['MN_PRIVATE_SINK_TOKEN'])
-          print(json.dumps({'private_receipt':saved,'official_member_links':links},ensure_ascii=False))
+          print(json.dumps({'private_receipt':saved,'result':receipt},ensure_ascii=False))
+          if receipt['status']!='OFFICIAL_MEMBER_MAP_READY':raise SystemExit(2)
           PY
