@@ -1,0 +1,30 @@
+schema_version: 1.0.0
+source_set_id: F176
+title: INEGA — Balance Enerxético de Galicia 2024, revisión maio 2026
+producer: INEGA
+product_key: mobilidade-source-id::F176
+adapter: static_http
+access: public
+sink: private
+cadence: annual
+expected_format: PDF
+source:
+  landing_url: https://www.inega.gal/sites/default/files/publicacions/20260504_Balance_enerxetico_Galicia_2024.pdf
+raw_native:
+  geography: Galicia
+  classification: Native INEGA energy carriers, sectors and uses
+  acquisition_scope: 2024 balance, May 2026 revision; supersedes March for current analytical use
+reuse:
+  status: not_verified
+  public_redistribution_gate: private_only
+  evidence_url: https://www.inega.gal/sites/default/files/publicacions/20260504_Balance_enerxetico_Galicia_2024.pdf
+  license: null
+parameters:
+  period: '2024; revision 2026-05'
+  limitations: Preserve March as history, do not require equal hashes or double count revisions. Mixed transport, fishing, agriculture, mining and construction totals remain context.
+  assets:
+    - key: INEGA_BALANCE_2024_MAY_2026
+      format: PDF
+      min_bytes: 1000
+      filename: F176-inega-balance-2024-revision-may-2026.pdf
+      url: https://www.inega.gal/sites/default/files/publicacions/20260504_Balance_enerxetico_Galicia_2024.pdf
