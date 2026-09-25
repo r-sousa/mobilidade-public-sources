@@ -3,7 +3,7 @@ source_set_id: F67
 title: INE — BGRI 2021, Subsecções estatísticas, Continente
 producer: INE — Instituto Nacional de Estatística
 product_key: mobilidade-source-id::F67
-adapter: static_http
+adapter: google_drive_handoff
 access: public
 sink: private
 cadence: decennial
@@ -12,6 +12,7 @@ source:
   landing_url: https://mapas.ine.pt/download/index2021.phtml
   exact_member_url: https://mapas.ine.pt/download/filesGPG/2021/BGRI21_CONT.zip
   locator_evidence: https://github.com/U-Shift/SiteSelection/blob/988aae7931400611501f701dc6a45dd76f941053/code/data_extract.R
+  transport_handoff: Google Drive shared-file handoff; producer identity remains INE and the Drive object is not a substitute source.
 raw_native:
   geography: Portugal Continental; native 2021 statistical subsections
   classification: INE BGRI 2021 subsection identifiers and native geometry
@@ -23,13 +24,11 @@ reuse:
   license: null
 parameters:
   period: '2021'
-  transfer_mode: curl_ipv4
-  limitations: Archive acquisition is separate from geodata acceptance. Verify original GeoPackage, geometry types, identifiers, feature coverage and CRS before admission. The research-code link identifies the official INE URL only and is not the data source.
-  assets:
-    - key: INE_BGRI21_CONT
-      format: ZIP
-      min_bytes: 200000000
-      required_members:
-        - BGRI21_CONT.gpkg
-      filename: F67-INE-BGRI21_CONT.zip
-      url: https://mapas.ine.pt/download/filesGPG/2021/BGRI21_CONT.zip
+  drive_file_id: 1PqAfRemBmLK4SCaT_snDUfX5WDEnEGqd
+  expected_bytes: 246754080
+  expected_sha256: 3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171
+  filename: F67-INE-BGRI21_CONT.zip
+  format: ZIP
+  required_members:
+    - BGRI21_CONT.gpkg
+  limitations: Google Drive is a temporary byte-transport handoff only. The archive must match the user-verified exact byte length and SHA-256 before private preservation. Native GeoPackage acceptance remains a separate QA step.
