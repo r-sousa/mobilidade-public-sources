@@ -1,0 +1,53 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "e054eb1c1933d47f576d169049527b817da452ca",
+  "acquisition_timestamp": "2026-09-25T14:12:56.576872Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 98255,
+      "format": "XLSX",
+      "name": "DGEG_GMA_2024__F170-dgeg-gma-2024.xlsx",
+      "role": "native",
+      "sha256": "2a5e56022506a4e488cb2de0ed2df03e5726385bdf374fe236b941241defa0e6",
+      "source_url": "https://www.dgeg.gov.pt/media/naedv3kq/dgeg-gma-2024.xlsx"
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "XLSX",
+  "limitations": "Preserve sheets, native units and provisional status. Activity-sector consumption is not automatically vehicle-fuel consumption.",
+  "native_asset_fingerprint": "c5e3020822b5dbd9f53128f5dbc4297607aa7d2019b77048191953366e11eb82",
+  "primary_repair": true,
+  "producer": "DGEG",
+  "product_key": "mobilidade-source-id::F170",
+  "raw_native": {
+    "acquisition_scope": "Whole official 2024 provisional workbook; all worksheets",
+    "classification": "Native CAE activity divisions; retain source classification vintage",
+    "geography": "Portugal; native municipality, NUTS and district aggregates"
+  },
+  "repair_authorization": {
+    "path": "statistics/recovery-20260920/simple-runtime/decisions/20260925-user-source-disposition.json",
+    "ref": "8432432f63b648feb52e665ec39aecf18cdb0456"
+  },
+  "request_id": "MN-G63-FINAL-F170-20260925",
+  "reuse": {
+    "evidence_url": "https://www.dgeg.gov.pt/media/naedv3kq/dgeg-gma-2024.xlsx",
+    "license": null,
+    "public_redistribution_gate": "private_only",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2024 provisório",
+  "source_set_id": "F170",
+  "source_url": "https://www.dgeg.gov.pt/pt/estatistica/energia/gas-natural/consumos/",
+  "title": "DGEG — Consumo de gás natural por município e setor 2024",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
