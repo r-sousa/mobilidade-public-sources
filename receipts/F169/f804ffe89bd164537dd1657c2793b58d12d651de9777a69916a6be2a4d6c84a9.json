@@ -1,0 +1,53 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "2382363504490a8f3ff3f68fa3de31958dc1c3cc",
+  "acquisition_timestamp": "2026-09-25T14:12:47.624214Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 1347753,
+      "format": "PDF",
+      "name": "DGEG_BEN_2024__F169-dgeg-ben-2024.pdf",
+      "role": "native",
+      "sha256": "2b1ad0d5e99791a9038487fd46ff934b4e8c023ae789ec49172c03f189c26a18",
+      "source_url": "https://www.dgeg.gov.pt/media/ofelw0w5/dgeg-ben-2024.pdf"
+    }
+  ],
+  "cadence": "annual",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "PDF",
+  "limitations": "National scope only; preserve transport sector and national context separately; no inferred Norte allocation.",
+  "native_asset_fingerprint": "f804ffe89bd164537dd1657c2793b58d12d651de9777a69916a6be2a4d6c84a9",
+  "primary_repair": true,
+  "producer": "DGEG",
+  "product_key": "mobilidade-source-id::F169",
+  "raw_native": {
+    "acquisition_scope": "Official national energy balance 2024; keep source revision and units",
+    "classification": "DGEG native energy products and sectors",
+    "geography": "Portugal"
+  },
+  "repair_authorization": {
+    "path": "statistics/recovery-20260920/simple-runtime/decisions/20260925-user-source-disposition.json",
+    "ref": "8432432f63b648feb52e665ec39aecf18cdb0456"
+  },
+  "request_id": "MN-G63-FINAL-F169-20260925",
+  "reuse": {
+    "evidence_url": "https://www.dgeg.gov.pt/media/ofelw0w5/dgeg-ben-2024.pdf",
+    "license": null,
+    "public_redistribution_gate": "private_only",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2024",
+  "source_set_id": "F169",
+  "source_url": "https://www.dgeg.gov.pt/pt/destaques/balanco-energetico-nacional-2024/",
+  "title": "DGEG — Balanço Energético Nacional 2024",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
