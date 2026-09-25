@@ -1,0 +1,32 @@
+schema_version: 1.0.0
+source_set_id: F67
+title: INE — BGRI 2021, Subsecções estatísticas, Continente
+producer: INE — Instituto Nacional de Estatística
+product_key: mobilidade-source-id::F67
+adapter: static_http
+access: public
+sink: private
+cadence: decennial
+expected_format: ZIP
+source:
+  landing_url: https://mapas.ine.pt/download/index2021.phtml
+  exact_member_url: https://mapas.ine.pt/download/filesGPG/2021/BGRI21_CONT.zip
+  locator_evidence: https://github.com/U-Shift/SiteSelection/blob/988aae7931400611501f701dc6a45dd76f941053/code/data_extract.R
+raw_native:
+  geography: Portugal Continental; native 2021 statistical subsections
+  classification: INE BGRI 2021 subsection identifiers and native geometry
+  acquisition_scope: Exact producer archive BGRI21_CONT.zip; retain all original members. Do not substitute grid, CAOP, municipal subset or a third-party geometry.
+reuse:
+  status: not_verified
+  public_redistribution_gate: private_only
+  evidence_url: https://mapas.ine.pt/download/metadados/bgri.html
+  license: null
+parameters:
+  period: '2021'
+  limitations: Archive acquisition is separate from geodata acceptance. Verify original GeoPackage, geometry types, identifiers, feature coverage and CRS before admission. The research-code link identifies the official INE URL only and is not the data source.
+  assets:
+    - key: INE_BGRI21_CONT
+      format: ZIP
+      min_bytes: 100000
+      filename: F67-INE-BGRI21_CONT.zip
+      url: https://mapas.ine.pt/download/filesGPG/2021/BGRI21_CONT.zip
