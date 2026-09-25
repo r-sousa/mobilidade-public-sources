@@ -2967,7 +2967,7 @@
       "title": "Município de Amarante — relatórios de desempenho e OSP"
     },
     {
-      "audit_status": "G63_ACQUIRED_FULL_ACCEPTED_2019_2025_RAW_SERIES_EXTRACTION_PENDING",
+      "audit_status": "G63_2019_2025_PARTIAL_NORMALIZED_QA_285_APPROVED_CURRENT_SCOPE_SETTLED_EXPLICIT_HOLDS",
       "canonical_authority": "r-sousa/EU-transp-weekly",
       "consumer_overlay_count": 0,
       "default_action": "REVIEW_MIDDLE_TIER_FIRST",
@@ -2975,7 +2975,7 @@
       "private_locator": null,
       "public_reuse_status": "PUBLIC_READ_NO_BULK_REUSE_LICENSE_PROMOTED",
       "release_count": 0,
-      "runtime_overlay_count": 5,
+      "runtime_overlay_count": 12,
       "source_set_id": "F199",
       "theme": "05 Fares, service quality and public-service obligations",
       "title": "Município de Barcelos — Relatório Anual Circunstanciado OSP"
@@ -2995,7 +2995,7 @@
       "title": "Município de Freixo de Espada à Cinta — Relatório OSP"
     },
     {
-      "audit_status": "G63_2018_2026_RAW_SERIES_PRESERVED_2026_NORMALIZED_7_RECORDS_QA_APPROVED",
+      "audit_status": "G63_2018_2026_NORMALIZED_63_RECORDS_QA_APPROVED_CANONICAL_READBACK_PASS",
       "canonical_authority": "r-sousa/EU-transp-weekly",
       "consumer_overlay_count": 0,
       "default_action": "REVIEW_MIDDLE_TIER_FIRST",
@@ -3003,7 +3003,7 @@
       "private_locator": null,
       "public_reuse_status": "PUBLIC_READ_NO_RIGHTS_PROMOTION",
       "release_count": 0,
-      "runtime_overlay_count": 6,
+      "runtime_overlay_count": 13,
       "source_set_id": "F201",
       "theme": "17 Transport authority governance and finance",
       "title": "IMT / FSPT-FMT — Financiamento Regular das Autoridades de Transportes"
