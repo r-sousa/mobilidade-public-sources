@@ -1,0 +1,30 @@
+schema_version: 1.0.0
+source_set_id: F170
+title: DGEG — Consumo de gás natural por município e setor 2024
+producer: DGEG
+product_key: mobilidade-source-id::F170
+adapter: static_http
+access: public
+sink: private
+cadence: annual
+expected_format: XLSX
+source:
+  landing_url: https://www.dgeg.gov.pt/pt/estatistica/energia/gas-natural/consumos/
+raw_native:
+  geography: Portugal; native municipality, NUTS and district aggregates
+  classification: Native CAE activity divisions; retain source classification vintage
+  acquisition_scope: Whole official 2024 provisional workbook; all worksheets
+reuse:
+  status: not_verified
+  public_redistribution_gate: private_only
+  evidence_url: https://www.dgeg.gov.pt/media/naedv3kq/dgeg-gma-2024.xlsx
+  license: null
+parameters:
+  period: '2024 provisório'
+  limitations: Preserve sheets, native units and provisional status. Activity-sector consumption is not automatically vehicle-fuel consumption.
+  assets:
+    - key: DGEG_GMA_2024
+      format: XLSX
+      min_bytes: 1000
+      filename: F170-dgeg-gma-2024.xlsx
+      url: https://www.dgeg.gov.pt/media/naedv3kq/dgeg-gma-2024.xlsx
