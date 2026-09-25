@@ -1,0 +1,30 @@
+schema_version: 1.0.0
+source_set_id: F169
+title: DGEG — Balanço Energético Nacional 2024
+producer: DGEG
+product_key: mobilidade-source-id::F169
+adapter: static_http
+access: public
+sink: private
+cadence: annual
+expected_format: PDF
+source:
+  landing_url: https://www.dgeg.gov.pt/pt/destaques/balanco-energetico-nacional-2024/
+raw_native:
+  geography: Portugal
+  classification: DGEG native energy products and sectors
+  acquisition_scope: Official national energy balance 2024; keep source revision and units
+reuse:
+  status: not_verified
+  public_redistribution_gate: private_only
+  evidence_url: https://www.dgeg.gov.pt/media/ofelw0w5/dgeg-ben-2024.pdf
+  license: null
+parameters:
+  period: '2024'
+  limitations: National scope only; preserve transport sector and national context separately; no inferred Norte allocation.
+  assets:
+    - key: DGEG_BEN_2024
+      format: PDF
+      min_bytes: 1000
+      filename: F169-dgeg-ben-2024.pdf
+      url: https://www.dgeg.gov.pt/media/ofelw0w5/dgeg-ben-2024.pdf
