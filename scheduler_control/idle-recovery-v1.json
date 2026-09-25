@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "policy_id": "MN-IDLE-RECOVERY-20260925",
+  "enabled": true,
+  "state": "IDLE",
+  "holder": null,
+  "claim_nonce": null,
+  "lease_expires_at": null,
+  "sequence": 0,
+  "last_reservation_at": null,
+  "last_wake_at": null,
+  "target_start_at": null,
+  "evidence_token": null,
+  "last_result": null,
+  "cooldown_seconds": 3600,
+  "scope": "Scheduling metadata only. No source bytes, credentials, private paths, acceptance changes or execution code. A worker may wake the existing orchestrator, never another worker directly."
+}
