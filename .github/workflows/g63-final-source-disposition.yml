@@ -1,0 +1,30 @@
+name: G63 final source disposition
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'execution_requests/g63-final-source-disposition.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-g63-final-canonical-disposition
+  cancel-in-progress: false
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install existing runtime
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Validate syntax and execute approved private transaction
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+          MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+        run: |
+          python -m py_compile scripts/apply_g63_source_decisions.py
+          python scripts/apply_g63_source_decisions.py
