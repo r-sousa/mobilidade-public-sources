@@ -15,6 +15,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 import requests
+import gdown
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 from requests.adapters import HTTPAdapter
@@ -483,6 +484,79 @@ def download_curl_ipv4(url: str, path: Path, work: Path, *, timeout: int = 2400)
         "content_type": ctype,
     }
 
+
+
+def google_drive_handoff(spec: dict, work: Path) -> dict:
+    """Acquire exact public bytes from a temporary Google Drive transport mirror.
+
+    Producer identity remains the source landing URL in the specification.
+    The Drive object is transport-only and MUST be pinned by size and SHA-256.
+    """
+    pms = spec["parameters"]
+    file_id = str(pms["drive_file_id"])
+    expected_size = int(pms["expected_bytes"])
+    expected_sha = str(pms["expected_sha256"]).lower()
+    filename = str(pms.get("filename") or "handoff.bin")
+    fmt = str(pms.get("format") or Path(filename).suffix.lstrip(".") or "binary").upper()
+    required_members = list(pms.get("required_members") or [])
+
+    p = work / "payload" / filename
+    p.parent.mkdir(parents=True, exist_ok=True)
+    share_url = f"https://drive.google.com/file/d/{file_id}/view"
+
+    out = gdown.download(
+        url=share_url,
+        output=str(p),
+        quiet=False,
+        fuzzy=True,
+        resume=True,
+    )
+    if not out or not p.is_file():
+        raise RuntimeError("Google Drive handoff did not materialize the file")
+
+    actual_size = p.stat().st_size
+    actual_sha = sha256(p)
+    if actual_size != expected_size:
+        raise RuntimeError(
+            f"Drive handoff size mismatch: {actual_size} != {expected_size}"
+        )
+    if actual_sha.lower() != expected_sha:
+        raise RuntimeError(
+            f"Drive handoff SHA-256 mismatch: {actual_sha} != {expected_sha}"
+        )
+
+    if fmt == "ZIP":
+        if not zipfile.is_zipfile(p):
+            raise RuntimeError(f"{filename} is not a valid ZIP archive")
+        if required_members:
+            with zipfile.ZipFile(p) as z:
+                basenames = {Path(n).name for n in z.namelist() if not n.endswith("/")}
+            missing = [x for x in required_members if x not in basenames]
+            if missing:
+                raise RuntimeError(
+                    f"{filename} missing required ZIP members: {missing}"
+                )
+
+    rec = {
+        "path": str(p.relative_to(work)),
+        "name": filename,
+        "sha256": actual_sha,
+        "bytes": actual_size,
+        "source_url": share_url,
+        "format": fmt,
+        "role": "native",
+    }
+    return {
+        "acquired_at": now(),
+        "assets": [rec],
+        "validation_result": "PASS_DRIVE_HANDOFF_EXACT_HASH_PIN",
+        "source_period_or_edition": pms.get("period"),
+        "limitations": (
+            "Google Drive is a temporary transport handoff only. "
+            "Producer identity remains the first-party source declared in source.landing_url. "
+            "Exact byte length and SHA-256 are pinned before private preservation."
+        ),
+    }
 
 def static_http(spec: dict, work: Path) -> dict:
     s = session()
@@ -2222,6 +2296,7 @@ ADAPTERS = {
     "eurostat": eurostat,
     "ine_json": ine_partitioned_acquire,
     "static_http": static_http,
+    "google_drive_handoff": google_drive_handoff,
     "gtfs_static": gtfs_static,
     "ckan_gtfs": ckan_gtfs,
     "ige_table": ige_table,
