@@ -60,7 +60,8 @@
         "sparql_json",
         "html_table",
         "easychart_html",
-        "rest_xml"
+        "rest_xml",
+        "google_drive_handoff"
       ]
     },
     "access": {
