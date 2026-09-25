@@ -8,13 +8,13 @@
   "counts": {
     "CONTROLLED_METADATA_ONLY": 2,
     "MIDDLE_TIER_PRESENT": 47,
-    "NO_PRESERVED_DATA_ACKNOWLEDGED": 33,
+    "NO_PRESERVED_DATA_ACKNOWLEDGED": 32,
     "PRIVATE_RELEASE_ERROR_EVIDENCE": 6,
-    "PRIVATE_RELEASE_PRESENT": 98,
+    "PRIVATE_RELEASE_PRESENT": 99,
     "PUBLIC_RECOVERED": 13,
     "REFERENCE_ONLY": 4
   },
-  "generated_at": "2026-09-21",
+  "generated_at": "2026-09-25",
   "precedence": [
     "PUBLIC_RECOVERED",
     "PRIVATE_RELEASE_FIRST",
@@ -949,14 +949,14 @@
       "title": "CAOP"
     },
     {
-      "audit_status": "NO_RELEASE_IDENTIFIED",
+      "audit_status": "DATA_RELEASE",
       "canonical_authority": "r-sousa/EU-transp-weekly",
       "consumer_overlay_count": 0,
-      "default_action": "PRIMARY_ALLOWED",
-      "preservation_state": "NO_PRESERVED_DATA_ACKNOWLEDGED",
+      "default_action": "READ_PRIVATE_RELEASE_FIRST",
+      "preservation_state": "PRIVATE_RELEASE_PRESENT",
       "private_locator": null,
-      "public_reuse_status": "Not newly assessed; preserve source-specific restrictions.",
-      "release_count": 0,
+      "public_reuse_status": "No rights promotion; private preservation only.",
+      "release_count": 1,
       "runtime_overlay_count": 0,
       "source_set_id": "F67",
       "theme": "13 Geography and land use",
