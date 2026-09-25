@@ -23,10 +23,13 @@ reuse:
   license: null
 parameters:
   period: '2021'
+  transfer_mode: curl_ipv4
   limitations: Archive acquisition is separate from geodata acceptance. Verify original GeoPackage, geometry types, identifiers, feature coverage and CRS before admission. The research-code link identifies the official INE URL only and is not the data source.
   assets:
     - key: INE_BGRI21_CONT
       format: ZIP
-      min_bytes: 100000
+      min_bytes: 200000000
+      required_members:
+        - BGRI21_CONT.gpkg
       filename: F67-INE-BGRI21_CONT.zip
       url: https://mapas.ine.pt/download/filesGPG/2021/BGRI21_CONT.zip
