@@ -1,0 +1,50 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "346885129fa806b23753333084662a6354d010bd",
+  "acquisition_timestamp": "2026-09-25T23:26:46.037952Z",
+  "adapter": "google_drive_handoff",
+  "assets": [
+    {
+      "bytes": 246754080,
+      "format": "ZIP",
+      "name": "F67-INE-BGRI21_CONT.zip",
+      "role": "native",
+      "sha256": "3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171",
+      "source_url": "https://drive.google.com/file/d/1PqAfRemBmLK4SCaT_snDUfX5WDEnEGqd/view"
+    }
+  ],
+  "cadence": "decennial",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "ZIP",
+  "limitations": "Google Drive is a temporary transport handoff only. Producer identity remains the first-party source declared in source.landing_url. Exact byte length and SHA-256 are pinned before private preservation.",
+  "native_asset_fingerprint": "03b729e73f0adf411f893c50cac6883878629b6b8ab0d66338fdf9ebcf096738",
+  "primary_repair": false,
+  "producer": "INE — Instituto Nacional de Estatística",
+  "product_key": "mobilidade-source-id::F67",
+  "raw_native": {
+    "acquisition_scope": "Exact producer archive BGRI21_CONT.zip; retain all original members. Do not substitute grid, CAOP, municipal subset or a third-party geometry.",
+    "classification": "INE BGRI 2021 subsection identifiers and native geometry",
+    "geography": "Portugal Continental; native 2021 statistical subsections"
+  },
+  "repair_authorization": null,
+  "request_id": "push-36200514084",
+  "reuse": {
+    "evidence_url": "https://mapas.ine.pt/download/metadados/bgri.html",
+    "license": null,
+    "public_redistribution_gate": "private_only",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2021",
+  "source_set_id": "F67",
+  "source_url": "https://mapas.ine.pt/download/index2021.phtml",
+  "title": "INE — BGRI 2021, Subsecções estatísticas, Continente",
+  "validation_result": "PASS_DRIVE_HANDOFF_EXACT_HASH_PIN"
+}
