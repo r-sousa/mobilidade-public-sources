@@ -7,14 +7,14 @@
   },
   "counts": {
     "CONTROLLED_METADATA_ONLY": 2,
-    "MIDDLE_TIER_PRESENT": 47,
-    "NO_PRESERVED_DATA_ACKNOWLEDGED": 32,
+    "MIDDLE_TIER_PRESENT": 46,
+    "NO_PRESERVED_DATA_ACKNOWLEDGED": 33,
     "PRIVATE_RELEASE_ERROR_EVIDENCE": 6,
     "PRIVATE_RELEASE_PRESENT": 99,
     "PUBLIC_RECOVERED": 13,
     "REFERENCE_ONLY": 4
   },
-  "generated_at": "2026-09-25",
+  "generated_at": "2026-09-21",
   "precedence": [
     "PUBLIC_RECOVERED",
     "PRIVATE_RELEASE_FIRST",
@@ -949,14 +949,14 @@
       "title": "CAOP"
     },
     {
-      "audit_status": "DATA_RELEASE",
+      "audit_status": "NO_RELEASE_IDENTIFIED",
       "canonical_authority": "r-sousa/EU-transp-weekly",
       "consumer_overlay_count": 0,
-      "default_action": "READ_PRIVATE_RELEASE_FIRST",
-      "preservation_state": "PRIVATE_RELEASE_PRESENT",
+      "default_action": "PRIMARY_ALLOWED",
+      "preservation_state": "NO_PRESERVED_DATA_ACKNOWLEDGED",
       "private_locator": null,
-      "public_reuse_status": "No rights promotion; private preservation only.",
-      "release_count": 1,
+      "public_reuse_status": "Not newly assessed; preserve source-specific restrictions.",
+      "release_count": 0,
       "runtime_overlay_count": 0,
       "source_set_id": "F67",
       "theme": "13 Geography and land use",
@@ -2911,15 +2911,17 @@
       "title": "INE — IMob 2017: mobilidade nas Áreas Metropolitanas do Porto e de Lisboa"
     },
     {
-      "audit_status": "PARTIAL_NORMALIZATION_QA_42_APPROVED_0014450_2024_BLOCKED_EXACT",
+      "audit_status": "COMPLETE_REGISTERED_PUBLIC_SCOPE_87_NUMERIC_3_SOURCE_MARKERS_CONTROLLED_SEPARATE",
       "canonical_authority": "r-sousa/EU-transp-weekly",
       "consumer_overlay_count": 0,
-      "default_action": "REVIEW_MIDDLE_TIER_FIRST",
-      "preservation_state": "MIDDLE_TIER_PRESENT",
-      "private_locator": null,
+      "default_action": "READ_PRIVATE_RELEASE_FIRST",
+      "preservation_state": "PRIVATE_RELEASE_PRESENT",
+      "private_locator": {
+        "container": "mn-normalized-f195-87-033165124daa9c9a"
+      },
       "public_reuse_status": "Official public INE statistical surfaces registered; no new redistribution/publication clearance is inferred by source registration.",
-      "release_count": 0,
-      "runtime_overlay_count": 10,
+      "release_count": 1,
+      "runtime_overlay_count": 12,
       "source_set_id": "F195",
       "theme": "13 Mobility poverty, affordability and social conditions",
       "title": "INE — Inquérito às Condições de Vida e Rendimento (ICOR) / Portuguese EU-SILC"
