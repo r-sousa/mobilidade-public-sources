@@ -1,0 +1,42 @@
+name: MN APDL F09 inspect preserved workbooks
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apdl_f09_xlsx_profile.py'
+      - '.github/workflows/apdl-f09-xlsx-profile.yml'
+permissions:
+  contents: read
+jobs:
+  profile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read exactly four previously preserved XLSX objects
+        env:
+          GH_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api -H 'Accept: application/octet-stream' repos/r-sousa/EU-transp-weekly/releases/assets/688237386 > "$RUNNER_TEMP/nature-2025.xlsx"
+          gh api -H 'Accept: application/octet-stream' repos/r-sousa/EU-transp-weekly/releases/assets/688237561 > "$RUNNER_TEMP/od-2025.xlsx"
+          gh api -H 'Accept: application/octet-stream' repos/r-sousa/EU-transp-weekly/releases/assets/688237480 > "$RUNNER_TEMP/nature-2026sep.xlsx"
+          gh api -H 'Accept: application/octet-stream' repos/r-sousa/EU-transp-weekly/releases/assets/688237622 > "$RUNNER_TEMP/od-2026sep.xlsx"
+          echo 'c84e1b0d3d5e2abc064552cc647e8796ae0087b527f6d550ce19af6e30addfc5  '`printf '%s' "$RUNNER_TEMP/nature-2025.xlsx"` | sha256sum -c -
+          echo '5d8774f86348dd56fac5992691154c9346a14b7498c05c8f2203b2dbe276922e  '`printf '%s' "$RUNNER_TEMP/od-2025.xlsx"` | sha256sum -c -
+          echo 'fc2ffdb67e8a260bfb754dacfcbd4b25048b55db88ce3fd5d05dcba9ea520ff1  '`printf '%s' "$RUNNER_TEMP/nature-2026sep.xlsx"` | sha256sum -c -
+          echo '1229cfa886772fcdc4fe2a2bbe0747cb67b06f7f179d2c22297837ae6e927862  '`printf '%s' "$RUNNER_TEMP/od-2026sep.xlsx"` | sha256sum -c -
+      - name: Extract workbook layouts without posting values to public logs
+        shell: bash
+        run: |
+          python scripts/apdl_f09_xlsx_profile.py "$RUNNER_TEMP/nature-2025.xlsx" "$RUNNER_TEMP/od-2025.xlsx" "$RUNNER_TEMP/nature-2026sep.xlsx" "$RUNNER_TEMP/od-2026sep.xlsx" > "$RUNNER_TEMP/apdl-f09-profile.json"
+      - name: Store profile in canonical private repository
+        env:
+          GH_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -w0 "$RUNNER_TEMP/apdl-f09-profile.json" > "$RUNNER_TEMP/profile.b64"
+          gh api --method PUT repos/r-sousa/EU-transp-weekly/contents/statistics/recovery-20260920/simple-runtime/outputs/orchestrator/20261029-MN-APDL-F09-workbook-profile.json --input <(python -c 'import json,os; print(json.dumps(dict(message="MN-APDL: inspect preserved F09 XLSX internal layout",branch="mobilidade-norte-recovery-20260919",content=open(os.environ["RUNNER_TEMP"]+"/profile.b64").read())))') > /dev/null
+          echo 'PRIVATE_PROFILE_SAVED'
