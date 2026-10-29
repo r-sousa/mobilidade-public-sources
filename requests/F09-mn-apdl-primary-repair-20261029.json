@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "source_set_id": "F09",
+  "request_id": "MN-APDL-F09-2025-2026SEP-PRIMARY-REPAIR-20261029",
+  "requested_by": "EU-transp-weekly/Mobilidade-Norte-Orchestrator",
+  "reason": "Preserved-first review confirmed current F09 cache contains general-movement workbooks only; acquire exactly 11 missing 2025 complete and 2026 September accumulated APDL XLSX editions from source_specs/F09.yml, without reacquiring 2025 general-movement and without any public-release rights change. Initial run 40860551563 correctly skipped; private orchestrator authorization now pinned.",
+  "primary_repair": true,
+  "repair_authorization_path": "statistics/recovery-20260920/simple-runtime/outputs/orchestrator/20261029-MN-APDL-F09-primary-repair-authorisation.json",
+  "repair_authorization_ref": "27130708354cbb33a23547edfb4fad041719d790",
+  "canonical_private_branch": "mobilidade-norte-recovery-20260919",
+  "new_source_set": false,
+  "rights_or_publication_promotion": false
+}
