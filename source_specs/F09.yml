@@ -1,0 +1,87 @@
+schema_version: 1.0.0
+source_set_id: F09
+title: APDL — Boletim Estatístico do Porto de Leixões (quadros nativos 2025 e setembro de 2026)
+producer: APDL — Administração dos Portos do Douro, Leixões e Viana do Castelo
+product_key: mobilidade-source-id::F09
+adapter: static_http
+access: public
+sink: private
+cadence: on-demand
+expected_format: XLSX
+source:
+  landing_url: https://leixoes.apdl.pt/estatisticas/boletim-estatistico/boletim-estatistico/
+raw_native:
+  geography: Porto de Leixões
+  classification: Classificações APDL nativas por grupo, natureza, origem/destino, locais de carga/descarga, navios e terminal petroleiro
+  acquisition_scope: 2025 annual edition and September 2026 year-to-date editions; 2025 general movement already preserved by F09 and intentionally omitted
+reuse:
+  status: not_verified
+  public_redistribution_gate: private_only
+  evidence_url: https://leixoes.apdl.pt/estatisticas/boletim-estatistico/boletim-estatistico/
+  license: null
+parameters:
+  period: '2025-01..12 annual and 2026-01..09 cumulative; keep periods separate'
+  limitations: >-
+    Preserve whole original workbooks, sheets, cell references, exact APDL units and
+    source revisions. The 2025 general-movement workbook is already preserved in
+    canonical F09 and must not be acquired again by this request. 2026 September is
+    an accumulated partial-year edition, not annual 2026. Maritime origin/destination
+    or intermediary ports are not evidence of final commercial markets or hinterland
+    NUTS III. This acquisition is byte preservation, not normalized/validated data.
+    Rights for public redistribution are not cleared: private sink only.
+  assets:
+    - key: APDL_F09_2026SEP_MOV_GERAL
+      format: XLSX
+      min_bytes: 1000
+      filename: F09-mov-geral-2026-09.xlsx
+      url: https://leixoes.apdl.pt/media/35oju2wz/bmmovg_ptlei_09_2026.xlsx
+    - key: APDL_F09_2025_NAVIOS
+      format: XLSX
+      min_bytes: 1000
+      filename: F09-navios-2025.xlsx
+      url: https://leixoes.apdl.pt/media/jcybs1nh/bmn_ptlei_12_2025.xlsx
+    - key: APDL_F09_2026SEP_NAVIOS
+      format: XLSX
+      min_bytes: 1000
+      filename: F09-navios-2026-09.xlsx
+      url: https://leixoes.apdl.pt/media/lbcgog30/bmn_ptlei_09_2026.xlsx
+    - key: APDL_F09_2025_GRUPO_NATUREZA
+      format: XLSX
+      min_bytes: 1000
+      filename: F09-merc-grupo-natureza-2025.xlsx
+      url: https://leixoes.apdl.pt/media/wupdkmp5/bmgn_ptlei_12_2025.xlsx
+    - key: APDL_F09_2026SEP_GRUPO_NATUREZA
+      format: XLSX
+      min_bytes: 1000
+      filename: F09-merc-grupo-natureza-2026-09.xlsx
+      url: https://leixoes.apdl.pt/media/50rhnfux/bmgn_ptlei_09_2026.xlsx
+    - key: APDL_F09_2025_GRUPO_OD
+      format: XLSX
+      min_bytes: 1000
+      filename: F09-merc-grupo-od-2025.xlsx
+      url: https://leixoes.apdl.pt/media/wthn2qhp/bmgod_ptlei_12_2025.xlsx
+    - key: APDL_F09_2026SEP_GRUPO_OD
+      format: XLSX
+      min_bytes: 1000
+      filename: F09-merc-grupo-od-2026-09.xlsx
+      url: https://leixoes.apdl.pt/media/5aehtl20/bmgod_ptlei_09_2026.xlsx
+    - key: APDL_F09_2025_LOCAIS_CARGA_DESCARGA
+      format: XLSX
+      min_bytes: 1000
+      filename: F09-locais-carga-descarga-2025.xlsx
+      url: https://leixoes.apdl.pt/media/dsecmwlu/bmlc_ptlei_12_2025.xlsx
+    - key: APDL_F09_2026SEP_LOCAIS_CARGA_DESCARGA
+      format: XLSX
+      min_bytes: 1000
+      filename: F09-locais-carga-descarga-2026-09.xlsx
+      url: https://leixoes.apdl.pt/media/x0ok30lc/bmlc_ptlei_09_2026.xlsx
+    - key: APDL_F09_2025_TERMINAL_PETROLEIROS
+      format: XLSX
+      min_bytes: 1000
+      filename: F09-terminal-petroleiros-2025.xlsx
+      url: https://leixoes.apdl.pt/media/tskgxywc/bmtpl_ptlei_12_2025.xlsx
+    - key: APDL_F09_2026SEP_TERMINAL_PETROLEIROS
+      format: XLSX
+      min_bytes: 1000
+      filename: F09-terminal-petroleiros-2026-09.xlsx
+      url: https://leixoes.apdl.pt/media/droagqao/bmtpl_ptlei_09_2026.xlsx
