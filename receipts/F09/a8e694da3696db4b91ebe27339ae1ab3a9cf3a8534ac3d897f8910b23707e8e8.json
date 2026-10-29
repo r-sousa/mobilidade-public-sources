@@ -1,0 +1,133 @@
+{
+  "access": "public",
+  "acquisition_code_commit": "8999e319655a192fe06734a8942819e91dd3289a",
+  "acquisition_timestamp": "2026-10-29T10:51:31.910637Z",
+  "adapter": "static_http",
+  "assets": [
+    {
+      "bytes": 203932,
+      "format": "XLSX",
+      "name": "APDL_F09_2026SEP_MOV_GERAL__F09-mov-geral-2026-09.xlsx",
+      "role": "native",
+      "sha256": "3cff326e035c8f69d90d6fe30cf29f2243df2e92491bd335d627778ff1765586",
+      "source_url": "https://leixoes.apdl.pt/media/35oju2wz/bmmovg_ptlei_09_2026.xlsx"
+    },
+    {
+      "bytes": 139744,
+      "format": "XLSX",
+      "name": "APDL_F09_2025_NAVIOS__F09-navios-2025.xlsx",
+      "role": "native",
+      "sha256": "ba0a33a986ef770cb7bdd86b94f1e5c5e93feb5353553110dd94bfec49591099",
+      "source_url": "https://leixoes.apdl.pt/media/jcybs1nh/bmn_ptlei_12_2025.xlsx"
+    },
+    {
+      "bytes": 139626,
+      "format": "XLSX",
+      "name": "APDL_F09_2026SEP_NAVIOS__F09-navios-2026-09.xlsx",
+      "role": "native",
+      "sha256": "ff0a87ad872dc0bcd126b367ba05e7c94b1f261322fa50b0c08ba6df2f76f06e",
+      "source_url": "https://leixoes.apdl.pt/media/lbcgog30/bmn_ptlei_09_2026.xlsx"
+    },
+    {
+      "bytes": 315389,
+      "format": "XLSX",
+      "name": "APDL_F09_2025_GRUPO_NATUREZA__F09-merc-grupo-natureza-2025.xlsx",
+      "role": "native",
+      "sha256": "c84e1b0d3d5e2abc064552cc647e8796ae0087b527f6d550ce19af6e30addfc5",
+      "source_url": "https://leixoes.apdl.pt/media/wupdkmp5/bmgn_ptlei_12_2025.xlsx"
+    },
+    {
+      "bytes": 241787,
+      "format": "XLSX",
+      "name": "APDL_F09_2026SEP_GRUPO_NATUREZA__F09-merc-grupo-natureza-2026-09.xlsx",
+      "role": "native",
+      "sha256": "fc2ffdb67e8a260bfb754dacfcbd4b25048b55db88ce3fd5d05dcba9ea520ff1",
+      "source_url": "https://leixoes.apdl.pt/media/50rhnfux/bmgn_ptlei_09_2026.xlsx"
+    },
+    {
+      "bytes": 135861,
+      "format": "XLSX",
+      "name": "APDL_F09_2025_GRUPO_OD__F09-merc-grupo-od-2025.xlsx",
+      "role": "native",
+      "sha256": "5d8774f86348dd56fac5992691154c9346a14b7498c05c8f2203b2dbe276922e",
+      "source_url": "https://leixoes.apdl.pt/media/wthn2qhp/bmgod_ptlei_12_2025.xlsx"
+    },
+    {
+      "bytes": 93129,
+      "format": "XLSX",
+      "name": "APDL_F09_2026SEP_GRUPO_OD__F09-merc-grupo-od-2026-09.xlsx",
+      "role": "native",
+      "sha256": "1229cfa886772fcdc4fe2a2bbe0747cb67b06f7f179d2c22297837ae6e927862",
+      "source_url": "https://leixoes.apdl.pt/media/5aehtl20/bmgod_ptlei_09_2026.xlsx"
+    },
+    {
+      "bytes": 138688,
+      "format": "XLSX",
+      "name": "APDL_F09_2025_LOCAIS_CARGA_DESCARGA__F09-locais-carga-descarga-2025.xlsx",
+      "role": "native",
+      "sha256": "dc81a8992f85d0900b36b383055207c40a2eecfef9b9223a8a2e36e3c8e35c68",
+      "source_url": "https://leixoes.apdl.pt/media/dsecmwlu/bmlc_ptlei_12_2025.xlsx"
+    },
+    {
+      "bytes": 96120,
+      "format": "XLSX",
+      "name": "APDL_F09_2026SEP_LOCAIS_CARGA_DESCARGA__F09-locais-carga-descarga-2026-09.xlsx",
+      "role": "native",
+      "sha256": "213f6d0144ddcaeb37f3a23eacf5d15738812ead144b27229d28201f965326b1",
+      "source_url": "https://leixoes.apdl.pt/media/x0ok30lc/bmlc_ptlei_09_2026.xlsx"
+    },
+    {
+      "bytes": 138014,
+      "format": "XLSX",
+      "name": "APDL_F09_2025_TERMINAL_PETROLEIROS__F09-terminal-petroleiros-2025.xlsx",
+      "role": "native",
+      "sha256": "e099f4a308a54193487f0c7eff2029af50d4946d4fff146c26579b1a6aec76d1",
+      "source_url": "https://leixoes.apdl.pt/media/tskgxywc/bmtpl_ptlei_12_2025.xlsx"
+    },
+    {
+      "bytes": 95821,
+      "format": "XLSX",
+      "name": "APDL_F09_2026SEP_TERMINAL_PETROLEIROS__F09-terminal-petroleiros-2026-09.xlsx",
+      "role": "native",
+      "sha256": "0b89a0872fec437e0c48ac8f421949b5815af3e751c457d38e02eb1ebe418870",
+      "source_url": "https://leixoes.apdl.pt/media/droagqao/bmtpl_ptlei_09_2026.xlsx"
+    }
+  ],
+  "cadence": "on-demand",
+  "disposition": {
+    "bytes_persisted": true,
+    "intended_sink": "private",
+    "private_receipt_written": true,
+    "status": "PRIVATE_SINK_PRESERVED"
+  },
+  "expected_format": "XLSX",
+  "limitations": "Preserve whole original workbooks, sheets, cell references, exact APDL units and source revisions. The 2025 general-movement workbook is already preserved in canonical F09 and must not be acquired again by this request. 2026 September is an accumulated partial-year edition, not annual 2026. Maritime origin/destination or intermediary ports are not evidence of final commercial markets or hinterland NUTS III. This acquisition is byte preservation, not normalized/validated data. Rights for public redistribution are not cleared: private sink only.",
+  "native_asset_fingerprint": "a8e694da3696db4b91ebe27339ae1ab3a9cf3a8534ac3d897f8910b23707e8e8",
+  "primary_repair": true,
+  "producer": "APDL — Administração dos Portos do Douro, Leixões e Viana do Castelo",
+  "product_key": "mobilidade-source-id::F09",
+  "raw_native": {
+    "acquisition_scope": "2025 annual edition and September 2026 year-to-date editions; 2025 general movement already preserved by F09 and intentionally omitted",
+    "classification": "Classificações APDL nativas por grupo, natureza, origem/destino, locais de carga/descarga, navios e terminal petroleiro",
+    "geography": "Porto de Leixões"
+  },
+  "repair_authorization": {
+    "path": "statistics/recovery-20260920/simple-runtime/outputs/orchestrator/20261029-MN-APDL-F09-primary-repair-authorisation.json",
+    "ref": "27130708354cbb33a23547edfb4fad041719d790"
+  },
+  "request_id": "MN-APDL-F09-2025-2026SEP-PRIMARY-REPAIR-20261029",
+  "reuse": {
+    "evidence_url": "https://leixoes.apdl.pt/estatisticas/boletim-estatistico/boletim-estatistico/",
+    "license": null,
+    "public_redistribution_gate": "private_only",
+    "status": "not_verified"
+  },
+  "reuse_disposition": "NO_CANONICAL_RIGHTS_STATE_CHANGE",
+  "schema_version": "1.0.0",
+  "sink": "private",
+  "source_period_or_edition": "2025-01..12 annual and 2026-01..09 cumulative; keep periods separate",
+  "source_set_id": "F09",
+  "source_url": "https://leixoes.apdl.pt/estatisticas/boletim-estatistico/boletim-estatistico/",
+  "title": "APDL — Boletim Estatístico do Porto de Leixões (quadros nativos 2025 e setembro de 2026)",
+  "validation_result": "PASS_STATIC_ASSETS_MATERIALIZED"
+}
