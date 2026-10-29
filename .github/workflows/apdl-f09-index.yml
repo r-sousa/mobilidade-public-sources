@@ -1,0 +1,36 @@
+name: MN-APDL F09 register private normalized manifest
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apdl-f09-index.yml'
+permissions:
+  contents: read
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Fetch normalized evidence from existing private prerelease
+        env:
+          GH_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release download mn-normalized-f09-20261029-7abef1100eb935e1 \
+            --repo r-sousa/EU-transp-weekly \
+            --pattern F09-normalized-manifest.json \
+            --dir "$RUNNER_TEMP"
+          python -m json.tool "$RUNNER_TEMP/F09-normalized-manifest.json" > /dev/null
+      - name: Register quality and dataset references on private canonical branch
+        env:
+          GH_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --method PUT \
+            repos/r-sousa/EU-transp-weekly/contents/statistics/recovery-20260920/simple-runtime/outputs/orchestrator/20261029-MN-APDL-F09-normalized-manifest.json \
+            -f branch=mobilidade-norte-recovery-20260919 \
+            -f 'message=MN-APDL: register provisional normalized F09 datasets and QA' \
+            -f content="$(base64 -w0 "$RUNNER_TEMP/F09-normalized-manifest.json")" > /dev/null
+          echo 'PRIVATE_MANIFEST_REGISTERED'
