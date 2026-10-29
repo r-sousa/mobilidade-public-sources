@@ -1,0 +1,52 @@
+name: MN-APDL F09 native normalization to private prerelease
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apdl_f09_normalize.py'
+      - '.github/workflows/apdl-f09-normalize.yml'
+permissions:
+  contents: read
+concurrency:
+  group: mn-apdl-f09-normalize-source-20261029
+  cancel-in-progress: false
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reuse SHA-256 pinned native assets from the canonical private release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/f09-normalized"
+          gh api -H 'Accept: application/octet-stream' repos/r-sousa/EU-transp-weekly/releases/assets/688237386 > "$RUNNER_TEMP/f09-normalized/nature-2025.xlsx"
+          gh api -H 'Accept: application/octet-stream' repos/r-sousa/EU-transp-weekly/releases/assets/688237561 > "$RUNNER_TEMP/f09-normalized/od-2025.xlsx"
+          gh api -H 'Accept: application/octet-stream' repos/r-sousa/EU-transp-weekly/releases/assets/688237480 > "$RUNNER_TEMP/f09-normalized/nature-2026sep.xlsx"
+          gh api -H 'Accept: application/octet-stream' repos/r-sousa/EU-transp-weekly/releases/assets/688237622 > "$RUNNER_TEMP/f09-normalized/od-2026sep.xlsx"
+      - name: Materialize four source-native CSV datasets and independent QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/apdl_f09_normalize.py "$RUNNER_TEMP/f09-normalized" > "$RUNNER_TEMP/normalization-result.json"
+          python -m json.tool "$RUNNER_TEMP/normalization-result.json" > /dev/null
+          python -m json.tool "$RUNNER_TEMP/f09-normalized/F09-normalized-manifest.json" > /dev/null
+      - name: Publish internal-only prerelease with data and QA
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/f09-normalized"
+          fingerprint=$(sha256sum F09-normalized-manifest.json | cut -c 1-16)
+          tag="mn-normalized-f09-20261029-$fingerprint"
+          gh release create "$tag" F09-*.csv F09-normalized-manifest.json \
+            --repo r-sousa/EU-transp-weekly \
+            --target mobilidade-norte-recovery-20260919 \
+            --title "MN-APDL F09 — normalized source views, QA pending (2025 and Sep 2026)" \
+            --notes "Private internal-only F09 normalization. Four APDL source-native CSV datasets plus full QA manifest. Includes edition comparison views: filter edition_position=current for main series. September 2026 cross-table totals disagree; not canonical QA accepted or approved for public Sites. Original SHA pinned. Read the attached manifest first." \
+            --prerelease
+          echo "PRIVATE_NORMALIZED_PRERELEASE_CREATED $tag"
