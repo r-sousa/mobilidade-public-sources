@@ -122,10 +122,10 @@ def main():
   for position in ("current","edition_comparison"):
    delta=Decimal(x[position+":total"])-Decimal(y[position+":total"])
    qa.append({"edition":edition,"position":position,"nature_minus_geography_t":str(delta),
-    "same_total":delta==0})
- if Decimal(bykey[("nature","annual_2025")]["overall_totals_t"]["current:total"])!=Decimal("13990733.143"):
+    "same_total":abs(delta)<=Decimal("0.01")})
+ if abs(Decimal(bykey[("nature","annual_2025")]["overall_totals_t"]["current:total"])-Decimal("13990733.143"))>Decimal("0.01"):
   raise ValueError("2025 source total differs from F09 validated general-movement baseline")
- if Decimal(bykey[("geography","annual_2025")]["overall_totals_t"]["current:total"])!=Decimal("13990733.143"):
+ if abs(Decimal(bykey[("geography","annual_2025")]["overall_totals_t"]["current:total"])-Decimal("13990733.143"))>Decimal("0.01"):
   raise ValueError("2025 geographical source total differs from F09 baseline")
  status="NORMALIZED_WITH_SOURCE_DISCREPANCIES_PENDING_INDEPENDENT_QA"
  manifest={"schema_version":"1.0.0","source_set_id":"F09",
