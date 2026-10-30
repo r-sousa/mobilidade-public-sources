@@ -16,16 +16,18 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 BASE = "https://servicios.idee.es/wcs-inspire/mdt"
-COVERAGE = "Elevacion25830_25"
+COVERAGES = ("Elevacion25830_25", "Elevacion25830_5")
 # Exploratory 1x1-km window near city of Zamora in ETRS89 / UTM 30N.
 WEST, SOUTH, EAST, NORTH = (270_500, 4_597_800, 271_500, 4_598_800)
 MAX_BYTES = 5_000_000
 
 
-def coverage_url():
+def coverage_url(coverage_id: str):
+    if coverage_id not in COVERAGES:
+        raise ValueError("coverage not explicitly approved for this pilot")
     params = [
         ("service", "WCS"), ("request", "GetCoverage"), ("version", "2.0.1"),
-        ("coverageId", COVERAGE), ("format", "image/tiff"),
+        ("coverageId", coverage_id), ("format", "image/tiff"),
         ("subset", f"x({WEST},{EAST})"),
         ("subset", f"y({SOUTH},{NORTH})"),
     ]
@@ -77,13 +79,14 @@ def inspect(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--coverage", choices=COVERAGES, default=COVERAGES[0])
     args = parser.parse_args()
-    url = coverage_url()
+    url = coverage_url(args.coverage)
     receipt = {
         "mission": "MN-GEO-RAIL-001", "worker": "W3",
         "stage": "ES_WCS_25m_Zamora_1km2_pilot",
         "observed_utc": datetime.now(timezone.utc).isoformat(),
-        "coverage_id": COVERAGE,
+        "coverage_id": args.coverage,
         "query_bbox_utm30_epsg25830": [WEST,SOUTH,EAST,NORTH],
         "source_url": url, "status": "unverified",
         "native_raster_preserved": False,
@@ -106,6 +109,9 @@ def main():
                     receipt["response_excerpt"] = raster_stream.read(240).decode("utf-8", "replace")
                     raise RuntimeError("WCS response is not TIFF")
             receipt["raster"] = inspect(native)
+            target_step = 5 if args.coverage.endswith("_5") else 25
+            if any(abs(n - target_step) > 0.001 for n in receipt["raster"]["pixel_size_m"]):
+                raise RuntimeError("WCS returned a different pixel resolution")
             receipt["status"] = "one_coverage_sample_validated"
     except Exception as exc:
         receipt["status"] = "sample_unverified_error"
