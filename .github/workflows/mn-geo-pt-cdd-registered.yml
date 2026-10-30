@@ -1,0 +1,94 @@
+name: MN-GEO-RAIL-001 DGT CDD registered one-tile acquisition
+
+# This workflow appears in Actions after review and MERGE into main.
+# There is deliberately NO push/pull_request trigger with secrets.
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: 'One bounded, previously indexed DGT MDT-2m tile'
+        type: choice
+        required: true
+        default: mirandela
+        options:
+          - mirandela
+          - amarante
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mn-geo-rail-001-dgt-cdd-registered-direct
+  cancel-in-progress: false
+
+jobs:
+  verify-protected-main:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Require protected default branch before unlocking DGT environment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          protected="$(curl --fail --silent --show-error \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/r-sousa/mobilidade-public-sources/branches/main" \
+            | jq -r '.protected')"
+          if [[ "$protected" != "true" ]]; then
+            echo "::error::main is not protected. Configure a branch protection rule or ruleset before using dgt-cdd secrets."
+            exit 1
+          fi
+          echo "Protected main verified, subject to configured environment approval."
+
+  secure-one-tile-acquisition:
+    needs: verify-protected-main
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: dgt-cdd
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      DGT_SITE: ${{ inputs.site }}
+    steps:
+      - name: Checkout only trusted default-branch code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install direct acquisition and native-raster QA libraries
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3' 'rasterio>=1.4,<2'
+      - name: Secure HTTPS login, ONE DGT native GeoTIFF, QA, discard raster
+        id: acquire
+        env:
+          DGT_CDD_USERNAME: ${{ secrets.DGT_CDD_USERNAME }}
+          DGT_CDD_PASSWORD: ${{ secrets.DGT_CDD_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python tools/geo_rail_pt_cdd_authenticated.py \
+            --site "$DGT_SITE" \
+            --index reports/mn-geo-rail-001/pt-dgt-mdt-candidate-envelopes.geojson \
+            --receipt "$RUNNER_TEMP/dgt-cdd-sanitary-receipt.json"
+      - name: Retain ONLY sanitized receipt (never native bytes or session)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-dgt-cdd-one-tile-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/dgt-cdd-sanitary-receipt.json
+          if-no-files-found: warn
+          retention-days: 15
+      - name: Highlight pre-acceptance limits
+        if: always()
+        run: |
+          echo "DGT registered-pilot metadata receipt is in the Actions artifact, if generated." >> "$GITHUB_STEP_SUMMARY"
+          echo "The native file was not uploaded, committed or published; no Fxx was accepted." >> "$GITHUB_STEP_SUMMARY"
+          echo "Never paste or print authentication cookies, redirects, account credentials or the native asset URL." >> "$GITHUB_STEP_SUMMARY"
