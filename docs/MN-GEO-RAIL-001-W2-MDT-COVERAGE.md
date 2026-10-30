@@ -38,3 +38,17 @@ Os ficheiros não contêm assinaturas de URLs de descarga nem qualquer token, co
 A identidade canónica Fxx ainda não foi atribuída, e esta aquisição não autoriza a publicação no Site Mobilidade Norte nem cálculos de declives ferroviários. Para o estudo seguinte é necessário: confirmar os ativos nativos e os direitos de download; recortar ao envelope oficial de estudo; validar NoData e pegadas originais; testar o sistema vertical; preservar ficheiros com SHA-256; e obter aceitação canónica. A autoridade mantém-se no [PR privado #26](https://github.com/r-sousa/EU-transp-weekly/pull/26) e [issue #25](https://github.com/r-sousa/EU-transp-weekly/issues/25).
 
 **Fontes oficiais:** [DGT — descarregamento LiDAR](https://www.dgterritorio.gov.pt/descarregamento-de-dados-lidar-de-portugal-continental), [DGT — dados abertos](https://www.dgterritorio.gov.pt/dados-abertos), [CDD](https://cdd.dgterritorio.gov.pt/).
+
+## Teste adicional de acesso a objetos nativos — W2, 30/10/2026
+
+[Execução pública #41141266505](https://github.com/r-sousa/mobilidade-public-sources/actions/runs/41141266505), concluída com sucesso, [recibo de acesso](../reports/mn-geo-rail-001/pt-dgt-native-asset-preflight.json).
+
+Foram identificados, em consultas STAC anónimas, dois objetos `MDT-2m`:
+- Setor Mirandela — `MDT-2m-282510-09-2024`;
+- Setor Amarante — `MDT-2m-200484-07-2025`.
+
+Os dois metadados indicam o recurso `data`, com MIME `image/tiff; application=geotiff`. Em cada caso, um pedido `HEAD` anónimo ao host oficial `cdd.dgterritorio.gov.pt` **devolveu HTTP 302**. O redirecionamento foi deliberadamente **não seguido**, não houve envio de cookies/tokens/credenciais nem descarga de dados, e o recibo contém apenas host, status, tipo de recurso e SHA-256 da resposta STAC — **não** guarda URLs completas ou eventuais assinaturas.
+
+**Conclusão limitada:** comprovação de descoberta pública do raster no catálogo, **não** comprovação de download anónimo. Um redirecionamento HTTP 302 não indica ausência do ficheiro; para avançar à aquisição dos bytes originais é necessário assegurar uma via de acesso autorizada, compatível com a autenticação exigida pelo CDD e sem colocar credenciais nas Actions públicas. A DGT indica explicitamente registo para descarregamento no [webinar CDD de 2025](https://www.dgterritorio.gov.pt/sites/default/files/ficheiros-artigos/Apresentacoes/2025/5-Webinar_LiDAR_15jul2025.pdf).
+
+O relatório distingue, assim, três níveis: **STAC consultável**, **asset nativo catalogado** e **dados nativos efetivamente obtidos e validados**. Apenas os dois primeiros se encontram comprovados nos ensaios portugueses atuais.
