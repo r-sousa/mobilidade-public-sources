@@ -74,7 +74,7 @@
   "mission": "MN-GEO-RAIL-001",
   "native_raster_acquired": false,
   "note": "WCS service capabilities do not by themselves validate raster footprints or available sheets.",
-  "observed_utc": "2026-10-30T22:27:49.756119+00:00",
+  "observed_utc": "2026-10-30T22:28:01.206923+00:00",
   "producer": "IGN/CNIG — Spain",
   "public_redistribution_authorized": false,
   "response_bytes": 12162,
