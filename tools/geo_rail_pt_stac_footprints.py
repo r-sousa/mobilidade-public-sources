@@ -32,6 +32,42 @@ WINDOWS = (
 COLLECTIONS = ("MDT-2m", "MDT-50cm")
 
 
+def geojson_bounds(geometry: dict | None):
+    """Only accept GeoJSON polygons with plausible PT WGS84 positions."""
+    if not isinstance(geometry,dict) or geometry.get("type") not in ("Polygon","MultiPolygon"):
+        return None
+    points=[]
+    def visit(node,depth=0):
+        if depth>9 or len(points)>10000 or not isinstance(node,list):
+            return
+        if len(node)>=2 and all(isinstance(z,(int,float)) and not isinstance(z,bool) for z in node[:2]):
+            lon,lat=node[:2]
+            if not (-11 <= lon <= -5 and 36 <= lat <= 43):
+                raise ValueError("GeoJSON coordinates outside PT WGS84 expected range")
+            points.append((lon,lat))
+        else:
+            for child in node:
+                visit(child,depth+1)
+    try:
+        visit(geometry.get("coordinates"))
+    except ValueError:
+        return None
+    if len(points)<4 or len(points)>10000:
+        return None
+    return [min(x for x,y in points),min(y for x,y in points),
+            max(x for x,y in points),max(y for x,y in points)]
+
+
+def is_wgs84_bbox(bbox):
+    return (isinstance(bbox,list) and len(bbox)>=4 and
+            all(isinstance(z,(int,float)) and not isinstance(z,bool) for z in bbox[:4]) and
+            -11 <= bbox[0] <= bbox[2] <= -5 and 36 <= bbox[1] <= bbox[3] <= 43)
+
+
+def intersects(a,b):
+    return not (a[2]<b[0] or a[0]>b[2] or a[3]<b[1] or a[1]>b[3])
+
+
 def summary(bbox, collection, response: dict) -> dict:
     """Strictly whitelist fields, so private signed STAC links never leak."""
     if response.get("type") != "FeatureCollection":
@@ -39,33 +75,43 @@ def summary(bbox, collection, response: dict) -> dict:
     features = response.get("features")
     if not isinstance(features, list) or len(features) > LIMIT:
         raise ValueError("invalid STAC features/limit contract")
-    result = []
-    diagnostics = {"missing_bbox":0,"bad_bbox":0,"outside_expected_geographic_bounds":0,"missing_or_long_id":0}
-    example = None
+    result=[]
+    diagnostics={"missing_bbox":0,"bad_bbox":0,"source_bbox_not_wgs84":0,
+                 "geometry_recovered":0,"geometry_invalid":0,
+                 "not_intersecting_requested_window":0,"missing_or_long_id":0}
+    example=None
     for f in features:
-        if not isinstance(f, dict):
+        if not isinstance(f,dict):
             continue
-        bb = f.get("bbox")
+        bb=f.get("bbox")
         if example is None:
-            example = {"top_level_keys":sorted(str(k) for k in f.keys())[:30],
-                       "bbox_first_four_numbers":(bb[:4] if isinstance(bb,list) and len(bb)>=4 and all(isinstance(z,(int,float)) for z in bb[:4]) else None),
-                       "geometry_type":((f.get("geometry") or {}).get("type") if isinstance(f.get("geometry"),dict) else None)}
-        if bb is None:
-            diagnostics["missing_bbox"]+=1
+            example={"top_level_keys":sorted(str(k) for k in f.keys())[:30],
+                     "bbox_first_four_numbers":(bb[:4] if isinstance(bb,list) and len(bb)>=4 and all(isinstance(z,(int,float)) for z in bb[:4]) else None),
+                     "geometry_type":(f.get("geometry") or {}).get("type") if isinstance(f.get("geometry"),dict) else None,
+                     "geometry_bbox":geojson_bounds(f.get("geometry"))}
+        origin="source_bbox"
+        if not is_wgs84_bbox(bb):
+            if bb is None: diagnostics["missing_bbox"]+=1
+            elif isinstance(bb,list) and len(bb)>=4: diagnostics["source_bbox_not_wgs84"]+=1
+            else: diagnostics["bad_bbox"]+=1
+            bb=geojson_bounds(f.get("geometry"))
+            origin="geometry_recovered"
+            if bb is None:
+                diagnostics["geometry_invalid"]+=1
+                continue
+            diagnostics["geometry_recovered"]+=1
+        else:
+            bb=bb[:4]
+        if not intersects(bb,bbox):
+            diagnostics["not_intersecting_requested_window"]+=1
             continue
-        if not isinstance(bb, list) or len(bb) < 4 or not all(isinstance(v,(int,float)) for v in bb[:4]):
-            diagnostics["bad_bbox"]+=1
-            continue
-        x0,y0,x1,y1 = bb[:4]
-        if not (-11 <= x0 <= x1 <= -5 and 36 <= y0 <= y1 <= 43):
-            diagnostics["outside_expected_geographic_bounds"]+=1
-            continue
-        ident = f.get("id")
-        if not isinstance(ident, str) or len(ident) > 160:
+        ident=f.get("id")
+        if not isinstance(ident,str) or len(ident)>160:
             diagnostics["missing_or_long_id"]+=1
             continue
-        result.append({"tile_id": ident, "bbox_wgs84": bb[:4],
-                       "collection": str(f.get("collection", collection))[:50]})
+        result.append({"tile_id":ident,"bbox_wgs84":bb[:4],
+                       "bbox_method":origin,
+                       "collection":str(f.get("collection",collection))[:50]})
     return {
         "returned_count": len(features),
         "metadata_footprint_count": len(result),
