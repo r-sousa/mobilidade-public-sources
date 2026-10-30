@@ -12,7 +12,7 @@ import math
 from pathlib import Path
 import re
 
-TILE_RE = re.compile(r"Copernicus_DSM_COG_10_[NS]\\d{2}_00_[EW]\\d{3}_00_DEM")
+TILE_RE = re.compile(r"Copernicus_DSM_COG_10_[NS][0-9]{2}_00_[EW][0-9]{3}_00_DEM")
 SOURCE = "https://copernicus-dem-30m.s3.amazonaws.com/readme.html"
 TILE_LIST = "https://copernicus-dem-30m.s3.amazonaws.com/tileList.txt"
 
