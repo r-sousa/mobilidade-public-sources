@@ -111,7 +111,7 @@ def run():
         workspace=Path(tmp)
         # No network grid discovery; initial baseline exposes missing resources.
         before=TransformerGroup(CRS.from_epsg(5780),CRS.from_epsg(5782),
-                                allow_ballpark=False)
+                                allow_ballpark=False,always_xy=True)
         report["before"] = summarize_group(before)
         downloads=[transfer_grid(name,workspace) for name in GRIDS]
         report["grid_downloads"]=downloads
@@ -134,6 +134,12 @@ def run():
                         "synthetic_output_Alicante_height_m":height if valid else None,
                         "operation_returns_finite":valid
                     })
+                report["tested_example_points_all_finite"]=all(
+                    s["operation_returns_finite"]
+                    for s in report["transformation_examples_not_observed_altitudes"])
+                report["best_grid_operation_reproducibly_available"] = (
+                    report["best_grid_operation_reproducibly_available"] and
+                    report["tested_example_points_all_finite"])
         else:
             report["best_grid_operation_reproducibly_available"]=False
     return report
