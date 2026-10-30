@@ -46,3 +46,15 @@ Conservar apenas evidência técnica e rever o resultado no [PR privado canónic
 - [QGIS community — DGT CDD Downloader](https://plugins.qgis.org/plugins/dgt_cdd_downloader/) (não é API oficial DGT)
 - [DGT — dados abertos, CC BY 4.0](https://www.dgterritorio.gov.pt/dados-abertos)
 - [DGT — Centro de Dados](https://cdd.dgterritorio.gov.pt/)
+
+## Verificação de rede sem credenciais — 30/10/2026
+
+[GitHub Actions #41144702809](https://github.com/r-sousa/mobilidade-public-sources/actions/runs/41144702809) **SUCCESS**, [recibo HTTPS anonimizado](../reports/mn-geo-rail-001/pt-dgt-anonymous-login-https-preflight.json).
+
+- Portal CDD: **HTTP 200** com certificado HTTPS verificado.
+- Endpoint Keycloak `auth.cdd.dgterritorio.gov.pt`: **HTTP 200**.
+- Formulário `kc-form-login` detetado, `action` submetível exclusivamente a host HTTPS oficial.
+- Um campo oculto detetado, **sem** qualquer valor guardado.
+- Nenhum `POST` de login, nome de utilizador, palavra-passe, cookie, sessão ou ficheiro nativo foi enviado/obtido.
+
+O [teste de segurança do adaptador #41144598774](https://github.com/r-sousa/mobilidade-public-sources/actions/runs/41144598774) passou depois de corrigida a identificação dos bytes TIFF. Não existe ainda prova de credenciais válidas nem de autorização de download do asset após login; esta validação exige o Environment `dgt-cdd` configurado e execução explicitamente aprovada na branch `main`.
