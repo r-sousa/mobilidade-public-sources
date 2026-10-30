@@ -22,9 +22,7 @@ from tempfile import TemporaryDirectory
 from urllib.parse import urlencode, urljoin, urlsplit
 from datetime import datetime, timezone
 
-from geo_rail_pt_native_intake_qa import (
-    audit, APPROVED_COLLECTIONS, MAX_NATIVE_BYTES,
-)
+from geo_rail_pt_native_intake_qa import audit, MAX_NATIVE_BYTES
 
 PORTAL = "https://cdd.dgterritorio.gov.pt"
 STAC = PORTAL + "/dgt-be/v1/search"
@@ -192,7 +190,7 @@ def find_native_asset(session,site):
     config=PILOT_SITES[site]
     payload={"bbox":config["bbox"],"collections":[COLLECTION],"limit":500}
     response=request_bounded_redirects(
-        session, "POST", STAC, TRUSTED_AUTH_REDIRECTS, json_body=payload)
+        session, "POST", STAC, TRUSTED_AUTH_REDIRECTS, json_body=payload,stream=True)
     data,response_sha=read_metadata(response)
     if data.get("type")!="FeatureCollection":
         raise IntakeError("stac_response_not_feature_collection")
