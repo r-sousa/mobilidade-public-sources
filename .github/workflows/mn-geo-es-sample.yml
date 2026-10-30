@@ -32,30 +32,34 @@ jobs:
         id: sample
         shell: bash
         run: |
-          if python tools/geo_rail_es_wcs_sample.py \
-             --output=reports/mn-geo-rail-001/es-wcs-25m-zamora-sample.json; then
-            echo "failed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "failed=true" >> "$GITHUB_OUTPUT"
-          fi
+          failed=false
+          for resolution in 25 5; do
+            if ! python tools/geo_rail_es_wcs_sample.py \
+              --coverage=Elevacion25830_${resolution} \
+              --output=reports/mn-geo-rail-001/es-wcs-${resolution}m-zamora-sample.json; then
+              failed=true
+            fi
+          done
+          echo "failed=$failed" >> "$GITHUB_OUTPUT"
       - name: Preserve metadata only; never native raster bytes
         shell: bash
         run: |
           set -euo pipefail
-          receipt=reports/mn-geo-rail-001/es-wcs-25m-zamora-sample.json
-          cp "$receipt" "$RUNNER_TEMP/es-wcs-sample.json"
+          mkdir -p "$RUNNER_TEMP/mn-geo-es-receipts"
+          cp reports/mn-geo-rail-001/es-wcs-25m-zamora-sample.json "$RUNNER_TEMP/mn-geo-es-receipts/"
+          cp reports/mn-geo-rail-001/es-wcs-5m-zamora-sample.json "$RUNNER_TEMP/mn-geo-es-receipts/"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           for attempt in 1 2 3; do
             git fetch origin "$GITHUB_REF_NAME"
             git reset --hard "origin/$GITHUB_REF_NAME"
-            mkdir -p "$(dirname "$receipt")"
-            cp "$RUNNER_TEMP/es-wcs-sample.json" "$receipt"
-            git add "$receipt"
+            mkdir -p reports/mn-geo-rail-001
+            cp "$RUNNER_TEMP/mn-geo-es-receipts/"*.json reports/mn-geo-rail-001/
+            git add reports/mn-geo-rail-001/es-wcs-25m-zamora-sample.json reports/mn-geo-rail-001/es-wcs-5m-zamora-sample.json
             if git diff --cached --quiet; then
               exit 0
             fi
-            git commit -m "data(geo): record bounded CNIG WCS 25m near-Zamora pilot"
+            git commit -m "data(geo): record bounded CNIG WCS 25m and 5m pilots"
             if git push origin "HEAD:${GITHUB_REF_NAME}"; then
               exit 0
             fi
