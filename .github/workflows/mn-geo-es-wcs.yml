@@ -13,6 +13,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: mn-geo-rail-001-cnig-wcs-\${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   inspect-public-capabilities:
     if: github.ref == 'refs/heads/mn-geo-rail-001-es-wcs-20261030'
