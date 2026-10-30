@@ -144,7 +144,7 @@
   "is_real_terrain_harmonization": false,
   "mission": "MN-GEO-RAIL-001",
   "native_rasters_reprojected": 0,
-  "observed_utc": "2026-10-30T22:58:24.139040+00:00",
+  "observed_utc": "2026-10-30T22:58:37.093602+00:00",
   "pyproj_version": "3.8.0",
   "references": {
     "copernicus_egm2008_vertical": "EPSG:3855",
