@@ -33,7 +33,7 @@ jobs:
           python-version: '3.12'
       - name: Unit tests (no network)
         run: python -m unittest discover -s tests -p 'test_geo_rail_r1*.py' -v
-      - name: Producer tile-list and bounded COG HEAD checks
+      - name: Producer tile-list, COG HEAD and 16KiB TIFF header checks
         run: |
           set -euo pipefail
           python tools/geo_rail_r1_probe.py \
@@ -49,7 +49,8 @@ jobs:
           assert len(x['features']) == 12
           assert not x['metadata']['raster_content_validated']
           assert not x['metadata']['is_coverage_verified']
-          assert x['metadata']['native_raster_bytes_downloaded'] == 0
+          assert x['metadata']['native_complete_rasters_downloaded'] == 0
+          assert 0 <= x['metadata']['raster_header_bytes_examined'] <= 12 * 16384
           assert all(not f['properties']['canonical_acceptance'] for f in x['features'])
           print(x['metadata']['status_counts'], x['metadata']['head_status_counts'])
           PY
