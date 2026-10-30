@@ -1,0 +1,18 @@
+{
+  "executed_login_post": false,
+  "form_action_is_trusted_https_auth_host": true,
+  "hidden_field_names_count": 1,
+  "keycloak_login_form_detected": true,
+  "login_http_status": 200,
+  "login_result_hostname": "auth.cdd.dgterritorio.gov.pt",
+  "mission": "MN-GEO-RAIL-001",
+  "native_bytes_downloaded": 0,
+  "observed_utc": "2026-10-30T23:28:52.678334+00:00",
+  "portal_http_status": 200,
+  "source": "https://cdd.dgterritorio.gov.pt/",
+  "stage": "CDD_anonymous_login_form_https_preflight",
+  "status": "anonymous_https_form_preflight_passed",
+  "stored_html_cookie_form_action_or_token": false,
+  "submitted_credentials": false,
+  "worker": "W2"
+}
