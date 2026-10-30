@@ -119,7 +119,7 @@
       }
     ]
   },
-  "best_grid_operation_reproducibly_available": true,
+  "best_grid_operation_reproducibly_available": false,
   "canonical_acceptance": false,
   "grid_downloads": [
     {
@@ -144,7 +144,7 @@
   "is_real_terrain_harmonization": false,
   "mission": "MN-GEO-RAIL-001",
   "native_rasters_reprojected": 0,
-  "observed_utc": "2026-10-30T22:57:54.444250+00:00",
+  "observed_utc": "2026-10-30T22:58:24.139040+00:00",
   "pyproj_version": "3.8.0",
   "references": {
     "copernicus_egm2008_vertical": "EPSG:3855",
@@ -159,6 +159,7 @@
   "source_crs_name": "Cascais height",
   "stage": "vertical_cascais_alicante_proj_operation_audit",
   "target_crs_name": "Alicante height",
+  "tested_example_points_all_finite": false,
   "transformation_examples_not_observed_altitudes": [
     {
       "label": "PT_Mirandela_exploratory",
