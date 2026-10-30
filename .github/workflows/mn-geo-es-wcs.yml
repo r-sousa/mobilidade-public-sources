@@ -31,7 +31,8 @@ jobs:
         run: |
           set -euo pipefail
           if python tools/geo_rail_es_wcs_probe.py \
-            --output=reports/mn-geo-rail-001/es-wcs-capabilities.json; then
+            --output=reports/mn-geo-rail-001/es-wcs-capabilities.json \
+            --describe; then
             echo "probe_failed=false" >> "$GITHUB_OUTPUT"
           else
             echo "probe_failed=true" >> "$GITHUB_OUTPUT"
