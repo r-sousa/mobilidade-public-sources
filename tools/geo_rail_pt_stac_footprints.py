@@ -17,8 +17,8 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 URL = "https://cdd.dgterritorio.gov.pt/dgt-be/v1/search"
-MAX_BYTES_PER_RESPONSE = 2_000_000
-LIMIT = 100
+MAX_BYTES_PER_RESPONSE = 6_000_000
+LIMIT = 500
 # Diagnostic boxes, WGS84; selected to sample alternative east-west sectors
 # without defining a rail alignment or implying a rail stop at box centres.
 WINDOWS = (
@@ -139,7 +139,7 @@ def inspect_window(box_name: str, bbox: list[float], collection: str, transport=
             r["http_status"]=response.status
             raw=response.read(MAX_BYTES_PER_RESPONSE+1)
         if len(raw)>MAX_BYTES_PER_RESPONSE:
-            raise ValueError("STAC response exceeds 2MB cap")
+            raise ValueError("STAC response exceeds 6MB cap")
         r["source_response_sha256"]=sha256(raw).hexdigest()
         r["response_byte_count"]=len(raw)
         r.update(summary(bbox,collection,json.loads(raw)))
