@@ -31,6 +31,7 @@ class TransectTests(unittest.TestCase):
 
     @unittest.skipUnless(importlib.util.find_spec('pyproj'), 'pyproj only on geospatial runner')
     def test_reject_unreviewed_out_of_scope_requests(self):
+        from pyproj import Transformer
         proj = Transformer.from_crs(4326, 25830, always_xy=True)
         with self.assertRaises(ValueError):
             mod.tile_bbox_from_longlat(-9, 42, proj)
