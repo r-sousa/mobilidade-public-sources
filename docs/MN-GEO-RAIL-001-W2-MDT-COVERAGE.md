@@ -52,3 +52,26 @@ Os dois metadados indicam o recurso `data`, com MIME `image/tiff; application=ge
 **Conclusão limitada:** comprovação de descoberta pública do raster no catálogo, **não** comprovação de download anónimo. Um redirecionamento HTTP 302 não indica ausência do ficheiro; para avançar à aquisição dos bytes originais é necessário assegurar uma via de acesso autorizada, compatível com a autenticação exigida pelo CDD e sem colocar credenciais nas Actions públicas. A DGT indica explicitamente registo para descarregamento no [webinar CDD de 2025](https://www.dgterritorio.gov.pt/sites/default/files/ficheiros-artigos/Apresentacoes/2025/5-Webinar_LiDAR_15jul2025.pdf).
 
 O relatório distingue, assim, três níveis: **STAC consultável**, **asset nativo catalogado** e **dados nativos efetivamente obtidos e validados**. Apenas os dois primeiros se encontram comprovados nos ensaios portugueses atuais.
+
+## Passagem para descarga com conta registada e QA de primeiro MDT nativo
+
+A conta de acesso ao CDD foi **criada pelo utilizador em 30/10/2026**; o registo é uma condição externa, não foram partilhadas nem armazenadas credenciais. Não se afirma que a conta tenha sido utilizada pelo runner.
+
+**Fonte DGT:**
+- Página oficial dos dados [LiDAR e descarregamento](https://www.dgterritorio.gov.pt/descarregamento-de-dados-lidar-de-portugal-continental): área por operação até cerca de **200 km²**; dados MDT-2m, MDT-50cm em GeoTIFF; API de grande escala ainda em desenvolvimento à data da informação consultada.
+- [Ficha técnica DGT dos Modelos Digitais do Relevo](https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-topografica/modelos-digitais): refere **Datum Altimétrico de Cascais**, horizontal PT-TM06/ETRS89 e acesso mediante CDD ou plugin QGIS.
+- [DGT — dados abertos](https://www.dgterritorio.gov.pt/dados-abertos): **CC BY 4.0** com atribuição à DGT; confirmar âmbito específico de cada edição ao promover a publicação.
+- [Página oficial da lista de downloads](https://cdd.dgterritorio.gov.pt/dgt-fe/downloads?language=pt): os itens adicionados à lista de transferência só ficam disponíveis **durante 24 horas**.
+
+### Protocolo recomendado para a primeira prova (um único GeoTIFF)
+
+1. O utilizador acede e autentica-se no [CDD](https://cdd.dgterritorio.gov.pt/), escolhe **LiDAR — Modelos Digitais do Relevo / MDT-2m**, numa área de dimensão reduzida próxima de **Mirandela** (ou outro dos setores amostrados no índice W2).
+2. Adiciona **um único tile** à lista e descarrega-o durante a janela de 24h. Não enviar nem guardar no GitHub cópias da sessão, cookies, tokens, cabeçalhos HTTP de autenticação ou palavra-passe.
+3. Para testar a correspondência direta ao acervo conhecido, pode escolher-se o candidato `MDT-2m-282510-09-2024` (se o identificador estiver visível no portal); outro tile do índice W2 também serve, ficando identificado pelo ID real no nome/metadados.
+4. O utilizador entrega o **GeoTIFF original** num meio privado autorizado (por exemplo, anexo nesta conversa). O processamento **não** é autorizado pelo simples registo: a validação de metadados precede qualquer publicação.
+5. Executa-se localmente `tools/geo_rail_pt_native_intake_qa.py` com os argumentos `--native`, `--collection MDT-2m`, `--tile-id`, `--index reports/mn-geo-rail-001/pt-dgt-mdt-candidate-envelopes.geojson` e `--receipt`, para avaliar integridade, raster, CRS, resolução, limites, NoData, amplitude de altitudes e compatibilidade espacial com o índice STAC de descoberta. O ficheiro **não** é publicado pelo código; fica apenas um recibo técnico sanitizado com hash SHA-256.
+6. Só após validação e aceitação canónica poderá ser proposta preservação de bytes numa release e eventual disponibilização ao Site.
+
+**Estado da ferramenta:** [QA de ficheiro nativo registado](../tools/geo_rail_pt_native_intake_qa.py), com [testes sintéticos](../tests/test_geo_rail_pt_native_intake_qa.py). O [workflow de testes isolados](../.github/workflows/mn-geo-pt-native-intake-tests.yml) **não** faz login, não descarrega ficheiros da DGT nem armazena credenciais — apenas valida GeoTIFFs artificiais numa pasta temporária.
+
+Para aquisições mais amplas, a DGT refere o plugin comunitário [DGT CDD Downloader do QGIS](https://plugins.qgis.org/plugins/dgt_cdd_downloader/). Este suporta a autenticação QGIS e segmentação de áreas, mas **não deve ser simplesmente copiado para o runner público**, pois requer verificação das práticas de segurança de sessão/TLS e regras de uso. O plugin não é oficial da DGT.
