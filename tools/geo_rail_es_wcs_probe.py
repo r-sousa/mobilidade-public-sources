@@ -50,7 +50,55 @@ def parse_wcs_capabilities(xml_bytes: bytes) -> dict:
     }
 
 
-def probe(urlopen_func=urlopen) -> dict:
+DESCRIBE_IDS = ("Elevacion25830_25", "Elevacion25830_5")
+
+
+def describe_coverage(coverage_id: str, urlopen_func=urlopen) -> dict:
+    """Read <=2 MiB of WCS DescribeCoverage XML; never invoke GetCoverage."""
+    if coverage_id not in DESCRIBE_IDS:
+        raise ValueError("coverage not in reviewed allowlist")
+    query = dict(PARAMS, request="DescribeCoverage", coverageId=coverage_id)
+    url = ENDPOINT + "?" + urlencode(query)
+    result = {"coverage_id": coverage_id, "describe_url": url,
+              "status": "unverified", "http_status": None}
+    try:
+        with urlopen_func(Request(url, headers={
+                "User-Agent": "MN-GEO-RAIL-001-wcs-describe/1.0"}), timeout=TIMEOUT) as response:
+            result["http_status"] = response.status
+            data = response.read(2_000_001)
+        if len(data) > 2_000_000:
+            raise ValueError("DescribeCoverage XML over byte budget")
+        result["response_bytes"] = len(data)
+        result["response_sha256"] = hashlib.sha256(data).hexdigest()
+        root = ET.fromstring(data)
+        if local_name(root.tag) != "CoverageDescriptions":
+            raise ValueError(f"unexpected DescribeCoverage root {local_name(root.tag)}")
+        result["status"] = "description_parsed"
+        result["envelopes"] = []
+        for envelope in root.iter():
+            if local_name(envelope.tag) not in ("Envelope", "EnvelopeWithTimePeriod"):
+                continue
+            info = {"srsName": envelope.attrib.get("srsName"),
+                    "axisLabels": envelope.attrib.get("axisLabels"),
+                    "lowerCorner": None, "upperCorner": None}
+            for child in envelope:
+                if local_name(child.tag) in ("lowerCorner", "upperCorner"):
+                    info[local_name(child.tag)] = (child.text or "").strip()
+            result["envelopes"].append(info)
+        result["grid_limits"] = []
+        for item in root.iter():
+            if local_name(item.tag) == "GridEnvelope":
+                result["grid_limits"].append({
+                    local_name(ch.tag): (ch.text or "").strip()
+                    for ch in item if local_name(ch.tag) in ("low", "high")})
+    except Exception as exc:
+        result["status"] = "description_unverified_error"
+        result["error_type"] = type(exc).__name__
+        result["error_excerpt"] = str(exc)[:240]
+    return result
+
+
+def probe(urlopen_func=urlopen, include_descriptions=False) -> dict:
     url = ENDPOINT + "?" + urlencode(PARAMS)
     receipt = {
         "mission": "MN-GEO-RAIL-001", "worker": "W3", "stage": "ES_WCS_capabilities_only",
@@ -76,6 +124,8 @@ def probe(urlopen_func=urlopen) -> dict:
         info = parse_wcs_capabilities(data)
         receipt.update(info)
         receipt["status"] = "capabilities_parsed"
+        if include_descriptions:
+            receipt["described_coverages"] = [describe_coverage(x) for x in DESCRIBE_IDS]
     except Exception as error:
         receipt["status"] = "capabilities_unverified_error"
         receipt["error_type"] = type(error).__name__
@@ -86,8 +136,9 @@ def probe(urlopen_func=urlopen) -> dict:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--describe", action="store_true", help="Read selected WCS DescribeCoverage XMLs")
     args = parser.parse_args()
-    receipt = probe()
+    receipt = probe(include_descriptions=args.describe)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(receipt, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
                            encoding="utf-8")
