@@ -3,7 +3,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import unittest
-from pyproj import Transformer
 
 TOOLS = Path(__file__).resolve().parents[1] / "tools"
 sys.path.insert(0, str(TOOLS))
@@ -13,8 +12,10 @@ spec.loader.exec_module(mod)
 
 
 class TransectTests(unittest.TestCase):
+    @unittest.skipUnless(importlib.util.find_spec('pyproj'), 'pyproj only on geospatial runner')
     def test_five_grounded_points_and_perimeters(self):
         self.assertEqual(len(mod.SITES), 5)
+        from pyproj import Transformer
         proj = Transformer.from_crs(4326, 25830, always_xy=True)
         for name, lon, lat, ref in mod.SITES:
             self.assertTrue(ref.startswith("https://pares.cultura.gob.es/"))
@@ -28,6 +29,7 @@ class TransectTests(unittest.TestCase):
                 self.assertIn(f"Elevacion25830_{res}", url)
                 self.assertIn("GetCoverage", url)
 
+    @unittest.skipUnless(importlib.util.find_spec('pyproj'), 'pyproj only on geospatial runner')
     def test_reject_unreviewed_out_of_scope_requests(self):
         proj = Transformer.from_crs(4326, 25830, always_xy=True)
         with self.assertRaises(ValueError):
