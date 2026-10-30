@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import re
+import struct
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -46,6 +47,67 @@ def load_primary_index():
     }
 
 
+MAX_PREFIX_BYTES = 16384
+
+
+def parse_tiff_prefix(prefix: bytes) -> dict:
+    """Parse TIFF signature and optional first IFD dimensions from bounded bytes."""
+    info = {"tiff_signature_valid": False, "width_px": None, "height_px": None}
+    if len(prefix) < 8 or prefix[:2] not in (b"II", b"MM"):
+        return info
+    endian = "<" if prefix[:2] == b"II" else ">"
+    magic = struct.unpack(endian + "H", prefix[2:4])[0]
+    if magic not in (42, 43):
+        return info
+    info["tiff_signature_valid"] = True
+    if magic != 42:
+        return info  # BigTIFF signature confirmed; IFD not parsed here.
+    ifd_offset = struct.unpack(endian + "I", prefix[4:8])[0]
+    if ifd_offset + 2 > len(prefix):
+        return info
+    n = struct.unpack_from(endian + "H", prefix, ifd_offset)[0]
+    if n > 1024 or ifd_offset + 2 + 12 * n > len(prefix):
+        return info
+    for i in range(n):
+        offset = ifd_offset + 2 + 12 * i
+        tag, dtype, count = struct.unpack_from(endian + "HHI", prefix, offset)
+        if tag not in (256, 257) or count != 1 or dtype not in (3, 4):
+            continue
+        value = struct.unpack_from(endian + ("H" if dtype == 3 else "I"), prefix, offset + 8)[0]
+        info["width_px" if tag == 256 else "height_px"] = value
+    return info
+
+
+def probe_range_header(url: str) -> dict:
+    """Read <=16KiB via a bounded HTTP Range and classify TIFF metadata only."""
+    result = {"range_state": "unverified", "range_http_status": None,
+              "prefix_bytes_read": 0, "tiff_signature_valid": False,
+              "width_px": None, "height_px": None}
+    try:
+        request = Request(url, headers={"Range": f"bytes=0-{MAX_PREFIX_BYTES - 1}"})
+        with urlopen(request, timeout=TIMEOUT_S) as response:
+            result["range_http_status"] = response.status
+            if response.status != 206 or not response.headers.get("Content-Range", "").startswith("bytes 0-"):
+                result["range_state"] = "range_not_honored"
+                return result
+            prefix = response.read(MAX_PREFIX_BYTES + 1)
+            result["prefix_bytes_read"] = len(prefix)
+        if len(prefix) > MAX_PREFIX_BYTES:
+            result["range_state"] = "range_exceeded_budget"
+            return result
+        info = parse_tiff_prefix(prefix)
+        result.update(info)
+        result["range_state"] = ("tiff_header_confirmed" if info["tiff_signature_valid"]
+                                 else "unexpected_raster_header")
+    except HTTPError as exc:
+        result["range_http_status"] = exc.code
+        result["range_state"] = "range_request_failed"
+    except (OSError, URLError, TimeoutError) as exc:
+        result["range_state"] = "range_request_failed"
+        result["range_error_class"] = type(exc).__name__
+    return result
+
+
 def probe_head(tile: str) -> dict:
     # The path comes exclusively from the validated tile_id constructor.
     if re.fullmatch(TILE_RE.pattern, tile) is None:
@@ -64,6 +126,7 @@ def probe_head(tile: str) -> dict:
             result["content_length_bytes"] = int(size) if size and size.isdigit() else None
             if response.status == 200 and (result["content_length_bytes"] or 0) > 0:
                 result["head_state"] = "object_reported_not_validated"
+                result.update(probe_range_header(url))
             else:
                 result["head_state"] = "head_insufficient_metadata"
     except HTTPError as exc:
@@ -85,18 +148,26 @@ def run(bbox, names, list_meta, head_probe=probe_head):
     for feature in inventory["features"]:
         status = feature["properties"].get("head_state", "not_probed")
         states[status] = states.get(status, 0) + 1
+    total_prefix_bytes = sum(f["properties"].get("prefix_bytes_read", 0) for f in inventory["features"])
+    header_counts = {}
+    for feature in inventory["features"]:
+        state = feature["properties"].get("range_state", "not_probed")
+        header_counts[state] = header_counts.get(state, 0) + 1
     inventory["metadata"].update({
         "stage": "R1_producer_tile_listing_and_object_head_probe",
         "observed_utc": datetime.now(timezone.utc).isoformat(),
         "producer_tile_list": list_meta,
         "head_status_counts": states,
-        "native_raster_bytes_downloaded": 0,
+        "range_header_status_counts": header_counts,
+        "raster_header_bytes_examined": total_prefix_bytes,
+        "native_complete_rasters_downloaded": 0,
+        "native_raster_bytes_downloaded": total_prefix_bytes,
         "raster_content_validated": False,
         "raster_footprint_validated": False,
         "licence_clearance": "pending_canonical_check",
         "canonical_acceptance": False,
         "is_coverage_verified": False,
-        "note": "Tile-list membership and HEAD response alone do not establish valid raster coverage.",
+        "note": "Tile listing, HEAD and <=16KiB TIFF header do not validate georeferencing, pixels or bare-earth elevation.",
     })
     return inventory
 
