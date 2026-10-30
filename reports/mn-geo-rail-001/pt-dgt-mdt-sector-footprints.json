@@ -5,13 +5,34 @@
   "feature_ids_not_source_download_permissions": true,
   "mission": "MN-GEO-RAIL-001",
   "native_assets_preserved": 0,
-  "observed_utc": "2026-10-30T22:38:55.692826+00:00",
+  "observed_utc": "2026-10-30T22:40:15.893749+00:00",
   "request_count": 12,
   "requests": [
     {
       "authentication_supplied": false,
       "box_id": "E01_east_north",
       "collection": "MDT-2m",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          110000,
+          2,
+          0,
+          247000
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [],
       "has_next_page": true,
       "http_status": 200,
@@ -27,13 +48,40 @@
       ],
       "response_byte_count": 704970,
       "returned_count": 100,
-      "source_response_sha256": "9a63d0c5f57a463c79f47d4e194e411ecd0a563b9ce767c3e993d21ad385910b",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "9d170b1db45a703b8bdb530fc79b8979f176c1f975d86034f83b2b56387da3a2",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 100
+      }
     },
     {
       "authentication_supplied": false,
       "box_id": "E01_east_north",
       "collection": "MDT-50cm",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          110000,
+          0.5,
+          0,
+          246999.99999999907
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [],
       "has_next_page": true,
       "http_status": 200,
@@ -49,13 +97,40 @@
       ],
       "response_byte_count": 691894,
       "returned_count": 100,
-      "source_response_sha256": "af05396752cffae594d3619b44aa5a7d94923307f18e68e0a0c905b496eda4b8",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "a30441888a767b2557024ba8be583b61ef7644211ac2274129898e61a9252fe5",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 100
+      }
     },
     {
       "authentication_supplied": false,
       "box_id": "E02_east_south",
       "collection": "MDT-2m",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          109000,
+          2,
+          0,
+          218000
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [],
       "has_next_page": true,
       "http_status": 200,
@@ -71,13 +146,40 @@
       ],
       "response_byte_count": 744365,
       "returned_count": 100,
-      "source_response_sha256": "74bd841f9216763c3e273f37f3e9f80eff6aa17c292fff5f84667a63b3095771",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "2c5d81ea6f62fc96b204f41f4a824df189806d0f258473a794f89c589d87b372",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 100
+      }
     },
     {
       "authentication_supplied": false,
       "box_id": "E02_east_south",
       "collection": "MDT-50cm",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          108999.99999999999,
+          0.5,
+          0,
+          218000.00000000093
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [],
       "has_next_page": true,
       "http_status": 200,
@@ -93,13 +195,40 @@
       ],
       "response_byte_count": 691979,
       "returned_count": 100,
-      "source_response_sha256": "09ffea8f393af0ca2a1e981c84fcbf26379acc8f11e55266a98a66543497858d",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "12cc0974e44bae9f1e52aff8b02454a75b8d3a8625bda8d81e2b4183299379cb",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 100
+      }
     },
     {
       "authentication_supplied": false,
       "box_id": "E03_macedo_sector",
       "collection": "MDT-2m",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          96000,
+          2,
+          0,
+          213000
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [],
       "has_next_page": true,
       "http_status": 200,
@@ -115,13 +244,40 @@
       ],
       "response_byte_count": 783648,
       "returned_count": 100,
-      "source_response_sha256": "09d991123d0a55a265c6a244f5070425b65730af1a3b638c3b11f7faf5d4c5e5",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "2745ea56a66cf85e0c8f2fc6b19b5847d9a7de7376426a094cd59ae6ab90cc6b",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 100
+      }
     },
     {
       "authentication_supplied": false,
       "box_id": "E03_macedo_sector",
       "collection": "MDT-50cm",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          95999.99999999994,
+          0.5,
+          0,
+          213000.00000000093
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [],
       "has_next_page": true,
       "http_status": 200,
@@ -137,13 +293,40 @@
       ],
       "response_byte_count": 743234,
       "returned_count": 100,
-      "source_response_sha256": "9cee6b9bbed43484e13e7efeed9a4ab29acaffa92c1630fb93ba23dfcd4ce5ae",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "b518782269f285df2ce79712a4db1728b0f9235cb4ff9714a750b6df53120571",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 100
+      }
     },
     {
       "authentication_supplied": false,
       "box_id": "E04_mirandela_sector",
       "collection": "MDT-2m",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          82000,
+          2,
+          0,
+          210000
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [],
       "has_next_page": true,
       "http_status": 200,
@@ -159,13 +342,40 @@
       ],
       "response_byte_count": 770504,
       "returned_count": 100,
-      "source_response_sha256": "1b5660d1d1f8bc09f36ca1b920b76a5696ffebf3037a9fd4b0f9f119ab1f57be",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "ac2e7c117ede54bb66ae878a11b73e90102dca7f824425abc83ed8db529c8f39",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 100
+      }
     },
     {
       "authentication_supplied": false,
       "box_id": "E04_mirandela_sector",
       "collection": "MDT-50cm",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          81999.99999999999,
+          0.5,
+          0,
+          210000
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [],
       "has_next_page": true,
       "http_status": 200,
@@ -181,13 +391,40 @@
       ],
       "response_byte_count": 577510,
       "returned_count": 100,
-      "source_response_sha256": "745c768562116ca477ae86a40f9e9ed4df7f0e08336f4180f7a23b635c0154c6",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "91e22403ab4cf0e2a4e58025dc3f03b56ec720bc0951720aea9fc91e34c6a69f",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 100
+      }
     },
     {
       "authentication_supplied": false,
       "box_id": "E05_vila_real_sector",
       "collection": "MDT-2m",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          32000,
+          2,
+          0,
+          184000
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [],
       "has_next_page": true,
       "http_status": 200,
@@ -203,13 +440,40 @@
       ],
       "response_byte_count": 462022,
       "returned_count": 100,
-      "source_response_sha256": "5b83ccd7f82a0283312134440a6289324c93f36cb9961ba1dcc8142b109abecd",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "acf8f8a9181dd7e2b5996252e3f4a6f9b93dfb52dd9d49a696950da69d12c769",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 100
+      }
     },
     {
       "authentication_supplied": false,
       "box_id": "E05_vila_real_sector",
       "collection": "MDT-50cm",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          32000,
+          0.5,
+          0,
+          184000
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [],
       "has_next_page": true,
       "http_status": 200,
@@ -225,13 +489,40 @@
       ],
       "response_byte_count": 693954,
       "returned_count": 100,
-      "source_response_sha256": "0abe6e9b8c86ec3a303659626c91f7d30cd625936abc022b0c0eb8cae1bb490d",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "91d4f6093f2ad475982f8156ecfbdf07d48a0bd5e7523df1f5b798d3372a56d8",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 100
+      }
     },
     {
       "authentication_supplied": false,
       "box_id": "E06_amarante_sector",
       "collection": "MDT-2m",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          -8.1331083,
+          41.3162513,
+          -8.1211638,
+          41.3252561
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [
         {
           "bbox_wgs84": [
@@ -1248,13 +1539,40 @@
       ],
       "response_byte_count": 487250,
       "returned_count": 100,
-      "source_response_sha256": "dacb0fac40496982f941f50b48552661e9929fa4b5146d8e65945a4accb16208",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "96fdd81c4c66f77af1c6faa222002daee5d972cc3518d4cb4156ad863c00f829",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 0
+      }
     },
     {
       "authentication_supplied": false,
       "box_id": "E06_amarante_sector",
       "collection": "MDT-50cm",
+      "first_record_safe_shape": {
+        "bbox_first_four_numbers": [
+          -8.1331083,
+          41.3162513,
+          -8.1211638,
+          41.3252561
+        ],
+        "geometry_type": "Polygon",
+        "top_level_keys": [
+          "assets",
+          "bbox",
+          "collection",
+          "geometry",
+          "id",
+          "links",
+          "properties",
+          "stac_extensions",
+          "stac_version",
+          "type"
+        ]
+      },
       "footprints": [
         {
           "bbox_wgs84": [
@@ -2271,8 +2589,14 @@
       ],
       "response_byte_count": 488822,
       "returned_count": 100,
-      "source_response_sha256": "57a9c12116ea23016ea0fd3143f0f334cf86f89a997cd1954bc4f257996a39fa",
-      "status": "metadata_returned_partial"
+      "source_response_sha256": "7935c31d0f9ade3eacaae75f2eeb289ed79f8b2a2672e366436c7d9c98be28c0",
+      "status": "metadata_returned_partial",
+      "whitelist_rejection_counts": {
+        "bad_bbox": 0,
+        "missing_bbox": 0,
+        "missing_or_long_id": 0,
+        "outside_expected_geographic_bounds": 0
+      }
     }
   ],
   "search_url": "https://cdd.dgterritorio.gov.pt/dgt-be/v1/search",
