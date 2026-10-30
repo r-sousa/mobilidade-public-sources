@@ -141,10 +141,117 @@
       "status": "downloaded_temporary_tiff"
     }
   ],
+  "grid_spatial_diagnostics": [
+    {
+      "band_count": 1,
+      "bounds": [
+        -10.024999999999999,
+        36.50000000000001,
+        -5.974999999999999,
+        42.25
+      ],
+      "crs": "EPSG:4937",
+      "dtype": "float32",
+      "filename": "pt_dgt_GeodPT08.tif",
+      "height": 230,
+      "nodata": null,
+      "samples": [
+        {
+          "grid_sample_value_m": 55.66699981689453,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Mirandela_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 56.67900085449219,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Nordeste_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 55.650001525878906,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Amarante_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 56.275001525878906,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "ES_Alcanices_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "sample_finite": false,
+          "sample_masked": null,
+          "site": "ES_Zamora_exploratory",
+          "within_grid_bbox": false
+        }
+      ],
+      "status": "tiff_opened",
+      "width": 162
+    },
+    {
+      "band_count": 1,
+      "bounds": [
+        -9.50833333,
+        34.99166667,
+        4.508327730000001,
+        44.00832973
+      ],
+      "crs": "EPSG:4937",
+      "dtype": "float32",
+      "filename": "es_ign_egm08-rednap.tif",
+      "height": 541,
+      "nodata": null,
+      "samples": [
+        {
+          "grid_sample_value_m": 55.55400085449219,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Mirandela_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 56.7599983215332,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Nordeste_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 55.564998626708984,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Amarante_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 56.38100051879883,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "ES_Alcanices_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 55.4640007019043,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "ES_Zamora_exploratory",
+          "within_grid_bbox": true
+        }
+      ],
+      "status": "tiff_opened",
+      "width": 841
+    }
+  ],
   "is_real_terrain_harmonization": false,
   "mission": "MN-GEO-RAIL-001",
   "native_rasters_reprojected": 0,
-  "observed_utc": "2026-10-30T22:58:37.093602+00:00",
+  "observed_utc": "2026-10-30T23:00:15.494694+00:00",
   "pyproj_version": "3.8.0",
   "references": {
     "copernicus_egm2008_vertical": "EPSG:3855",
@@ -173,6 +280,30 @@
       "label": "PT_Nordeste_exploratory",
       "latitude": 41.75,
       "longitude": -6.9,
+      "operation_returns_finite": false,
+      "synthetic_input_Cascais_height_m": 0,
+      "synthetic_output_Alicante_height_m": null
+    },
+    {
+      "label": "PT_Amarante_exploratory",
+      "latitude": 41.26,
+      "longitude": -8.1,
+      "operation_returns_finite": false,
+      "synthetic_input_Cascais_height_m": 0,
+      "synthetic_output_Alicante_height_m": null
+    },
+    {
+      "label": "ES_Alcanices_exploratory",
+      "latitude": 41.6994,
+      "longitude": -6.34647,
+      "operation_returns_finite": false,
+      "synthetic_input_Cascais_height_m": 0,
+      "synthetic_output_Alicante_height_m": null
+    },
+    {
+      "label": "ES_Zamora_exploratory",
+      "latitude": 41.50378,
+      "longitude": -5.746992,
       "operation_returns_finite": false,
       "synthetic_input_Cascais_height_m": 0,
       "synthetic_output_Alicante_height_m": null
