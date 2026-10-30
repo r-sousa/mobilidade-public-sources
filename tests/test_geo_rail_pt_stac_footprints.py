@@ -53,4 +53,28 @@ class W2FootprintTests(unittest.TestCase):
         self.assertEqual(x["returned_count"],0)
 
 
+    def test_recovers_geojson_polygon_from_non_wgs84_source_bbox(self):
+        g={"type":"Polygon","coordinates":[[
+            [-6.9,41.8],[-6.89,41.8],[-6.89,41.81],[-6.9,41.81],[-6.9,41.8]]]}
+        feature={"type":"Feature","id":"dgt-tile-1","collection":"MDT-2m",
+                 "bbox":[110000,2,0,247000],"geometry":g}
+        result=m.summary(m.WINDOWS[0][1],"MDT-2m",
+                         {"type":"FeatureCollection","features":[feature],"links":[]})
+        self.assertEqual(result["metadata_footprint_count"],1)
+        self.assertEqual(result["whitelist_rejection_counts"]["source_bbox_not_wgs84"],1)
+        self.assertEqual(result["whitelist_rejection_counts"]["geometry_recovered"],1)
+        self.assertEqual(result["footprints"][0]["bbox_method"],"geometry_recovered")
+
+    def test_rejects_non_geographic_geometry_as_coverage(self):
+        feature={"type":"Feature","id":"dgt-projected","collection":"MDT-2m",
+                 "bbox":[110000,2,0,247000],
+                 "geometry":{"type":"Polygon","coordinates":[[
+                     [110000,247000],[111000,247000],[111000,248000],
+                     [110000,248000],[110000,247000]]]}}
+        r=m.summary(m.WINDOWS[0][1],"MDT-2m",
+                    {"type":"FeatureCollection","features":[feature],"links":[]})
+        self.assertEqual(r["metadata_footprint_count"],0)
+        self.assertEqual(r["whitelist_rejection_counts"]["geometry_invalid"],1)
+
+
 if __name__=="__main__":unittest.main()
