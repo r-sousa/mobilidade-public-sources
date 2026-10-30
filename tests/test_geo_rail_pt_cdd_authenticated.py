@@ -163,5 +163,55 @@ class SecurityTests(unittest.TestCase):
 
 
 
+    def test_unapproved_redirect_reports_only_phase_and_domain_class(self):
+        uri="https://auth.cdd.dgterritorio.gov.pt/realms/dgterritorio/login-actions"
+        secret="PRIVATE_CREDENTIALS_AND_QUERY_SHOULD_NOT_BE_SAVED"
+        redirect=(
+            "https://unknown.example.invalid/login?code="+secret+
+            "&session_state="+secret
+        )
+        s=StubSession([StubResponse(uri,302,{"Location":redirect})])
+        with self.assertRaises(m.IntakeError) as ctx:
+            m.request_bounded_redirects(s,"POST",uri,m.TRUSTED_AUTH_REDIRECTS,
+                                        form={"username":"HIDDEN","password":secret},
+                                        phase="keycloak_credentials_submission")
+        failure=ctx.exception
+        self.assertEqual(failure.code,"unapproved_redirect_destination")
+        self.assertEqual(failure.phase,"keycloak_credentials_submission")
+        self.assertEqual(failure.redirect["redirect_hostname_class"],
+                         "outside_DGT_hostname_allowlist")
+        import json
+        sanitized=json.dumps(failure.redirect)
+        self.assertNotIn(secret,sanitized)
+        self.assertNotIn("code=",sanitized)
+        self.assertNotIn("session_state",sanitized)
+        self.assertNotIn("HIDDEN",sanitized)
+        self.assertEqual(len(s.calls),1)
+
+    def test_official_unlisted_domain_reported_without_path_or_query(self):
+        diagnostic=m.sanitized_redirect_diagnostic(
+            "https://files.cdd.dgterritorio.gov.pt:8081/dl?key=SECRET")
+        self.assertEqual(diagnostic["redirect_hostname_class"],
+                         "files.cdd.dgterritorio.gov.pt")
+        self.assertEqual(diagnostic["redirect_port"],8081)
+        self.assertEqual(diagnostic["redirect_scheme_class"],"https")
+        self.assertNotIn("SECRET",str(diagnostic))
+        self.assertNotIn("/dl",str(diagnostic))
+
+    def test_invalid_redirect_location_cannot_be_silently_followed(self):
+        origin="https://cdd.dgterritorio.gov.pt/data"
+        response=StubResponse(origin,302,
+                              {"Location":"http://cdd.dgterritorio.gov.pt/non-https"})
+        s=StubSession([response])
+        with self.assertRaises(m.IntakeError) as ctx:
+            m.request_bounded_redirects(s,"GET",origin,m.TRUSTED_DATA_REDIRECTS,
+                                        phase="native_geotiff_download")
+        self.assertEqual(ctx.exception.redirect["redirect_scheme_class"],"http")
+        self.assertEqual(ctx.exception.redirect["redirect_hostname_class"],
+                         "cdd.dgterritorio.gov.pt")
+        self.assertTrue(response.closed)
+        self.assertEqual(len(s.calls),1)
+
+
 if __name__=="__main__":
     unittest.main()
