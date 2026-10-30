@@ -118,7 +118,7 @@ def run():
         if all(item["status"]=="downloaded_temporary_tiff" for item in downloads):
             datadir.append_data_dir(str(workspace))
             after=TransformerGroup(CRS.from_epsg(5780),CRS.from_epsg(5782),
-                                   allow_ballpark=False)
+                                   allow_ballpark=False,always_xy=True)
             report["after"]=summarize_group(after)
             report["best_grid_operation_reproducibly_available"]=bool(after.best_available)
             if after.best_available and after.transformers:
