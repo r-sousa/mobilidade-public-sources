@@ -119,8 +119,11 @@
       }
     ]
   },
-  "best_grid_operation_reproducibly_available": false,
+  "best_grid_operation_reproducibly_available": true,
   "canonical_acceptance": false,
+  "direct_pipeline_contains_both_geoid_grids": true,
+  "direct_pipeline_derived_from_epsg_operation": true,
+  "direct_pipeline_spatially_tested_in_PT": true,
   "grid_downloads": [
     {
       "bytes": 81638,
@@ -251,7 +254,7 @@
   "is_real_terrain_harmonization": false,
   "mission": "MN-GEO-RAIL-001",
   "native_rasters_reprojected": 0,
-  "observed_utc": "2026-10-30T23:00:15.494694+00:00",
+  "observed_utc": "2026-10-30T23:01:12.225666+00:00",
   "pyproj_version": "3.8.0",
   "references": {
     "copernicus_egm2008_vertical": "EPSG:3855",
@@ -264,51 +267,57 @@
     "vertical_grid_issuer": "https://cdn.proj.org/"
   },
   "source_crs_name": "Cascais height",
+  "spain_Zamora_outside_portuguese_geoid_extent": true,
   "stage": "vertical_cascais_alicante_proj_operation_audit",
   "target_crs_name": "Alicante height",
-  "tested_example_points_all_finite": false,
   "transformation_examples_not_observed_altitudes": [
     {
+      "direct_lonlat_grid_operation_returns_finite": true,
       "label": "PT_Mirandela_exploratory",
       "latitude": 41.5,
       "longitude": -7.2,
-      "operation_returns_finite": false,
+      "native_latlon_axis_operation_returns_finite": true,
       "synthetic_input_Cascais_height_m": 0,
-      "synthetic_output_Alicante_height_m": null
+      "synthetic_output_Alicante_height_m": 0.1027486335475345
     },
     {
+      "direct_lonlat_grid_operation_returns_finite": true,
       "label": "PT_Nordeste_exploratory",
       "latitude": 41.75,
       "longitude": -6.9,
-      "operation_returns_finite": false,
+      "native_latlon_axis_operation_returns_finite": true,
       "synthetic_input_Cascais_height_m": 0,
-      "synthetic_output_Alicante_height_m": null
+      "synthetic_output_Alicante_height_m": -0.03025453111138887
     },
     {
+      "direct_lonlat_grid_operation_returns_finite": true,
       "label": "PT_Amarante_exploratory",
       "latitude": 41.26,
       "longitude": -8.1,
-      "operation_returns_finite": false,
+      "native_latlon_axis_operation_returns_finite": true,
       "synthetic_input_Cascais_height_m": 0,
-      "synthetic_output_Alicante_height_m": null
+      "synthetic_output_Alicante_height_m": 0.08300006841228225
     },
     {
+      "direct_lonlat_grid_operation_returns_finite": true,
       "label": "ES_Alcanices_exploratory",
       "latitude": 41.6994,
       "longitude": -6.34647,
-      "operation_returns_finite": false,
+      "native_latlon_axis_operation_returns_finite": true,
       "synthetic_input_Cascais_height_m": 0,
-      "synthetic_output_Alicante_height_m": null
+      "synthetic_output_Alicante_height_m": -0.057913319255021634
     },
     {
+      "direct_lonlat_grid_operation_returns_finite": false,
       "label": "ES_Zamora_exploratory",
       "latitude": 41.50378,
       "longitude": -5.746992,
-      "operation_returns_finite": false,
+      "native_latlon_axis_operation_returns_finite": false,
       "synthetic_input_Cascais_height_m": 0,
       "synthetic_output_Alicante_height_m": null
     }
   ],
   "vertical_crs_of_CNIG_wcs_native_raster_explicitly_verified": false,
+  "vertical_harmonization_ready": false,
   "worker": "W4"
 }
