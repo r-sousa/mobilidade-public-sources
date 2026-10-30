@@ -5,7 +5,7 @@
   "feature_ids_not_source_download_permissions": true,
   "mission": "MN-GEO-RAIL-001",
   "native_assets_preserved": 0,
-  "observed_utc": "2026-10-30T22:41:23.960817+00:00",
+  "observed_utc": "2026-10-30T22:41:49.087976+00:00",
   "request_count": 12,
   "requests": [
     {
@@ -1155,7 +1155,7 @@
       ],
       "response_byte_count": 704970,
       "returned_count": 100,
-      "source_response_sha256": "82f323e0b1fededd2ad208038401e0c10a638db0730d5ca36383a6243b97cf65",
+      "source_response_sha256": "4449f416389b47629e955386bc96f32ace379d7cecc214992a56c16e531dd18e",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
@@ -2314,7 +2314,7 @@
       ],
       "response_byte_count": 691894,
       "returned_count": 100,
-      "source_response_sha256": "8f2fd95970f9f09c28831386a0a6b41ca3ef062161c2f0eeb9cfa667613ac490",
+      "source_response_sha256": "305beaedec560c37144c050a6eb484531b9beb3683d07007c283b16b51de70b2",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
@@ -3473,7 +3473,7 @@
       ],
       "response_byte_count": 744365,
       "returned_count": 100,
-      "source_response_sha256": "7e9ad56f36c84e882028fec13b772fb57829607584e4ba8408b6bf2bbd1b2131",
+      "source_response_sha256": "e58b8f757f0d3af70ef583bcb1670d4ca1a38e69c0997e553f9cd9e611fd0cc3",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
@@ -4632,7 +4632,7 @@
       ],
       "response_byte_count": 691979,
       "returned_count": 100,
-      "source_response_sha256": "3d43e0a9b0ba7482fb54bbd27f65bb025ff44bee54f58534fe5ed46fe4564fe3",
+      "source_response_sha256": "013e8202126e8a7e97206cfee8aca3ebdb86b81a88205d64e78e4b35e45935cd",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
@@ -5791,7 +5791,7 @@
       ],
       "response_byte_count": 783648,
       "returned_count": 100,
-      "source_response_sha256": "9470853fce610a8f834425e62056861e4f2b3d9c170a00b689757c69a34f35f3",
+      "source_response_sha256": "205a6a798c5a663bbb76d090ce4d2d2c7bb52b05867fbb11aea3e1bea59d07be",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
@@ -6950,7 +6950,7 @@
       ],
       "response_byte_count": 743234,
       "returned_count": 100,
-      "source_response_sha256": "cf97b9b2a7c39f5880109d64fd2f6d9ee2e3c87c5bf2584737ddf8eac755a661",
+      "source_response_sha256": "a4ce2a340d39d495fc7bc4c07bc4147bd48348fd26ba3c4c8ad6354f4505ac64",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
@@ -8109,7 +8109,7 @@
       ],
       "response_byte_count": 770504,
       "returned_count": 100,
-      "source_response_sha256": "99a371b937e0c376d2e900fd1904e3177c3dd3735ee83573bf0bb0dfaa94daeb",
+      "source_response_sha256": "6b2f746d71818626e8f09e772da53196f49710eb6db9a0924285a42b625a9266",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
@@ -9268,7 +9268,7 @@
       ],
       "response_byte_count": 577510,
       "returned_count": 100,
-      "source_response_sha256": "7247ac8d9e08921b97591667a663fc39a3f8d98558e965216cf820cdaceeae3f",
+      "source_response_sha256": "241cc6458fd321476d82d254039c88eeb8f5fba2c52c216f1f6ee6f32ea5736a",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
@@ -10427,7 +10427,7 @@
       ],
       "response_byte_count": 462022,
       "returned_count": 100,
-      "source_response_sha256": "299d290a410d371798bc5b65c02933f594375095328288fc8f70fb1080d981d6",
+      "source_response_sha256": "bdfc8742e44c295b6d75bd25f7e5bc1cbb18977901bd1f4eb2380a3748c1d5b7",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
@@ -11586,7 +11586,7 @@
       ],
       "response_byte_count": 693954,
       "returned_count": 100,
-      "source_response_sha256": "b14e02ebf72a57c2ef44fbbb1f53c2c769d2266622ad29c2ba9f8daff41ecc50",
+      "source_response_sha256": "c18876c0bcb3b169b77a636d5728df561fc2692202d49bf91622142b3f665953",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
@@ -12745,7 +12745,7 @@
       ],
       "response_byte_count": 487250,
       "returned_count": 100,
-      "source_response_sha256": "a03d6d1a0322bee0141cf82fea620de57a82e669c47ff6c4a84cfa8547daebdc",
+      "source_response_sha256": "eb0f638190b34d13608dbbd2495ee07166a7778804d7ea2fa6f26b8a9f856726",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
@@ -13904,7 +13904,7 @@
       ],
       "response_byte_count": 488822,
       "returned_count": 100,
-      "source_response_sha256": "8741f98045ac046f0226caf04e2a25a81f419dfd3efa7244b4729517e639832d",
+      "source_response_sha256": "5ef62a3e9d36372ad622229e52a3432336ddd3264ac87521572f74094daa4607",
       "status": "metadata_returned_partial",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
