@@ -147,5 +147,21 @@ class SecurityTests(unittest.TestCase):
 
 
 
+    def test_production_workflow_requires_branch_protection_and_manual_environment(self):
+        y=(ROOT/".github/workflows/mn-geo-pt-cdd-registered.yml").read_text(encoding="utf-8")
+        self.assertIn("workflow_dispatch:",y)
+        self.assertNotIn("\\n  push:",y)
+        self.assertNotIn("\\n  pull_request:",y)
+        self.assertIn("verify-protected-main:",y)
+        self.assertIn("needs: verify-protected-main",y)
+        self.assertIn("if [[ \"$protected\" != \"true\" ]]",y)
+        self.assertIn("environment: dgt-cdd",y)
+        self.assertIn("github.ref == 'refs/heads/main'",y)
+        self.assertIn("secrets.DGT_CDD_USERNAME",y)
+        self.assertIn("secrets.DGT_CDD_PASSWORD",y)
+        self.assertIn("persist-credentials: false",y)
+
+
+
 if __name__=="__main__":
     unittest.main()
