@@ -24,11 +24,57 @@
   ],
   "coverage_ids_truncated": false,
   "coverage_summary_count": 17,
+  "described_coverages": [
+    {
+      "coverage_id": "Elevacion25830_25",
+      "describe_url": "https://servicios.idee.es/wcs-inspire/mdt?service=WCS&request=DescribeCoverage&version=2.0.1&coverageId=Elevacion25830_25",
+      "envelopes": [
+        {
+          "axisLabels": "x y",
+          "lowerCorner": "-19487.5 3901187.5",
+          "srsName": "http://www.opengis.net/def/crs/EPSG/0/25830",
+          "upperCorner": "1140387.5 4865712.5"
+        }
+      ],
+      "grid_limits": [
+        {
+          "high": "46394 38580",
+          "low": "0 0"
+        }
+      ],
+      "http_status": 200,
+      "response_bytes": 2540,
+      "response_sha256": "fadb886035d9438581bf0a1663b503f7b3394ea19e6e8e0d737504a94934b301",
+      "status": "description_parsed"
+    },
+    {
+      "coverage_id": "Elevacion25830_5",
+      "describe_url": "https://servicios.idee.es/wcs-inspire/mdt?service=WCS&request=DescribeCoverage&version=2.0.1&coverageId=Elevacion25830_5",
+      "envelopes": [
+        {
+          "axisLabels": "x y",
+          "lowerCorner": "-19452.5 3901197.5",
+          "srsName": "http://www.opengis.net/def/crs/EPSG/0/25830",
+          "upperCorner": "1140352.5 4865682.5"
+        }
+      ],
+      "grid_limits": [
+        {
+          "high": "231960 192896",
+          "low": "0 0"
+        }
+      ],
+      "http_status": 200,
+      "response_bytes": 2536,
+      "response_sha256": "da3b2638ecceb52eeb837fc5d020e6573489fdfb2ce0435872e34e1f5876421a",
+      "status": "description_parsed"
+    }
+  ],
   "http_status": 200,
   "mission": "MN-GEO-RAIL-001",
   "native_raster_acquired": false,
   "note": "WCS service capabilities do not by themselves validate raster footprints or available sheets.",
-  "observed_utc": "2026-10-30T22:27:45.729274+00:00",
+  "observed_utc": "2026-10-30T22:27:49.756119+00:00",
   "producer": "IGN/CNIG — Spain",
   "public_redistribution_authorized": false,
   "response_bytes": 12162,
