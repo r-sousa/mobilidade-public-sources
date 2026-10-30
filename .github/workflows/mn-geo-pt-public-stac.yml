@@ -1,0 +1,58 @@
+name: MN-GEO-RAIL-001 PT anonymous DGT CDD discovery
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-pt-public-stac-20261030
+    paths:
+      - .github/workflows/mn-geo-pt-public-stac.yml
+      - tools/geo_rail_pt_public_stac_probe.py
+      - tests/test_geo_rail_pt_public_stac_probe.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-pt-cdd-public-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  safe-public-metadata:
+    if: github.ref == 'refs/heads/mn-geo-rail-001-pt-public-stac-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Security tests (mocked responses)
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_public_stac_probe.py' -v
+      - name: DGT CDD public metadata availability check, no authentication
+        run: |
+          python tools/geo_rail_pt_public_stac_probe.py \
+            --output=reports/mn-geo-rail-001/pt-dgt-public-stac-access.json
+      - name: Persist sanitized technical receipt, with concurrent update retry
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt=reports/mn-geo-rail-001/pt-dgt-public-stac-access.json
+          cp "$receipt" "$RUNNER_TEMP/mn-geo-pt-public-access.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            mkdir -p "$(dirname "$receipt")"
+            cp "$RUNNER_TEMP/mn-geo-pt-public-access.json" "$receipt"
+            git add "$receipt"
+            if git diff --cached --quiet; then
+              exit 0
+            fi
+            git commit -m "data(geo): record anonymous DGT metadata access outcome"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+          done
+          exit 1
