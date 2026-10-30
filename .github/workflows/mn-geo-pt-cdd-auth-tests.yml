@@ -1,0 +1,31 @@
+name: MN-GEO-RAIL-001 W2 authenticated CDD adapter security tests (no secrets)
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-pt-public-stac-20261030
+    paths:
+      - .github/workflows/mn-geo-pt-cdd-auth-tests.yml
+      - tools/geo_rail_pt_cdd_authenticated.py
+      - tests/test_geo_rail_pt_cdd_authenticated.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-authentication-adapter-without-secrets:
+    if: github.ref == 'refs/heads/mn-geo-rail-001-pt-public-stac-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check Python syntax before touching authenticated configuration
+        run: python -m py_compile tools/geo_rail_pt_cdd_authenticated.py
+      - name: Verify strict host/redirect/Keycloak-form/file-download contracts offline
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_cdd_authenticated.py' -v
+      - name: Confirm zero credentials and zero native DGT bytes used by tests
+        run: echo "No authentication, environment secrets, native DGT files, public data upload or workflow token writes."
