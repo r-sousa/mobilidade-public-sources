@@ -1,0 +1,68 @@
+name: MN-GEO-RAIL-001 W2 DGT anonymous native asset preflight
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-pt-public-stac-20261030
+    paths:
+      - .github/workflows/mn-geo-pt-asset-preflight.yml
+      - tools/geo_rail_pt_asset_preflight.py
+      - tests/test_geo_rail_pt_asset_preflight.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-w2-asset-preflight-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  anonymous-head-only:
+    if: github.ref == 'refs/heads/mn-geo-rail-001-pt-public-stac-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify safe host, HEAD method, no signed links, no redirects
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_asset_preflight.py' -v
+      - name: Check two published STAC items and classify anonymous native access
+        id: probe
+        shell: bash
+        run: |
+          if python tools/geo_rail_pt_asset_preflight.py \
+            --output=reports/mn-geo-rail-001/pt-dgt-native-asset-preflight.json; then
+            echo 'failed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'failed=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Persist sanitized status-only receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt=reports/mn-geo-rail-001/pt-dgt-native-asset-preflight.json
+          cp "$receipt" "$RUNNER_TEMP/mn-w2-asset-safe.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            mkdir -p "$(dirname "$receipt")"
+            cp "$RUNNER_TEMP/mn-w2-asset-safe.json" "$receipt"
+            git add "$receipt"
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "data(geo): DGT anonymous native asset access preflight, no URLs"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
+          done
+          exit 1
+      - name: Require metadata response for both diagnostic cases
+        env:
+          FAILED: ${{ steps.probe.outputs.failed }}
+        run: |
+          if [[ "$FAILED" == 'true' ]]; then
+            echo 'DGT access preflight incomplete, see metadata receipt' >&2
+            exit 1
+          fi
