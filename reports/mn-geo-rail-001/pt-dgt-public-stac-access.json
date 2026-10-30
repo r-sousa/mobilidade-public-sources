@@ -1,0 +1,45 @@
+{
+  "attempts": [
+    {
+      "authentication_supplied": false,
+      "bytes_read": 81522,
+      "collection_ids": null,
+      "http_status": 200,
+      "method": "GET",
+      "path": "/collections",
+      "response_sha256": "1ef70a626d6a901d7a62a200e5e64897839807861d39f986f1cdaef493b829ef",
+      "returned_features_count": null,
+      "status": "public_metadata_read"
+    },
+    {
+      "authentication_supplied": false,
+      "bytes_read": 5050,
+      "collection_ids": null,
+      "http_status": 200,
+      "method": "POST",
+      "path": "/search",
+      "response_sha256": "20c1a48ac93c10c45861d8635f4d93fcd118f0e99375878f0ff0cb3a92a1a393",
+      "returned_collection_counts": {
+        "MDT-2m": 1
+      },
+      "returned_features_count": 1,
+      "status": "public_metadata_read"
+    }
+  ],
+  "canonical_acceptance": false,
+  "coverage_not_proven_when_access_denied": true,
+  "did_not_download_native_elevation": true,
+  "endpoint_discovered_from": "https://github.com/qgispt/dgtcd_downer",
+  "mission": "MN-GEO-RAIL-001",
+  "observed_utc": "2026-10-30T22:36:56.484700+00:00",
+  "producer": "Direcao-Geral do Territorio, CDD (Portugal)",
+  "source_access_policy": "No account, token, cookie, login or TLS bypass supplied",
+  "stage": "pt_dgt_cdd_public_stac_access_only",
+  "tested_bbox_wgs84": [
+    -7.2,
+    41.6,
+    -6.8,
+    41.9
+  ],
+  "worker": "W2"
+}
