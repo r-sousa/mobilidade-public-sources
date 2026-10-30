@@ -84,7 +84,7 @@ def main():
     url = coverage_url(args.coverage)
     receipt = {
         "mission": "MN-GEO-RAIL-001", "worker": "W3",
-        "stage": "ES_WCS_25m_Zamora_1km2_pilot",
+        "stage": f"ES_WCS_{args.coverage.rsplit('_', 1)[-1]}m_Zamora_1km2_pilot",
         "observed_utc": datetime.now(timezone.utc).isoformat(),
         "coverage_id": args.coverage,
         "query_bbox_utm30_epsg25830": [WEST,SOUTH,EAST,NORTH],
