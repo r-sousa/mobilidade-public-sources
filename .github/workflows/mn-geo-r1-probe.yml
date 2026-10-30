@@ -59,10 +59,25 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add reports/mn-geo-rail-001/r1-20261030-producer-list-and-head.geojson
-          if git diff --cached --quiet; then
-            echo 'No change to metadata receipt'
-            exit 0
-          fi
-          git commit -m "data(geo): record R1 producer tile-list and HEAD probe receipt"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          receipt=reports/mn-geo-rail-001/r1-20261030-producer-list-and-head.geojson
+          cp "$receipt" "$RUNNER_TEMP/mn-geo-r1-receipt.geojson"
+          for attempt in 1 2 3; do
+            # Rebase metadata work safely against the latest remote branch without force pushes.
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            mkdir -p "$(dirname "$receipt")"
+            cp "$RUNNER_TEMP/mn-geo-r1-receipt.geojson" "$receipt"
+            git add "$receipt"
+            if git diff --cached --quiet; then
+              echo 'Metadata receipt already current'
+              exit 0
+            fi
+            git commit -m "data(geo): record R1 producer tile and TIFF header receipt"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo 'Metadata receipt committed'
+              exit 0
+            fi
+            echo "Remote advanced during attempt $attempt, retrying without force"
+          done
+          echo 'Unable to persist receipt after 3 concurrent-update retries' >&2
+          exit 1
