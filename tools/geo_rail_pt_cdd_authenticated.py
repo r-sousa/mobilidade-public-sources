@@ -53,9 +53,35 @@ USER_AGENT = "MobilidadeNorte-DGT-CDDAuthenticated-Pilot/1.0"
 class IntakeError(Exception):
     """Generic, non-sensitive error code only. Never include URLs or headers."""
 
-    def __init__(self, code):
+    def __init__(self, code, *, phase="not_identified", redirect=None):
         self.code = code
+        self.phase = phase
+        self.redirect = redirect
         super().__init__(code)
+
+
+def sanitized_redirect_diagnostic(url):
+    """Only DGT-owned hostnames, protocol class and numeric port; never path/query."""
+    try:
+        p = urlsplit(url)
+        host = (p.hostname or "").lower().rstrip(".")
+        scheme = p.scheme.lower() if p.scheme.lower() in ("https", "http") else "other"
+        port = p.port
+        if host == "dgterritorio.gov.pt" or host.endswith(".dgterritorio.gov.pt"):
+            host_class = host
+        else:
+            host_class = "outside_DGT_hostname_allowlist"
+        return {
+            "redirect_hostname_class": host_class,
+            "redirect_scheme_class": scheme,
+            "redirect_port": port,
+        }
+    except (ValueError, TypeError):
+        return {
+            "redirect_hostname_class": "unparseable",
+            "redirect_scheme_class": "unparseable",
+            "redirect_port": None,
+        }
 
 
 def allowed_url(url, allowed_hosts):
@@ -73,10 +99,11 @@ def allowed_url(url, allowed_hosts):
 def request_bounded_redirects(
     session, method, url, allowed_hosts, *,
     timeout=30, form=None, json_body=None, stream=False, stop_at=None,
+    phase="not_identified",
 ):
     """All redirects checked BEFORE being followed, no arbitrary host/network."""
     if not allowed_url(url, allowed_hosts):
-        raise IntakeError("unapproved_https_host_or_url")
+        raise IntakeError("unapproved_https_host_or_url", phase=phase)
     for _ in range(MAX_REDIRECTS+1):
         try:
             response = session.request(
@@ -85,26 +112,30 @@ def request_bounded_redirects(
                 stream=stream, timeout=timeout,
             )
         except Exception:
-            raise IntakeError("network_request_failed") from None
+            raise IntakeError("network_request_failed", phase=phase) from None
         status = response.status_code
         if status not in (301, 302, 303, 307, 308):
             return response
         location = response.headers.get("Location")
         if not isinstance(location, str) or not location:
             response.close()
-            raise IntakeError("redirect_without_location")
+            raise IntakeError("redirect_without_location", phase=phase)
         dest = urljoin(url, location)
         if not allowed_url(dest, allowed_hosts):
             response.close()
-            raise IntakeError("unapproved_redirect_destination")
+            raise IntakeError("unapproved_redirect_destination",
+                              phase=phase,
+                              redirect=sanitized_redirect_diagnostic(dest))
         response.close()
         if stop_at is not None and not allowed_url(dest, stop_at):
-            raise IntakeError("redirect_outside_download_host_allowlist")
+            raise IntakeError("redirect_outside_download_host_allowlist",
+                              phase=phase,
+                              redirect=sanitized_redirect_diagnostic(dest))
         # RFC semantics: 302/303 after POST are GET navigation.
         if status == 303 or (status in (301, 302) and method == "POST"):
             method, form, json_body = "GET", None, None
         url = dest
-    raise IntakeError("too_many_redirects")
+    raise IntakeError("too_many_redirects", phase=phase)
 
 
 class KeycloakLoginForm(HTMLParser):
@@ -155,14 +186,16 @@ def authenticated_session(username, password):
     s.verify = True
     s.headers.update({"Accept": "text/html,application/json;q=0.9,*/*;q=0.8"})
     try:
-        with request_bounded_redirects(s,"GET",PORTAL,TRUSTED_AUTH_REDIRECTS) as r:
+        with request_bounded_redirects(s,"GET",PORTAL,TRUSTED_AUTH_REDIRECTS,
+                                       phase="portal_public_entry") as r:
             if r.status_code!=200:
                 raise IntakeError("portal_unavailable")
         q=urlencode({
             "client_id":CLIENT, "response_type":"code",
             "redirect_uri":CALLBACK, "scope":"openid profile email"
         })
-        with request_bounded_redirects(s,"GET",LOGIN+"?"+q,TRUSTED_AUTH_REDIRECTS) as page:
+        with request_bounded_redirects(s,"GET",LOGIN+"?"+q,TRUSTED_AUTH_REDIRECTS,
+                                       phase="keycloak_public_form") as page:
             if page.status_code!=200:
                 raise IntakeError("login_form_unavailable")
             parser=KeycloakLoginForm()
@@ -175,7 +208,8 @@ def authenticated_session(username, password):
         form.update(username=username,password=password)
         # NO credential-bearing text, headers, HTML or URLs are logged.
         with request_bounded_redirects(s,"POST",action,TRUSTED_AUTH_REDIRECTS,
-                                       form=form,timeout=35) as done:
+                                       form=form,timeout=35,
+                                       phase="keycloak_credentials_submission") as done:
             if done.status_code!=200 or urlsplit(done.url).hostname!=DATA_HOST:
                 raise IntakeError("authentication_not_confirmed_or_mfa_required")
             # A final 200 on CDD is not a guarantee of a usable native download.
@@ -190,7 +224,8 @@ def find_native_asset(session,site):
     config=PILOT_SITES[site]
     payload={"bbox":config["bbox"],"collections":[COLLECTION],"limit":500}
     response=request_bounded_redirects(
-        session, "POST", STAC, TRUSTED_AUTH_REDIRECTS, json_body=payload,stream=True)
+        session, "POST", STAC, TRUSTED_AUTH_REDIRECTS, json_body=payload,
+        stream=True,phase="stac_after_authentication")
     data,response_sha=read_metadata(response)
     if data.get("type")!="FeatureCollection":
         raise IntakeError("stac_response_not_feature_collection")
@@ -223,7 +258,7 @@ def download_native(session, href, destination):
     # managed by requests on the DGT domain. HTTPS verification is ON.
     result=request_bounded_redirects(
         session,"GET",href,TRUSTED_DATA_REDIRECTS,stream=True,timeout=60,
-        stop_at=TRUSTED_DATA_REDIRECTS)
+        stop_at=TRUSTED_DATA_REDIRECTS,phase="native_geotiff_download")
     size=0
     digest=hashlib.sha256()
     try:
@@ -318,6 +353,9 @@ def main():
     except IntakeError as error:
         report["status"]="acquisition_or_native_quality_not_verified"
         report["safe_error_code"]=error.code
+        report["safe_error_phase"]=error.phase
+        if error.redirect:
+            report.update(error.redirect)
     except Exception:
         # Suppress all HTTP errors/exception details, which may contain
         # session tokens or secret URL query parameters.
