@@ -24,6 +24,9 @@ MAX_EACH_BYTES=20_000_000
 EXAMPLES=(
  {"label":"PT_Mirandela_exploratory","longitude":-7.2,"latitude":41.5},
  {"label":"PT_Nordeste_exploratory","longitude":-6.9,"latitude":41.75},
+ {"label":"PT_Amarante_exploratory","longitude":-8.1,"latitude":41.26},
+ {"label":"ES_Alcanices_exploratory","longitude":-6.346470,"latitude":41.699400},
+ {"label":"ES_Zamora_exploratory","longitude":-5.746992,"latitude":41.503780},
 )
 
 
@@ -80,6 +83,39 @@ def summarize_group(group):
             "unavailable_operations":missing}
 
 
+def grid_geographic_diagnostics(workspace):
+    """Report producer grid footprint and finite samples; grid bytes remain temporary."""
+    import rasterio
+    import numpy as np
+    results=[]
+    for name in GRIDS:
+        record={"filename":name,"status":"not_inspected","samples":[]}
+        try:
+            with rasterio.open(workspace/name) as ds:
+                bounds=list(ds.bounds)
+                record.update({"status":"tiff_opened","crs":str(ds.crs),
+                               "bounds":bounds,"width":ds.width,"height":ds.height,
+                               "nodata":ds.nodata,"dtype":ds.dtypes[0],
+                               "band_count":ds.count})
+                for p in EXAMPLES:
+                    lon,lat=p["longitude"],p["latitude"]
+                    inside=bounds[0]<=lon<=bounds[2] and bounds[1]<=lat<=bounds[3]
+                    x={"site":p["label"],"within_grid_bbox":inside,
+                       "sample_finite":False,"sample_masked":None}
+                    if inside:
+                        value=next(ds.sample([(lon,lat)],masked=True))[0]
+                        x["sample_masked"]=bool(np.ma.is_masked(value))
+                        x["sample_finite"]=bool(np.isfinite(float(value)))
+                        if x["sample_finite"]:
+                            x["grid_sample_value_m"]=float(value)
+                    record["samples"].append(x)
+        except Exception as err:
+            record.update({"status":"unverified","error_type":type(err).__name__,
+                           "error_excerpt":str(err)[:160]})
+        results.append(record)
+    return results
+
+
 def run():
     import pyproj
     from pyproj import CRS,datadir
@@ -116,6 +152,7 @@ def run():
         downloads=[transfer_grid(name,workspace) for name in GRIDS]
         report["grid_downloads"]=downloads
         if all(item["status"]=="downloaded_temporary_tiff" for item in downloads):
+            report["grid_spatial_diagnostics"]=grid_geographic_diagnostics(workspace)
             datadir.append_data_dir(str(workspace))
             after=TransformerGroup(CRS.from_epsg(5780),CRS.from_epsg(5782),
                                    allow_ballpark=False,always_xy=True)
