@@ -1,0 +1,59 @@
+{
+  "canonical_acceptance": false,
+  "canonical_identity_assigned": false,
+  "checked_raster_metadata": {
+    "band_count": 1,
+    "bounds_wgs84": [
+      -8.00013888888889,
+      41.00013888888889,
+      -7.000138888888889,
+      42.00013888888889
+    ],
+    "driver": "GTiff",
+    "dtype": "float32",
+    "height_px": 3600,
+    "horizontal_crs": "EPSG:4326",
+    "is_tiled": true,
+    "nodata_declared": null,
+    "overviews": [
+      2,
+      4,
+      8
+    ],
+    "pixel_size_degrees": [
+      0.0002777777777777778,
+      0.0002777777777777778
+    ],
+    "sample_window": {
+      "col_off": 1672,
+      "height_px": 256,
+      "max_surface_height_m": 1058.071044921875,
+      "mean_surface_height_m": 774.9892578125,
+      "min_surface_height_m": 475.33929443359375,
+      "row_off": 1672,
+      "valid_cell_count": 65536,
+      "width_px": 256
+    },
+    "width_px": 3600
+  },
+  "mission": "MN-GEO-RAIL-001",
+  "native_asset_bytes": 44038002,
+  "native_asset_preserved_canonically": false,
+  "native_asset_retained_in_repository": false,
+  "native_asset_sha256": "860fb53b25e4ebc2a519458e8e457211e808c7f0f10d80a3b0dc4d4c03e22715",
+  "observed_utc": "2026-10-30T22:24:39.042584+00:00",
+  "producer": "ESA Copernicus DEM GLO-30 Public via AWS/Sinergise",
+  "ready_for_rail_alignment_profiles": false,
+  "reuse_publication_clearance": false,
+  "source_kind": "DSM_not_DTM",
+  "source_tile": "Copernicus_DSM_COG_10_N41_00_W008_00_DEM",
+  "source_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N41_00_W008_00_DEM/Copernicus_DSM_COG_10_N41_00_W008_00_DEM.tif",
+  "stage": "R1_single_cog_technical_sample",
+  "validation_scope": "one complete COG, first-band georeferencing and 256x256 centre window",
+  "vertical_datum_verified_from_native_file": false,
+  "warnings": [
+    "DSM surface includes vegetation and buildings and must not be relabelled as DTM.",
+    "One validated tile does not prove full 12-tile coverage or cross-border datum continuity.",
+    "Temporary native bytes were removed. This is a provenance/technical-test receipt only."
+  ]
+}
