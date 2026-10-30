@@ -125,5 +125,27 @@ class SecurityTests(unittest.TestCase):
             self.assertNotIn("DO_NOT_LOG",str(ctx.exception))
 
 
+    def test_failure_receipt_is_parseable_json_without_secrets(self):
+        import json
+        import contextlib
+        import os
+        from unittest.mock import patch
+        with TemporaryDirectory() as tmp:
+            receipt=Path(tmp)/"receipt.json"
+            index=Path(tmp)/"index.geojson"
+            index.write_text('{"type":"FeatureCollection","features":[]}',encoding="utf-8")
+            argv=["prog","--site","mirandela","--index",str(index),
+                  "--receipt",str(receipt)]
+            with patch("sys.argv",argv),patch.dict(os.environ,{},clear=True):
+                with contextlib.redirect_stdout(io.StringIO()):
+                    with self.assertRaises(SystemExit):
+                        m.main()
+            data=json.loads(receipt.read_text(encoding="utf-8"))
+            self.assertEqual(data["safe_error_code"],"environment_secrets_not_set")
+            self.assertEqual(data["status"],"acquisition_or_native_quality_not_verified")
+            self.assertNotIn("password",json.dumps(data).lower())
+
+
+
 if __name__=="__main__":
     unittest.main()
