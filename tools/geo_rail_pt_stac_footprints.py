@@ -40,19 +40,29 @@ def summary(bbox, collection, response: dict) -> dict:
     if not isinstance(features, list) or len(features) > LIMIT:
         raise ValueError("invalid STAC features/limit contract")
     result = []
+    diagnostics = {"missing_bbox":0,"bad_bbox":0,"outside_expected_geographic_bounds":0,"missing_or_long_id":0}
+    example = None
     for f in features:
         if not isinstance(f, dict):
             continue
         bb = f.get("bbox")
+        if example is None:
+            example = {"top_level_keys":sorted(str(k) for k in f.keys())[:30],
+                       "bbox_first_four_numbers":(bb[:4] if isinstance(bb,list) and len(bb)>=4 and all(isinstance(z,(int,float)) for z in bb[:4]) else None),
+                       "geometry_type":((f.get("geometry") or {}).get("type") if isinstance(f.get("geometry"),dict) else None)}
         if bb is None:
+            diagnostics["missing_bbox"]+=1
             continue
         if not isinstance(bb, list) or len(bb) < 4 or not all(isinstance(v,(int,float)) for v in bb[:4]):
+            diagnostics["bad_bbox"]+=1
             continue
         x0,y0,x1,y1 = bb[:4]
         if not (-11 <= x0 <= x1 <= -5 and 36 <= y0 <= y1 <= 43):
+            diagnostics["outside_expected_geographic_bounds"]+=1
             continue
         ident = f.get("id")
         if not isinstance(ident, str) or len(ident) > 160:
+            diagnostics["missing_or_long_id"]+=1
             continue
         result.append({"tile_id": ident, "bbox_wgs84": bb[:4],
                        "collection": str(f.get("collection", collection))[:50]})
@@ -63,6 +73,8 @@ def summary(bbox, collection, response: dict) -> dict:
         "number_matched_reported": response.get("numberMatched") if isinstance(response.get("numberMatched"),int) else None,
         "number_returned_reported": response.get("numberReturned") if isinstance(response.get("numberReturned"),int) else None,
         "footprints": result,
+        "whitelist_rejection_counts":diagnostics,
+        "first_record_safe_shape":example,
     }
 
 
