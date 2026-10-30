@@ -13,7 +13,6 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import urlencode
 
-from pyproj import Transformer
 from geo_rail_es_wcs_sample import download_bounded, inspect
 
 WCS = "https://servicios.idee.es/wcs-inspire/mdt"
@@ -57,6 +56,7 @@ def build_coverage_url(resolution: int, bbox: list[int]) -> str:
 
 
 def probe_sites(sites=SITES, resolutions=RESOLUTIONS) -> dict:
+    from pyproj import Transformer  # Optional geospatial runtime; not required to import module
     transformer = Transformer.from_crs(4326, 25830, always_xy=True)
     results = []
     for name, lon, lat, reference in sites:
