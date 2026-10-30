@@ -1,0 +1,88 @@
+{
+  "canonical_acceptance": false,
+  "cases": [
+    {
+      "asset_count": 1,
+      "bbox_wgs84": [
+        -7.25,
+        41.45,
+        -7.15,
+        41.55
+      ],
+      "collection": "MDT-2m",
+      "diagnostic_window": "Mirandela",
+      "item_id": "MDT-2m-282510-09-2024",
+      "native_asset_candidates": [
+        {
+          "asset_key": "data",
+          "preflight": {
+            "content_length_bytes": null,
+            "content_type": null,
+            "has_query": false,
+            "host": "cdd.dgterritorio.gov.pt",
+            "http_status": 302,
+            "native_bytes_downloaded": 0,
+            "redirect_target_host": "cdd.dgterritorio.gov.pt",
+            "scheme": "https",
+            "sent_authentication": false,
+            "status": "redirect_not_followed"
+          },
+          "reported_media_type": "image/tiff; application=geotiff",
+          "roles": [
+            "data",
+            "visual"
+          ]
+        }
+      ],
+      "source_stac_response_sha256": "4cd6b70d394ac48b7c24def44fb75fff18e51d880e02e49564fd25b32a27c46a",
+      "status": "metadata_accessible_asset_preflight_done"
+    },
+    {
+      "asset_count": 1,
+      "bbox_wgs84": [
+        -8.15,
+        41.22,
+        -8.05,
+        41.32
+      ],
+      "collection": "MDT-2m",
+      "diagnostic_window": "Amarante",
+      "item_id": "MDT-2m-200484-07-2025",
+      "native_asset_candidates": [
+        {
+          "asset_key": "data",
+          "preflight": {
+            "content_length_bytes": null,
+            "content_type": null,
+            "has_query": false,
+            "host": "cdd.dgterritorio.gov.pt",
+            "http_status": 302,
+            "native_bytes_downloaded": 0,
+            "redirect_target_host": "cdd.dgterritorio.gov.pt",
+            "scheme": "https",
+            "sent_authentication": false,
+            "status": "redirect_not_followed"
+          },
+          "reported_media_type": "image/tiff; application=geotiff",
+          "roles": [
+            "data",
+            "visual"
+          ]
+        }
+      ],
+      "source_stac_response_sha256": "6753bb663f862a00753fd19f648faa6019b2f916362af363baa93260d599e74e",
+      "status": "metadata_accessible_asset_preflight_done"
+    }
+  ],
+  "metadata_only": true,
+  "mission": "MN-GEO-RAIL-001",
+  "native_data_quality_validated": false,
+  "native_raster_bytes_downloaded": 0,
+  "no_credentials_used": true,
+  "no_redirects_followed": true,
+  "observed_utc": "2026-10-30T22:55:42.709824+00:00",
+  "producer": "DGT Centro de Dados",
+  "signed_links_never_persisted": true,
+  "stage": "pt_anonymous_native_asset_HEAD_access_preflight",
+  "worker": "W2"
+}
