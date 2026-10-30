@@ -1,0 +1,182 @@
+{
+  "actual_PT_ES_benchmark_observation_checked": false,
+  "after": {
+    "available_operations": [
+      {
+        "accuracy_m": 0.09,
+        "definition": "proj=pipeline step proj=axisswap order=2,1 step proj=unitconvert xy_in=deg xy_out=rad step proj=vgridshift grids=pt_dgt_GeodPT08.tif multiplier=1 step inv proj=vgridshift grids=es_ign_egm08-rednap.tif multiplier=1 step proj=unitconvert xy_in=rad xy_out=deg step proj=axisswap order=2,1",
+        "description": "Inverse of ETRS89 to Cascais height (1) + ETRS89 to Alicante height (1)"
+      },
+      {
+        "accuracy_m": 0.2,
+        "definition": "proj=pipeline step proj=geogoffset dh=-0.315 step inv proj=vertoffset lat_0=40.7722222222222 lon_0=-3.65972222222222 dh=-0.486 slope_lat=-0.003 slope_lon=0.006",
+        "description": "Cascais height to EVRF2000 height (1) + Inverse of Alicante height to EVRF2000 height (1)"
+      }
+    ],
+    "best_available": true,
+    "unavailable_operations": [
+      {
+        "accuracy_m": 0.102,
+        "description": "Cascais height to EVRF2019 mean-tide height (2) + Inverse of Alicante height to EVRF2019 mean-tide height (1)",
+        "grids": [
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "es_2019m.asc",
+            "url": ""
+          },
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "pt_2019m.asc",
+            "url": ""
+          }
+        ]
+      },
+      {
+        "accuracy_m": 0.11,
+        "description": "Cascais height to EVRF2019 height (2) + Inverse of Alicante height to EVRF2019 height (1)",
+        "grids": [
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "es_2019z.asc",
+            "url": ""
+          },
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "pt_2019z.asc",
+            "url": ""
+          }
+        ]
+      }
+    ]
+  },
+  "before": {
+    "available_operations": [
+      {
+        "accuracy_m": 0.2,
+        "definition": "proj=pipeline step proj=geogoffset dh=-0.315 step inv proj=vertoffset lat_0=40.7722222222222 lon_0=-3.65972222222222 dh=-0.486 slope_lat=-0.003 slope_lon=0.006",
+        "description": "Cascais height to EVRF2000 height (1) + Inverse of Alicante height to EVRF2000 height (1)"
+      }
+    ],
+    "best_available": false,
+    "unavailable_operations": [
+      {
+        "accuracy_m": 0.09,
+        "description": "Inverse of ETRS89 to Cascais height (1) + ETRS89 to Alicante height (1)",
+        "grids": [
+          {
+            "available": false,
+            "open_license": true,
+            "short_name": "es_ign_egm08-rednap.tif",
+            "url": "https://cdn.proj.org/es_ign_egm08-rednap.tif"
+          },
+          {
+            "available": false,
+            "open_license": true,
+            "short_name": "pt_dgt_GeodPT08.tif",
+            "url": "https://cdn.proj.org/pt_dgt_GeodPT08.tif"
+          }
+        ]
+      },
+      {
+        "accuracy_m": 0.102,
+        "description": "Cascais height to EVRF2019 mean-tide height (2) + Inverse of Alicante height to EVRF2019 mean-tide height (1)",
+        "grids": [
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "es_2019m.asc",
+            "url": ""
+          },
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "pt_2019m.asc",
+            "url": ""
+          }
+        ]
+      },
+      {
+        "accuracy_m": 0.11,
+        "description": "Cascais height to EVRF2019 height (2) + Inverse of Alicante height to EVRF2019 height (1)",
+        "grids": [
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "es_2019z.asc",
+            "url": ""
+          },
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "pt_2019z.asc",
+            "url": ""
+          }
+        ]
+      }
+    ]
+  },
+  "best_grid_operation_reproducibly_available": true,
+  "canonical_acceptance": false,
+  "grid_downloads": [
+    {
+      "bytes": 81638,
+      "filename": "pt_dgt_GeodPT08.tif",
+      "open_license_indicated_by_proj_catalogue": true,
+      "preserved_in_git": false,
+      "sha256": "8c006ae3afa037c214d30e7ec97736452705773ccb663274e003ced1d08ccaa0",
+      "source_url": "https://cdn.proj.org/pt_dgt_GeodPT08.tif",
+      "status": "downloaded_temporary_tiff"
+    },
+    {
+      "bytes": 827857,
+      "filename": "es_ign_egm08-rednap.tif",
+      "open_license_indicated_by_proj_catalogue": true,
+      "preserved_in_git": false,
+      "sha256": "d1758a580c2acc7cddcb814c2aebe1e5ab83f74dfaed8c1a885355bb3f85df58",
+      "source_url": "https://cdn.proj.org/es_ign_egm08-rednap.tif",
+      "status": "downloaded_temporary_tiff"
+    }
+  ],
+  "is_real_terrain_harmonization": false,
+  "mission": "MN-GEO-RAIL-001",
+  "native_rasters_reprojected": 0,
+  "observed_utc": "2026-10-30T22:57:54.444250+00:00",
+  "pyproj_version": "3.8.0",
+  "references": {
+    "copernicus_egm2008_vertical": "EPSG:3855",
+    "portugal_geoid_official": "https://www.gov.pt/servicos/aceder-online-ao-modelo-do-geoide-geodpt08-",
+    "portugal_horizontal": "EPSG:3763",
+    "portugal_vertical": "EPSG:5780",
+    "spain_geoid_ign": "https://datos-geodesia.ign.es/geoide/Leeme_Readme.pdf",
+    "spain_horizontal": "EPSG:25830",
+    "spain_vertical": "EPSG:5782",
+    "vertical_grid_issuer": "https://cdn.proj.org/"
+  },
+  "source_crs_name": "Cascais height",
+  "stage": "vertical_cascais_alicante_proj_operation_audit",
+  "target_crs_name": "Alicante height",
+  "transformation_examples_not_observed_altitudes": [
+    {
+      "label": "PT_Mirandela_exploratory",
+      "latitude": 41.5,
+      "longitude": -7.2,
+      "operation_returns_finite": false,
+      "synthetic_input_Cascais_height_m": 0,
+      "synthetic_output_Alicante_height_m": null
+    },
+    {
+      "label": "PT_Nordeste_exploratory",
+      "latitude": 41.75,
+      "longitude": -6.9,
+      "operation_returns_finite": false,
+      "synthetic_input_Cascais_height_m": 0,
+      "synthetic_output_Alicante_height_m": null
+    }
+  ],
+  "vertical_crs_of_CNIG_wcs_native_raster_explicitly_verified": false,
+  "worker": "W4"
+}
