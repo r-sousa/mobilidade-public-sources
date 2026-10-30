@@ -158,25 +158,48 @@ def run():
                                    allow_ballpark=False,always_xy=True)
             report["after"]=summarize_group(after)
             report["best_grid_operation_reproducibly_available"]=bool(after.best_available)
+            report["vertical_harmonization_ready"]=False
+            report["direct_pipeline_spatially_tested_in_PT"]=False
             if after.best_available and after.transformers:
+                from pyproj import Transformer
                 transformer=after.transformers[0]
+                definition=transformer.definition
+                # EPSG vertical-only CRS pipelines conventionally include
+                # axis swaps for native lat/lon axis order. For explicitly
+                # longitude-first samples remove only these two wrappers,
+                # retaining BOTH authoritative vertical gridshift steps.
+                raw="step proj=axisswap order=2,1"
+                direct_definition=definition.replace(raw,"")
+                direct=Transformer.from_pipeline(direct_definition)
+                report["direct_pipeline_derived_from_epsg_operation"]=True
+                report["direct_pipeline_contains_both_geoid_grids"]=all(
+                    name in direct_definition for name in GRIDS)
                 report["transformation_examples_not_observed_altitudes"]=[]
                 for site in EXAMPLES:
                     lon,lat=site["longitude"],site["latitude"]
-                    x,y,height=transformer.transform(lon,lat,0.0)
-                    valid=all(math.isfinite(v) for v in (x,y,height))
+                    # Compare native group axis convention and explicitly
+                    # lon/lat direct pipeline. A zero height is synthetic.
+                    x,y,h_native=transformer.transform(lat,lon,0.0)
+                    u,v,h_direct=direct.transform(lon,lat,0.0)
+                    native_valid=all(math.isfinite(v) for v in (x,y,h_native))
+                    direct_valid=all(math.isfinite(v) for v in (u,v,h_direct))
                     report["transformation_examples_not_observed_altitudes"].append({
                         "label":site["label"],"longitude":lon,"latitude":lat,
                         "synthetic_input_Cascais_height_m":0,
-                        "synthetic_output_Alicante_height_m":height if valid else None,
-                        "operation_returns_finite":valid
+                        "native_latlon_axis_operation_returns_finite":native_valid,
+                        "direct_lonlat_grid_operation_returns_finite":direct_valid,
+                        "synthetic_output_Alicante_height_m":h_direct if direct_valid else None,
                     })
-                report["tested_example_points_all_finite"]=all(
-                    s["operation_returns_finite"]
-                    for s in report["transformation_examples_not_observed_altitudes"])
-                report["best_grid_operation_reproducibly_available"] = (
-                    report["best_grid_operation_reproducibly_available"] and
-                    report["tested_example_points_all_finite"])
+                tested=report["transformation_examples_not_observed_altitudes"]
+                report["direct_pipeline_spatially_tested_in_PT"]=(
+                    report["direct_pipeline_contains_both_geoid_grids"] and
+                    all(t["direct_lonlat_grid_operation_returns_finite"]
+                        for t in tested if t["label"].startswith("PT_")))
+                report["spain_Zamora_outside_portuguese_geoid_extent"]=not any(
+                    s["filename"]=="pt_dgt_GeodPT08.tif" and
+                    x["site"]=="ES_Zamora_exploratory" and x["within_grid_bbox"]
+                    for s in report["grid_spatial_diagnostics"]
+                    for x in s.get("samples",[]))
         else:
             report["best_grid_operation_reproducibly_available"]=False
     return report
@@ -191,8 +214,9 @@ def main():
     args.output.write_text(json.dumps(doc,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding="utf-8")
     print(json.dumps({"grid_downloads":[(x["filename"],x["status"],x.get("bytes"))
         for x in doc["grid_downloads"]],"best_available":doc["best_grid_operation_reproducibly_available"]}))
-    if not doc["best_grid_operation_reproducibly_available"]:
-        raise SystemExit("Best grid-based vertical transformation not available; inspect audit")
+    if not (doc["best_grid_operation_reproducibly_available"] and
+            doc.get("direct_pipeline_spatially_tested_in_PT",False)):
+        raise SystemExit("Vertical grid operation not spatially validated in Portuguese control locations")
 
 
 if __name__=="__main__":
