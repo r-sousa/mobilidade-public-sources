@@ -5,7 +5,7 @@
   "feature_ids_not_source_download_permissions": true,
   "mission": "MN-GEO-RAIL-001",
   "native_assets_preserved": 0,
-  "observed_utc": "2026-10-30T22:41:49.087976+00:00",
+  "observed_utc": "2026-10-30T22:42:27.451986+00:00",
   "request_count": 12,
   "requests": [
     {
@@ -1139,11 +1139,99 @@
           ],
           "collection": "MDT-2m",
           "tile_id": "MDT-2m-302544-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9050438,
+            41.8407766,
+            -6.8928328,
+            41.8499072
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-302543-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9052159,
+            41.8317754,
+            -6.8930067,
+            41.840906
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-302542-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9053879,
+            41.8227742,
+            -6.8931804,
+            41.8319047
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-302541-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9055599,
+            41.813773,
+            -6.8933541,
+            41.8229035
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-302540-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9057317,
+            41.8047717,
+            -6.8935278,
+            41.8139022
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-302539-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9059035,
+            41.7957704,
+            -6.8937013,
+            41.8049009
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-302538-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9060752,
+            41.7867692,
+            -6.8938748,
+            41.7958996
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-302537-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9062468,
+            41.7777679,
+            -6.8940481,
+            41.7868983
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-302536-06-2024"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 108,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -1153,18 +1241,18 @@
         -6.8,
         41.88
       ],
-      "response_byte_count": 704970,
-      "returned_count": 100,
-      "source_response_sha256": "4449f416389b47629e955386bc96f32ace379d7cecc214992a56c16e531dd18e",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 767390,
+      "returned_count": 108,
+      "source_response_sha256": "5b2b7966f46e7c7abf42c0994f202b710a5615e15d8bdcb741be15d4e8258b13",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
-        "geometry_recovered": 100,
+        "geometry_recovered": 108,
         "missing_bbox": 0,
         "missing_or_long_id": 0,
         "not_intersecting_requested_window": 0,
-        "source_bbox_not_wgs84": 100
+        "source_bbox_not_wgs84": 108
       }
     },
     {
@@ -2298,11 +2386,99 @@
           ],
           "collection": "MDT-50cm",
           "tile_id": "MDT-50cm-302544-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9050438,
+            41.8407766,
+            -6.8928328,
+            41.8499072
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-302543-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9052159,
+            41.8317754,
+            -6.8930067,
+            41.840906
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-302542-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9053879,
+            41.8227742,
+            -6.8931804,
+            41.8319047
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-302541-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9055599,
+            41.813773,
+            -6.8933541,
+            41.8229035
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-302540-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9057317,
+            41.8047717,
+            -6.8935278,
+            41.8139022
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-302539-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9059035,
+            41.7957704,
+            -6.8937013,
+            41.8049009
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-302538-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9060752,
+            41.7867692,
+            -6.8938748,
+            41.7958996
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-302537-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9062468,
+            41.7777679,
+            -6.8940481,
+            41.7868983
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-302536-06-2024"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 108,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -2312,18 +2488,18 @@
         -6.8,
         41.88
       ],
-      "response_byte_count": 691894,
-      "returned_count": 100,
-      "source_response_sha256": "305beaedec560c37144c050a6eb484531b9beb3683d07007c283b16b51de70b2",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 746952,
+      "returned_count": 108,
+      "source_response_sha256": "c9c8c06fef18a60d4ea8ae99001bdf785b2d87295b1eb5d5d21fad57a4e7bb20",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
-        "geometry_recovered": 100,
+        "geometry_recovered": 108,
         "missing_bbox": 0,
         "missing_or_long_id": 0,
         "not_intersecting_requested_window": 0,
-        "source_bbox_not_wgs84": 100
+        "source_bbox_not_wgs84": 108
       }
     },
     {
@@ -3457,11 +3633,99 @@
           ],
           "collection": "MDT-2m",
           "tile_id": "MDT-2m-301515-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9219914,
+            41.5798637,
+            -6.9098329,
+            41.5889924
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-301514-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9221596,
+            41.5708621,
+            -6.9100028,
+            41.5799907
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-301513-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9223277,
+            41.5618604,
+            -6.9101726,
+            41.5709889
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-301512-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9224957,
+            41.5528587,
+            -6.9103424,
+            41.5619872
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-301511-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9226636,
+            41.5438569,
+            -6.9105121,
+            41.5529855
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-301510-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9228315,
+            41.5348552,
+            -6.9106817,
+            41.5439837
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-301509-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9229993,
+            41.5258535,
+            -6.9108512,
+            41.5349819
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-301508-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.923167,
+            41.5168517,
+            -6.9110206,
+            41.5259801
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-301507-06-2024"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 108,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -3471,18 +3735,18 @@
         -6.82,
         41.62
       ],
-      "response_byte_count": 744365,
-      "returned_count": 100,
-      "source_response_sha256": "e58b8f757f0d3af70ef583bcb1670d4ca1a38e69c0997e553f9cd9e611fd0cc3",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 806787,
+      "returned_count": 108,
+      "source_response_sha256": "ebfce29f4d483893bdf917444787dd9693f080801a8b2c3f67054931e84e0e2b",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
-        "geometry_recovered": 100,
+        "geometry_recovered": 108,
         "missing_bbox": 0,
         "missing_or_long_id": 0,
         "not_intersecting_requested_window": 0,
-        "source_bbox_not_wgs84": 100
+        "source_bbox_not_wgs84": 108
       }
     },
     {
@@ -4616,11 +4880,99 @@
           ],
           "collection": "MDT-50cm",
           "tile_id": "MDT-50cm-301515-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9219914,
+            41.5798637,
+            -6.9098329,
+            41.5889924
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-301514-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9221596,
+            41.5708621,
+            -6.9100028,
+            41.5799907
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-301513-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9223277,
+            41.5618604,
+            -6.9101726,
+            41.5709889
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-301512-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9224957,
+            41.5528587,
+            -6.9103424,
+            41.5619872
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-301511-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9226636,
+            41.5438569,
+            -6.9105121,
+            41.5529855
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-301510-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9228315,
+            41.5348552,
+            -6.9106817,
+            41.5439837
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-301509-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.9229993,
+            41.5258535,
+            -6.9108512,
+            41.5349819
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-301508-06-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -6.923167,
+            41.5168517,
+            -6.9110206,
+            41.5259801
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-301507-06-2024"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 108,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -4630,18 +4982,18 @@
         -6.82,
         41.62
       ],
-      "response_byte_count": 691979,
-      "returned_count": 100,
-      "source_response_sha256": "013e8202126e8a7e97206cfee8aca3ebdb86b81a88205d64e78e4b35e45935cd",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 747063,
+      "returned_count": 108,
+      "source_response_sha256": "670b4f22ac0725e95ffb2ca30bcca8247a06efa00c85cee60f75863c57616a4d",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
-        "geometry_recovered": 100,
+        "geometry_recovered": 108,
         "missing_bbox": 0,
         "missing_or_long_id": 0,
         "not_intersecting_requested_window": 0,
-        "source_bbox_not_wgs84": 100
+        "source_bbox_not_wgs84": 108
       }
     },
     {
@@ -5775,11 +6127,231 @@
           ],
           "collection": "MDT-2m",
           "tile_id": "MDT-2m-288510-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0785825,
+            41.5364053,
+            -7.0664533,
+            41.5455181
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-288509-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0787287,
+            41.5274031,
+            -7.0666012,
+            41.5365158
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-288508-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0788748,
+            41.5184008,
+            -7.0667491,
+            41.5275135
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-288507-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0790209,
+            41.5093985,
+            -7.0668969,
+            41.5185112
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-288506-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0791669,
+            41.5003963,
+            -7.0670446,
+            41.5095089
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-288505-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0793129,
+            41.491394,
+            -7.0671923,
+            41.5005066
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-288504-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0794587,
+            41.4823917,
+            -7.0673399,
+            41.4915043
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-288503-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0796045,
+            41.4733893,
+            -7.0674874,
+            41.482502
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-288502-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.089985,
+            41.5725248,
+            -7.0778505,
+            41.5816364
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287513-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0901298,
+            41.5635225,
+            -7.077997,
+            41.5726341
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287512-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0902745,
+            41.5545203,
+            -7.0781435,
+            41.5636319
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287511-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0904192,
+            41.5455181,
+            -7.0782899,
+            41.5546296
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287510-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0905638,
+            41.5365158,
+            -7.0784362,
+            41.5456274
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287509-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0907084,
+            41.5275135,
+            -7.0785825,
+            41.5366251
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287508-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0908528,
+            41.5185112,
+            -7.0787287,
+            41.5276228
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287507-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0909973,
+            41.5095089,
+            -7.0788748,
+            41.5186204
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287506-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0911416,
+            41.5005066,
+            -7.0790209,
+            41.5096181
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287505-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0912859,
+            41.4915043,
+            -7.0791669,
+            41.5006157
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287504-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0914301,
+            41.482502,
+            -7.0793129,
+            41.4916134
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287503-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0915743,
+            41.4734996,
+            -7.0794587,
+            41.482611
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-287502-09-2024"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 120,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -5789,18 +6361,18 @@
         -6.98,
         41.58
       ],
-      "response_byte_count": 783648,
-      "returned_count": 100,
-      "source_response_sha256": "205a6a798c5a663bbb76d090ce4d2d2c7bb52b05867fbb11aea3e1bea59d07be",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 940044,
+      "returned_count": 120,
+      "source_response_sha256": "cb42886918ea7947b7b5fe4e7d719162760d8032c40cf88e73c2401d01884498",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
-        "geometry_recovered": 100,
+        "geometry_recovered": 120,
         "missing_bbox": 0,
         "missing_or_long_id": 0,
         "not_intersecting_requested_window": 0,
-        "source_bbox_not_wgs84": 100
+        "source_bbox_not_wgs84": 120
       }
     },
     {
@@ -6934,11 +7506,231 @@
           ],
           "collection": "MDT-50cm",
           "tile_id": "MDT-50cm-288510-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0785825,
+            41.5364053,
+            -7.0664533,
+            41.5455181
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-288509-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0787287,
+            41.5274031,
+            -7.0666012,
+            41.5365158
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-288508-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0788748,
+            41.5184008,
+            -7.0667491,
+            41.5275135
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-288507-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0790209,
+            41.5093985,
+            -7.0668969,
+            41.5185112
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-288506-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0791669,
+            41.5003963,
+            -7.0670446,
+            41.5095089
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-288505-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0793129,
+            41.491394,
+            -7.0671923,
+            41.5005066
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-288504-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0794587,
+            41.4823917,
+            -7.0673399,
+            41.4915043
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-288503-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0796045,
+            41.4733893,
+            -7.0674874,
+            41.482502
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-288502-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.089985,
+            41.5725248,
+            -7.0778505,
+            41.5816364
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287513-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0901298,
+            41.5635225,
+            -7.077997,
+            41.5726341
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287512-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0902745,
+            41.5545203,
+            -7.0781435,
+            41.5636319
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287511-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0904192,
+            41.5455181,
+            -7.0782899,
+            41.5546296
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287510-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0905638,
+            41.5365158,
+            -7.0784362,
+            41.5456274
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287509-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0907084,
+            41.5275135,
+            -7.0785825,
+            41.5366251
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287508-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0908528,
+            41.5185112,
+            -7.0787287,
+            41.5276228
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287507-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0909973,
+            41.5095089,
+            -7.0788748,
+            41.5186204
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287506-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0911416,
+            41.5005066,
+            -7.0790209,
+            41.5096181
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287505-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0912859,
+            41.4915043,
+            -7.0791669,
+            41.5006157
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287504-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0914301,
+            41.482502,
+            -7.0793129,
+            41.4916134
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287503-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.0915743,
+            41.4734996,
+            -7.0794587,
+            41.482611
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-287502-09-2024"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 120,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -6948,18 +7740,18 @@
         -6.98,
         41.58
       ],
-      "response_byte_count": 743234,
-      "returned_count": 100,
-      "source_response_sha256": "a4ce2a340d39d495fc7bc4c07bc4147bd48348fd26ba3c4c8ad6354f4505ac64",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 901116,
+      "returned_count": 120,
+      "source_response_sha256": "eff69dd7745924f666040eab0a5fe8d343b21001babc3057f724e771e39170ac",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
-        "geometry_recovered": 100,
+        "geometry_recovered": 120,
         "missing_bbox": 0,
         "missing_or_long_id": 0,
         "not_intersecting_requested_window": 0,
-        "source_bbox_not_wgs84": 100
+        "source_bbox_not_wgs84": 120
       }
     },
     {
@@ -8093,11 +8885,231 @@
           ],
           "collection": "MDT-2m",
           "tile_id": "MDT-2m-274507-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2466955,
+            41.5108307,
+            -7.2345939,
+            41.5199263
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-274506-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2468183,
+            41.5018279,
+            -7.2347184,
+            41.5109236
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-274505-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.246941,
+            41.4928252,
+            -7.2348428,
+            41.5019208
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-274504-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2470637,
+            41.4838224,
+            -7.2349672,
+            41.4929181
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-274503-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2471863,
+            41.4748196,
+            -7.2350916,
+            41.4839153
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-274502-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2473089,
+            41.4658168,
+            -7.2352158,
+            41.4749125
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-274501-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2474314,
+            41.456814,
+            -7.2353401,
+            41.4659096
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-274500-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2475539,
+            41.4478112,
+            -7.2354642,
+            41.4569068
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-274499-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2581876,
+            41.5469345,
+            -7.2460807,
+            41.556029
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273510-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.258309,
+            41.5379318,
+            -7.2462038,
+            41.5470263
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273509-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2584303,
+            41.5289291,
+            -7.2463268,
+            41.5380236
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273508-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2585515,
+            41.5199263,
+            -7.2464498,
+            41.5290208
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273507-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2586727,
+            41.5109236,
+            -7.2465727,
+            41.5200181
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273506-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2587939,
+            41.5019208,
+            -7.2466955,
+            41.5110153
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273505-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2589149,
+            41.4929181,
+            -7.2468183,
+            41.5020125
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273504-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.259036,
+            41.4839153,
+            -7.246941,
+            41.4930097
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273503-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2591569,
+            41.4749125,
+            -7.2470637,
+            41.4840069
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273502-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2592778,
+            41.4659096,
+            -7.2471863,
+            41.475004
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273501-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2593987,
+            41.4569068,
+            -7.2473089,
+            41.4660012
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273500-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2595195,
+            41.447904,
+            -7.2474314,
+            41.4569983
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-273499-09-2024"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 120,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -8107,18 +9119,18 @@
         -7.15,
         41.55
       ],
-      "response_byte_count": 770504,
-      "returned_count": 100,
-      "source_response_sha256": "6b2f746d71818626e8f09e772da53196f49710eb6db9a0924285a42b625a9266",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 861232,
+      "returned_count": 120,
+      "source_response_sha256": "75665f94d713e3cf24951e09367ec038882867789a5c5aa3926aef830e551433",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
-        "geometry_recovered": 100,
+        "geometry_recovered": 120,
         "missing_bbox": 0,
         "missing_or_long_id": 0,
         "not_intersecting_requested_window": 0,
-        "source_bbox_not_wgs84": 100
+        "source_bbox_not_wgs84": 120
       }
     },
     {
@@ -9252,11 +10264,231 @@
           ],
           "collection": "MDT-50cm",
           "tile_id": "MDT-50cm-274507-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2466955,
+            41.5108307,
+            -7.2345939,
+            41.5199263
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-274506-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2468183,
+            41.5018279,
+            -7.2347184,
+            41.5109236
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-274505-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.246941,
+            41.4928252,
+            -7.2348428,
+            41.5019208
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-274504-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2470637,
+            41.4838224,
+            -7.2349672,
+            41.4929181
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-274503-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2471863,
+            41.4748196,
+            -7.2350916,
+            41.4839153
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-274502-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2473089,
+            41.4658168,
+            -7.2352158,
+            41.4749125
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-274501-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2474314,
+            41.456814,
+            -7.2353401,
+            41.4659096
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-274500-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2475539,
+            41.4478112,
+            -7.2354642,
+            41.4569068
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-274499-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2581876,
+            41.5469345,
+            -7.2460807,
+            41.556029
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273510-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.258309,
+            41.5379318,
+            -7.2462038,
+            41.5470263
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273509-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2584303,
+            41.5289291,
+            -7.2463268,
+            41.5380236
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273508-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2585515,
+            41.5199263,
+            -7.2464498,
+            41.5290208
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273507-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2586727,
+            41.5109236,
+            -7.2465727,
+            41.5200181
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273506-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2587939,
+            41.5019208,
+            -7.2466955,
+            41.5110153
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273505-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2589149,
+            41.4929181,
+            -7.2468183,
+            41.5020125
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273504-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.259036,
+            41.4839153,
+            -7.246941,
+            41.4930097
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273503-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2591569,
+            41.4749125,
+            -7.2470637,
+            41.4840069
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273502-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2592778,
+            41.4659096,
+            -7.2471863,
+            41.475004
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273501-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2593987,
+            41.4569068,
+            -7.2473089,
+            41.4660012
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273500-09-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.2595195,
+            41.447904,
+            -7.2474314,
+            41.4569983
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-273499-09-2024"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 120,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -9266,18 +10498,18 @@
         -7.15,
         41.55
       ],
-      "response_byte_count": 577510,
-      "returned_count": 100,
-      "source_response_sha256": "241cc6458fd321476d82d254039c88eeb8f5fba2c52c216f1f6ee6f32ea5736a",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 668632,
+      "returned_count": 120,
+      "source_response_sha256": "ae8bd3810c9b9425a78121b48d41dc86cecb6fc176f03b1be8fa136fbdd5fc23",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
-        "geometry_recovered": 100,
+        "geometry_recovered": 120,
         "missing_bbox": 0,
         "missing_or_long_id": 0,
         "not_intersecting_requested_window": 0,
-        "source_bbox_not_wgs84": 100
+        "source_bbox_not_wgs84": 120
       }
     },
     {
@@ -10411,11 +11643,231 @@
           ],
           "collection": "MDT-2m",
           "tile_id": "MDT-2m-224484-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8465199,
+            41.3068607,
+            -7.8345378,
+            41.3158951
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-224483-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8465593,
+            41.2978567,
+            -7.8345788,
+            41.306891
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-224482-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8465987,
+            41.2888526,
+            -7.8346199,
+            41.297887
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-224481-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8466381,
+            41.2798485,
+            -7.8346609,
+            41.2888829
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-224480-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8466774,
+            41.2708445,
+            -7.834702,
+            41.2798789
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-224479-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8467168,
+            41.2618404,
+            -7.834743,
+            41.2708748
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-224478-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8467561,
+            41.2528363,
+            -7.8347839,
+            41.2618707
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-224477-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8467954,
+            41.2438321,
+            -7.8348249,
+            41.2528665
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-224476-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8583096,
+            41.3429071,
+            -7.8463225,
+            41.3519402
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223487-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8583475,
+            41.3339031,
+            -7.846362,
+            41.3429362
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223486-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8583853,
+            41.3248991,
+            -7.8464015,
+            41.3339322
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223485-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8584231,
+            41.3158951,
+            -7.846441,
+            41.3249282
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223484-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8584609,
+            41.306891,
+            -7.8464804,
+            41.3159242
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223483-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8584987,
+            41.297887,
+            -7.8465199,
+            41.3069202
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223482-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8585364,
+            41.2888829,
+            -7.8465593,
+            41.2979161
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223481-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8585742,
+            41.2798789,
+            -7.8465987,
+            41.288912
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223480-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8586119,
+            41.2708748,
+            -7.8466381,
+            41.2799079
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223479-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8586496,
+            41.2618707,
+            -7.8466774,
+            41.2709038
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223478-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8586873,
+            41.2528665,
+            -7.8467168,
+            41.2618997
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223477-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.858725,
+            41.2438624,
+            -7.8467561,
+            41.2528956
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-223476-07-2024"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 120,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -10425,18 +11877,18 @@
         -7.75,
         41.35
       ],
-      "response_byte_count": 462022,
-      "returned_count": 100,
-      "source_response_sha256": "bdfc8742e44c295b6d75bd25f7e5bc1cbb18977901bd1f4eb2380a3748c1d5b7",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 552746,
+      "returned_count": 120,
+      "source_response_sha256": "4af0289ae0ccbe6f1032ef1527e6596de00f8cc180fc90230102899587b930b7",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
-        "geometry_recovered": 100,
+        "geometry_recovered": 120,
         "missing_bbox": 0,
         "missing_or_long_id": 0,
         "not_intersecting_requested_window": 0,
-        "source_bbox_not_wgs84": 100
+        "source_bbox_not_wgs84": 120
       }
     },
     {
@@ -11570,11 +13022,231 @@
           ],
           "collection": "MDT-50cm",
           "tile_id": "MDT-50cm-224484-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8465199,
+            41.3068607,
+            -7.8345378,
+            41.3158951
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-224483-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8465593,
+            41.2978567,
+            -7.8345788,
+            41.306891
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-224482-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8465987,
+            41.2888526,
+            -7.8346199,
+            41.297887
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-224481-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8466381,
+            41.2798485,
+            -7.8346609,
+            41.2888829
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-224480-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8466774,
+            41.2708445,
+            -7.834702,
+            41.2798789
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-224479-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8467168,
+            41.2618404,
+            -7.834743,
+            41.2708748
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-224478-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8467561,
+            41.2528363,
+            -7.8347839,
+            41.2618707
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-224477-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8467954,
+            41.2438321,
+            -7.8348249,
+            41.2528665
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-224476-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8583096,
+            41.3429071,
+            -7.8463225,
+            41.3519402
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223487-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8583475,
+            41.3339031,
+            -7.846362,
+            41.3429362
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223486-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8583853,
+            41.3248991,
+            -7.8464015,
+            41.3339322
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223485-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8584231,
+            41.3158951,
+            -7.846441,
+            41.3249282
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223484-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8584609,
+            41.306891,
+            -7.8464804,
+            41.3159242
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223483-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8584987,
+            41.297887,
+            -7.8465199,
+            41.3069202
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223482-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8585364,
+            41.2888829,
+            -7.8465593,
+            41.2979161
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223481-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8585742,
+            41.2798789,
+            -7.8465987,
+            41.288912
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223480-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8586119,
+            41.2708748,
+            -7.8466381,
+            41.2799079
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223479-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8586496,
+            41.2618707,
+            -7.8466774,
+            41.2709038
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223478-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.8586873,
+            41.2528665,
+            -7.8467168,
+            41.2618997
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223477-07-2024"
+        },
+        {
+          "bbox_method": "geometry_recovered",
+          "bbox_wgs84": [
+            -7.858725,
+            41.2438624,
+            -7.8467561,
+            41.2528956
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-223476-07-2024"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 120,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -11584,18 +13256,18 @@
         -7.75,
         41.35
       ],
-      "response_byte_count": 693954,
-      "returned_count": 100,
-      "source_response_sha256": "c18876c0bcb3b169b77a636d5728df561fc2692202d49bf91622142b3f665953",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 831972,
+      "returned_count": 120,
+      "source_response_sha256": "c5653452966e49b96fa572de5b4a6b4467b0badd12b14586e38b94571c3b2c02",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
-        "geometry_recovered": 100,
+        "geometry_recovered": 120,
         "missing_bbox": 0,
         "missing_or_long_id": 0,
         "not_intersecting_requested_window": 0,
-        "source_bbox_not_wgs84": 100
+        "source_bbox_not_wgs84": 120
       }
     },
     {
@@ -12729,11 +14401,99 @@
           ],
           "collection": "MDT-2m",
           "tile_id": "MDT-2m-201474-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1211835,
+            41.2172031,
+            -8.1092553,
+            41.2262092
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201473-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2712305,
+            -8.121172,
+            41.2802353
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200479-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2622262,
+            -8.1211736,
+            41.2712311
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200478-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.253222,
+            -8.1211753,
+            41.2622269
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200477-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2442178,
+            -8.1211769,
+            41.2532226
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200476-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2352135,
+            -8.1211786,
+            41.2442184
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200475-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2172049,
+            -8.1211818,
+            41.2262098
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200473-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2262092,
+            -8.1211802,
+            41.2352141
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200474-07-2025"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 108,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -12743,10 +14503,10 @@
         -8.05,
         41.32
       ],
-      "response_byte_count": 487250,
-      "returned_count": 100,
-      "source_response_sha256": "eb0f638190b34d13608dbbd2495ee07166a7778804d7ea2fa6f26b8a9f856726",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 523134,
+      "returned_count": 108,
+      "source_response_sha256": "eb9b85c3e4e51c45e2cc8277e765335b98c36730305f47563b5bb25830bb829c",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
@@ -13888,11 +15648,99 @@
           ],
           "collection": "MDT-50cm",
           "tile_id": "MDT-50cm-201474-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1211835,
+            41.2172031,
+            -8.1092553,
+            41.2262092
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201473-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2712305,
+            -8.121172,
+            41.2802353
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200479-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2622262,
+            -8.1211736,
+            41.2712311
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200478-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.253222,
+            -8.1211753,
+            41.2622269
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200477-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2442178,
+            -8.1211769,
+            41.2532226
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200476-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2352135,
+            -8.1211786,
+            41.2442184
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200475-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2172049,
+            -8.1211818,
+            41.2262098
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200473-07-2025"
+        },
+        {
+          "bbox_method": "source_bbox",
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2262092,
+            -8.1211802,
+            41.2352141
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200474-07-2025"
         }
       ],
-      "has_next_page": true,
+      "has_next_page": false,
       "http_status": 200,
-      "metadata_footprint_count": 100,
+      "metadata_footprint_count": 108,
       "number_matched_reported": null,
       "number_returned_reported": null,
       "original_native_asset_downloaded": false,
@@ -13902,10 +15750,10 @@
         -8.05,
         41.32
       ],
-      "response_byte_count": 488822,
-      "returned_count": 100,
-      "source_response_sha256": "5ef62a3e9d36372ad622229e52a3432336ddd3264ac87521572f74094daa4607",
-      "status": "metadata_returned_partial",
+      "response_byte_count": 524828,
+      "returned_count": 108,
+      "source_response_sha256": "03d06c15e90409a7b6fc461aa18f76a2ee7c3dc5d91b3a4e9918ce30a1e09294",
+      "status": "metadata_returned_one_page",
       "whitelist_rejection_counts": {
         "bad_bbox": 0,
         "geometry_invalid": 0,
