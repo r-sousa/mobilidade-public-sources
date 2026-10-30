@@ -1,0 +1,2285 @@
+{
+  "canonical_acceptance": false,
+  "canonical_identity_assigned": false,
+  "coverage_polygon_verified": false,
+  "feature_ids_not_source_download_permissions": true,
+  "mission": "MN-GEO-RAIL-001",
+  "native_assets_preserved": 0,
+  "observed_utc": "2026-10-30T22:38:55.692826+00:00",
+  "request_count": 12,
+  "requests": [
+    {
+      "authentication_supplied": false,
+      "box_id": "E01_east_north",
+      "collection": "MDT-2m",
+      "footprints": [],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 0,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -6.9,
+        41.78,
+        -6.8,
+        41.88
+      ],
+      "response_byte_count": 704970,
+      "returned_count": 100,
+      "source_response_sha256": "9a63d0c5f57a463c79f47d4e194e411ecd0a563b9ce767c3e993d21ad385910b",
+      "status": "metadata_returned_partial"
+    },
+    {
+      "authentication_supplied": false,
+      "box_id": "E01_east_north",
+      "collection": "MDT-50cm",
+      "footprints": [],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 0,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -6.9,
+        41.78,
+        -6.8,
+        41.88
+      ],
+      "response_byte_count": 691894,
+      "returned_count": 100,
+      "source_response_sha256": "af05396752cffae594d3619b44aa5a7d94923307f18e68e0a0c905b496eda4b8",
+      "status": "metadata_returned_partial"
+    },
+    {
+      "authentication_supplied": false,
+      "box_id": "E02_east_south",
+      "collection": "MDT-2m",
+      "footprints": [],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 0,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -6.92,
+        41.52,
+        -6.82,
+        41.62
+      ],
+      "response_byte_count": 744365,
+      "returned_count": 100,
+      "source_response_sha256": "74bd841f9216763c3e273f37f3e9f80eff6aa17c292fff5f84667a63b3095771",
+      "status": "metadata_returned_partial"
+    },
+    {
+      "authentication_supplied": false,
+      "box_id": "E02_east_south",
+      "collection": "MDT-50cm",
+      "footprints": [],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 0,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -6.92,
+        41.52,
+        -6.82,
+        41.62
+      ],
+      "response_byte_count": 691979,
+      "returned_count": 100,
+      "source_response_sha256": "09ffea8f393af0ca2a1e981c84fcbf26379acc8f11e55266a98a66543497858d",
+      "status": "metadata_returned_partial"
+    },
+    {
+      "authentication_supplied": false,
+      "box_id": "E03_macedo_sector",
+      "collection": "MDT-2m",
+      "footprints": [],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 0,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -7.08,
+        41.48,
+        -6.98,
+        41.58
+      ],
+      "response_byte_count": 783648,
+      "returned_count": 100,
+      "source_response_sha256": "09d991123d0a55a265c6a244f5070425b65730af1a3b638c3b11f7faf5d4c5e5",
+      "status": "metadata_returned_partial"
+    },
+    {
+      "authentication_supplied": false,
+      "box_id": "E03_macedo_sector",
+      "collection": "MDT-50cm",
+      "footprints": [],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 0,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -7.08,
+        41.48,
+        -6.98,
+        41.58
+      ],
+      "response_byte_count": 743234,
+      "returned_count": 100,
+      "source_response_sha256": "9cee6b9bbed43484e13e7efeed9a4ab29acaffa92c1630fb93ba23dfcd4ce5ae",
+      "status": "metadata_returned_partial"
+    },
+    {
+      "authentication_supplied": false,
+      "box_id": "E04_mirandela_sector",
+      "collection": "MDT-2m",
+      "footprints": [],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 0,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -7.25,
+        41.45,
+        -7.15,
+        41.55
+      ],
+      "response_byte_count": 770504,
+      "returned_count": 100,
+      "source_response_sha256": "1b5660d1d1f8bc09f36ca1b920b76a5696ffebf3037a9fd4b0f9f119ab1f57be",
+      "status": "metadata_returned_partial"
+    },
+    {
+      "authentication_supplied": false,
+      "box_id": "E04_mirandela_sector",
+      "collection": "MDT-50cm",
+      "footprints": [],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 0,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -7.25,
+        41.45,
+        -7.15,
+        41.55
+      ],
+      "response_byte_count": 577510,
+      "returned_count": 100,
+      "source_response_sha256": "745c768562116ca477ae86a40f9e9ed4df7f0e08336f4180f7a23b635c0154c6",
+      "status": "metadata_returned_partial"
+    },
+    {
+      "authentication_supplied": false,
+      "box_id": "E05_vila_real_sector",
+      "collection": "MDT-2m",
+      "footprints": [],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 0,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -7.85,
+        41.25,
+        -7.75,
+        41.35
+      ],
+      "response_byte_count": 462022,
+      "returned_count": 100,
+      "source_response_sha256": "5b83ccd7f82a0283312134440a6289324c93f36cb9961ba1dcc8142b109abecd",
+      "status": "metadata_returned_partial"
+    },
+    {
+      "authentication_supplied": false,
+      "box_id": "E05_vila_real_sector",
+      "collection": "MDT-50cm",
+      "footprints": [],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 0,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -7.85,
+        41.25,
+        -7.75,
+        41.35
+      ],
+      "response_byte_count": 693954,
+      "returned_count": 100,
+      "source_response_sha256": "0abe6e9b8c86ec3a303659626c91f7d30cd625936abc022b0c0eb8cae1bb490d",
+      "status": "metadata_returned_partial"
+    },
+    {
+      "authentication_supplied": false,
+      "box_id": "E06_amarante_sector",
+      "collection": "MDT-2m",
+      "footprints": [
+        {
+          "bbox_wgs84": [
+            -8.1331083,
+            41.3162513,
+            -8.1211638,
+            41.3252561
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1331083,
+            41.3072472,
+            -8.1211654,
+            41.3162519
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1331083,
+            41.298243,
+            -8.1211671,
+            41.3072478
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2892388,
+            -8.1211687,
+            41.2982436
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2802347,
+            -8.1211704,
+            41.2892395
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-200480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450529,
+            41.3162513,
+            -8.1331083,
+            41.3252561
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450512,
+            41.3072472,
+            -8.1331083,
+            41.3162519
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450496,
+            41.298243,
+            -8.1331083,
+            41.3072478
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450479,
+            41.2892388,
+            -8.1331083,
+            41.2982436
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450463,
+            41.2802347,
+            -8.1331083,
+            41.2892395
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569974,
+            41.3162495,
+            -8.1450512,
+            41.3252555
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569941,
+            41.3072453,
+            -8.1450496,
+            41.3162513
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569908,
+            41.2982412,
+            -8.1450479,
+            41.3072472
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569876,
+            41.289237,
+            -8.1450463,
+            41.298243
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569843,
+            41.2802328,
+            -8.1450447,
+            41.2892388
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092225,
+            41.3162464,
+            -8.0972747,
+            41.3252536
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092258,
+            41.3072422,
+            -8.0972796,
+            41.3162495
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092291,
+            41.2982381,
+            -8.0972846,
+            41.3072453
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092324,
+            41.2892339,
+            -8.0972895,
+            41.2982412
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450365,
+            41.2262092,
+            -8.1331083,
+            41.2352141
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450348,
+            41.2172049,
+            -8.1331083,
+            41.2262098
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450381,
+            41.2352135,
+            -8.1331083,
+            41.2442184
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.061451,
+            41.3162216,
+            -8.0494966,
+            41.3252338
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0614608,
+            41.3072175,
+            -8.0495081,
+            41.3162296
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0614707,
+            41.2982133,
+            -8.0495196,
+            41.3072255
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0614805,
+            41.2892091,
+            -8.0495311,
+            41.2982213
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0614904,
+            41.280205,
+            -8.0495426,
+            41.2892172
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615002,
+            41.2712008,
+            -8.049554,
+            41.280213
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.06151,
+            41.2621966,
+            -8.0495655,
+            41.2712088
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615199,
+            41.2531923,
+            -8.049577,
+            41.2622046
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615297,
+            41.2441881,
+            -8.0495885,
+            41.2532004
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615395,
+            41.2351838,
+            -8.0495999,
+            41.2441961
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615493,
+            41.2261796,
+            -8.0496114,
+            41.2351919
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615592,
+            41.2171753,
+            -8.0496229,
+            41.2261876
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-206473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0733938,
+            41.3162296,
+            -8.0614411,
+            41.3252406
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734021,
+            41.3072255,
+            -8.061451,
+            41.3162365
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734103,
+            41.2982213,
+            -8.0614608,
+            41.3072323
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734185,
+            41.2892172,
+            -8.0614707,
+            41.2982282
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734267,
+            41.280213,
+            -8.0614805,
+            41.289224
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734349,
+            41.2712088,
+            -8.0614904,
+            41.2802198
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734431,
+            41.2622046,
+            -8.0615002,
+            41.2712156
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734513,
+            41.2532004,
+            -8.06151,
+            41.2622114
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734595,
+            41.2441961,
+            -8.0615199,
+            41.2532072
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734677,
+            41.2351919,
+            -8.0615297,
+            41.2442029
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734758,
+            41.2261876,
+            -8.0615395,
+            41.2351987
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.073484,
+            41.2171833,
+            -8.0615493,
+            41.2261944
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-205473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853367,
+            41.3162365,
+            -8.0733856,
+            41.3252462
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0972796,
+            41.316242,
+            -8.0853302,
+            41.3252505
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0972846,
+            41.3072379,
+            -8.0853367,
+            41.3162464
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0972895,
+            41.2982337,
+            -8.0853433,
+            41.3072422
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0972944,
+            41.2892296,
+            -8.0853499,
+            41.2982381
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0972993,
+            41.2802254,
+            -8.0853564,
+            41.2892339
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211654,
+            41.3162495,
+            -8.1092192,
+            41.3252555
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211671,
+            41.3072453,
+            -8.1092225,
+            41.3162513
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.145043,
+            41.2622262,
+            -8.1331083,
+            41.2712311
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.156981,
+            41.2712286,
+            -8.145043,
+            41.2802347
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569777,
+            41.2622244,
+            -8.1450414,
+            41.2712305
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569744,
+            41.2532201,
+            -8.1450397,
+            41.2622262
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569712,
+            41.2442159,
+            -8.1450381,
+            41.253222
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569679,
+            41.2352116,
+            -8.1450365,
+            41.2442178
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569646,
+            41.2262074,
+            -8.1450348,
+            41.2352135
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569613,
+            41.2172031,
+            -8.1450332,
+            41.2262092
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-198473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450414,
+            41.253222,
+            -8.1331083,
+            41.2622269
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450397,
+            41.2442178,
+            -8.1331083,
+            41.2532226
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853433,
+            41.3072323,
+            -8.0733938,
+            41.316242
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853499,
+            41.2982282,
+            -8.0734021,
+            41.3072379
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853564,
+            41.289224,
+            -8.0734103,
+            41.2982337
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.085363,
+            41.2802198,
+            -8.0734185,
+            41.2892296
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853696,
+            41.2712156,
+            -8.0734267,
+            41.2802254
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853761,
+            41.2622114,
+            -8.0734349,
+            41.2712212
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853827,
+            41.2532072,
+            -8.0734431,
+            41.262217
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853892,
+            41.2442029,
+            -8.0734513,
+            41.2532127
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853958,
+            41.2351987,
+            -8.0734595,
+            41.2442085
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0854023,
+            41.2261944,
+            -8.0734677,
+            41.2352042
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0854089,
+            41.2171901,
+            -8.0734758,
+            41.2262
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-204473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973141,
+            41.2532127,
+            -8.0853761,
+            41.2622213
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.097319,
+            41.2442085,
+            -8.0853827,
+            41.2532171
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973239,
+            41.2352042,
+            -8.0853892,
+            41.2442128
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973288,
+            41.2262,
+            -8.0853958,
+            41.2352086
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973337,
+            41.2171957,
+            -8.0854023,
+            41.2262043
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450447,
+            41.2712305,
+            -8.1331083,
+            41.2802353
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-199479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973043,
+            41.2712212,
+            -8.085363,
+            41.2802297
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973092,
+            41.262217,
+            -8.0853696,
+            41.2712255
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-203478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092357,
+            41.2802297,
+            -8.0972944,
+            41.289237
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092389,
+            41.2712255,
+            -8.0972993,
+            41.2802328
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092422,
+            41.2622213,
+            -8.0973043,
+            41.2712286
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092455,
+            41.2532171,
+            -8.0973092,
+            41.2622244
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092488,
+            41.2442128,
+            -8.0973141,
+            41.2532201
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092521,
+            41.2352086,
+            -8.097319,
+            41.2442159
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092553,
+            41.2262043,
+            -8.0973239,
+            41.2352116
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092586,
+            41.2172,
+            -8.0973288,
+            41.2262074
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-202473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211687,
+            41.2982412,
+            -8.1092258,
+            41.3072472
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211704,
+            41.289237,
+            -8.1092291,
+            41.298243
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.121172,
+            41.2802328,
+            -8.1092324,
+            41.2892388
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211736,
+            41.2712286,
+            -8.1092357,
+            41.2802347
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211753,
+            41.2622244,
+            -8.1092389,
+            41.2712305
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211769,
+            41.2532201,
+            -8.1092422,
+            41.2622262
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211786,
+            41.2442159,
+            -8.1092455,
+            41.253222
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211802,
+            41.2352116,
+            -8.1092488,
+            41.2442178
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211818,
+            41.2262074,
+            -8.1092521,
+            41.2352135
+          ],
+          "collection": "MDT-2m",
+          "tile_id": "MDT-2m-201474-07-2025"
+        }
+      ],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 100,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -8.15,
+        41.22,
+        -8.05,
+        41.32
+      ],
+      "response_byte_count": 487250,
+      "returned_count": 100,
+      "source_response_sha256": "dacb0fac40496982f941f50b48552661e9929fa4b5146d8e65945a4accb16208",
+      "status": "metadata_returned_partial"
+    },
+    {
+      "authentication_supplied": false,
+      "box_id": "E06_amarante_sector",
+      "collection": "MDT-50cm",
+      "footprints": [
+        {
+          "bbox_wgs84": [
+            -8.1331083,
+            41.3162513,
+            -8.1211638,
+            41.3252561
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1331083,
+            41.3072472,
+            -8.1211654,
+            41.3162519
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1331083,
+            41.298243,
+            -8.1211671,
+            41.3072478
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2892388,
+            -8.1211687,
+            41.2982436
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1331083,
+            41.2802347,
+            -8.1211704,
+            41.2892395
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-200480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450529,
+            41.3162513,
+            -8.1331083,
+            41.3252561
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450512,
+            41.3072472,
+            -8.1331083,
+            41.3162519
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450496,
+            41.298243,
+            -8.1331083,
+            41.3072478
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450479,
+            41.2892388,
+            -8.1331083,
+            41.2982436
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450463,
+            41.2802347,
+            -8.1331083,
+            41.2892395
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569974,
+            41.3162495,
+            -8.1450512,
+            41.3252555
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569941,
+            41.3072453,
+            -8.1450496,
+            41.3162513
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569908,
+            41.2982412,
+            -8.1450479,
+            41.3072472
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569876,
+            41.289237,
+            -8.1450463,
+            41.298243
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569843,
+            41.2802328,
+            -8.1450447,
+            41.2892388
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092225,
+            41.3162464,
+            -8.0972747,
+            41.3252536
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092258,
+            41.3072422,
+            -8.0972796,
+            41.3162495
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092291,
+            41.2982381,
+            -8.0972846,
+            41.3072453
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092324,
+            41.2892339,
+            -8.0972895,
+            41.2982412
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450365,
+            41.2262092,
+            -8.1331083,
+            41.2352141
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450348,
+            41.2172049,
+            -8.1331083,
+            41.2262098
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450381,
+            41.2352135,
+            -8.1331083,
+            41.2442184
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.061451,
+            41.3162216,
+            -8.0494966,
+            41.3252338
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0614608,
+            41.3072175,
+            -8.0495081,
+            41.3162296
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0614707,
+            41.2982133,
+            -8.0495196,
+            41.3072255
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0614805,
+            41.2892091,
+            -8.0495311,
+            41.2982213
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0614904,
+            41.280205,
+            -8.0495426,
+            41.2892172
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615002,
+            41.2712008,
+            -8.049554,
+            41.280213
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.06151,
+            41.2621966,
+            -8.0495655,
+            41.2712088
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615199,
+            41.2531923,
+            -8.049577,
+            41.2622046
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615297,
+            41.2441881,
+            -8.0495885,
+            41.2532004
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615395,
+            41.2351838,
+            -8.0495999,
+            41.2441961
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615493,
+            41.2261796,
+            -8.0496114,
+            41.2351919
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0615592,
+            41.2171753,
+            -8.0496229,
+            41.2261876
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-206473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0733938,
+            41.3162296,
+            -8.0614411,
+            41.3252406
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734021,
+            41.3072255,
+            -8.061451,
+            41.3162365
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734103,
+            41.2982213,
+            -8.0614608,
+            41.3072323
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734185,
+            41.2892172,
+            -8.0614707,
+            41.2982282
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734267,
+            41.280213,
+            -8.0614805,
+            41.289224
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734349,
+            41.2712088,
+            -8.0614904,
+            41.2802198
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734431,
+            41.2622046,
+            -8.0615002,
+            41.2712156
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734513,
+            41.2532004,
+            -8.06151,
+            41.2622114
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734595,
+            41.2441961,
+            -8.0615199,
+            41.2532072
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734677,
+            41.2351919,
+            -8.0615297,
+            41.2442029
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0734758,
+            41.2261876,
+            -8.0615395,
+            41.2351987
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.073484,
+            41.2171833,
+            -8.0615493,
+            41.2261944
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-205473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853367,
+            41.3162365,
+            -8.0733856,
+            41.3252462
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0972796,
+            41.316242,
+            -8.0853302,
+            41.3252505
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0972846,
+            41.3072379,
+            -8.0853367,
+            41.3162464
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0972895,
+            41.2982337,
+            -8.0853433,
+            41.3072422
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0972944,
+            41.2892296,
+            -8.0853499,
+            41.2982381
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0972993,
+            41.2802254,
+            -8.0853564,
+            41.2892339
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211654,
+            41.3162495,
+            -8.1092192,
+            41.3252555
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201484-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211671,
+            41.3072453,
+            -8.1092225,
+            41.3162513
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.145043,
+            41.2622262,
+            -8.1331083,
+            41.2712311
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.156981,
+            41.2712286,
+            -8.145043,
+            41.2802347
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569777,
+            41.2622244,
+            -8.1450414,
+            41.2712305
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569744,
+            41.2532201,
+            -8.1450397,
+            41.2622262
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569712,
+            41.2442159,
+            -8.1450381,
+            41.253222
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569679,
+            41.2352116,
+            -8.1450365,
+            41.2442178
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569646,
+            41.2262074,
+            -8.1450348,
+            41.2352135
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1569613,
+            41.2172031,
+            -8.1450332,
+            41.2262092
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-198473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450414,
+            41.253222,
+            -8.1331083,
+            41.2622269
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450397,
+            41.2442178,
+            -8.1331083,
+            41.2532226
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853433,
+            41.3072323,
+            -8.0733938,
+            41.316242
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204483-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853499,
+            41.2982282,
+            -8.0734021,
+            41.3072379
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853564,
+            41.289224,
+            -8.0734103,
+            41.2982337
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.085363,
+            41.2802198,
+            -8.0734185,
+            41.2892296
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853696,
+            41.2712156,
+            -8.0734267,
+            41.2802254
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853761,
+            41.2622114,
+            -8.0734349,
+            41.2712212
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853827,
+            41.2532072,
+            -8.0734431,
+            41.262217
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853892,
+            41.2442029,
+            -8.0734513,
+            41.2532127
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0853958,
+            41.2351987,
+            -8.0734595,
+            41.2442085
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0854023,
+            41.2261944,
+            -8.0734677,
+            41.2352042
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0854089,
+            41.2171901,
+            -8.0734758,
+            41.2262
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-204473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973141,
+            41.2532127,
+            -8.0853761,
+            41.2622213
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.097319,
+            41.2442085,
+            -8.0853827,
+            41.2532171
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973239,
+            41.2352042,
+            -8.0853892,
+            41.2442128
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973288,
+            41.2262,
+            -8.0853958,
+            41.2352086
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973337,
+            41.2171957,
+            -8.0854023,
+            41.2262043
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1450447,
+            41.2712305,
+            -8.1331083,
+            41.2802353
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-199479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973043,
+            41.2712212,
+            -8.085363,
+            41.2802297
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.0973092,
+            41.262217,
+            -8.0853696,
+            41.2712255
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-203478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092357,
+            41.2802297,
+            -8.0972944,
+            41.289237
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092389,
+            41.2712255,
+            -8.0972993,
+            41.2802328
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092422,
+            41.2622213,
+            -8.0973043,
+            41.2712286
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092455,
+            41.2532171,
+            -8.0973092,
+            41.2622244
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092488,
+            41.2442128,
+            -8.0973141,
+            41.2532201
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092521,
+            41.2352086,
+            -8.097319,
+            41.2442159
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092553,
+            41.2262043,
+            -8.0973239,
+            41.2352116
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202474-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1092586,
+            41.2172,
+            -8.0973288,
+            41.2262074
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-202473-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211687,
+            41.2982412,
+            -8.1092258,
+            41.3072472
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201482-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211704,
+            41.289237,
+            -8.1092291,
+            41.298243
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201481-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.121172,
+            41.2802328,
+            -8.1092324,
+            41.2892388
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201480-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211736,
+            41.2712286,
+            -8.1092357,
+            41.2802347
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201479-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211753,
+            41.2622244,
+            -8.1092389,
+            41.2712305
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201478-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211769,
+            41.2532201,
+            -8.1092422,
+            41.2622262
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201477-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211786,
+            41.2442159,
+            -8.1092455,
+            41.253222
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201476-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211802,
+            41.2352116,
+            -8.1092488,
+            41.2442178
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201475-07-2025"
+        },
+        {
+          "bbox_wgs84": [
+            -8.1211818,
+            41.2262074,
+            -8.1092521,
+            41.2352135
+          ],
+          "collection": "MDT-50cm",
+          "tile_id": "MDT-50cm-201474-07-2025"
+        }
+      ],
+      "has_next_page": true,
+      "http_status": 200,
+      "metadata_footprint_count": 100,
+      "number_matched_reported": null,
+      "number_returned_reported": null,
+      "original_native_asset_downloaded": false,
+      "query_bbox_wgs84": [
+        -8.15,
+        41.22,
+        -8.05,
+        41.32
+      ],
+      "response_byte_count": 488822,
+      "returned_count": 100,
+      "source_response_sha256": "57a9c12116ea23016ea0fd3143f0f334cf86f89a997cd1954bc4f257996a39fa",
+      "status": "metadata_returned_partial"
+    }
+  ],
+  "search_url": "https://cdd.dgterritorio.gov.pt/dgt-be/v1/search",
+  "source_url": "https://cdd.dgterritorio.gov.pt/",
+  "stage": "pt_dgt_anonymous_stac_mdt_candidate_footprints",
+  "surface_raster_checked": false,
+  "used_public_anonymous_metadata_only": true,
+  "window_count": 6,
+  "worker": "W2"
+}
