@@ -1,0 +1,72 @@
+name: MN-GEO-RAIL-001 W4 vertical grid operation audit
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-es-wcs-20261030
+    paths:
+      - .github/workflows/mn-geo-vertical-grid-audit.yml
+      - tools/geo_rail_vertical_grid_audit.py
+      - tests/test_geo_rail_vertical_grid_audit.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-vertical-grids-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vertical-crs-readiness:
+    if: github.ref == 'refs/heads/mn-geo-rail-001-es-wcs-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PROJ_NETWORK: "OFF"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PROJ/Python library for isolated QA
+        run: python -m pip install --disable-pip-version-check 'pyproj>=3.6,<4'
+      - name: Verify source allowlist and no unbounded grids
+        run: python -m unittest discover -s tests -p 'test_geo_rail_vertical_grid_audit.py' -v
+      - name: Inspect Cascais/Alicante operations with two bounded public grids
+        id: qa
+        shell: bash
+        run: |
+          if python tools/geo_rail_vertical_grid_audit.py \
+              --output=reports/mn-geo-rail-001/vertical-cascais-alicante-grid-audit.json; then
+            echo 'failed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'failed=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Persist only transformation metadata and grid hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt=reports/mn-geo-rail-001/vertical-cascais-alicante-grid-audit.json
+          cp "$receipt" "$RUNNER_TEMP/mn-vertical-grid-receipt.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            mkdir -p "$(dirname "$receipt")"
+            cp "$RUNNER_TEMP/mn-vertical-grid-receipt.json" "$receipt"
+            git add "$receipt"
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "data(geo): record PROJ Cascais-Alicante grid availability and SHAs"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
+          done
+          exit 1
+      - name: Distinguish grid readiness from actual raster harmonization
+        env:
+          FAILED: ${{ steps.qa.outputs.failed }}
+        run: |
+          if [[ "$FAILED" == 'true' ]]; then
+            echo 'No reproducible best vertical grid operation; see preserved receipt' >&2
+            exit 1
+          fi
