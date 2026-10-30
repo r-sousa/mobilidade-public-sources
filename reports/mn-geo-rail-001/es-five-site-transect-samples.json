@@ -6,7 +6,7 @@
   "mission": "MN-GEO-RAIL-001",
   "native_rasters_retained": 0,
   "not_spatially_contiguous": true,
-  "observed_utc": "2026-10-30T22:36:24.295730+00:00",
+  "observed_utc": "2026-10-30T22:42:41.536350+00:00",
   "producer": "IGN/CNIG, WCS terrain data, ETRS89 UTM30",
   "product_sample_count": 10,
   "site_count": 5,
