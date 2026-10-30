@@ -98,10 +98,13 @@ def main():
             receipt["response_bytes"] = size
             receipt["response_sha256"] = sha
             receipt["content_type"] = content_type
-            if native.read_bytes()[:4] not in (b"II*\\x00", b"MM\\x00*",
-                                                  b"II+\\x00", b"MM\\x00+"):
-                receipt["response_excerpt"] = native.read_bytes()[:240].decode("utf-8", "replace")
-                raise RuntimeError("WCS response is not TIFF")
+            with native.open("rb") as raster_stream:
+                prefix = raster_stream.read(4)
+                if prefix not in (bytes([73,73,42,0]), bytes([77,77,0,42]),
+                                  bytes([73,73,43,0]), bytes([77,77,0,43])):
+                    raster_stream.seek(0)
+                    receipt["response_excerpt"] = raster_stream.read(240).decode("utf-8", "replace")
+                    raise RuntimeError("WCS response is not TIFF")
             receipt["raster"] = inspect(native)
             receipt["status"] = "one_coverage_sample_validated"
     except Exception as exc:
