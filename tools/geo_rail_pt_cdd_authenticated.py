@@ -248,7 +248,7 @@ def download_native(session, href, destination):
             raise IntakeError("native_tiff_unexpectedly_small")
         with destination.open("rb") as fd:
             if fd.read(4) not in (
-                    b"II*\\x00",b"MM\\x00*",b"II+\\x00",b"MM\\x00+"):
+                    b"II*\x00",b"MM\x00*",b"II+\x00",b"MM\x00+"):
                 raise IntakeError("native_response_not_tiff")
         return size,digest.hexdigest()
     finally:
