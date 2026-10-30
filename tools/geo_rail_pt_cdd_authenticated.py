@@ -324,7 +324,7 @@ def main():
         report["status"]="acquisition_or_native_quality_not_verified"
         report["safe_error_code"]="unexpected_error_inspect_code_without_logging_secrets"
     args.receipt.parent.mkdir(parents=True,exist_ok=True)
-    args.receipt.write_text(json.dumps(report,indent=2,sort_keys=True,ensure_ascii=False)+"\\n",
+    args.receipt.write_text(json.dumps(report,indent=2,sort_keys=True,ensure_ascii=False)+"\n",
                             encoding="utf-8")
     print(json.dumps({
         "status":report["status"],"site":args.site,
