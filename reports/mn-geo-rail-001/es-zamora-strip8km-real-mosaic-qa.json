@@ -1,0 +1,271 @@
+{
+  "Fxx_canonical_accepted": false,
+  "crossborder_vertical_harmonization_verified": false,
+  "distinct_total_tested_area_km2": 16,
+  "expected_resolutions_m": [
+    5,
+    25
+  ],
+  "full_corridor_terrain_coverage_verified": false,
+  "horizontal_crs": "EPSG:25830",
+  "mission": "MN-GEO-RAIL-001",
+  "native_raster_bytes_persisted": 0,
+  "native_vertical_datum_verified": false,
+  "observed_utc": "2026-10-31T02:28:27.872678+00:00",
+  "producer": "IGN/CNIG WCS",
+  "requested_native_rasters_per_site_and_resolution": 5,
+  "requests_maximum": 10,
+  "sample_area_per_site_km2": 16,
+  "samples_expected": 2,
+  "samples_validated": 2,
+  "separate_site_from_Alcanices_and_Vinas": true,
+  "site_publication_authorized": false,
+  "sites": [
+    {
+      "bbox_union_epsg25830": [
+        266725,
+        4597325,
+        274725,
+        4599325
+      ],
+      "centre_wgs84": [
+        -5.746992,
+        41.50378
+      ],
+      "files": [
+        {
+          "bbox_utm30": [
+            266725,
+            4597325,
+            268725,
+            4599325
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 688.0,
+          "min_m": 618.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "8be6fd284b6ab23ea97253668bd34d07bd5afb351d6ba4bb5586d01cbc70d0df",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            268725,
+            4597325,
+            270725,
+            4599325
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 681.0,
+          "min_m": 619.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "b78c9760176da34e1e766e0d4ceed6a6cdb5224ec9863471eb990103314a6184",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            270725,
+            4597325,
+            272725,
+            4599325
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 659.0,
+          "min_m": 621.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "5ea5aaecac39121fd29cbb4db6d1b2696165f4d043ad7ce2013a066dfb6d5ee1",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            272725,
+            4597325,
+            274725,
+            4599325
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 637.0,
+          "min_m": 623.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "1b473af40ce57085cfc75e781d16c93039d7741f07f4a836e00ee0a0494327e3",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            266725,
+            4597325,
+            274725,
+            4599325
+          ],
+          "bytes": 1282056,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 688.0,
+          "min_m": 618.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "3bde0c53508a4b05f408f502fcc6b3184ec450bd153e9e5a040750f61d2fa0cd",
+          "valid_cells": 640000,
+          "width_px": 1600
+        }
+      ],
+      "native_geo_tiffs_saved": false,
+      "qa": {
+        "masked_or_missing_cells": 0,
+        "maximum_abs_difference_m": 0.0,
+        "same_mask": true,
+        "same_valid_pixels": true,
+        "total_cells": 640000,
+        "valid_cells": 640000,
+        "verified": true
+      },
+      "resolution_m": 5,
+      "site": "Zamora",
+      "status": "validated_local_8km_strip"
+    },
+    {
+      "bbox_union_epsg25830": [
+        266725,
+        4597325,
+        274725,
+        4599325
+      ],
+      "centre_wgs84": [
+        -5.746992,
+        41.50378
+      ],
+      "files": [
+        {
+          "bbox_utm30": [
+            266725,
+            4597325,
+            268725,
+            4599325
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 688.0,
+          "min_m": 618.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "84762129747ab2b1a6d47da7153e2c319e41cb045e4d1f344493fd6f85ab77fd",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            268725,
+            4597325,
+            270725,
+            4599325
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 681.0,
+          "min_m": 619.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "5c93665726b937801b6dc1b668cfaa6bc12f13abd1bfe14923d32e5e6ebf977c",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            270725,
+            4597325,
+            272725,
+            4599325
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 659.0,
+          "min_m": 621.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "e45bf33677e0c0e956800731d9a0e478d9a8a5e6c873d7915191cf429a6266b1",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            272725,
+            4597325,
+            274725,
+            4599325
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 637.0,
+          "min_m": 623.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "eb2062013ab4e245a8121fe79e8f8d2c8741284459afd8cc6c8daccf3a6bb762",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            266725,
+            4597325,
+            274725,
+            4599325
+          ],
+          "bytes": 51712,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 688.0,
+          "min_m": 618.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "251f195b77035a7a4bdeed8352eda83735a7155603bdd2d3923d1ad703a46bbf",
+          "valid_cells": 25600,
+          "width_px": 320
+        }
+      ],
+      "native_geo_tiffs_saved": false,
+      "qa": {
+        "masked_or_missing_cells": 0,
+        "maximum_abs_difference_m": 0.0,
+        "same_mask": true,
+        "same_valid_pixels": true,
+        "total_cells": 25600,
+        "valid_cells": 25600,
+        "verified": true
+      },
+      "resolution_m": 25,
+      "site": "Zamora",
+      "status": "validated_local_8km_strip"
+    }
+  ],
+  "stage": "W3_Zamora_single_local_8_by_2_km_real_MDT_seam_validation",
+  "worker": "W3"
+}
