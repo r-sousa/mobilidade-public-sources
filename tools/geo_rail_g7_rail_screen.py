@@ -15,6 +15,8 @@ import numpy as np
 import rasterio
 from pyproj import Transformer
 from scipy.ndimage import gaussian_filter1d
+from scipy.optimize import linprog
+from scipy.sparse import coo_matrix
 from shapely.geometry import Point,LineString,mapping
 from shapely.ops import transform as shape_transform
 
@@ -123,10 +125,44 @@ def sample_dsm(ds,projected):
   raise ValueError("GLO30_source_surface_data_invalid")
  return raw
 
+def grade_L1_profile(z,s,grade_per_m):
+ """Least-absolute-departure vertical PROFILE PROXY on source DSM (not rail).
+
+ Sparse HiGHS LP: minimise sum_i u_i subject to |h_i-z_i|<=u_i,
+ |h_(i+1)-h_i|<=grade*segment_length. No station heights, structures,
+ vertical-curve radii, or bare-earth measurements are represented.
+ """
+ n=len(z)
+ if n<2:raise ValueError("too_short_vertical_DSM_source")
+ I=[];J=[];V=[];bound=[]
+ def constraint(vs,b):
+  k=len(bound)
+  for j,val in vs:
+   I.append(k);J.append(j);V.append(val)
+  bound.append(b)
+ for i in range(n):
+  constraint(((i,1.),(n+i,-1.)),float(z[i]))
+  constraint(((i,-1.),(n+i,-1.)),float(-z[i]))
+ for i in range(n-1):
+  d=grade_per_m*(s[i+1]-s[i])
+  constraint(((i,-1.),(i+1,1.)),float(d))
+  constraint(((i,1.),(i+1,-1.)),float(d))
+ A=coo_matrix((V,(I,J)),shape=(len(bound),2*n)).tocsr()
+ c=np.r_[np.zeros(n),np.ones(n)]
+ sol=linprog(c,A_ub=A,b_ub=np.asarray(bound),
+             bounds=[(None,None)]*n+[(0,None)]*n,
+             method="highs",options={"time_limit":90.0})
+ if not sol.success or sol.x is None:
+  raise ValueError("conservative_L1_source_DSM_gradient_program_no_solution_"+str(sol.message))
+ h=sol.x[:n]
+ if np.any(np.abs(np.diff(h))>grade_per_m*np.diff(s)+.001):
+  raise ValueError("L1_vertical_screen_exceeds_grade_limit")
+ return h
+
 def vertical_pressure(points,heights,gradient):
  seg=np.linalg.norm(np.diff(points,axis=0),axis=1)
  s=np.r_[0,np.cumsum(seg)]
- h=grade_envelopes(heights,s,gradient/1000.)
+ h=grade_L1_profile(heights,s,gradient/1000.)
  delta=h-heights
  # No turn values into tunnel/viaduct counts; DSM can include treetops/buildings.
  threshold={}
@@ -135,7 +171,8 @@ def vertical_pressure(points,heights,gradient):
   threshold[f"line_below_DSM_gt_{int(t)}m_fraction"]=round(float(np.mean(delta< -t)),4)
   threshold[f"line_above_DSM_gt_{int(t)}m_fraction"]=round(float(np.mean(delta>t)),4)
  return {"longitudinal_grade_cap_permille_hypothetical":gradient,
-   "Linf_minimum_max_abs_line_vs_DSM_surface_m":round(float(np.max(np.abs(delta))),2),
+   "L1_minimum_total_abs_line_vs_DSM_max_departure_m":round(float(np.max(np.abs(delta))),2),
+   "vertical_objective":"minimum_total_absolute_DSM_departure_under_simple_gradient_cap_NOT_railway_design",
    "p90_abs_line_vs_DSM_surface_m":round(float(np.quantile(np.abs(delta),.9)),2),
    "fraction_of_profile_distance_with_DSM_pressure_gt25m_proxy":threshold["residual_abs_gt_25m_screening_fraction"],
    "endpoint_line_DSM_vertical_differences_m":[round(float(delta[0]),2),round(float(delta[-1]),2)],
