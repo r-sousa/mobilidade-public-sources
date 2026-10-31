@@ -1,9 +1,11 @@
 """DGT native NoData regression: source masks preserved; no fabricated ground."""
-import sys,tempfile,unittest
+import sys,tempfile,unittest,importlib.util
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"tools"))
 import geo_rail_g3_native80 as qa
 
+@unittest.skipUnless(importlib.util.find_spec("numpy") and importlib.util.find_spec("rasterio"),
+ "optional geospatial raster packages are installed in the G3-specific QA workflow")
 class TestOriginalSourceMasks(unittest.TestCase):
  def test_partial_source_nodata_seams_and_mosaic_preserve_original_ground(self):
   import numpy as np,rasterio
