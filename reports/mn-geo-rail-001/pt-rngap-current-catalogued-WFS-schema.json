@@ -1,0 +1,103 @@
+{
+  "DGT_actual_survey_marks_retrieved": 0,
+  "Fxx_canonical_accepted": false,
+  "candidate_source": {
+    "HTTPS_probed_on_same_DGT_host_and_path": false,
+    "official_catalogue_resource_ID": "95bd9727-4119-43e4-9886-bfed5b05c6d6",
+    "official_catalogue_resource_format": "wfs",
+    "original_catalogue_resource_scheme": "https",
+    "resource_title": "Rede de Nivelamento Geométrico de Alta Precisão - RNGAP",
+    "service_host": "geo2.dgterritorio.gov.pt",
+    "service_path": "/geoserver/RGN/ows"
+  },
+  "catalogue_source_sha256": "805b25d53c8ba558d709dc6c000e16dcd1e24edef2d3e17bfd21bec4cbdac2fc",
+  "crossborder_datum_validated": false,
+  "has_retrieved_verified_RNGAP_attributes": false,
+  "mission": "MN-GEO-RAIL-001",
+  "official_PT_Cascais_heights_retrieved": 0,
+  "official_catalogue": "https://dados.gov.pt/api/1/datasets/rede-de-nivelamento-geometrico-de-alta-precisao-rngap/",
+  "probes": [
+    {
+      "WFS_version": "2.0.0",
+      "candidate_RNGAP_layers": [
+        {
+          "name": "RGN:RedeNivelamento",
+          "title": "RedeNivelamento"
+        }
+      ],
+      "declared_fields": [
+        "the_geom",
+        "MARCA",
+        "LIN_SEC",
+        "MARCA2",
+        "LIN_SEC2",
+        "MARCA3",
+        "LIN_SEC3",
+        "MARCA4",
+        "LIN_SEC4",
+        "MARCA5",
+        "LIN_SEC5",
+        "ALTH38",
+        "ESTRADA",
+        "ESTLADO",
+        "DESCRICAO",
+        "RedeNivelamento"
+      ],
+      "possible_height_field_names": [
+        "ALTH38",
+        "RedeNivelamento"
+      ],
+      "schema_does_not_establish_vertical_datum": true,
+      "schema_has_verified_numeric_height_VALUES": false,
+      "schema_response_SHA256": "974a9d5804a57fe57150c59172f15db53655c77fec021c60b57ef1b2b605fa64",
+      "schema_response_bytes": 2377,
+      "selected_layer": "RGN:RedeNivelamento",
+      "sha256": "d130a5aaca7bf52d4ad01e1538835d33fe40039a9d72b9ab39eedfa9ec495ebf",
+      "size_bytes": 91367,
+      "status": "official_WFS_layer_and_XSD_schema_verified",
+      "total_layer_count": 5
+    },
+    {
+      "WFS_version": "1.1.0",
+      "candidate_RNGAP_layers": [
+        {
+          "name": "RGN:RedeNivelamento",
+          "title": "RedeNivelamento"
+        }
+      ],
+      "declared_fields": [
+        "the_geom",
+        "MARCA",
+        "LIN_SEC",
+        "MARCA2",
+        "LIN_SEC2",
+        "MARCA3",
+        "LIN_SEC3",
+        "MARCA4",
+        "LIN_SEC4",
+        "MARCA5",
+        "LIN_SEC5",
+        "ALTH38",
+        "ESTRADA",
+        "ESTLADO",
+        "DESCRICAO",
+        "RedeNivelamento"
+      ],
+      "possible_height_field_names": [
+        "ALTH38",
+        "RedeNivelamento"
+      ],
+      "schema_does_not_establish_vertical_datum": true,
+      "schema_has_verified_numeric_height_VALUES": false,
+      "schema_response_SHA256": "82d4cc9bba0f66e5653fd3c8f3151fd702775cc786fbd9e1b39f6703f58fbbb4",
+      "schema_response_bytes": 2324,
+      "selected_layer": "RGN:RedeNivelamento",
+      "sha256": "28f587a58dd25865c7b0c904f182e0bc94a0414f1a416445b5fd9f749518fc4e",
+      "size_bytes": 22867,
+      "status": "official_WFS_layer_and_XSD_schema_verified",
+      "total_layer_count": 5
+    }
+  ],
+  "stage": "official_data_gov_pt_WFS_exact_resource_metadata_only",
+  "utc": "2026-10-31T08:31:59.565183+00:00"
+}
