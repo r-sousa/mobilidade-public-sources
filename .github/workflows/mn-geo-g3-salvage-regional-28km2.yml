@@ -1,0 +1,58 @@
+name: MN-GEO-RAIL-001 G3 salvage previously verified real 28km2 regional DGT 2m originals
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g3-salvage-regional-28km2-20261031
+    paths:
+      - .github/workflows/mn-geo-g3-salvage-regional-28km2.yml
+permissions:
+  actions: read
+  contents: write
+jobs:
+  independent-publication-with-no-DGT-credentials:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g3-salvage-regional-28km2-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=1.24,<3' 'requests>=2.32,<3'
+      - name: Fetch exact immutable G3 source selection SHA256 with public HTTPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --max-time 100             "https://github.com/r-sousa/mobilidade-public-sources/releases/download/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json"             --output "$RUNNER_TEMP/G3-real-source-2km-study.json"
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G3-real-source-2km-study.json" | sha256sum -c -
+      - name: Retrieve successful regional-only protected source artifact from FAILED full run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/regional-source"
+          gh run download 41222195065 --repo "$GITHUB_REPOSITORY" --name "mn-geo-rail-001-G3-native2m-regional-verified-41222195065" --dir "$RUNNER_TEMP/regional-source"
+          test "$(find "$RUNNER_TEMP/regional-source" -name '*.tif' -type f | wc -l)" -eq 35
+      - name: Independently re-open, rehash and verify original DGT 2m pixels, 28 GeoTIFF source files, 7 exact mosaics and 28 source seams
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g3_native80.py --review "$RUNNER_TEMP/G3-real-source-2km-study.json" --batch regional --verify "$RUNNER_TEMP/regional-source"
+      - name: Publish independently verified regional original source archive with DGT credit, NO DGT account secrets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/regional-source"
+          tag="mn-geo-rail-001-g3-DGT2m-regional-original-recovered-41222195065"
+          cat > "$RUNNER_TEMP/notes.txt" <<'NOTE'
+          Producer original DGT Centro de Dados MDT2m 1km2 bare-earth terrestrial GeoTIFF sources. CC BY 4.0; credit Direção-Geral do Território. Source originally downloaded in protected-main workflow run #41222195065; that overall run failed in other batches, BUT the 28km2 regional batch independently succeeded with all original source TIFFs and mosaic/seam QA. This release recovers original protected-job output, independently SHA-verifies 28 individual native 2m TIFFs and seven 2x2km exact-pixel ground mosaics, 28 source tile seams, 7m ground pixels, 0 NoData.
+          No credential, signed source URI, road-network accessibility claim, railway alignment, grade or cost calculation included. Mandatory Vila Real and Bragança service areas; Sanabria excluded. G2/G3/G4/G5 and Fxx/Site gates remain conditional.
+          NOTE
+          gh release create "$tag" "$d"/*.tif "$d"/G3-DGT-native2m-regional-original-source-QA.json             --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease             --title "G3 28km2 original DGT2m regional source: fully independently verified recovery from partially failed run"             --notes-file "$RUNNER_TEMP/notes.txt"
