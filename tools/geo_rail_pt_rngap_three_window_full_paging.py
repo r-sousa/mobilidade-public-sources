@@ -74,7 +74,7 @@ def verify_pages(fetcher=fetch,opener=urlopen):
         for page in range(MAX_PAGES_PER_WINDOW):
             offset=page*PAGE_SIZE
             original,meta=fetcher(page_url(bbox,offset),opener=opener)
-            rec=parse_source_features(original,bbox)
+            rec=parse_source_features(original,bbox,max_rows=PAGE_SIZE)
             if rec["invalid_records"] or rec["returned_features"] != rec["valid_original_marks"]:
                 raise ValueError("source_RNGAP_page_contains_unverified_mark_or_height")
             if matched is None:
