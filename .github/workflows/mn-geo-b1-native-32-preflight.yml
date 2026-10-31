@@ -1,0 +1,69 @@
+name: MN-GEO-RAIL-001 B1 preflight exact 32 original DGT 2m source IDs
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-b1-native-32-reviewed-20261031
+    paths:
+      - .github/workflows/mn-geo-b1-native-32-preflight.yml
+      - tools/geo_rail_pt_b1_native32.py
+      - tests/test_geo_rail_pt_b1_native32.py
+      - configs/MN-GEO-RAIL-001-B1-DGT32-source-IDs.json
+      - .github/workflows/mn-geo-pt-b1-32-native-registered.yml
+permissions:
+  contents: read
+jobs:
+  review-exact-road-and-DSM-vetted-original-2m-tiles:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-b1-native-32-reviewed-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test reviewed fixed 32 producer IDs and native QA security contract offline
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_b1_native32.py' -v
+      - name: Download exact-source SHA-pinned B1 DGT 2m review selection
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/B1-exact"
+          gh release download "mn-geo-rail-001-b1-review-source-tiles-after-road-DSM-join-41201246809" --repo "$GITHUB_REPOSITORY" --pattern "B1-joined-actual-sources.json" --dir "$RUNNER_TEMP/B1-exact"
+          echo "79c8811bf8be1a5c92d6aac1089b9a558db1ba0e6819ac3a07c250b1f38e1cfc  $RUNNER_TEMP/B1-exact/B1-joined-actual-sources.json" | sha256sum -c -
+      - name: Inspect compulsory cities, geography and 32 immutable official IDs
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,json,pathlib,re
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"B1-exact/B1-joined-actual-sources.json"
+          j=json.loads(p.read_text())
+          assert j["binding_transport_requirement"]==["Vila Real","Bragança"]
+          assert j["Sanabria_excluded_from_active_scope"] is True
+          assert j["Fxx_accepted"] is False and j["Site_authorized"] is False
+          assert j["preselected_groups_per_city"]=={"Vila Real":4,"Bragança":4}
+          g=j["preselected_review_groups"]
+          assert len(g)==8 and len({x["sector_id"] for x in g})==8
+          ids=[]
+          for x in g:
+            assert x["city"] in ("Vila Real","Bragança") and x["quadrant"] in ("W","E","N","S")
+            assert len(x["official_DGT_original_MDT2m_tile_IDs"])==4
+            assert not x["original_DGT_native_2m_rasters_downloaded_for_this_sector"]
+            e,n,e2,n2=x["research_sector_grid_epsg3763"]
+            assert e2-e==n2-n==2000
+            for tile in x["official_DGT_original_MDT2m_tile_IDs"]:
+              m=re.fullmatch(r"MDT-2m-(\d{3})(\d{3})-(\d{2})-(\d{4})",tile)
+              assert m and int(m[1]) in range(150,450)
+              assert int(m[2]) in range(340,640)
+              ids.append(tile)
+          assert len(ids)==len(set(ids))==32
+          print("B1_PREPARE_REAL_EXACT_32_SOURCE_IDS",json.dumps({x["city"]:[g["official_DGT_original_MDT2m_tile_IDs"] for g in j["preselected_review_groups"] if g["city"]==x["city"]] for x in j["preselected_review_groups"]},ensure_ascii=False))
+          PY
+      - name: Preserve precise official source IDs for independent static review
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-b1-32-reviewed-original-DGT-tile-IDs-${{ github.run_id }}
+          path: ${{ runner.temp }}/B1-exact/B1-joined-actual-sources.json
+          retention-days: 15
+          if-no-files-found: error
