@@ -1,0 +1,193 @@
+name: MN-GEO-RAIL-001 B1 registered protected DGT 2m 32 original tiles in 2 mandatory cities
+# Credentialed access ONLY after an explicit main-branch workflow_dispatch;
+# no branch PR/push, schedule or external account links can expose DGT secrets.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-geo-rail-001-b1-registered-DGT-native2m-20261031
+  cancel-in-progress: false
+jobs:
+  verify-protected-main:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Verify public main protected before any environment credential exposure
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          protected="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/r-sousa/mobilidade-public-sources/branches/main" | jq -r '.protected')"
+          [[ "$protected" == "true" ]] || { echo "::error::main branch not protected; rejecting DGT original source access"; exit 1; }
+  acquire-vila-real:
+    needs: verify-protected-main
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: dgt-cdd
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install bounded DGT source library and geospatial verification dependencies
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3' 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
+      - name: Run exact 32 source IDs and raster pixel offline tests before secrets are read
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_b1_native32.py' -v
+      - name: Acquire 16 producer-original native 2m raster files and validate 4 groups and 16 actual seams
+        env:
+          DGT_CDD_USERNAME: ${{ secrets.DGT_CDD_USERNAME }}
+          DGT_CDD_PASSWORD: ${{ secrets.DGT_CDD_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python tools/geo_rail_pt_b1_native32.py --city vila_real --acquire "$RUNNER_TEMP/B1-vila_real-original-source"
+          python tools/geo_rail_pt_b1_native32.py --city vila_real --verify "$RUNNER_TEMP/B1-vila_real-original-source"
+      - name: Stage ONLY checked native TIFF source bytes + sanitized provenances for independent publisher
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-B1-vila_real-native-2m-approved-${{ github.run_id }}
+          path: ${{ runner.temp }}/B1-vila_real-original-source/
+          compression-level: 0
+          retention-days: 5
+          if-no-files-found: error
+      - name: Security provenance
+        if: always()
+        shell: bash
+        run: |
+          echo "DGT credentials and signed asset links never leave protected environment; only validated source GeoTIFFs and sanitized SHA256 QA can be passed to publisher." >> "$GITHUB_STEP_SUMMARY"
+  acquire-braganca:
+    needs: verify-protected-main
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: dgt-cdd
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install bounded DGT source library and geospatial verification dependencies
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3' 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
+      - name: Run exact 32 source IDs and raster pixel offline tests before secrets are read
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_b1_native32.py' -v
+      - name: Acquire 16 producer-original native 2m raster files and validate 4 groups and 16 actual seams
+        env:
+          DGT_CDD_USERNAME: ${{ secrets.DGT_CDD_USERNAME }}
+          DGT_CDD_PASSWORD: ${{ secrets.DGT_CDD_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python tools/geo_rail_pt_b1_native32.py --city braganca --acquire "$RUNNER_TEMP/B1-braganca-original-source"
+          python tools/geo_rail_pt_b1_native32.py --city braganca --verify "$RUNNER_TEMP/B1-braganca-original-source"
+      - name: Stage ONLY checked native TIFF source bytes + sanitized provenances for independent publisher
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-B1-braganca-native-2m-approved-${{ github.run_id }}
+          path: ${{ runner.temp }}/B1-braganca-original-source/
+          compression-level: 0
+          retention-days: 5
+          if-no-files-found: error
+      - name: Security provenance
+        if: always()
+        shell: bash
+        run: |
+          echo "DGT credentials and signed asset links never leave protected environment; only validated source GeoTIFFs and sanitized SHA256 QA can be passed to publisher." >> "$GITHUB_STEP_SUMMARY"
+  publish-vila-real:
+    needs: acquire-vila-real
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install independent geospatial verifier without receiving any DGT credentials
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3' 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
+      - name: Retrieve DGT original tiles checked by protected runner
+        uses: actions/download-artifact@v4
+        with:
+          name: mn-geo-rail-001-B1-vila_real-native-2m-approved-${{ github.run_id }}
+          path: ${{ runner.temp }}/B1-vila_real-source-check
+      - name: Recompute every original source SHA256, actual pixel count, 4x4 source seam integrity and reassembled original pixels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_pt_b1_native32.py --city vila_real --verify "$RUNNER_TEMP/B1-vila_real-source-check"
+      - name: Publish 16 original DGT raster TIFFs, 4 mosaics and sanitized QA under proper open-data attribution
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/B1-vila_real-source-check"
+          tag="mn-geo-rail-001-b1-DGT2m-vila_real-native-source-preacceptance-${GITHUB_RUN_ID}"
+          cat > "$RUNNER_TEMP/notes.txt" <<'NOTE'
+          MN-GEO-RAIL-001 B1, actual original source-native terrain rasters from Portugal's Direção-Geral do Território (DGT) CDD — CC BY 4.0; attribute Direção-Geral do Território. Source: https://cdd.dgterritorio.gov.pt/ ; rights: https://www.dgterritorio.gov.pt/dados-abertos.
+          Source original 1x1 km 2m GeoTIFF tile identities, source hashes, valid pixel counts, 4 study groups each with four edge-seam QA tests, and exact pixel-preserving 2x2km mosaics included in source JSON.
+          Territorial purpose: mandatory service Vila Real and Bragança, possible peripheral rail stations subject to real road access; these sampled areas ARE NOT selected stations/rail lines. Sanabria excluded.
+          2m terrestrial DTM, NOT Copernicus surface DSM. No full Porto–Zamora corridor coverage, no cross-border geodetic vertical control, no approval of Fxx or Site.
+          GITHUB_TOKEN is used only in NO-DGT-CREDENTIALS publisher; DGT account secret and signed URLs are never persisted or published.
+          NOTE
+          gh release create "$tag" "$d"/*.tif "$d"/B1-DGT-native-MDT2m-vila_real-source-QA.json --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "MN-GEO-RAIL-001 B1 original DGT 2m bare-earth raster acquisition vila_real, 16 km2" --notes-file "$RUNNER_TEMP/notes.txt"
+  publish-braganca:
+    needs: acquire-braganca
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install independent geospatial verifier without receiving any DGT credentials
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3' 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
+      - name: Retrieve DGT original tiles checked by protected runner
+        uses: actions/download-artifact@v4
+        with:
+          name: mn-geo-rail-001-B1-braganca-native-2m-approved-${{ github.run_id }}
+          path: ${{ runner.temp }}/B1-braganca-source-check
+      - name: Recompute every original source SHA256, actual pixel count, 4x4 source seam integrity and reassembled original pixels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_pt_b1_native32.py --city braganca --verify "$RUNNER_TEMP/B1-braganca-source-check"
+      - name: Publish 16 original DGT raster TIFFs, 4 mosaics and sanitized QA under proper open-data attribution
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/B1-braganca-source-check"
+          tag="mn-geo-rail-001-b1-DGT2m-braganca-native-source-preacceptance-${GITHUB_RUN_ID}"
+          cat > "$RUNNER_TEMP/notes.txt" <<'NOTE'
+          MN-GEO-RAIL-001 B1, actual original source-native terrain rasters from Portugal's Direção-Geral do Território (DGT) CDD — CC BY 4.0; attribute Direção-Geral do Território. Source: https://cdd.dgterritorio.gov.pt/ ; rights: https://www.dgterritorio.gov.pt/dados-abertos.
+          Source original 1x1 km 2m GeoTIFF tile identities, source hashes, valid pixel counts, 4 study groups each with four edge-seam QA tests, and exact pixel-preserving 2x2km mosaics included in source JSON.
+          Territorial purpose: mandatory service Vila Real and Bragança, possible peripheral rail stations subject to real road access; these sampled areas ARE NOT selected stations/rail lines. Sanabria excluded.
+          2m terrestrial DTM, NOT Copernicus surface DSM. No full Porto–Zamora corridor coverage, no cross-border geodetic vertical control, no approval of Fxx or Site.
+          GITHUB_TOKEN is used only in NO-DGT-CREDENTIALS publisher; DGT account secret and signed URLs are never persisted or published.
+          NOTE
+          gh release create "$tag" "$d"/*.tif "$d"/B1-DGT-native-MDT2m-braganca-source-QA.json --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "MN-GEO-RAIL-001 B1 original DGT 2m bare-earth raster acquisition braganca, 16 km2" --notes-file "$RUNNER_TEMP/notes.txt"
+
