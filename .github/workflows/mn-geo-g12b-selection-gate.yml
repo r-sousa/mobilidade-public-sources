@@ -1,0 +1,85 @@
+name: MN-GEO-RAIL-001 G12B gated six-option cost/service evidence portfolio
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g12-station-service-20261031
+      - main
+    paths:
+      - tools/geo_rail_g12b_evidence_gated_preselection.py
+      - tests/test_geo_rail_g12b_preselection.py
+      - .github/workflows/mn-geo-g12b-selection-gate.yml
+permissions:
+  contents: write
+  actions: read
+jobs:
+  G12B-six-option-evidence-guard:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Enforce no-unfounded-economic-cost conclusions
+        run: |
+          python -m py_compile tools/geo_rail_g12b_evidence_gated_preselection.py
+          python -m unittest discover -s tests -p test_geo_rail_g12b_preselection.py -v
+      - name: Retrieve archived original G10 and fixed successful G12A run-identity only
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G12B-input"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 \
+            "https://github.com/r-sousa/mobilidade-public-sources/releases/download/mn-geo-rail-001-g10-27-macro-portfolio-41243658672/G10-27-combinations-81-speed-source-only.json" \
+            -o "$RUNNER_TEMP/G12B-input/G10.json"
+          echo "7677ed95f822ee8ada510f984f50ee498851e3bd948f9ed960e08f8620cc7287  $RUNNER_TEMP/G12B-input/G10.json" | sha256sum -c -
+          gh run download 41247885541 --repo "$GITHUB_REPOSITORY" --name MN-GEO-RAIL-001-G12A-six-corridors-real-road-station-research --dir "$RUNNER_TEMP/G12B-input"
+          test -s "$RUNNER_TEMP/G12B-input/G12A-108-siting-source-road-service.json"
+      - name: Source-evidence preselection and data-readiness gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g12b_evidence_gated_preselection.py \
+            --g10 "$RUNNER_TEMP/G12B-input/G10.json" \
+            --g12 "$RUNNER_TEMP/G12B-input/G12A-108-siting-source-road-service.json" \
+            --json "$RUNNER_TEMP/G12B-three-families-six-alternatives-data-gates.json" \
+            --markdown "$RUNNER_TEMP/G12B-six-alternatives-preselection-report.md"
+          python - <<'PY'
+          import json,pathlib,os
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])
+          q=json.loads((d/"G12B-three-families-six-alternatives-data-gates.json").read_text())
+          assert len(q["per_alternative_source_comparison"])==6
+          assert len(q["marginal_module_alternative_contrasts"])>=4
+          assert q["provisional_3_family_anchors_NOT_final_selection"]==["P1-2-1","P2-2-1","P2-2-3"]
+          assert q["do_not_claim_minimum_financial_cost_or_maximum_accessibility"]
+          assert q["cost_EUR_and_train_service_frequency_all_null"]
+          assert len(q["gated_upstream_sources_and_next_validation"])==5
+          assert not q["Fxx_accepted"] and not q["Site_authorized"]
+          assert q["Sanabria_excluded"]
+          print("G12B accepted: three geographically diverse research families, 5 hard upstream data blockers, NO claimed cost-optimal rail solution")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G12B-3-families-cost-service-data-gates
+          path: |
+            ${{ runner.temp }}/G12B-three-families-six-alternatives-data-gates.json
+            ${{ runner.temp }}/G12B-six-alternatives-preselection-report.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish G12B on protected main after successful QA, preacceptance only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g12b-service-cost-evidence-gate-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G12B-three-families-six-alternatives-data-gates.json" "$RUNNER_TEMP/G12B-six-alternatives-preselection-report.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G12B 3 diverse research families, source-based 6-alt service screens, CAPEX/OD blocking gates" \
+            --notes "G10 + successful immutable G12A action research road-reference evidence. 6 source geographic alternatives, 3 anchor families only a provisional variety portfolio, explicit technical DSM/length vs road-to-study-point differences, never actual stations or train service. All investment EUR, jobs/population catchment, observed OD/CP timetables and unit costs missing, with F67 BGRI original in private canonical requiring validation and 5 follow-up data gates. Do not declare any financial cost optimum. No new DGT acquisition or Fxx/Site."
