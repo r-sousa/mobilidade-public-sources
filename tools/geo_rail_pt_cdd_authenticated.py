@@ -17,6 +17,9 @@ import hashlib
 from html.parser import HTMLParser
 import json
 import os
+import ipaddress
+import re
+import socket
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import urlencode, urljoin, urlsplit
@@ -253,12 +256,115 @@ def find_native_asset(session,site):
     return href,response_sha
 
 
+
+def verified_public_storage_endpoint(url, *, dns_lookup=None):
+    """One CDD-issued storage URL; HTTPS :9000, strictly public IP/DNS.
+
+    Never evaluates URL path or query; they are opaque signed data.
+    Forbid all private/loopback/reserved DNS results and embedded credentials.
+    This validation is a conservative preflight, not a replacement for TLS
+    certificate checks on the actual HTTPS request.
+    """
+    try:
+        p=urlsplit(url)
+        host=(p.hostname or "").lower().rstrip(".")
+        if (p.scheme!="https" or p.port!=9000 or
+            p.username or p.password or p.fragment or not host):
+            return False
+        if host==DATA_HOST or host==AUTH_HOST:
+            return False
+        try:
+            literal=ipaddress.ip_address(host)
+        except ValueError:
+            literal=None
+        if literal is not None:
+            return literal.is_global
+        if not re.fullmatch(r"[a-z0-9.-]{4,253}",host):
+            return False
+        if any(not label or label.startswith("-") or label.endswith("-")
+               for label in host.split(".")):
+            return False
+        if (host=="localhost" or "." not in host or
+            host.endswith((".localhost",".local",".internal",".test",
+                           ".invalid",".example",".onion"))):
+            return False
+        if dns_lookup is None:
+            dns_lookup=socket.getaddrinfo
+        addresses=dns_lookup(host,9000,proto=socket.IPPROTO_TCP)
+        if not addresses:
+            return False
+        return all(ipaddress.ip_address(info[4][0]).is_global for info in addresses)
+    except (ValueError, TypeError, OSError):
+        return False
+
+
+def native_response_from_dgt_with_single_storage_hop(session, href):
+    """Follow same-host DGT redirects; allow one isolated HTTPS :9000 hop.
+
+    Only DGT-authenticated response may issue the storage link. A fresh,
+    cookie-free HTTP session is used for the storage request, so DGT login
+    credentials, DGT cookies and Authorization never leave DGT.
+    """
+    import requests
+    if not allowed_url(href,TRUSTED_DATA_REDIRECTS):
+        raise IntakeError("unapproved_native_asset_href",
+                          phase="native_geotiff_download")
+    url=href
+    for _ in range(MAX_REDIRECTS+1):
+        try:
+            result=session.request("GET",url,
+                headers={"User-Agent":USER_AGENT},
+                stream=True,allow_redirects=False,timeout=60)
+        except Exception:
+            raise IntakeError("dgt_native_request_failed",
+                              phase="native_geotiff_download") from None
+        if result.status_code not in (301,302,303,307,308):
+            return result,None
+        loc=result.headers.get("Location","")
+        destination=urljoin(url,loc)
+        result.close()
+        if allowed_url(destination,TRUSTED_DATA_REDIRECTS):
+            url=destination
+            continue
+        if not verified_public_storage_endpoint(destination):
+            raise IntakeError(
+                "unapproved_redirect_destination",
+                phase="native_geotiff_download",
+                redirect=sanitized_redirect_diagnostic(destination))
+        # Request URL is an opaque time-limited storage link provided by DGT;
+        # it is not logged or stored in any receipt. Do not forward account
+        # cookies or headers. Forbid further redirects, including to DGT.
+        storage=requests.Session()
+        storage.verify=True
+        storage.trust_env=False
+        storage.headers.clear()
+        storage.cookies.clear()
+        try:
+            response=storage.request("GET",destination,
+                headers={"User-Agent":USER_AGENT},
+                stream=True,allow_redirects=False,timeout=60)
+            if response.status_code in (301,302,303,307,308):
+                response.close()
+                raise IntakeError("storage_second_redirect_not_allowed",
+                                  phase="native_geotiff_download")
+            return response,storage
+        except IntakeError:
+            storage.close()
+            raise
+        except Exception:
+            storage.close()
+            raise IntakeError(
+                "external_storage_https_or_network_failed",
+                phase="native_geotiff_download") from None
+    raise IntakeError("too_many_dgt_native_redirects",
+                      phase="native_geotiff_download")
+
+
 def download_native(session, href, destination):
     # No POST credentials ever travel to the data asset. Cookies are
     # managed by requests on the DGT domain. HTTPS verification is ON.
-    result=request_bounded_redirects(
-        session,"GET",href,TRUSTED_DATA_REDIRECTS,stream=True,timeout=60,
-        stop_at=TRUSTED_DATA_REDIRECTS,phase="native_geotiff_download")
+    result,storage_session=native_response_from_dgt_with_single_storage_hop(
+        session,href)
     size=0
     digest=hashlib.sha256()
     try:
@@ -288,6 +394,8 @@ def download_native(session, href, destination):
         return size,digest.hexdigest()
     finally:
         result.close()
+        if storage_session is not None:
+            storage_session.close()
 
 
 def execute(site,source_index):
