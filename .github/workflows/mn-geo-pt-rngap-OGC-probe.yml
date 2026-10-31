@@ -1,0 +1,57 @@
+name: MN-GEO-RAIL-001 W4 public Portuguese RNGAP OGC service metadata diagnostics
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-w4-dgt-rngap-service-20261031
+    paths:
+      - tools/geo_rail_pt_rngap_service_probe.py
+      - tests/test_geo_rail_pt_rngap_service_probe.py
+      - .github/workflows/mn-geo-pt-rngap-OGC-probe.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-DGT-RNGAP-OGC-metadata-only
+  cancel-in-progress: false
+
+jobs:
+  official-DGT-OGC-metadata-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run bounded no-credentials origin and OGC XML parsing tests
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_rngap_service_probe.py' -v
+      - name: Probe THREE official-host OGC geodesy capabilities, never GetFeature
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_pt_rngap_service_probe.py \
+            --output "$RUNNER_TEMP/pt-dgt-rngap-service-metadata-probe.json"
+      - name: Persist sanitized metadata diagnostic without marks or source grid bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          target=reports/mn-geo-rail-001/pt-dgt-rngap-wfs-wms-capabilities-diagnostic.json
+          cp "$RUNNER_TEMP/pt-dgt-rngap-service-metadata-probe.json" "$target"
+          python - <<'PY'
+          import json
+          p="reports/mn-geo-rail-001/pt-dgt-rngap-wfs-wms-capabilities-diagnostic.json"
+          j=json.load(open(p))
+          assert len(j["results"])==3
+          assert not j["crossborder_benchmark_validation_complete"]
+          assert j["Portuguese_RNGAP_mark_coordinates_acquired"]==0
+          assert j["full_country_source_feature_downloaded"] is False
+          print("RNGAP_METADATA_DIAGNOSTIC_PROBE",j["successful_valid_OGC_service_responses"])
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): preserve bounded Portuguese DGT OGC RNGAP endpoint metadata diagnostic"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
