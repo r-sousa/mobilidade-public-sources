@@ -1,0 +1,92 @@
+name: MN-GEO-RAIL-001 G13A 108 local 30m DSM station-reference profiles with verified road inputs
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g13-dsm-station-access-audit-20261031
+      - main
+    paths:
+      - tools/geo_rail_g13a_real_DSM_site_profiles.py
+      - tests/test_geo_rail_g13a_real_DSM_site_profiles.py
+      - .github/workflows/mn-geo-g13a-dsm-station-screen.yml
+permissions:
+  contents: write
+jobs:
+  real_DSM_site_relief_preacceptance:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install explicit raster/terrain profiling dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'scipy>=1.12,<2' 'rasterio>=1.4,<2' 'shapely>=2,<3' 'pyproj>=3.6,<4'
+      - name: Compile and enforce G13A site proxy not-station unit tests
+        run: |
+          python -m py_compile tools/geo_rail_g13a_real_DSM_site_profiles.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g13a_real_DSM_site_profiles.py' -v
+      - name: Retrieve source SHA-pinned original GLO30 and G3 G5 G10 G12A evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G13A-source"
+          b="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 180 "$b/mn-geo-rail-001-r1-airport-zamora-dsm-preacceptance-41198485197/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" -o "$RUNNER_TEMP/G13A-source/GLO30.tif"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$b/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json" -o "$RUNNER_TEMP/G13A-source/G3.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$b/mn-geo-rail-001-g5-distinct-research-bands-41232865101/G5-three-modules-real-source-route-screens.json" -o "$RUNNER_TEMP/G13A-source/G5.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$b/mn-geo-rail-001-g10-27-macro-portfolio-41243658672/G10-27-combinations-81-speed-source-only.json" -o "$RUNNER_TEMP/G13A-source/G10.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$b/mn-geo-rail-001-g12a-station-siting-stop-sensitivity-41248196910/G12A-108-siting-source-road-service.json" -o "$RUNNER_TEMP/G13A-source/G12A.json"
+          echo "a708b502b2eb86236c70f2d74322e9d8e2ea1417eb24094d0e43536845407bd9  $RUNNER_TEMP/G13A-source/GLO30.tif" | sha256sum -c -
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G13A-source/G3.json" | sha256sum -c -
+          echo "a4cb8be1443b8be484303934595dfb8ffecaeb6b7857dc0a1ee1569956adfc32  $RUNNER_TEMP/G13A-source/G5.json" | sha256sum -c -
+          echo "7677ed95f822ee8ada510f984f50ee498851e3bd948f9ed960e08f8620cc7287  $RUNNER_TEMP/G13A-source/G10.json" | sha256sum -c -
+          echo "d4f80818afb71a34632f86de9a1dca483b3406075d0cc003139aa0e82eb7c753  $RUNNER_TEMP/G13A-source/G12A.json" | sha256sum -c -
+      - name: Profile every source station research reference with 123 real original surface samples per location
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g13a_real_DSM_site_profiles.py \
+            --g3 "$RUNNER_TEMP/G13A-source/G3.json" \
+            --g5 "$RUNNER_TEMP/G13A-source/G5.json" \
+            --g10 "$RUNNER_TEMP/G13A-source/G10.json" \
+            --g12 "$RUNNER_TEMP/G13A-source/G12A.json" \
+            --dsm "$RUNNER_TEMP/G13A-source/GLO30.tif" \
+            --json "$RUNNER_TEMP/G13A-108-station-research-site-surface-graded-access.json" \
+            --markdown "$RUNNER_TEMP/G13A-real-DSM-urban-interface-screen.md"
+          python - <<'PY'
+          import json,pathlib,os
+          x=pathlib.Path(os.environ["RUNNER_TEMP"])
+          r=json.loads((x/"G13A-108-station-research-site-surface-graded-access.json").read_text())
+          assert r["site_counts"]["original_research_points"]==108
+          assert len(r["non_dominated_reference_site_screens_per_market"])==36
+          assert len(r["six_corridor_research_summary"])==6
+          assert r["Sanabria_excluded"] and r["mandatory_service_markets"]==["Vila Real","Bragança"]
+          assert r["ineligible_to_infer_feasible_station_platform"]
+          assert r["no_census_job_catchment_cost_eur_passenger_demand"]
+          assert r["no_new_authenticated_DGT_or_CNIG_ground_download"]
+          assert not r["Fxx_accepted"] and not r["Site_authorized"]
+          print("G13A validated 108 real DSM local surface profiles, no station/rail/financial certification")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G13A-original-DSM-station-reference-108
+          path: |
+            ${{ runner.temp }}/G13A-108-station-research-site-surface-graded-access.json
+            ${{ runner.temp }}/G13A-real-DSM-urban-interface-screen.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish source-backed G13A station reference QA on protected main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g13a-local-surface-access-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G13A-108-station-research-site-surface-graded-access.json" "$RUNNER_TEMP/G13A-real-DSM-urban-interface-screen.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G13A 108 original 30m DSM local grade/site and OSRM-access proximity screens; NOT stations" \
+            --notes "108 fixed G12A source study road-snap points, real SHA-pinned Copernicus 30m SURFACE not ground, 1km mathematical 18/25permille station reference and ±125m lateral relief; city market access only to road points not legal station access; non-dominated shortlist is research only. No railway engineering, public transit, BGRI jobs/population, cost EUR, authentic new DGT ground or Fxx/Site."
