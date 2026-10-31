@@ -1,0 +1,94 @@
+name: MN-GEO-RAIL-001 G17 actual 15 30 45 min road-reach INE2021 population
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g15-road-isochrones-20261031
+      - main
+    paths:
+      - tools/geo_rail_g17_valhalla_reverse_road_ine_census.py
+      - tests/test_geo_rail_g17_reverse_road_ine2021.py
+      - .github/workflows/mn-geo-g17-valhalla-original-ine-road-isochrones.yml
+permissions:
+  contents: write
+jobs:
+  G17_real_road_network_2021_residents:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install native GeoPackage polygons and coordinate transformation
+        run: python -m pip install --disable-pip-version-check 'shapely>=2.1,<3' 'pyproj>=3.6,<4'
+      - name: Validate strict 15/30/45min reverse driving isochrone validation tests
+        run: |
+          python -m py_compile tools/geo_rail_g17_valhalla_reverse_road_ine_census.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g17_reverse_road_ine2021.py' -v
+      - name: Fetch original exact INE 2021 BGRI GPKG and immutable earlier G14 census research coordinates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G17-source"
+          gh release download mn-f67-bgri21-cont-original-INE-verified-20261031 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'BGRI21_CONT.zip' --dir "$RUNNER_TEMP/G17-source"
+          gh release download mn-geo-rail-001-g14-bgri2021-station-demographic-envelopes-41250842887 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G14-BGRI2021-three-families-six-cities-5-10-20km-catchments.json' --dir "$RUNNER_TEMP/G17-source"
+          echo "3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171  $RUNNER_TEMP/G17-source/BGRI21_CONT.zip" | sha256sum -c -
+          echo "af16f552634f066ad5723445d9bd6e389f5769a522b2782d7064bc206acc216d  $RUNNER_TEMP/G17-source/G14-BGRI2021-three-families-six-cities-5-10-20km-catchments.json" | sha256sum -c -
+      - name: Real original census counts within real reverse motor-vehicle arrival polygons; <=18 unique public demo calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g17_valhalla_reverse_road_ine_census.py \
+            --f67 "$RUNNER_TEMP/G17-source/BGRI21_CONT.zip" \
+            --g14 "$RUNNER_TEMP/G17-source/G14-BGRI2021-three-families-six-cities-5-10-20km-catchments.json" \
+            --json "$RUNNER_TEMP/G17-real-road-15-30-45min-INE2021-census.json" \
+            --geojson "$RUNNER_TEMP/G17-reverse-15-30-45min-road-isochrone-geometry.geojson" \
+            --markdown "$RUNNER_TEMP/G17-source-real-road-INE-census-2021-evidence.md"
+          python - <<'PY'
+          import os,json,pathlib
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])
+          x=json.loads((d/"G17-real-road-15-30-45min-INE2021-census.json").read_text())
+          q=json.loads((d/"G17-reverse-15-30-45min-road-isochrone-geometry.geojson").read_text())
+          assert len(x["54_source_city_minutes_cases"])==54
+          assert len(x["9_original_2021_road_catchment_union_aggregates"])==9
+          assert 0<x["distinct_public_router_requests"]<=18
+          assert len(q["features"])==63
+          assert x["road_direction"]=="reverse_road_isocrone_from_area_TO_study_reference_for_arrival"
+          assert x["source_2021_census_native_QA"]["record_count"]==203264
+          assert x["mandatory_urban_markets"]==["Vila Real","Bragança"]
+          assert x["Sanabria_excluded"]
+          assert x["unknown_PT_network_not_zero_PT_supply"]
+          assert not x["Fxx_accepted"] and not x["Site_authorized"]
+          print("G17 PASS: real source exact 2021 census × reverse OSM driving 15/30/45 min polygons, 54 place/time values, 9 nonoverlapping unions, no PT imputation")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G17-true-road-isochrones-original-INE2021
+          path: |
+            ${{ runner.temp }}/G17-real-road-15-30-45min-INE2021-census.json
+            ${{ runner.temp }}/G17-reverse-15-30-45min-road-isochrone-geometry.geojson
+            ${{ runner.temp }}/G17-source-real-road-INE-census-2021-evidence.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish source-authenticated G17 road accessibility research results on main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g17-15-30-45-real-road-2021-population-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G17-real-road-15-30-45min-INE2021-census.json" \
+            "$RUNNER_TEMP/G17-reverse-15-30-45min-road-isochrone-geometry.geojson" \
+            "$RUNNER_TEMP/G17-source-real-road-INE-census-2021-evidence.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G17 actual 15/30/45min reverse driving road arrival areas at research points × original INE 2021 population" \
+            --notes "True OSM Valhalla reverse auto travel-time isochrones (up to 18 unique study origin points, rate<=1/sec public demo) intersected with exact historical INE BGRI21_CONT.gpkg source 2021 subsection residents; 54 city/time cases and 9 non-double-counted union populations. This is road travel to nearby points of UNBUILT 2km research rail corridors, not rail station access, traffic-adjusted driving, PT bus routes, real ridership or economics. Systematic public transport data not available for NUTS2 Norte and no fictitious score or zero PT imposed. Surface geometry tracks not built; QA native census, source SHA and network response receipts. No new F67 acquisition, no Fxx/Site or EUR cost."

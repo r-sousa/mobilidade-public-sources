@@ -1,0 +1,46 @@
+name: MN GEO G15 public Valhalla true road isochrone feasibility probe
+on:
+  push:
+    branches: [mn-geo-rail-001-g15-road-isochrones-20261031]
+    paths: [.github/workflows/mn-geo-g15-road-isochrone-preflight.yml]
+permissions:
+  contents: read
+jobs:
+  native_public_routing_isochrone_probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: One bounded public reverse auto isochrone query 15 30 45 minutes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,urllib.request,urllib.error,time,hashlib
+          url="https://valhalla1.openstreetmap.de/isochrone"
+          payload={"locations":[{"lat":41.3006,"lon":-7.744}],"costing":"auto",
+            "contours":[{"time":15},{"time":30},{"time":45}],
+            "polygons":True,"reverse":True,"denoise":0.2,"generalize":150}
+          body=json.dumps(payload,separators=(",",":")).encode()
+          req=urllib.request.Request(url,data=body,method="POST",headers={
+            "Content-Type":"application/json","Accept":"application/json",
+            "X-Client-Id":"mobilidade-norte-rail-G15-source-research",
+            "User-Agent":"MobilidadeNorte-G15-infrequent-research-public-routing/1.0"})
+          try:
+            with urllib.request.urlopen(req,timeout=65) as response:
+              raw=response.read(2000001)
+              print("G15_VALHALLA_HTTP="+json.dumps({"status":response.status,
+                "ctype":response.headers.get("content-type"),"bytes":len(raw),
+                "raw_sha256":hashlib.sha256(raw).hexdigest()}))
+              assert len(raw)<2000000
+              j=json.loads(raw)
+              fs=j.get("features",[])
+              print("G15_VALHALLA_GEOMETRY="+json.dumps({"features":len(fs),
+               "type":j.get("type"),"properties":[f.get("properties") for f in fs],
+               "geometry_types":[f.get("geometry",{}).get("type") for f in fs],
+               "warning":j.get("warnings",[])},ensure_ascii=False))
+              assert j.get("type")=="FeatureCollection" and len(fs)>=3
+              assert all(f.get("geometry",{}).get("type") in ("Polygon","MultiPolygon") for f in fs)
+          except urllib.error.HTTPError as e:
+            print("G15_VALHALLA_UPSTREAM_ERROR="+json.dumps({"status":e.code,"reply":e.read(1200).decode("utf8","replace")}))
+            raise
+          PY
