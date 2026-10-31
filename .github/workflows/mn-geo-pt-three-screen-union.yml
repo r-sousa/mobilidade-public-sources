@@ -1,0 +1,47 @@
+name: MN-GEO-RAIL-001 DGT three scans 4333 pair union QA
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-porto-vilareal-stac-20261031
+    paths:
+      - tools/geo_rail_pt_three_screen_union.py
+      - tests/test_geo_rail_pt_three_screen_union.py
+      - .github/workflows/mn-geo-pt-three-screen-union.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-dgt-three-scan-source-union
+  cancel-in-progress: false
+
+jobs:
+  materialize-deduplication-source-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate original sanitized STAC receipts and exact 2m/50cm source ID pairing
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_three_screen_union.py' -v
+      - name: Compute durable no-secrets three-screen union QA
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_pt_three_screen_union.py \
+            --report-dir reports/mn-geo-rail-001 \
+            --output "$RUNNER_TEMP/dgt-three-screen-source-union.json"
+      - name: Persist compact source-hashed result only on review branch
+        run: |
+          set -euo pipefail
+          target="reports/mn-geo-rail-001/pt-dgt-three-screen-catalogue-union-qa.json"
+          cp "$RUNNER_TEMP/dgt-three-screen-source-union.json" "$target"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): preserve source-hashed 4333 DGT product positions catalogue union QA"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
