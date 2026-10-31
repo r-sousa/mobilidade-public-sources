@@ -1,0 +1,65 @@
+name: MN-GEO-RAIL-001 G3 reproduce original NoData source failure safely without DGT secrets
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g3-void-aware-qc-20261031
+    paths:
+      - tools/geo_rail_g3_native80.py
+      - tests/test_geo_rail_g3_native_voids.py
+      - .github/workflows/mn-geo-pt-g3-80-native-registered.yml
+      - .github/workflows/mn-geo-g3-source-void-regression.yml
+permissions:
+  contents: read
+jobs:
+  exact-source-mask-seam-qa-before-protected-acquisition:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g3-void-aware-qc-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      PYTHONPATH: tools
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=1.24,<3' 'requests>=2.32,<3'
+      - name: Exercise original DGT NoData source masks, all-missing corner, exact mosaic cells and seams
+        run: python -m unittest discover -s tests -p 'test_geo_rail_g3_native_voids.py' -v
+      - name: Verify mandatory service, 76 original source IDs and synthetic raster controls unchanged
+        run: python -m unittest discover -s tests -p 'test_geo_rail_g3_native80.py' -v
+      - name: Confirm protected acquisition will only retry two missing city batches, never regional
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          y=Path(".github/workflows/mn-geo-pt-g3-80-native-registered.yml").read_text()
+          assert y.count("batch: [vila_real, braganca]")==2
+          assert "batch: [vila_real, braganca, regional]" not in y
+          assert "mn-geo-rail-001-g3-DGT2m-regional-original-recovered-41222195065" in y
+          assert "environment: dgt-cdd" in y and "  workflow_dispatch:" in y
+          assert "  pull_request:" not in y and "  schedule:" not in y and "  push:" not in y
+          assert "always() &&" in y and "batch_source_available.outputs.found" in y
+          assert "test_geo_rail_g3_native_voids.py" in y
+          print("G3_SAFE: recovered 28 regional existing, only 48 city source grids eligible for protected acquisition; partial originals preserved")
+          PY
+      - name: Check source pinned 76 target IDs and existing 28km2 regional release without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --max-time 100             "https://github.com/r-sousa/mobilidade-public-sources/releases/download/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json"             --output "$RUNNER_TEMP/G3-real-source-2km-study.json"
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G3-real-source-2km-study.json" | sha256sum -c -
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from geo_rail_g3_native80 import load_review,batch_groups
+          groups=load_review(Path(os.environ["RUNNER_TEMP"])/"G3-real-source-2km-study.json")
+          assert len(groups)==19
+          assert len(batch_groups(groups,"vila_real"))==7
+          assert len(batch_groups(groups,"braganca"))==5
+          assert len(batch_groups(groups,"regional"))==7
+          assert len({id for g in groups for id in g["tile_ids"]})==76
+          print("real official DGT source metadata SHA256 and 76 target IDs confirmed")
+          PY
