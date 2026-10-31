@@ -135,14 +135,14 @@ def inspect_output(path):
         pixels=ds.read(1,masked=True)
         valid=int(pixels.count())
         coverage=float(valid/pixels.size)
-        if coverage < 0.985:
-            raise ValueError("regional DSM rectangle has too many missing pixels")
+        if valid!=pixels.size:
+            raise ValueError("regional DSM rectangle contains masked/missing pixels (zero tolerated)")
         v=pixels.compressed()
         if not np.isfinite(v).all() or float(v.min())<-500 or float(v.max())>4000:
             raise ValueError("implausible regional DSM range")
         raw=ds.read(1)
         seams=_seam_qa(raw,ds.transform)
-        if any(x["fraction_both_adjacent_valid"] < 0.985 for x in seams):
+        if any(x["either_missing"] for x in seams):
             raise ValueError("regional DSM failed internal tile seam pixel-validity gate")
         return {"bbox_wgs84":bounds,"horizontal_crs":"EPSG:4326",
                 "vertical_reference_from_Copernicus_product_documentation":"EGM2008 (EPSG:3855)",
@@ -177,10 +177,22 @@ def acquire(work_dir:Path):
     with ExitStack() as stack:
         sources=[stack.enter_context(rasterio.open(p)) for p in src_paths]
         # Same WGS84 one-arcsec source grid, no interpolation to a coarser raster.
+        # rasterio.merge may leave the last column unwritten when the requested
+        # crop touches an independently rounded source window. Preserve 2 extra
+        # source columns at the right then crop to the EXACT intended grid.
+        # Without this guard 3024 cells were missing in one east-boundary column
+        # despite the original fourth 1-degree COG having ALL pixels valid.
+        west,south,east,north=OUTPUT_BBOX_WGS84
+        expanded_bbox=(west,south,east+2*ARCSEC,north)
         pixels,transform=rasterio.merge.merge(
-            sources,bounds=OUTPUT_BBOX_WGS84,res=(ARCSEC,ARCSEC),
+            sources,bounds=expanded_bbox,res=(ARCSEC,ARCSEC),
             method="first",nodata=NODATA,target_aligned_pixels=True
         )
+        requested_width=int(round((east-west)/ARCSEC))
+        requested_height=int(round((north-south)/ARCSEC))
+        if pixels.shape[0]!=1 or pixels.shape[1]!=requested_height or pixels.shape[2]<requested_width:
+            raise ValueError("unexpected source/output grid shape")
+        pixels=pixels[:,:,:requested_width]
     if pixels.shape[0]!=1: raise ValueError("unapproved multi-band mosaic")
     out=work_dir/OUT_NAME
     with rasterio.open(out,"w",driver="GTiff",height=pixels.shape[1],width=pixels.shape[2],
