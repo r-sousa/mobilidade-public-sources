@@ -13,9 +13,14 @@ on:
         options:
           - mirandela
           - amarante
+      preserve_native:
+        description: 'Preserve validated Mirandela raster in public prerelease, CC BY 4.0, not canonical Fxx'
+        type: boolean
+        default: true
+        required: true
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: mn-geo-rail-001-dgt-cdd-registered-direct
@@ -54,6 +59,7 @@ jobs:
     env:
       PYTHONDONTWRITEBYTECODE: '1'
       DGT_SITE: ${{ inputs.site }}
+      PRESERVE_NATIVE: ${{ inputs.preserve_native }}
     steps:
       - name: Checkout only trusted default-branch code
         uses: actions/checkout@v4
@@ -65,7 +71,7 @@ jobs:
           python-version: '3.12'
       - name: Install direct acquisition and native-raster QA libraries
         run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3' 'rasterio>=1.4,<2'
-      - name: Secure HTTPS login, ONE DGT native GeoTIFF, QA, discard raster
+      - name: Secure HTTPS login, ONE DGT native GeoTIFF and QA
         id: acquire
         env:
           DGT_CDD_USERNAME: ${{ secrets.DGT_CDD_USERNAME }}
@@ -74,21 +80,24 @@ jobs:
         run: |
           set -euo pipefail
           umask 077
-          python tools/geo_rail_pt_cdd_authenticated.py \
-            --site "$DGT_SITE" \
-            --index reports/mn-geo-rail-001/pt-dgt-mdt-candidate-envelopes.geojson \
-            --receipt "$RUNNER_TEMP/dgt-cdd-sanitary-receipt.json"
-      - name: Retain ONLY sanitized receipt (never native bytes or session)
+          args=(--site "$DGT_SITE" --index reports/mn-geo-rail-001/pt-dgt-mdt-candidate-envelopes.geojson --receipt "$RUNNER_TEMP/dgt-cdd-sanitary-receipt.json")
+          if [[ "$PRESERVE_NATIVE" == "true" && "$DGT_SITE" == "mirandela" ]]; then
+            args+=(--retain-verified-native "$RUNNER_TEMP/MDT-2m-282510-09-2024.tif")
+          fi
+          python tools/geo_rail_pt_cdd_authenticated.py "${args[@]}"
+      - name: Retain sanitized acquisition and publication receipts (no native bytes)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: mn-geo-rail-001-dgt-cdd-one-tile-receipt-${{ github.run_id }}
-          path: ${{ runner.temp }}/dgt-cdd-sanitary-receipt.json
+          path: |
+            ${{ runner.temp }}/dgt-cdd-sanitary-receipt.json
+            ${{ runner.temp }}/dgt-cdd-publication-receipt.json
           if-no-files-found: warn
           retention-days: 15
       - name: Highlight pre-acceptance limits
         if: always()
         run: |
           echo "DGT registered-pilot metadata receipt is in the Actions artifact, if generated." >> "$GITHUB_STEP_SUMMARY"
-          echo "The native file was not uploaded, committed or published; no Fxx was accepted." >> "$GITHUB_STEP_SUMMARY"
+          echo "Native source is released only for the SHA-pinned Mirandela pilot with preserve_native=true. No Fxx is accepted." >> "$GITHUB_STEP_SUMMARY"
           echo "Never paste or print authentication cookies, redirects, account credentials or the native asset URL." >> "$GITHUB_STEP_SUMMARY"
