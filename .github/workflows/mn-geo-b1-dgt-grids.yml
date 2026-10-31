@@ -1,0 +1,31 @@
+name: MN-GEO-RAIL-001 B1 shortlist DGT official original 2m grids at mandatory cities
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-b1-reviewed-dgt-grid-shortlist-20261031
+    paths:
+      - tools/geo_rail_pt_b1_dgt_review_grids.py
+      - tests/test_geo_rail_pt_b1_dgt_review_grids.py
+      - .github/workflows/mn-geo-b1-dgt-grids.yml
+permissions:
+  contents: read
+jobs:
+  source-hashed-five-receipts-and-reviewed-2km-city-grid-groups:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-b1-reviewed-dgt-grid-shortlist-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate five original receipts and mandatory city source shortlist
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_b1_dgt_review_grids.py' -v
+      - name: Generate official original DGT source 2km competing sector candidate IDs from all five scans
+        run: python tools/geo_rail_pt_b1_dgt_review_grids.py --reports reports/mn-geo-rail-001 --output "$RUNNER_TEMP/b1-DGT-city-2km-reviewed.json"
+      - name: Preserve screened source IDs, no credentials or original pixel acquisition
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-B1-mandatory-cities-original-DGT-review-${{ github.run_id }}
+          path: ${{ runner.temp }}/b1-DGT-city-2km-reviewed.json
+          retention-days: 30
