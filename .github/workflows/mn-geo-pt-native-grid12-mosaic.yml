@@ -1,0 +1,129 @@
+name: MN-GEO-RAIL-001 native DGT 12km2 source mosaic and terrain QA
+
+on:
+  push:
+    branches:
+      - main
+      - mn-geo-rail-001-native-grid12-evidence-20261031
+    paths:
+      - tools/geo_rail_pt_native_grid12_metrics.py
+      - tests/test_geo_rail_pt_native_grid12_metrics.py
+      - reports/mn-geo-rail-001/pt-dgt-native-grid12-preserved-audit.json
+      - .github/workflows/mn-geo-pt-native-grid12-mosaic.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mn-geo-rail-001-native-grid12-mosaic-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-real-source-derived-mosaic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deterministic real raster QA dependencies
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=2,<3'
+      - name: Validate 12 tile mosaic and slope QA contracts with synthetic original rasters
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_native_grid12_metrics.py' -v
+      - name: Download ONLY 12 pinned public original DGT source rasters and manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/dgt-grid12-source"
+          gh release download mn-geo-rail-001-dgt-grid12-preacceptance-41158397813 \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir "$RUNNER_TEMP/dgt-grid12-source" \
+            --pattern 'grid_*.tif' --pattern 'dgt-grid12-sanitized-qa.json'
+          test "$(find "$RUNNER_TEMP/dgt-grid12-source" -name '*.tif' -type f | wc -l)" -eq 12
+      - name: Recheck 12 original SHA256s and build actual native 2m mosaic and slope QA
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_pt_native_grid12_metrics.py \
+            --native-dir "$RUNNER_TEMP/dgt-grid12-source" \
+            --original-manifest "$RUNNER_TEMP/dgt-grid12-source/dgt-grid12-sanitized-qa.json" \
+            --source-index reports/mn-geo-rail-001/pt-dgt-native-grid12-preserved-audit.json \
+            --output-raster "$RUNNER_TEMP/dgt-grid12-mosaic-pttm06-2m.tif" \
+            --receipt "$RUNNER_TEMP/dgt-grid12-mosaic-qa.json"
+      - name: Store verified source-derived raster plus sanitized QA metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-real-grid12-native-mosaic-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/dgt-grid12-mosaic-pttm06-2m.tif
+            ${{ runner.temp }}/dgt-grid12-mosaic-qa.json
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 7
+
+  publish-source-derived-mosaic-only-on-main:
+    needs: build-real-source-derived-mosaic
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: mn-geo-rail-001-real-grid12-native-mosaic-${{ github.run_id }}
+          path: ${{ runner.temp }}/derived/
+      - name: Independently verify source release identity, QA and derived raster SHA256
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,pathlib
+          folder=pathlib.Path(os.environ["RUNNER_TEMP"])/"derived"
+          j=json.loads((folder/"dgt-grid12-mosaic-qa.json").read_text())
+          tif=folder/j["derived_mosaic_filename"]
+          assert tif.is_file() and tif.name=="dgt-grid12-mosaic-pttm06-2m.tif"
+          assert j["source_native_crs"]=="EPSG:3763"
+          assert j["mosaic_bbox_pttm06"]==[80000,206000,83000,210000]
+          assert j["mosaic_dimensions"]==[1500,2000]
+          assert j["pixel_count_valid"]==3000000
+          assert j["adjacent_source_cells_verified"]==8500
+          assert j["n_native_source_tiles"]==12
+          assert j["original_raster_SHA256_rechecked"] is True
+          assert j["original_source_release"]=="mn-geo-rail-001-dgt-grid12-preacceptance-41158397813"
+          assert j["full_Norte_Zamora_corridor_coverage_verified"] is False
+          assert j["Fxx_canonical_accepted"] is False and j["rail_alignment_ready"] is False
+          assert tif.stat().st_size==j["derived_mosaic_bytes"]
+          assert hashlib.sha256(tif.read_bytes()).hexdigest()==j["derived_mosaic_sha256"]
+          print("DERIVED_NATIVE_DGT_MOSAIC_SHA_VERIFIED")
+          PY
+      - name: Publish immutable DGT mosaic CC BY 4.0 prerelease with attribution
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-pt-dgt-grid12-mosaic-${GITHUB_RUN_ID}"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::Existing prerelease must never be overwritten" >&2
+            exit 1
+          fi
+          cat > "$RUNNER_TEMP/dgt-mosaic-notes.txt" <<'NOTE'
+          MN-GEO-RAIL-001 — experimental stitched native DGT 2m MDT.
+          Source/required attribution: Direção-Geral do Território (DGT).
+          Open data licence: CC BY 4.0. Official source: https://cdd.dgterritorio.gov.pt/
+          Original 12 source rasters: https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-geo-rail-001-dgt-grid12-preacceptance-41158397813
+          This derived 3x4km raster has EPSG:3763 and 2m pixels near Mirandela.
+          All 12 source hashes, 3 million pixels and raster joins reverified.
+          PREACCEPTANCE ONLY: no canonical Fxx, no verified vertical datum transform,
+          no whole Porto-Zamora coverage, no selected rail line, no feasibility CBA.
+          Terrain slope statistics describe the landscape, NOT rail gradients.
+          NOTE
+          gh release create "$tag" \
+            "$RUNNER_TEMP/derived/dgt-grid12-mosaic-pttm06-2m.tif" \
+            "$RUNNER_TEMP/derived/dgt-grid12-mosaic-qa.json" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "MN-GEO-RAIL-001 DGT native 2m Mirandela terrain mosaic" \
+            --notes-file "$RUNNER_TEMP/dgt-mosaic-notes.txt"
