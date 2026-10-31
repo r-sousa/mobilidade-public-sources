@@ -18,6 +18,21 @@ class TestSource(unittest.TestCase):
   self.assertEqual(out["valid_original_marks"],1)
   self.assertEqual(out["observations_validated"][0]["DGT_original_ALTH38_height_m"],225.375)
   self.assertTrue(out["observations_validated"][0]["source_mark_physical_quality_not_verified"])
+ def test_decimal_comma_text_converts_but_original_preserved(self):
+  b=m.SAMPLES[0][1]
+  feature={"type":"Feature","id":"RGN.RedeNivelamento.501",
+   "geometry":{"type":"Point","coordinates":[82000,205000]},
+   "properties":{"MARCA":"M501","ALTH38":" 225,375 "}}
+  j=json.dumps({"type":"FeatureCollection","features":[feature]}).encode()
+  result=m.parse_source_features(j,b)
+  self.assertEqual(result["valid_original_marks"],1)
+  height=result["observations_validated"][0]
+  self.assertEqual(height["DGT_original_ALTH38_height_m"],225.375)
+  self.assertEqual(height["DGT_ALTH38_original_source_value"]," 225,375 ")
+  self.assertTrue(height["source_original_height_was_text"])
+  self.assertIsNone(m.normalize_original_ALTH38("225 metres"))
+  self.assertIsNone(m.normalize_original_ALTH38("2.225,500"))
+  self.assertIsNone(m.normalize_original_ALTH38("NaN"))
  def test_no_numeric_height_not_claimed(self):
   b=m.SAMPLES[0][1]
   feature={"type":"Feature","id":"f1","geometry":{"type":"Point","coordinates":[82000,205000]},
