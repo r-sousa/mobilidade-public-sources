@@ -1,0 +1,720 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -9,
+              40
+            ],
+            [
+              -8,
+              40
+            ],
+            [
+              -8,
+              41
+            ],
+            [
+              -9,
+              41
+            ],
+            [
+              -9,
+              40
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N40_00_W009_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N40_00_W009_00_DEM/Copernicus_DSM_COG_10_N40_00_W009_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 38392651,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"f87ad2f017d7ede2038247b72a3ed401\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:21:39 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N40_00_W009_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -8,
+              40
+            ],
+            [
+              -7,
+              40
+            ],
+            [
+              -7,
+              41
+            ],
+            [
+              -8,
+              41
+            ],
+            [
+              -8,
+              40
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N40_00_W008_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N40_00_W008_00_DEM/Copernicus_DSM_COG_10_N40_00_W008_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 43333075,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"23a0a6a146086021919d02389d8a0783\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:21:39 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N40_00_W008_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -7,
+              40
+            ],
+            [
+              -6,
+              40
+            ],
+            [
+              -6,
+              41
+            ],
+            [
+              -7,
+              41
+            ],
+            [
+              -7,
+              40
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N40_00_W007_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N40_00_W007_00_DEM/Copernicus_DSM_COG_10_N40_00_W007_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 41347631,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"b833de45bbeed0a526ef418eb3fad33d\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:21:39 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N40_00_W007_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -6,
+              40
+            ],
+            [
+              -5,
+              40
+            ],
+            [
+              -5,
+              41
+            ],
+            [
+              -6,
+              41
+            ],
+            [
+              -6,
+              40
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N40_00_W006_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N40_00_W006_00_DEM/Copernicus_DSM_COG_10_N40_00_W006_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 40503265,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"a97b9a6c1d7f0608c801ac94ef47662d\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:21:38 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N40_00_W006_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -9,
+              41
+            ],
+            [
+              -8,
+              41
+            ],
+            [
+              -8,
+              42
+            ],
+            [
+              -9,
+              42
+            ],
+            [
+              -9,
+              41
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N41_00_W009_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N41_00_W009_00_DEM/Copernicus_DSM_COG_10_N41_00_W009_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 37449439,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"5e1289b8070d279ac847a694e418c590\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:22:22 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N41_00_W009_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -8,
+              41
+            ],
+            [
+              -7,
+              41
+            ],
+            [
+              -7,
+              42
+            ],
+            [
+              -8,
+              42
+            ],
+            [
+              -8,
+              41
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N41_00_W008_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N41_00_W008_00_DEM/Copernicus_DSM_COG_10_N41_00_W008_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 44038002,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"13f3d4b7f065616417dc9de1337753ea\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:22:22 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N41_00_W008_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -7,
+              41
+            ],
+            [
+              -6,
+              41
+            ],
+            [
+              -6,
+              42
+            ],
+            [
+              -7,
+              42
+            ],
+            [
+              -7,
+              41
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N41_00_W007_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N41_00_W007_00_DEM/Copernicus_DSM_COG_10_N41_00_W007_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 41406815,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"fa63bafe88854ca0c0edb1092f36fa10\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:22:22 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N41_00_W007_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -6,
+              41
+            ],
+            [
+              -5,
+              41
+            ],
+            [
+              -5,
+              42
+            ],
+            [
+              -6,
+              42
+            ],
+            [
+              -6,
+              41
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N41_00_W006_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N41_00_W006_00_DEM/Copernicus_DSM_COG_10_N41_00_W006_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 38671067,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"f37976d8f5ebf70001d9b5fdb616796c\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:22:22 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N41_00_W006_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -9,
+              42
+            ],
+            [
+              -8,
+              42
+            ],
+            [
+              -8,
+              43
+            ],
+            [
+              -9,
+              43
+            ],
+            [
+              -9,
+              42
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N42_00_W009_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N42_00_W009_00_DEM/Copernicus_DSM_COG_10_N42_00_W009_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 41697541,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"94f5f35f68e41be0a005c216212e3585\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:23:07 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N42_00_W009_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -8,
+              42
+            ],
+            [
+              -7,
+              42
+            ],
+            [
+              -7,
+              43
+            ],
+            [
+              -8,
+              43
+            ],
+            [
+              -8,
+              42
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N42_00_W008_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N42_00_W008_00_DEM/Copernicus_DSM_COG_10_N42_00_W008_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 43178896,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"ca71afaae3c6d55f65b27ad23682c1e6\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:23:07 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N42_00_W008_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -7,
+              42
+            ],
+            [
+              -6,
+              42
+            ],
+            [
+              -6,
+              43
+            ],
+            [
+              -7,
+              43
+            ],
+            [
+              -7,
+              42
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N42_00_W007_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N42_00_W007_00_DEM/Copernicus_DSM_COG_10_N42_00_W007_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 41384503,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"4344a01711a0ce3e62cedbc22a3940cd\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:23:06 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N42_00_W007_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -6,
+              42
+            ],
+            [
+              -5,
+              42
+            ],
+            [
+              -5,
+              43
+            ],
+            [
+              -6,
+              43
+            ],
+            [
+              -6,
+              42
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "Copernicus_DSM_COG_10_N42_00_W006_00_DEM",
+      "properties": {
+        "asset_url": "https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com/Copernicus_DSM_COG_10_N42_00_W006_00_DEM/Copernicus_DSM_COG_10_N42_00_W006_00_DEM.tif",
+        "canonical_acceptance": false,
+        "content_length_bytes": 39362791,
+        "content_type": "image/tiff",
+        "discovery_status": "listed_not_validated",
+        "etag": "\"cd6ba61c4bf9fcf8e555a2573f91308a\"",
+        "head_http_status": 200,
+        "head_state": "object_reported_not_validated",
+        "height_px": 3600,
+        "horizontal_crs": "EPSG:4326",
+        "last_modified": "Mon, 09 May 2022 14:23:06 GMT",
+        "model_class": "DSM_not_DTM",
+        "native_raster_acquired": false,
+        "native_raster_validated": false,
+        "nominal_resolution_m": 30,
+        "prefix_bytes_read": 16384,
+        "range_http_status": 206,
+        "range_state": "tiff_header_confirmed",
+        "source_product": "Copernicus DEM GLO-30 Public",
+        "tiff_signature_valid": true,
+        "tile_id": "Copernicus_DSM_COG_10_N42_00_W006_00_DEM",
+        "vertical_datum": "EGM2008_EPSG:3855",
+        "width_px": 3600
+      },
+      "type": "Feature"
+    }
+  ],
+  "metadata": {
+    "bbox_wgs84": [
+      -9.0,
+      40.8,
+      -5.5,
+      42.5
+    ],
+    "canonical_acceptance": false,
+    "data_kind": "DSM — not a lidar-derived bare-earth DTM",
+    "head_status_counts": {
+      "object_reported_not_validated": 12
+    },
+    "is_coverage_verified": false,
+    "licence_clearance": "pending_canonical_check",
+    "mission": "MN-GEO-RAIL-001",
+    "native_assets_preserved": 0,
+    "native_complete_rasters_downloaded": 0,
+    "native_raster_bytes_downloaded": 196608,
+    "note": "Tile listing, HEAD and <=16KiB TIFF header do not validate georeferencing, pixels or bare-earth elevation.",
+    "observed_utc": "2026-10-30T22:23:49.092712+00:00",
+    "producer_readme": "https://copernicus-dem-30m.s3.amazonaws.com/readme.html",
+    "producer_tile_list": {
+      "byte_count": 1110900,
+      "etag": "\"637fe75ddf7615ba853dd83caf05cd82\"",
+      "last_modified": "Mon, 09 May 2022 18:23:01 GMT",
+      "listed_tiles_global": 26450,
+      "sha256": "10604e3052c98a09e9216f1a8f0a555a04148419757575f783d4937fd44316dc",
+      "url": "https://copernicus-dem-30m.s3.amazonaws.com/tileList.txt"
+    },
+    "producer_tile_list_url": "https://copernicus-dem-30m.s3.amazonaws.com/tileList.txt",
+    "range_header_status_counts": {
+      "tiff_header_confirmed": 12
+    },
+    "raster_content_validated": false,
+    "raster_footprint_validated": false,
+    "raster_header_bytes_examined": 196608,
+    "stage": "R1_producer_tile_listing_and_object_head_probe",
+    "status_counts": {
+      "listed_not_validated": 12
+    },
+    "supplied_tile_list_sha256": "10604e3052c98a09e9216f1a8f0a555a04148419757575f783d4937fd44316dc",
+    "tile_count": 12
+  },
+  "type": "FeatureCollection"
+}

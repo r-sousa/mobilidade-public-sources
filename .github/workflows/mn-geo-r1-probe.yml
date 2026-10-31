@@ -1,0 +1,83 @@
+name: MN-GEO-RAIL-001 R1 metadata-only pilot
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-r1-tile-discovery-20261030
+    paths:
+      - .github/workflows/mn-geo-r1-probe.yml
+      - tools/geo_rail_r1_index.py
+      - tools/geo_rail_r1_probe.py
+      - tests/test_geo_rail_r1_index.py
+      - tests/test_geo_rail_r1_probe.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-r1-metadata-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  candidate-metadata:
+    if: github.ref == 'refs/heads/mn-geo-rail-001-r1-tile-discovery-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests (no network)
+        run: python -m unittest discover -s tests -p 'test_geo_rail_r1*.py' -v
+      - name: Producer tile-list, COG HEAD and 16KiB TIFF header checks
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_r1_probe.py \
+            --bbox=-9,40.8,-5.5,42.5 \
+            --output=reports/mn-geo-rail-001/r1-20261030-producer-list-and-head.geojson
+      - name: Assert safe R1 evidence boundaries
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('reports/mn-geo-rail-001/r1-20261030-producer-list-and-head.geojson')
+          x = json.loads(p.read_text(encoding='utf-8'))
+          assert len(x['features']) == 12
+          assert not x['metadata']['raster_content_validated']
+          assert not x['metadata']['is_coverage_verified']
+          assert x['metadata']['native_complete_rasters_downloaded'] == 0
+          assert 0 <= x['metadata']['raster_header_bytes_examined'] <= 12 * 16384
+          assert all(not f['properties']['canonical_acceptance'] for f in x['features'])
+          print(x['metadata']['status_counts'], x['metadata']['head_status_counts'])
+          PY
+      - name: Persist small metadata receipt on feature branch only
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          receipt=reports/mn-geo-rail-001/r1-20261030-producer-list-and-head.geojson
+          cp "$receipt" "$RUNNER_TEMP/mn-geo-r1-receipt.geojson"
+          for attempt in 1 2 3; do
+            # Rebase metadata work safely against the latest remote branch without force pushes.
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            mkdir -p "$(dirname "$receipt")"
+            cp "$RUNNER_TEMP/mn-geo-r1-receipt.geojson" "$receipt"
+            git add "$receipt"
+            if git diff --cached --quiet; then
+              echo 'Metadata receipt already current'
+              exit 0
+            fi
+            git commit -m "data(geo): record R1 producer tile and TIFF header receipt"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo 'Metadata receipt committed'
+              exit 0
+            fi
+            echo "Remote advanced during attempt $attempt, retrying without force"
+          done
+          echo 'Unable to persist receipt after 3 concurrent-update retries' >&2
+          exit 1

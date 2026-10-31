@@ -1,0 +1,74 @@
+name: MN-GEO-RAIL-001 single-tile technical sample
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-r1-tile-discovery-20261030
+    paths:
+      - .github/workflows/mn-geo-r1-sample.yml
+      - tools/geo_rail_r1_sample.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-single-cog-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate-one-native-cog:
+    if: github.ref == 'refs/heads/mn-geo-rail-001-r1-tile-discovery-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install GeoTIFF validator (public wheel)
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2'
+      - name: Acquire one native 44MB COG into isolated temporary disk; validate
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_r1_sample.py \
+            --output=reports/mn-geo-rail-001/r1-single-tile-technical-validation.json
+      - name: Assert native bytes are not redistributed
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('reports/mn-geo-rail-001/r1-single-tile-technical-validation.json')
+          x = json.loads(p.read_text(encoding='utf-8'))
+          assert x['native_asset_bytes'] == 44038002
+          assert len(x['native_asset_sha256']) == 64
+          assert x['checked_raster_metadata']['horizontal_crs'] == 'EPSG:4326'
+          assert not x['native_asset_preserved_canonically']
+          assert not x['canonical_acceptance']
+          assert not x['ready_for_rail_alignment_profiles']
+          print(x['checked_raster_metadata'])
+          PY
+      - name: Persist metadata receipt only, retries for concurrent branch updates
+        run: |
+          set -euo pipefail
+          receipt=reports/mn-geo-rail-001/r1-single-tile-technical-validation.json
+          cp "$receipt" "$RUNNER_TEMP/mn-geo-one-tile-receipt.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            mkdir -p "$(dirname "$receipt")"
+            cp "$RUNNER_TEMP/mn-geo-one-tile-receipt.json" "$receipt"
+            git add "$receipt"
+            if git diff --cached --quiet; then
+              echo 'Receipt already current'
+              exit 0
+            fi
+            git commit -m "data(geo): record one native-COP-DEM COG technical validation"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+          done
+          echo "Unable to persist metadata receipt after bounded retries" >&2
+          exit 1
