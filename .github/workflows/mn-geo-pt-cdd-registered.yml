@@ -85,6 +85,58 @@ jobs:
             args+=(--retain-verified-native "$RUNNER_TEMP/MDT-2m-282510-09-2024.tif")
           fi
           python tools/geo_rail_pt_cdd_authenticated.py "${args[@]}"
+      - name: Release only SHA-pinned native Mirandela tile, immutable CC BY 4.0 prerelease
+        if: inputs.preserve_native == true && inputs.site == 'mirandela'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          root="$RUNNER_TEMP"
+          tile="MDT-2m-282510-09-2024"
+          sha="761bc7ee18ef9377cca97556b6dececc14b8765c017c168dbf15552d8c9d78ba"
+          tag="mn-geo-rail-001-dgt-mdt2m-mirandela-sha256-761bc7ee18ef9377"
+          filename="$tile.tif"
+          manifest="$tile.sha256.json"
+          python tools/geo_rail_pt_cdd_preserve_manifest.py \
+            --native "$root/$filename" \
+            --qa "$root/dgt-cdd-sanitary-receipt.json" \
+            --out-dir "$root"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            mkdir -p "$root/existing-release-check"
+            gh release download "$tag" --repo "$GITHUB_REPOSITORY" \
+              --pattern "$filename" --dir "$root/existing-release-check"
+            existing_hash="$(sha256sum "$root/existing-release-check/$filename" | awk '{print $1}')"
+            [[ "$existing_hash" == "$sha" ]] || {
+              echo "::error::Existing native release asset hash conflict; refusing replacement"
+              exit 1
+            }
+            published_state="existing_raster_verified"
+          else
+            gh release create "$tag" \
+              "$root/$filename#$filename" "$root/$manifest#$manifest" \
+              --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+              --prerelease \
+              --title "DGT MDT-2m Mirandela — native source (pre-acceptance)" \
+              --notes-file "$root/release-notes.txt"
+            published_state="new_prerelease_created"
+          fi
+          python - "$root/dgt-cdd-publication-receipt.json" "$tag" "$sha" "$published_state" <<'PY'
+          import json,pathlib,sys
+          out,tag,sha,state=sys.argv[1:]
+          report={"mission":"MN-GEO-RAIL-001",
+            "status":"original_DGT_native_GeoTIFF_persisted_in_public_prerelease",
+            "producer":"Direção-Geral do Território",
+            "collection":"MDT-2m","producer_tile_id":"MDT-2m-282510-09-2024",
+            "native_sha256":sha,"native_file_bytes":1219159,
+            "release_url":"https://github.com/r-sousa/mobilidade-public-sources/releases/tag/"+tag,
+            "published_state":state,"canonical_Fxx_accepted":False,
+            "vertical_harmonization_done":False,"site_publication_authorized":False}
+          pathlib.Path(out).write_text(json.dumps(report,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+          print("NATIVE_DGT_PILOT_RELEASE_SHA256_VERIFIED")
+          PY
+
       - name: Retain sanitized acquisition and publication receipts (no native bytes)
         if: always()
         uses: actions/upload-artifact@v4
