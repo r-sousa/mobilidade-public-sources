@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - mn-geo-rail-001-pt-public-stac-20261030
+      - mn-geo-rail-001-cdd-storage-redirect-20261031
       - mn-geo-rail-001-dgt-redirect-diagnostics-20261030
     paths:
       - .github/workflows/mn-geo-pt-cdd-auth-tests.yml
@@ -16,7 +17,7 @@ permissions:
 
 jobs:
   verify-authentication-adapter-without-secrets:
-    if: github.ref == 'refs/heads/mn-geo-rail-001-pt-public-stac-20261030' || github.ref == 'refs/heads/mn-geo-rail-001-dgt-redirect-diagnostics-20261030'
+    if: github.ref == 'refs/heads/mn-geo-rail-001-pt-public-stac-20261030' || github.ref == 'refs/heads/mn-geo-rail-001-cdd-storage-redirect-20261031' || github.ref == 'refs/heads/mn-geo-rail-001-dgt-redirect-diagnostics-20261030'
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
