@@ -1,0 +1,62 @@
+{
+  "mission": "MN-GEO-RAIL-001",
+  "worker": "W3",
+  "stage": "descriptive_resolution_comparison_between_actual_WCS_response_grids",
+  "public_release": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-geo-rail-001-cnig-wcs-zamora-1km2-preacceptance-41194194127",
+  "site": "Zamora exploratory 1km2, not a rail alignment",
+  "bbox_epsg25830": [
+    270500,
+    4597800,
+    271500,
+    4598800
+  ],
+  "distinct_territory_km2": 1,
+  "source_original_producer_tile": false,
+  "GeoTIFF_WCS_response_exact_original_bytes": true,
+  "raster_value_units_inferred_as_elevation_m_not_vertical_accuracy": true,
+  "data_by_resolution_m": {
+    "5": {
+      "source_filename": "cnig-zamora-WCS-response-5m.tif",
+      "source_sha256": "b3ddf00ccbbfbafe2e46e21769a4be6076a4df1e8d5de186e92eb429862a99db",
+      "width_px": 200,
+      "height_px": 200,
+      "value_integer_encoded": true,
+      "GeoTIFF_dtype": "int16",
+      "unique_elevation_values_count": 37,
+      "min_m": 621,
+      "max_m": 657,
+      "median_m": 642,
+      "valid_cells": 40000
+    },
+    "25": {
+      "source_filename": "cnig-zamora-WCS-response-25m.tif",
+      "source_sha256": "1983cd9f53ed8f3e9ade85c7316cd6a6dd94cbef2f944a1ef8fb7ed109471dd4",
+      "width_px": 40,
+      "height_px": 40,
+      "value_integer_encoded": true,
+      "GeoTIFF_dtype": "int16",
+      "unique_elevation_values_count": 37,
+      "min_m": 621,
+      "max_m": 657,
+      "median_m": 643,
+      "valid_cells": 1600
+    }
+  },
+  "comparison_operation": "25m WCS elevation value minus arithmetic mean of its 5x5 contained 5m WCS elevation cells",
+  "comparison_cells": 1600,
+  "difference_mean_m": 0.21645000000000095,
+  "difference_median_m": 0,
+  "difference_min_m": -5.039999999999964,
+  "difference_max_m": 10.799999999999955,
+  "difference_MAE_m": 0.5127500000000002,
+  "difference_RMS_m": 1.0197411436242032,
+  "difference_abs_p95_m": 2.0399999999999636,
+  "difference_abs_p99_m": 4.161599999999967,
+  "difference_fraction_abs_gt_1m": 0.130625,
+  "this_is_not_an_estimate_of_vertical_error_or_RMSE_vs_survey_marks": true,
+  "independent_national_vertical_datum_validation": false,
+  "PT_ES_vertical_harmonization_validated": false,
+  "continuity_of_rail_corridor_pixels_validated": false,
+  "Fxx_accepted": false,
+  "Site_authorized": false
+}
