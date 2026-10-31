@@ -131,24 +131,34 @@ def seam_report(north_path,south_path):
             "vertical_datum_independently_verified":False,
         }
 
-def run(index):
+def run(index, progress=None):
+    """Execute with non-sensitive phase-only progress for safe error receipts."""
+    def phase(label):
+        if progress is not None:
+            progress["safe_phase"] = label
+
+    phase("reviewed_STAC_index")
     if not index.is_file() or index.is_symlink():
         raise IntakeError("reviewed_STAC_index_missing")
     source_index=json.loads(index.read_text(encoding="utf-8"))
     for tile in ITEMS:
         catalogue_record(source_index,COLLECTION,tile)
+    phase("credentials_presence")
     username=os.environ.get("DGT_CDD_USERNAME","")
     password=os.environ.get("DGT_CDD_PASSWORD","")
     if not username or not password:
         raise IntakeError("environment_credentials_unavailable")
     with TemporaryDirectory(prefix="mn-dgt-pair-") as temp:
         folder=Path(temp)
+        phase("protected_CDD_authentication")
         session=authenticated_session(username,password)
         try:
+            phase("exact_STAC_assets")
             assets,stac_sha=select_exact_assets(session)
             native={}
             for tile in ITEMS:
                 file=folder/("north.tif" if tile==NORTH_TILE else "south.tif")
+                phase("native_download_north" if tile==NORTH_TILE else "native_download_south")
                 size,digest=download_small_native(session,assets[tile],file)
                 native[tile]=(file,size,digest)
             if sum(v[1] for v in native.values())>MAX_AGGREGATE_BYTES:
@@ -158,14 +168,18 @@ def run(index):
         receipts=[]
         for tile in ITEMS:
             file,size,digest=native[tile]
+            phase("native_QA_north" if tile==NORTH_TILE else "native_QA_south")
             qa=audit(file,index,tile,COLLECTION)
             if qa["native_file_bytes"]!=size or qa["native_sha256"]!=digest:
                 raise IntakeError("pair_native_digest_disagrees_with_QA")
             receipts.append(qa)
+        phase("exact_pair_geometry")
         geometry=pair_geometry(receipts[0],receipts[1])
-        seam=seam_report(native[NORTH_TILE][0][0],native[SOUTH_TILE][0][0])
+        phase("native_seam_pixels")
+        seam=seam_report(native[NORTH_TILE][0],native[SOUTH_TILE][0])
         if not seam["edge_mask_continuity_all_valid"]:
             raise IntakeError("native_seam_contains_masked_cells")
+        phase("validated")
         return {
             "mission":"MN-GEO-RAIL-001","stage":"W2_DGT_native_two_tile_seam_2km2",
             "status":"two_native_GeoTIFFs_authenticated_QA_and_seam_validated",
@@ -200,12 +214,15 @@ def main():
         "native_bytes_persisted_after_runner":False,
         "observed_utc":datetime.now(timezone.utc).isoformat(),
     }
+    progress={"safe_phase":"not_started"}
     try:
-        result=run(args.index)
+        result=run(args.index,progress)
         result["observed_utc"]=datetime.now(timezone.utc).isoformat()
     except IntakeError as err:
         result["safe_error_code"]=err.code
+        result["safe_failure_phase"]=progress["safe_phase"]
     except Exception:
+        result["safe_failure_phase"]=progress["safe_phase"]
         result["safe_error_code"]="internal_or_raster_QA_error_no_sensitive_details"
     args.receipt.parent.mkdir(parents=True,exist_ok=True)
     args.receipt.write_text(json.dumps(result,indent=2,ensure_ascii=False,sort_keys=True)+"\n",encoding="utf-8")
