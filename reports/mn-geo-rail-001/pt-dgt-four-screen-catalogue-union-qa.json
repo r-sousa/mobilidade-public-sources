@@ -1,0 +1,979 @@
+{
+  "Fxx_canonical_accepted": false,
+  "G09_positions_new_vs_prior_three_screens": 2737,
+  "G09_positions_overlapping_prior_three_screens": 462,
+  "Site_publication_authorized": false,
+  "bbox_disagreement_IS_not_proven_native_pixel_void": true,
+  "bbox_disagreement_across_screens_count": 0,
+  "bbox_exception_records": [
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.2315904,
+        41.8709315,
+        -7.2296793,
+        41.8715226
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.2315905,
+        41.870927,
+        -7.2296853,
+        41.8715226
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "274546-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.2296936,
+        41.8708405,
+        -7.2175596,
+        41.8772374
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.2296937,
+        41.8708315,
+        -7.2175596,
+        41.8772374
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "275546-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.2145378,
+        41.8797435,
+        -7.2054437,
+        41.8822828
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.2145378,
+        41.8797389,
+        -7.2054377,
+        41.8822828
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.511,
+      "source_tile_suffix": "276547-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.1933909,
+        41.8886375,
+        -7.1932927,
+        41.8887644
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.1933909,
+        41.8886421,
+        -7.1932987,
+        41.8887644
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.511,
+      "source_tile_suffix": "277548-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.1925468,
+        41.9415726,
+        -7.192493,
+        41.941951
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.1925346,
+        41.9415773,
+        -7.1925171,
+        41.9419509
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.993,
+      "source_tile_suffix": "277553-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.187993,
+        41.8975451,
+        -7.1809914,
+        41.9066038
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.187993,
+        41.897545,
+        -7.1809853,
+        41.9066038
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.505,
+      "source_tile_suffix": "278549-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.1821418,
+        41.9155671,
+        -7.180731,
+        41.9245436
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.1821511,
+        41.915549,
+        -7.1807217,
+        41.9245572
+      ],
+      "max_bbox_edge_displacement_approx_m": 2.013,
+      "source_tile_suffix": "278551-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.187857,
+        41.9245509,
+        -7.1805871,
+        41.9336118
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.187857,
+        41.9245509,
+        -7.1805811,
+        41.9336118
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.496,
+      "source_tile_suffix": "278552-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.1923297,
+        41.9425547,
+        -7.180307,
+        41.9516546
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.1923297,
+        41.9425547,
+        -7.180313,
+        41.9516546
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.496,
+      "source_tile_suffix": "278554-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.19089,
+        41.9515565,
+        -7.180168,
+        41.9606458
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.19089,
+        41.9515566,
+        -7.1801801,
+        41.9606458
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "278555-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.1900037,
+        41.9605586,
+        -7.180052,
+        41.9696415
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.1900037,
+        41.9605585,
+        -7.180046,
+        41.9696415
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.496,
+      "source_tile_suffix": "278556-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.1896118,
+        41.9695603,
+        -7.1798999,
+        41.9786413
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.1896118,
+        41.9695604,
+        -7.179912,
+        41.9786413
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.0,
+      "source_tile_suffix": "278557-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.183928,
+        41.9785606,
+        -7.1798719,
+        41.9819964
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.183928,
+        41.9785605,
+        -7.1798598,
+        41.9819964
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.0,
+      "source_tile_suffix": "278558-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.1799112,
+        41.9784648,
+        -7.1677877,
+        41.9824904
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.1799112,
+        41.9784603,
+        -7.1677877,
+        41.9824904
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "279558-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.1678472,
+        41.978352,
+        -7.1556677,
+        41.9859976
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.167847,
+        41.978361,
+        -7.1556677,
+        41.9859976
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "280558-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.1547913,
+        41.9872546,
+        -7.143489,
+        41.9925898
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.1547912,
+        41.9872592,
+        -7.1435011,
+        41.9925898
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.0,
+      "source_tile_suffix": "281559-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.1435795,
+        41.9871574,
+        -7.1314235,
+        41.9930231
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.1435796,
+        41.9871529,
+        -7.1314235,
+        41.9930231
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "282559-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.131514,
+        41.9870442,
+        -7.1193995,
+        41.9902287
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.1315139,
+        41.9870487,
+        -7.1193995,
+        41.9902287
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "283559-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.1194482,
+        41.9870179,
+        -7.1151225,
+        41.9889643
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.1194484,
+        41.9870089,
+        -7.1151285,
+        41.9889643
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "284559-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.0836954,
+        41.9596696,
+        -7.078361,
+        41.9687187
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.0836954,
+        41.9596697,
+        -7.0783731,
+        41.9687187
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.0,
+      "source_tile_suffix": "287556-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.0835477,
+        41.9687018,
+        -7.0822165,
+        41.9719181
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.0835477,
+        41.9687064,
+        -7.0822225,
+        41.9719181
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.511,
+      "source_tile_suffix": "287557-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.0717846,
+        41.9504874,
+        -7.0596887,
+        41.9528319
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.0717846,
+        41.9504919,
+        -7.0596887,
+        41.9528319
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "288555-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.0597262,
+        41.9503736,
+        -7.0475627,
+        41.9566801
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.0597261,
+        41.9503781,
+        -7.0475627,
+        41.9566801
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "289555-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.0476678,
+        41.9502598,
+        -7.0354899,
+        41.9573416
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.0476677,
+        41.9502643,
+        -7.0354899,
+        41.9573416
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "290555-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.0356092,
+        41.9501563,
+        -7.0234973,
+        41.9533687
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.0356094,
+        41.9501473,
+        -7.0234973,
+        41.9533687
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "291555-09-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -7.0039788,
+        41.9589054,
+        -6.9991628,
+        41.9653067
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -7.0039786,
+        41.9589144,
+        -6.9991628,
+        41.9653067
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "293556-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.9950311,
+        41.9677965,
+        -6.9869512,
+        41.9731868
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.9950311,
+        41.9677966,
+        -6.9869572,
+        41.9731868
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.496,
+      "source_tile_suffix": "294557-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.9749929,
+        41.9675476,
+        -6.9627922,
+        41.975285
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.9749929,
+        41.9675521,
+        -6.9627922,
+        41.975285
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "296557-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.9629314,
+        41.9674635,
+        -6.9535001,
+        41.9727617
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.9629315,
+        41.967459,
+        -6.9535061,
+        41.9727617
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "297557-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.9512031,
+        41.9493503,
+        -6.9436564,
+        41.9584277
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.9512031,
+        41.9493503,
+        -6.9436503,
+        41.9584277
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.504,
+      "source_tile_suffix": "298555-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.9510366,
+        41.9584099,
+        -6.9484459,
+        41.9628823
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.9510368,
+        41.9584009,
+        -6.9484459,
+        41.9628823
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "298556-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.9393134,
+        41.9401707,
+        -6.9270993,
+        41.9486858
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.9393133,
+        41.9401752,
+        -6.9270993,
+        41.9486858
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "299554-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.9152013,
+        41.9399244,
+        -6.9030237,
+        41.9463897
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.9152014,
+        41.9399199,
+        -6.9030237,
+        41.9463897
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "301554-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.8732206,
+        41.9485353,
+        -6.8667637,
+        41.9507482
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.8732208,
+        41.9485263,
+        -6.8667577,
+        41.9507482
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "304555-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.8668004,
+        41.9484401,
+        -6.8581816,
+        41.9502453
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.8668005,
+        41.9484311,
+        -6.8581755,
+        41.9502453
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "305555-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.8428677,
+        41.9391248,
+        -6.8306614,
+        41.9466777
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.8428678,
+        41.9391203,
+        -6.8306614,
+        41.9466777
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "307554-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.8196369,
+        41.9569927,
+        -6.8183224,
+        41.9599413
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.819637,
+        41.9569838,
+        -6.8183285,
+        41.9599413
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.99,
+      "source_tile_suffix": "308556-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.8152725,
+        41.965847,
+        -6.805944,
+        41.9749531
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.8152725,
+        41.9658472,
+        -6.8059561,
+        41.9749531
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.0,
+      "source_tile_suffix": "309557-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.8145301,
+        41.9838486,
+        -6.8055849,
+        41.9929502
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.8145301,
+        41.9838485,
+        -6.8055789,
+        41.9929502
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.496,
+      "source_tile_suffix": "309559-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.8142811,
+        41.9928499,
+        -6.8055314,
+        41.9948045
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.8142811,
+        41.9928501,
+        -6.8055435,
+        41.9948045
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.0,
+      "source_tile_suffix": "309560-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.8055812,
+        41.9928255,
+        -6.8036399,
+        41.9933699
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.8055812,
+        41.9928256,
+        -6.8036459,
+        41.9933699
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.496,
+      "source_tile_suffix": "310560-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.7937048,
+        41.9835583,
+        -6.7814852,
+        41.9910802
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.7937046,
+        41.9835673,
+        -6.7814852,
+        41.9910802
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "311559-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.781641,
+        41.9834319,
+        -6.7694358,
+        41.990217
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.7816412,
+        41.9834229,
+        -6.7694358,
+        41.990217
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "312559-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.7699618,
+        41.9652886,
+        -6.7584802,
+        41.9744237
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.7699618,
+        41.9652887,
+        -6.7584922,
+        41.9744237
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.992,
+      "source_tile_suffix": "313557-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.7697698,
+        41.974354,
+        -6.763715,
+        41.9834243
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.7697698,
+        41.9743541,
+        -6.7637271,
+        41.9834243
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.0,
+      "source_tile_suffix": "313558-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.7695777,
+        41.9833812,
+        -6.7654757,
+        41.9868314
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.7695778,
+        41.9833768,
+        -6.7654817,
+        41.9868314
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.496,
+      "source_tile_suffix": "313559-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.7582889,
+        41.9471711,
+        -6.7491724,
+        41.9562788
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.7582889,
+        41.947171,
+        -6.7491664,
+        41.9562788
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.496,
+      "source_tile_suffix": "314555-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.7580954,
+        41.9562258,
+        -6.7534867,
+        41.9642175
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.7580954,
+        41.9562259,
+        -6.7534988,
+        41.9642175
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.0,
+      "source_tile_suffix": "314556-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.7464277,
+        41.9379786,
+        -6.7342318,
+        41.9445872
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.7464275,
+        41.9379876,
+        -6.7342318,
+        41.9445872
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "315554-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.734373,
+        41.9378328,
+        -6.7222375,
+        41.9416525
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.7343729,
+        41.9378373,
+        -6.7222375,
+        41.9416525
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "316554-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.7223181,
+        41.9376985,
+        -6.7101896,
+        41.9411774
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.7223183,
+        41.9376895,
+        -6.7101896,
+        41.9411774
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "317554-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.7102638,
+        41.9376452,
+        -6.7064551,
+        41.9387542
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.7102638,
+        41.9376451,
+        -6.706443,
+        41.9387542
+      ],
+      "max_bbox_edge_displacement_approx_m": 1.001,
+      "source_tile_suffix": "318554-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.6984112,
+        41.9283915,
+        -6.68616,
+        41.9373271
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.6984113,
+        41.928387,
+        -6.68616,
+        41.9373271
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "319553-06-2024"
+    },
+    {
+      "bbox_mdt2m_wgs84": [
+        -6.6850958,
+        41.9372317,
+        -6.674056,
+        41.939405
+      ],
+      "bbox_mdt50cm_wgs84": [
+        -6.6850956,
+        41.9372362,
+        -6.674056,
+        41.939405
+      ],
+      "max_bbox_edge_displacement_approx_m": 0.5,
+      "source_tile_suffix": "320554-06-2024"
+    }
+  ],
+  "bbox_exceptions_2m_vs_50cm": 54,
+  "catalogue_rectangles_are_NOT_validated_native_pixel_footprints": true,
+  "distinct_candidate_product_positions": 7070,
+  "entire_regional_native_DTM_coverage_verified": false,
+  "identical_2m_and_50cm_producer_id_suffix_pair_count": 7070,
+  "identical_pair_bbox_proxy_count": 7016,
+  "matched_tile_suffixes_both_resolutions": 7070,
+  "mission": "MN-GEO-RAIL-001",
+  "native_raster_bytes_downloaded_in_these_screens": 0,
+  "not_a_contiguous_native_raster_mosaic": true,
+  "observed_utc": "2026-10-31T10:04:53.888032+00:00",
+  "per_screen_ID_overlaps": [
+    {
+      "shared_DGT_product_positions": 24,
+      "source_a": "E01-E06",
+      "source_b": "G07"
+    },
+    {
+      "shared_DGT_product_positions": 120,
+      "source_a": "E01-E06",
+      "source_b": "G08"
+    },
+    {
+      "shared_DGT_product_positions": 456,
+      "source_a": "E01-E06",
+      "source_b": "G09"
+    },
+    {
+      "shared_DGT_product_positions": 0,
+      "source_a": "G07",
+      "source_b": "G08"
+    },
+    {
+      "shared_DGT_product_positions": 18,
+      "source_a": "G07",
+      "source_b": "G09"
+    },
+    {
+      "shared_DGT_product_positions": 0,
+      "source_a": "G08",
+      "source_b": "G09"
+    }
+  ],
+  "prior_three_screen_positions": 4333,
+  "producer": "Direção-Geral do Território, official anonymous STAC",
+  "sample_windows_not_all_Porto_Zamora_corridor": true,
+  "source_screens": [
+    {
+      "complete_query_count": 12,
+      "file": "pt-dgt-mdt-sector-footprints.json",
+      "metadata_only": true,
+      "name": "E01-E06",
+      "source_file_sha256": "0c8d4b8bcfbeaf96613b09b6cb5acc405d9a53963822bce94e153bc8bd941ed2",
+      "unique_candidates_by_collection": {
+        "MDT-2m": 684,
+        "MDT-50cm": 684
+      },
+      "verified_window_count": 6
+    },
+    {
+      "complete_query_count": 20,
+      "file": "pt-dgt-vilareal-mirandela-anonymous-strip.json",
+      "metadata_only": true,
+      "name": "G07",
+      "source_file_sha256": "44f85371464798f45feae331d058e0cdcf5d99b79ab5892ae4378d8e30c25c51",
+      "unique_candidates_by_collection": {
+        "MDT-2m": 1481,
+        "MDT-50cm": 1481
+      },
+      "verified_window_count": 10
+    },
+    {
+      "complete_query_count": 32,
+      "file": "pt-dgt-porto-vilareal-anonymous-strip.json",
+      "metadata_only": true,
+      "name": "G08",
+      "source_file_sha256": "1ddfba94e8594b4a7ebf87e68a8acede83cba647098aa5b48d23892780eb95f6",
+      "unique_candidates_by_collection": {
+        "MDT-2m": 2312,
+        "MDT-50cm": 2312
+      },
+      "verified_window_count": 16
+    },
+    {
+      "complete_query_count": 48,
+      "file": "pt-dgt-macedo-braganca-anonymous-strip.json",
+      "metadata_only": true,
+      "name": "G09",
+      "source_file_sha256": "ff902c0ed43182e1d55103796d482547bf7d1636ef68f1d5e38c303922a8e724",
+      "unique_candidates_by_collection": {
+        "MDT-2m": 3199,
+        "MDT-50cm": 3199
+      },
+      "verified_window_count": 24
+    }
+  ],
+  "stage": "DGT_four_screen_metadata_deduplication_with_cross_resolution_bbox_exceptions",
+  "total_complete_STAC_requests": 112,
+  "total_screen_windows": 56,
+  "unique_DGT_product_IDs_by_collection": {
+    "MDT-2m": 7070,
+    "MDT-50cm": 7070
+  },
+  "vertical_datum_crossborder_harmonized": false,
+  "worker": "W2"
+}

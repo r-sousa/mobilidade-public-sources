@@ -1,0 +1,65 @@
+name: MN-GEO-RAIL-001 DGT anonymous Macedo Braganca G09 metadata screening
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-east-braganca-stac-20261031
+    paths:
+      - tools/geo_rail_pt_east_stac_screen.py
+      - tests/test_geo_rail_pt_east_stac_screen.py
+      - .github/workflows/mn-geo-pt-east-stac-screen.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: mn-geo-rail-001-g09-east-metadata-only
+  cancel-in-progress: false
+jobs:
+  anonymous-eastern-review:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-east-braganca-stac-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline scope and fail-closed tests
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_east_stac_screen.py' -v
+      - name: Forty-eight anonymous and bounded STAC requests
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_pt_east_stac_screen.py --output "$RUNNER_TEMP/dgt-east-g09.json" || echo 'Partial source diagnostic retained; no coverage claim'
+      - name: Save only anonymous whitelisted metadata observations
+        run: |
+          set -euo pipefail
+          source="$RUNNER_TEMP/dgt-east-g09.json"
+          test -s "$source"
+          target="reports/mn-geo-rail-001/pt-dgt-macedo-braganca-anonymous-strip.json"
+          mkdir -p "$(dirname "$target")"
+          cp "$source" "$target"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): retain bounded G09 east DGT anonymous STAC review"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+      - name: Verify public-only scope and no overclaim
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path("reports/mn-geo-rail-001/pt-dgt-macedo-braganca-anonymous-strip.json").read_text())
+          assert report["query_count"]==48 and report["grid_window_count"]==24
+          assert report["source_raster_bytes_transferred"]==0
+          assert report["not_a_chosen_rail_alignment"]
+          assert report["rectangles_not_valid_pixel_coverage"]
+          assert not report["continuous_native_MDT_verified"]
+          assert not report["canonical_Fxx_accepted"] and not report["site_publication_authorized"]
+          if not report["queries_all_complete"]:
+              raise SystemExit("Partial STAC page/error: no absence or coverage inference permitted")
+          print("G09_ANONYMOUS_METADATA_FULL_QUERY_GRID_VALIDATED")
+          PY
