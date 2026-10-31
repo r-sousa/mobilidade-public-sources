@@ -1,4 +1,4 @@
-name: MN-GEO-RAIL-001 G3 protected actual DGT 2m 80 original tiles 20 study cells
+name: MN-GEO-RAIL-001 G3 protected actual DGT 2m 76 new original tiles in 19 study cells (after removing 4 Mirandela duplicates)
 # Secret-based DGT acquisition only via explicit manual workflow_dispatch on PROTECTED main.
 # Never run DGT credentials on push/PR/release/schedule, never publish credential-bearing links.
 on:
@@ -46,13 +46,13 @@ jobs:
         run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=1.24,<3' 'requests>=2.32,<3'
       - name: Offline tests before credentials read
         run: python -m unittest discover -s tests -p 'test_geo_rail_g3_native80.py' -v
-      - name: Retrieve SHA256-pinned reviewed 80 exact DGT original tile IDs from real-source G3 release
+      - name: Retrieve SHA256-pinned reviewed reviewed 80 DGT IDs of which 76 are not previously downloaded from real-source G3 release
         shell: bash
         run: |
           set -euo pipefail
           curl --fail --location --silent --show-error --retry 3 --max-time 100              "https://github.com/r-sousa/mobilidade-public-sources/releases/download/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json"              --output "$RUNNER_TEMP/G3-real-source-2km-study.json"
           echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G3-real-source-2km-study.json" | sha256sum -c -
-      - name: Verify approved 80 source original tile IDs and batch geography WITHOUT DGT secrets
+      - name: Verify 76 new original source tile IDs (four Mirandela duplicates excluded) and batch geography WITHOUT DGT secrets
         env:
           PYTHONPATH: tools
         shell: bash
@@ -64,7 +64,7 @@ jobs:
           d=load_review(Path(os.environ["RUNNER_TEMP"])/"G3-real-source-2km-study.json")
           assert len(d)==20
           assert all(len(batch_groups(d,k))==n for k,n in BATCHES.items())
-          print("approved source original producer G3 80 exact IDs; 7 Vila Real study cells, 5 Bragança and 8 intercity")
+          print("approved source originals: 76 new IDs; 7 Vila Real study cells, 5 Bragança, 7 intercity after excluding 4 Mirandela duplicates")
           PY
       - name: Protected DGT login, retrieve actual producer native 2m pixels and run 4 real source seams per group
         env:
