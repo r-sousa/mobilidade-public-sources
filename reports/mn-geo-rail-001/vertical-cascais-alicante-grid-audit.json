@@ -1,0 +1,323 @@
+{
+  "actual_PT_ES_benchmark_observation_checked": false,
+  "after": {
+    "available_operations": [
+      {
+        "accuracy_m": 0.09,
+        "definition": "proj=pipeline step proj=axisswap order=2,1 step proj=unitconvert xy_in=deg xy_out=rad step proj=vgridshift grids=pt_dgt_GeodPT08.tif multiplier=1 step inv proj=vgridshift grids=es_ign_egm08-rednap.tif multiplier=1 step proj=unitconvert xy_in=rad xy_out=deg step proj=axisswap order=2,1",
+        "description": "Inverse of ETRS89 to Cascais height (1) + ETRS89 to Alicante height (1)"
+      },
+      {
+        "accuracy_m": 0.2,
+        "definition": "proj=pipeline step proj=geogoffset dh=-0.315 step inv proj=vertoffset lat_0=40.7722222222222 lon_0=-3.65972222222222 dh=-0.486 slope_lat=-0.003 slope_lon=0.006",
+        "description": "Cascais height to EVRF2000 height (1) + Inverse of Alicante height to EVRF2000 height (1)"
+      }
+    ],
+    "best_available": true,
+    "unavailable_operations": [
+      {
+        "accuracy_m": 0.102,
+        "description": "Cascais height to EVRF2019 mean-tide height (2) + Inverse of Alicante height to EVRF2019 mean-tide height (1)",
+        "grids": [
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "es_2019m.asc",
+            "url": ""
+          },
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "pt_2019m.asc",
+            "url": ""
+          }
+        ]
+      },
+      {
+        "accuracy_m": 0.11,
+        "description": "Cascais height to EVRF2019 height (2) + Inverse of Alicante height to EVRF2019 height (1)",
+        "grids": [
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "es_2019z.asc",
+            "url": ""
+          },
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "pt_2019z.asc",
+            "url": ""
+          }
+        ]
+      }
+    ]
+  },
+  "before": {
+    "available_operations": [
+      {
+        "accuracy_m": 0.2,
+        "definition": "proj=pipeline step proj=geogoffset dh=-0.315 step inv proj=vertoffset lat_0=40.7722222222222 lon_0=-3.65972222222222 dh=-0.486 slope_lat=-0.003 slope_lon=0.006",
+        "description": "Cascais height to EVRF2000 height (1) + Inverse of Alicante height to EVRF2000 height (1)"
+      }
+    ],
+    "best_available": false,
+    "unavailable_operations": [
+      {
+        "accuracy_m": 0.09,
+        "description": "Inverse of ETRS89 to Cascais height (1) + ETRS89 to Alicante height (1)",
+        "grids": [
+          {
+            "available": false,
+            "open_license": true,
+            "short_name": "es_ign_egm08-rednap.tif",
+            "url": "https://cdn.proj.org/es_ign_egm08-rednap.tif"
+          },
+          {
+            "available": false,
+            "open_license": true,
+            "short_name": "pt_dgt_GeodPT08.tif",
+            "url": "https://cdn.proj.org/pt_dgt_GeodPT08.tif"
+          }
+        ]
+      },
+      {
+        "accuracy_m": 0.102,
+        "description": "Cascais height to EVRF2019 mean-tide height (2) + Inverse of Alicante height to EVRF2019 mean-tide height (1)",
+        "grids": [
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "es_2019m.asc",
+            "url": ""
+          },
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "pt_2019m.asc",
+            "url": ""
+          }
+        ]
+      },
+      {
+        "accuracy_m": 0.11,
+        "description": "Cascais height to EVRF2019 height (2) + Inverse of Alicante height to EVRF2019 height (1)",
+        "grids": [
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "es_2019z.asc",
+            "url": ""
+          },
+          {
+            "available": false,
+            "open_license": false,
+            "short_name": "pt_2019z.asc",
+            "url": ""
+          }
+        ]
+      }
+    ]
+  },
+  "best_grid_operation_reproducibly_available": true,
+  "canonical_acceptance": false,
+  "direct_pipeline_contains_both_geoid_grids": true,
+  "direct_pipeline_derived_from_epsg_operation": true,
+  "direct_pipeline_spatially_tested_in_PT": true,
+  "grid_downloads": [
+    {
+      "bytes": 81638,
+      "filename": "pt_dgt_GeodPT08.tif",
+      "open_license_indicated_by_proj_catalogue": true,
+      "preserved_in_git": false,
+      "sha256": "8c006ae3afa037c214d30e7ec97736452705773ccb663274e003ced1d08ccaa0",
+      "source_url": "https://cdn.proj.org/pt_dgt_GeodPT08.tif",
+      "status": "downloaded_temporary_tiff"
+    },
+    {
+      "bytes": 827857,
+      "filename": "es_ign_egm08-rednap.tif",
+      "open_license_indicated_by_proj_catalogue": true,
+      "preserved_in_git": false,
+      "sha256": "d1758a580c2acc7cddcb814c2aebe1e5ab83f74dfaed8c1a885355bb3f85df58",
+      "source_url": "https://cdn.proj.org/es_ign_egm08-rednap.tif",
+      "status": "downloaded_temporary_tiff"
+    }
+  ],
+  "grid_spatial_diagnostics": [
+    {
+      "band_count": 1,
+      "bounds": [
+        -10.024999999999999,
+        36.50000000000001,
+        -5.974999999999999,
+        42.25
+      ],
+      "crs": "EPSG:4937",
+      "dtype": "float32",
+      "filename": "pt_dgt_GeodPT08.tif",
+      "height": 230,
+      "nodata": null,
+      "samples": [
+        {
+          "grid_sample_value_m": 55.66699981689453,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Mirandela_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 56.67900085449219,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Nordeste_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 55.650001525878906,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Amarante_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 56.275001525878906,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "ES_Alcanices_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "sample_finite": false,
+          "sample_masked": null,
+          "site": "ES_Zamora_exploratory",
+          "within_grid_bbox": false
+        }
+      ],
+      "status": "tiff_opened",
+      "width": 162
+    },
+    {
+      "band_count": 1,
+      "bounds": [
+        -9.50833333,
+        34.99166667,
+        4.508327730000001,
+        44.00832973
+      ],
+      "crs": "EPSG:4937",
+      "dtype": "float32",
+      "filename": "es_ign_egm08-rednap.tif",
+      "height": 541,
+      "nodata": null,
+      "samples": [
+        {
+          "grid_sample_value_m": 55.55400085449219,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Mirandela_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 56.7599983215332,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Nordeste_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 55.564998626708984,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "PT_Amarante_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 56.38100051879883,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "ES_Alcanices_exploratory",
+          "within_grid_bbox": true
+        },
+        {
+          "grid_sample_value_m": 55.4640007019043,
+          "sample_finite": true,
+          "sample_masked": false,
+          "site": "ES_Zamora_exploratory",
+          "within_grid_bbox": true
+        }
+      ],
+      "status": "tiff_opened",
+      "width": 841
+    }
+  ],
+  "is_real_terrain_harmonization": false,
+  "mission": "MN-GEO-RAIL-001",
+  "native_rasters_reprojected": 0,
+  "observed_utc": "2026-10-30T23:01:12.225666+00:00",
+  "pyproj_version": "3.8.0",
+  "references": {
+    "copernicus_egm2008_vertical": "EPSG:3855",
+    "portugal_geoid_official": "https://www.gov.pt/servicos/aceder-online-ao-modelo-do-geoide-geodpt08-",
+    "portugal_horizontal": "EPSG:3763",
+    "portugal_vertical": "EPSG:5780",
+    "spain_geoid_ign": "https://datos-geodesia.ign.es/geoide/Leeme_Readme.pdf",
+    "spain_horizontal": "EPSG:25830",
+    "spain_vertical": "EPSG:5782",
+    "vertical_grid_issuer": "https://cdn.proj.org/"
+  },
+  "source_crs_name": "Cascais height",
+  "spain_Zamora_outside_portuguese_geoid_extent": true,
+  "stage": "vertical_cascais_alicante_proj_operation_audit",
+  "target_crs_name": "Alicante height",
+  "transformation_examples_not_observed_altitudes": [
+    {
+      "direct_lonlat_grid_operation_returns_finite": true,
+      "label": "PT_Mirandela_exploratory",
+      "latitude": 41.5,
+      "longitude": -7.2,
+      "native_latlon_axis_operation_returns_finite": true,
+      "synthetic_input_Cascais_height_m": 0,
+      "synthetic_output_Alicante_height_m": 0.1027486335475345
+    },
+    {
+      "direct_lonlat_grid_operation_returns_finite": true,
+      "label": "PT_Nordeste_exploratory",
+      "latitude": 41.75,
+      "longitude": -6.9,
+      "native_latlon_axis_operation_returns_finite": true,
+      "synthetic_input_Cascais_height_m": 0,
+      "synthetic_output_Alicante_height_m": -0.03025453111138887
+    },
+    {
+      "direct_lonlat_grid_operation_returns_finite": true,
+      "label": "PT_Amarante_exploratory",
+      "latitude": 41.26,
+      "longitude": -8.1,
+      "native_latlon_axis_operation_returns_finite": true,
+      "synthetic_input_Cascais_height_m": 0,
+      "synthetic_output_Alicante_height_m": 0.08300006841228225
+    },
+    {
+      "direct_lonlat_grid_operation_returns_finite": true,
+      "label": "ES_Alcanices_exploratory",
+      "latitude": 41.6994,
+      "longitude": -6.34647,
+      "native_latlon_axis_operation_returns_finite": true,
+      "synthetic_input_Cascais_height_m": 0,
+      "synthetic_output_Alicante_height_m": -0.057913319255021634
+    },
+    {
+      "direct_lonlat_grid_operation_returns_finite": false,
+      "label": "ES_Zamora_exploratory",
+      "latitude": 41.50378,
+      "longitude": -5.746992,
+      "native_latlon_axis_operation_returns_finite": false,
+      "synthetic_input_Cascais_height_m": 0,
+      "synthetic_output_Alicante_height_m": null
+    }
+  ],
+  "vertical_crs_of_CNIG_wcs_native_raster_explicitly_verified": false,
+  "vertical_harmonization_ready": false,
+  "worker": "W4"
+}

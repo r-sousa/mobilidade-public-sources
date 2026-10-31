@@ -1,0 +1,401 @@
+{
+  "continuous_coverage_between_sites_verified": false,
+  "expected_tests": 4,
+  "geographic_selection": "two exploratory 4x2 km windows, NOT an optimized rail line",
+  "is_rail_alignment": false,
+  "licence_and_canonical_acceptance": false,
+  "mission": "MN-GEO-RAIL-001",
+  "native_rasters_preserved": 0,
+  "observed_utc": "2026-10-30T22:55:00.086586+00:00",
+  "producer": "IGN/CNIG Spain, public WCS GetCoverage",
+  "results": [
+    {
+      "comparison": {
+        "all_mask_flags_identical": true,
+        "all_valid_sample_values_identical": true,
+        "block_grid_equals_independent_union": true,
+        "cells_total": 12800,
+        "jointly_valid_cells": 12800,
+        "max_abs_diff_m": 0.0
+      },
+      "parts": [
+        {
+          "bbox_utm30": [
+            219525,
+            4620825,
+            221525,
+            4622825
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 855.0,
+          "min_m": 764.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "1f1ea9ee262638a284ac403aa5f98f47f0c8a4f0eb75d4ddacd70425b60886c5",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            221525,
+            4620825,
+            223525,
+            4622825
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 853.0,
+          "min_m": 760.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "e674cca18f508af84177a70034326d5b310fe5eb1c9f4d00e6fcbc66eeebadf8",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            219525,
+            4620825,
+            223525,
+            4622825
+          ],
+          "bytes": 26088,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 855.0,
+          "min_m": 760.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "6cb829dcd3a81b124ddcc2417707e1a6e4f25a49855ecf40c5c886edc6999610",
+          "valid_cells": 12800,
+          "width_px": 160
+        }
+      ],
+      "resolution_m": 25,
+      "site": "Alcanices",
+      "site_lonlat": [
+        -6.34647,
+        41.6994
+      ],
+      "status": "validated_adjacent_and_union_no_missing_cells",
+      "windows": [
+        [
+          219525,
+          4620825,
+          221525,
+          4622825
+        ],
+        [
+          221525,
+          4620825,
+          223525,
+          4622825
+        ],
+        [
+          219525,
+          4620825,
+          223525,
+          4622825
+        ]
+      ]
+    },
+    {
+      "comparison": {
+        "all_mask_flags_identical": true,
+        "all_valid_sample_values_identical": true,
+        "block_grid_equals_independent_union": true,
+        "cells_total": 320000,
+        "jointly_valid_cells": 320000,
+        "max_abs_diff_m": 0.0
+      },
+      "parts": [
+        {
+          "bbox_utm30": [
+            219525,
+            4620825,
+            221525,
+            4622825
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 855.0,
+          "min_m": 763.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "7e9d8ced08f1444d03c2fcd058ea267039bacec73c2b2fd744c751f3ccfed652",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            221525,
+            4620825,
+            223525,
+            4622825
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 854.0,
+          "min_m": 759.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "3e1ec1d002701becc049983df7555ec05729559307b29cd4da310c9d73f831d7",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            219525,
+            4620825,
+            223525,
+            4622825
+          ],
+          "bytes": 641096,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 855.0,
+          "min_m": 759.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "ac9178be39b0ad5ad2581e047a52f15e8389eafe83c0cb28058aca66f9d4b97f",
+          "valid_cells": 320000,
+          "width_px": 800
+        }
+      ],
+      "resolution_m": 5,
+      "site": "Alcanices",
+      "site_lonlat": [
+        -6.34647,
+        41.6994
+      ],
+      "status": "validated_adjacent_and_union_no_missing_cells",
+      "windows": [
+        [
+          219525,
+          4620825,
+          221525,
+          4622825
+        ],
+        [
+          221525,
+          4620825,
+          223525,
+          4622825
+        ],
+        [
+          219525,
+          4620825,
+          223525,
+          4622825
+        ]
+      ]
+    },
+    {
+      "comparison": {
+        "all_mask_flags_identical": true,
+        "all_valid_sample_values_identical": true,
+        "block_grid_equals_independent_union": true,
+        "cells_total": 12800,
+        "jointly_valid_cells": 12800,
+        "max_abs_diff_m": 0.0
+      },
+      "parts": [
+        {
+          "bbox_utm30": [
+            209500,
+            4629425,
+            211500,
+            4631425
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 796.0,
+          "min_m": 606.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "93335ac16ed6b9e4879b6bf3daf31a864d19898de1c936ab550399e624362b40",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            211500,
+            4629425,
+            213500,
+            4631425
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 828.0,
+          "min_m": 634.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "02349cb51ff1f3bdc7989627ece657cdaa8b5d408caa9b17f377efed5d462b31",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            209500,
+            4629425,
+            213500,
+            4631425
+          ],
+          "bytes": 26088,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 828.0,
+          "min_m": 606.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "78b9d30e189749f4e37b97e041754a2cbf133af1482ab213c05fb9638338e404",
+          "valid_cells": 12800,
+          "width_px": 160
+        }
+      ],
+      "resolution_m": 25,
+      "site": "Vinas",
+      "site_lonlat": [
+        -6.47116,
+        41.7733
+      ],
+      "status": "validated_adjacent_and_union_no_missing_cells",
+      "windows": [
+        [
+          209500,
+          4629425,
+          211500,
+          4631425
+        ],
+        [
+          211500,
+          4629425,
+          213500,
+          4631425
+        ],
+        [
+          209500,
+          4629425,
+          213500,
+          4631425
+        ]
+      ]
+    },
+    {
+      "comparison": {
+        "all_mask_flags_identical": true,
+        "all_valid_sample_values_identical": true,
+        "block_grid_equals_independent_union": true,
+        "cells_total": 320000,
+        "jointly_valid_cells": 320000,
+        "max_abs_diff_m": 0.0
+      },
+      "parts": [
+        {
+          "bbox_utm30": [
+            209500,
+            4629425,
+            211500,
+            4631425
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 796.0,
+          "min_m": 605.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "8a5a7b9ef886ace9a2f522297794a1e785ce2349b502c6c5d7887bf0f977eb87",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            211500,
+            4629425,
+            213500,
+            4631425
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 829.0,
+          "min_m": 634.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "987d1e047767f40e76cbd701159df936530fdf33c9e3fd9f28a89f4d140b5533",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            209500,
+            4629425,
+            213500,
+            4631425
+          ],
+          "bytes": 641096,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 829.0,
+          "min_m": 605.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "7ed78ac958f8549152c10a3447a9ca865ae2233454b682f7af964398dcb1e765",
+          "valid_cells": 320000,
+          "width_px": 800
+        }
+      ],
+      "resolution_m": 5,
+      "site": "Vinas",
+      "site_lonlat": [
+        -6.47116,
+        41.7733
+      ],
+      "status": "validated_adjacent_and_union_no_missing_cells",
+      "windows": [
+        [
+          209500,
+          4629425,
+          211500,
+          4631425
+        ],
+        [
+          211500,
+          4629425,
+          213500,
+          4631425
+        ],
+        [
+          209500,
+          4629425,
+          213500,
+          4631425
+        ]
+      ]
+    }
+  ],
+  "stage": "es_wcs_adjacent_blocks_union_continuity_qa",
+  "validated_tests": 4,
+  "vertical_datum_crossborder_verified": false,
+  "worker": "W3"
+}

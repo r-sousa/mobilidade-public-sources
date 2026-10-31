@@ -1,0 +1,45 @@
+{
+  "canonical_acceptance": false,
+  "content_type": "image/tiff",
+  "coverage_id": "Elevacion25830_25",
+  "licence_clearance": false,
+  "mission": "MN-GEO-RAIL-001",
+  "native_raster_preserved": false,
+  "observed_utc": "2026-10-30T22:30:39.913304+00:00",
+  "query_bbox_utm30_epsg25830": [
+    270500,
+    4597800,
+    271500,
+    4598800
+  ],
+  "raster": {
+    "bounds_utm30": [
+      270500.0,
+      4597800.0,
+      271500.0,
+      4598800.0
+    ],
+    "crs": "EPSG:25830",
+    "driver": "GTiff",
+    "dtype": "int16",
+    "height_px": 40,
+    "max_terrain_m": 657.0,
+    "mean_terrain_m": 639.16625,
+    "min_terrain_m": 621.0,
+    "nodata": null,
+    "pixel_size_m": [
+      25.0,
+      25.0
+    ],
+    "valid_cells": 1600,
+    "width_px": 40
+  },
+  "ready_for_rail_alignment": false,
+  "response_bytes": 3656,
+  "response_sha256": "1983cd9f53ed8f3e9ade85c7316cd6a6dd94cbef2f944a1ef8fb7ed109471dd4",
+  "source_url": "https://servicios.idee.es/wcs-inspire/mdt?service=WCS&request=GetCoverage&version=2.0.1&coverageId=Elevacion25830_25&format=image%2Ftiff&subset=x%28270500%2C271500%29&subset=y%284597800%2C4598800%29",
+  "stage": "ES_WCS_25m_Zamora_1km2_pilot",
+  "status": "one_coverage_sample_validated",
+  "vertical_compatibility_verified": false,
+  "worker": "W3"
+}

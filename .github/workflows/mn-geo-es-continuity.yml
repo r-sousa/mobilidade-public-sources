@@ -1,0 +1,70 @@
+name: MN-GEO-RAIL-001 W3 adjacent blocks and union QA
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-es-wcs-20261030
+    paths:
+      - .github/workflows/mn-geo-es-continuity.yml
+      - tools/geo_rail_es_continuity_qa.py
+      - tests/test_geo_rail_es_continuity_qa.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-es-continuity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compare-cnij-adjacent-grids:
+    if: github.ref == 'refs/heads/mn-geo-rail-001-es-wcs-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pilot-only geospatial dependencies
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'pyproj>=3.6,<4'
+      - name: Validate geometry and comparison contract
+        run: python -m unittest discover -s tests -p 'test_geo_rail_es_continuity_qa.py' -v
+      - name: Verify independently served MDT tiles against union; no native retention
+        id: pilot
+        shell: bash
+        run: |
+          if python tools/geo_rail_es_continuity_qa.py \
+              --output=reports/mn-geo-rail-001/es-adjacent-blocks-union-qa.json; then
+            echo 'failed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'failed=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Store metadata and hashes only, safely rebased
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt=reports/mn-geo-rail-001/es-adjacent-blocks-union-qa.json
+          cp "$receipt" "$RUNNER_TEMP/mn-w3-continuity-receipt.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            mkdir -p "$(dirname "$receipt")"
+            cp "$RUNNER_TEMP/mn-w3-continuity-receipt.json" "$receipt"
+            git add "$receipt"
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "data(geo): persist MDT block-versus-union consistency evidence"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
+          done
+          exit 1
+      - name: Fail if checks do not validate
+        env:
+          FAILED: ${{ steps.pilot.outputs.failed }}
+        run: |
+          if [[ "$FAILED" == 'true' ]]; then
+            echo 'See persisted receipt: some coverage grids did not validate' >&2
+            exit 1
+          fi

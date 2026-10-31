@@ -1,0 +1,75 @@
+name: MN-GEO-RAIL-001 W3 sample Zamora
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-es-wcs-20261030
+    paths:
+      - .github/workflows/mn-geo-es-sample.yml
+      - tools/geo_rail_es_wcs_sample.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-es-sample-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  wcs-one-km-sample:
+    if: github.ref == 'refs/heads/mn-geo-rail-001-es-wcs-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install geospatial validator
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2'
+      - name: Request at most one square kilometre of CNIG WCS data
+        id: sample
+        shell: bash
+        run: |
+          failed=false
+          for resolution in 25 5; do
+            if ! python tools/geo_rail_es_wcs_sample.py \
+              --coverage=Elevacion25830_${resolution} \
+              --output=reports/mn-geo-rail-001/es-wcs-${resolution}m-zamora-sample.json; then
+              failed=true
+            fi
+          done
+          echo "failed=$failed" >> "$GITHUB_OUTPUT"
+      - name: Preserve metadata only; never native raster bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/mn-geo-es-receipts"
+          cp reports/mn-geo-rail-001/es-wcs-25m-zamora-sample.json "$RUNNER_TEMP/mn-geo-es-receipts/"
+          cp reports/mn-geo-rail-001/es-wcs-5m-zamora-sample.json "$RUNNER_TEMP/mn-geo-es-receipts/"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            mkdir -p reports/mn-geo-rail-001
+            cp "$RUNNER_TEMP/mn-geo-es-receipts/"*.json reports/mn-geo-rail-001/
+            git add reports/mn-geo-rail-001/es-wcs-25m-zamora-sample.json reports/mn-geo-rail-001/es-wcs-5m-zamora-sample.json
+            if git diff --cached --quiet; then
+              exit 0
+            fi
+            git commit -m "data(geo): record bounded CNIG WCS 25m and 5m pilots"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+          done
+          exit 1
+      - name: Require validated native sample, not merely successful HTTP
+        env:
+          FAILED: ${{ steps.sample.outputs.failed }}
+        run: |
+          if [[ "$FAILED" == "true" ]]; then
+            echo "No validated WCS sample; preserve error receipt for diagnostic" >&2
+            exit 1
+          fi

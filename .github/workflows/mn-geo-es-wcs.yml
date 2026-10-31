@@ -1,0 +1,74 @@
+name: MN-GEO-RAIL-001 CNIG WCS metadata discovery
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-es-wcs-20261030
+    paths:
+      - .github/workflows/mn-geo-es-wcs.yml
+      - tools/geo_rail_es_wcs_probe.py
+      - tests/test_geo_rail_es_wcs_probe.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-cnig-wcs-\${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inspect-public-capabilities:
+    if: github.ref == 'refs/heads/mn-geo-rail-001-es-wcs-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test WCS parsing and fail-closed controls
+        run: python -m unittest discover -s tests -p 'test_geo_rail_es_wcs_probe.py' -v
+      - name: Probe official CNIG WCS GetCapabilities (no raster)
+        id: probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          if python tools/geo_rail_es_wcs_probe.py \
+            --output=reports/mn-geo-rail-001/es-wcs-capabilities.json \
+            --describe; then
+            echo "probe_failed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "probe_failed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Persist only source-hashed metadata receipt
+        run: |
+          set -euo pipefail
+          receipt=reports/mn-geo-rail-001/es-wcs-capabilities.json
+          cp "$receipt" "$RUNNER_TEMP/es-wcs-capabilities.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            mkdir -p "$(dirname "$receipt")"
+            cp "$RUNNER_TEMP/es-wcs-capabilities.json" "$receipt"
+            git add "$receipt"
+            if git diff --cached --quiet; then
+              exit 0
+            fi
+            git commit -m "data(geo): record CNIG WCS GetCapabilities probe"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+          done
+          echo "metadata receipt commit failed after bounded retries" >&2
+          exit 1
+      - name: Gate on real WCS discovery status
+        env:
+          PROBE_FAILED: ${{ steps.probe.outputs.probe_failed }}
+        run: |
+          if [[ "$PROBE_FAILED" == "true" ]]; then
+            echo "CNIG WCS capability discovery was not verified, see persisted report" >&2
+            exit 1
+          fi
