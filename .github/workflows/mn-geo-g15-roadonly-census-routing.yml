@@ -1,0 +1,90 @@
+name: MN-GEO-RAIL-001 G15 original census road-only sampled access no public transport assumed
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g15-roadonly-20261031
+      - main
+    paths:
+      - tools/geo_rail_g15_road_only_census_sample.py
+      - tests/test_geo_rail_g15_road_only_sample.py
+      - .github/workflows/mn-geo-g15-roadonly-census-routing.yml
+permissions:
+  contents: write
+jobs:
+  G15_2021_urban_resident_road_only_routing_sampling:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 27
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install minimally sufficient GPKG geodesy
+        run: python -m pip install --disable-pip-version-check 'shapely>=2.1,<3' 'pyproj>=3.6,<4'
+      - name: Strict tests and no PT default zero/no nonexistent station assumption
+        run: |
+          python -m py_compile tools/geo_rail_g15_road_only_census_sample.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g15_road_only_sample.py' -v
+      - name: Read archived public exact original INE F67 and G14 only, SHA verified
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G15-src"
+          gh release download mn-f67-bgri21-cont-original-INE-verified-20261031 \
+            --repo "$GITHUB_REPOSITORY" --pattern BGRI21_CONT.zip --dir "$RUNNER_TEMP/G15-src"
+          gh release download mn-geo-rail-001-g14-bgri2021-station-demographic-envelopes-41250842887 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G14-BGRI2021-three-families-six-cities-5-10-20km-catchments.json' \
+            --dir "$RUNNER_TEMP/G15-src"
+          echo "3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171  $RUNNER_TEMP/G15-src/BGRI21_CONT.zip" | sha256sum -c -
+          echo "af16f552634f066ad5723445d9bd6e389f5769a522b2782d7064bc206acc216d  $RUNNER_TEMP/G15-src/G14-BGRI2021-three-families-six-cities-5-10-20km-catchments.json" | sha256sum -c -
+      - name: 2021 resident census 4km spatial cell population with bounded 2026 OSM car routing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g15_road_only_census_sample.py \
+            --original "$RUNNER_TEMP/G15-src/BGRI21_CONT.zip" \
+            --g14 "$RUNNER_TEMP/G15-src/G14-BGRI2021-three-families-six-cities-5-10-20km-catchments.json" \
+            --json "$RUNNER_TEMP/G15-3-families-six-city-census-OSRM-road-classification.json" \
+            --markdown "$RUNNER_TEMP/G15-road-only-access-source-comparison.md" \
+            --max-requests 48
+          python - <<'PY'
+          import pathlib,os,json
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])
+          a=json.loads((d/"G15-3-families-six-city-census-OSRM-road-classification.json").read_text())
+          assert len(a["all_18_family_city_population_road_research_screen"])==18
+          assert a["mandatory_markets"]==["Vila Real","Bragança"] and a["Sanabria_excluded"]
+          assert a["public_transport_assessment_scope"].startswith("NUTS2 Norte")
+          assert a["lack_of_GTFS_or_service_data_DOES_NOT_mean_no_bus_or_public_transport"]
+          assert a["no_weight_or_zero_penalty_for_missing_PT_data"]
+          assert a["road_population_4km_grid_not_accurate_to_full_road_isochrone"]
+          assert not a["Fxx_accepted"] and not a["Site_authorized"]
+          assert a["source_road_network_query_receipts"]["actual_total_queries"]<=48
+          assert a["GPKG_validation"]["record_count"]==203264
+          print("G15 verified 18 origin access sample screens, 2021 INE authentic census, public PT never ranked as zero or missing service; road unobserved declared unknown")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G15-road-only-2021-population-sampling
+          path: |
+            ${{ runner.temp }}/G15-3-families-six-city-census-OSRM-road-classification.json
+            ${{ runner.temp }}/G15-road-only-access-source-comparison.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish G15 road-population source evidence on main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g15-car-access-observed-sampled-BGRI-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G15-3-families-six-city-census-OSRM-road-classification.json" "$RUNNER_TEMP/G15-road-only-access-source-comparison.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G15 INE BGRI21 2021 sampled OSM car access to 3 corridor research families; PT not covered" \
+            --notes "No comparable NUTS II Norte bus/PT GTFS data: public transport excluded, NEVER zero service. Original INE 2021 subsec census groups in representative 4km population-prioritized cells inside 30km of G13A research road points, bounded 48 requests at low rate to OSM OSRM. Missing road routing or >600m snaps are UNKNOWN, not unreachable; 4km proxies and truncated Euclidean 30km universe are NOT exact 15/30/45 min isochrones. No authorized stations, ODs, cost EUR, new census downloads, Fxx canonical or Site publication."
