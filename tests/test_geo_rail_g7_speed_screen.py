@@ -5,7 +5,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"tools"))
 HAVE=all(importlib.util.find_spec(x) is not None for x in ("numpy","scipy","rasterio","pyproj","shapely"))
 if HAVE:
  import numpy as np
- from geo_rail_g7_rail_screen import (grade_envelopes,dense,smooth,radius_screen,
+ from geo_rail_g7_rail_screen import (grade_envelopes,grade_L1_profile,dense,smooth,radius_screen,
    choose_geometry,SPEEDS,MAX_REF_DISPLACEMENT_M)
 @unittest.skipUnless(HAVE,"full G7 GIS dependencies installed in specialized public-source CI")
 class G7Geometry(unittest.TestCase):
@@ -16,6 +16,13 @@ class G7Geometry(unittest.TestCase):
    h=grade_envelopes(z,s,grade)
    self.assertTrue(np.all(np.abs(np.diff(h))<=grade*200+1e-6))
    self.assertTrue(np.isfinite(h).all())
+ def test_L1_reduces_total_source_departure_vs_Linfinity_fit(self):
+  z=np.asarray([0.,0.,0.,0.,120.,0.,0.,0.,0.])
+  s=np.arange(len(z))*200.
+  hi=grade_envelopes(z,s,.025)
+  lo=grade_L1_profile(z,s,.025)
+  self.assertTrue(np.all(np.abs(np.diff(lo))<=5+1.e-5))
+  self.assertLessEqual(np.sum(np.abs(lo-z)),np.sum(np.abs(hi-z))+1.e-5)
  def test_flat_profile_identity(self):
   z=np.linspace(12,27,101);s=np.arange(101)*200.
   self.assertTrue(np.allclose(grade_envelopes(z,s,.025),z))
