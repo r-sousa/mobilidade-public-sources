@@ -1,0 +1,47 @@
+name: MN-GEO-RAIL-001 W2 G10 five-screen source union QA
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g10-interface-stac-20261031
+    paths:
+      - tools/geo_rail_pt_five_screen_union.py
+      - tests/test_geo_rail_pt_five_screen_union.py
+      - .github/workflows/mn-geo-pt-five-screen-union.yml
+permissions:
+  contents: read
+concurrency:
+  group: mn-geo-rail-001-g10-five-source-reconcile
+  cancel-in-progress: false
+jobs:
+  verified-receipt-union:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g10-interface-stac-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Complete source receipts, dedup, geometry-uncertainty and safe governance tests
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_five_screen_union.py' -v
+      - name: Independently recompute source-file hashes and exact five-screen ID union
+        run: python tools/geo_rail_pt_five_screen_union.py --report-dir reports/mn-geo-rail-001 --output "$RUNNER_TEMP/five-screen-qa.json"
+      - name: Independently verify immutable report already committed on branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          actual=json.loads(Path("reports/mn-geo-rail-001/pt-dgt-five-screen-catalogue-union-qa.json").read_text())
+          recalculated=json.loads(Path(__import__("os").environ["RUNNER_TEMP"],"five-screen-qa.json").read_text())
+          # UTC observation instant is intentionally volatile; compare ALL substantive fields.
+          actual.pop("observed_utc",None)
+          recalculated.pop("observed_utc",None)
+          assert actual==recalculated, "Versioned metadata report differs from source-hashed recomputation"
+          print("G10_FIVE_SCREEN_IMMUTABLE_SOURCE_RECEIPT_VERIFIED")
+          PY
+      - name: Preserve provenance boundary in summary
+        run: |
+          echo "58 review windows, 116 complete STAC metadata requests (subject to QA), 0 native raster bytes in metadata jobs." >> "$GITHUB_STEP_SUMMARY"
+          echo "G10 closes the unsampled metadata search interface between G08 and G07, not native pixel coverage or railway corridor continuity." >> "$GITHUB_STEP_SUMMARY"
