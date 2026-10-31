@@ -1,0 +1,56 @@
+name: MN-GEO-RAIL-001 grid12 source release offline trust boundary tests
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-grid12-native-prerelease-20261031
+    paths:
+      - tools/geo_rail_pt_cdd_grid12.py
+      - tests/test_geo_rail_pt_cdd_grid12.py
+      - .github/workflows/mn-geo-pt-cdd-grid12.yml
+      - .github/workflows/mn-geo-pt-grid12-release-tests.yml
+
+permissions:
+  contents: read
+
+jobs:
+  check-native-stage-and-workflow-separation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install offline Python source and workflow validation tools
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'requests>=2.32,<3' 'PyYAML>=6,<7'
+      - name: Test complete twelve-native-file staging without network or credentials
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_cdd_grid12.py' -v
+      - name: Confirm manual-only main-protected event, opt-in, and no-secret publishing job
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+          file=Path(".github/workflows/mn-geo-pt-cdd-grid12.yml")
+          doc=yaml.load(file.read_text(), Loader=yaml.BaseLoader)
+          assert set(doc["on"])=={"workflow_dispatch"}
+          inputs=doc["on"]["workflow_dispatch"]["inputs"]
+          assert inputs["preserve_native_preacceptance"]["default"]=="false"
+          jobs=doc["jobs"]
+          owner=jobs["twelve-reviewed-native-source-tiles"]
+          publisher=jobs["publish-licensed-native-prerelease"]
+          assert owner["environment"]=="dgt-cdd"
+          assert "contents" not in owner.get("permissions",{})
+          assert publisher["permissions"]=={"contents":"write"}
+          assert "environment" not in publisher
+          pub_text=str(publisher)
+          assert "DGT_CDD_USERNAME" not in pub_text
+          assert "DGT_CDD_PASSWORD" not in pub_text
+          assert "GITHUB_TOKEN" in pub_text
+          assert "github.ref == 'refs/heads/main'" in str(owner["if"])
+          assert "github.ref == 'refs/heads/main'" in str(publisher["if"])
+          assert "inputs.preserve_native_preacceptance" in str(publisher["if"])
+          print("SOURCE_RELEASE_SECRETS_AND_RELEASE_JOB_SEPARATED")
+          PY
