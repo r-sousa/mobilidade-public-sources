@@ -2,7 +2,7 @@ name: MN-GEO-RAIL-001 A1 acquire continuous regional GLO30 DSM original pixels
 on:
   push:
     branches:
-      - mn-geo-rail-001-r1-continuous-30m-dsm-20261031
+      - mn-geo-rail-001-a1-airport-inclusive-20261031
     paths:
       - tools/geo_rail_r1_regional_dsm_mosaic.py
       - tests/test_geo_rail_r1_regional_dsm_mosaic.py
@@ -10,11 +10,11 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: mn-geo-rail-001-r1-regional-four-real-cogs
+  group: mn-geo-rail-001-r1-airport-inclusive
   cancel-in-progress: false
 jobs:
   acquire-four-full-producer-COGs-and-test-regional-native-pixel-DSM:
-    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-r1-continuous-30m-dsm-20261031'
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-a1-airport-inclusive-20261031'
     runs-on: ubuntu-latest
     timeout-minutes: 23
     steps:
@@ -36,10 +36,10 @@ jobs:
       - name: Upload only vetted clipped DSM GeoTIFF and source QA (never full original 1deg COGs)
         uses: actions/upload-artifact@v4
         with:
-          name: mn-geo-rail-001-r1-30m-regional-DSM-${{ github.run_id }}
+          name: mn-geo-rail-001-r1-airport-inclusive-DSM-${{ github.run_id }}
           path: |
-            ${{ runner.temp }}/MN-GEO-REGIONAL/MN-GEO-RAIL-001-Porto-Zamora-GLO30-DSM-1arcsec.tif
-            ${{ runner.temp }}/MN-GEO-REGIONAL/MN-GEO-RAIL-001-Porto-Zamora-GLO30-DSM-source-QA.json
+            ${{ runner.temp }}/MN-GEO-REGIONAL/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif
+            ${{ runner.temp }}/MN-GEO-REGIONAL/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-source-QA.json
           if-no-files-found: error
           compression-level: 0
           retention-days: 7
@@ -61,7 +61,7 @@ jobs:
       - run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
       - uses: actions/download-artifact@v4
         with:
-          name: mn-geo-rail-001-r1-30m-regional-DSM-${{ github.run_id }}
+          name: mn-geo-rail-001-r1-airport-inclusive-DSM-${{ github.run_id }}
           path: ${{ runner.temp }}/MN-GEO-REGIONAL-APPROVED
       - name: Independently reopen full derived GeoTIFF and verify source SHA, cells, mask and seams
         run: |
@@ -74,7 +74,7 @@ jobs:
         run: |
           set -euo pipefail
           d="$RUNNER_TEMP/MN-GEO-REGIONAL-APPROVED"
-          tag="mn-geo-rail-001-r1-30m-porto-zamora-dsm-preacceptance-${GITHUB_RUN_ID}"
+          tag="mn-geo-rail-001-r1-airport-zamora-dsm-preacceptance-${GITHUB_RUN_ID}"
           cat > "$RUNNER_TEMP/notes.txt" <<'EOF'
           MN-GEO-RAIL-001: ACTUAL PIXELS of a regionally continuous Copernicus DEM GLO-30 Public digital SURFACE model (DSM).
           Source producers: DLR e.V., Airbus Defence and Space; European Union / ESA Copernicus.
@@ -83,9 +83,9 @@ jobs:
           Terms: https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM
           Only the clipped regional DSM and QA are published. Original four 1-degree producer COG source files are not rehosted.
           Source grid: 1 arcsecond WGS84 EPSG:4326; source product nominal vertical EGM2008 EPSG:3855, not independently accepted geodetic benchmark.
-          Screening rectangle [-8.65,41.08,-5.55,41.92] includes Porto–Trás-os-Montes–Zamora review sectors, NOT selected line route.
+          Screening rectangle [-8.75,41.08,-5.55,41.92] includes AFSC–Trás-os-Montes–Zamora review sectors, supersedes prior [-8.65,41.08,-5.55,41.92] clipping that omitted AFSC, NOT selected line route.
           DSM includes buildings and vegetation. NOT a bare-earth MDT / engineering-ready railway elevation profile.
           Preacceptance only: no Fxx, no Site, no rail ruling gradients, no shared PT-ES geodetic calibration.
           See the bundled QA JSON for validated real pixel counts, 3 tested source boundaries, original source SHA256 and output SHA256.
           EOF
-          gh release create "$tag" "$d/MN-GEO-RAIL-001-Porto-Zamora-GLO30-DSM-1arcsec.tif" "$d/MN-GEO-RAIL-001-Porto-Zamora-GLO30-DSM-source-QA.json" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "MN-GEO-RAIL-001 A1 Porto–Zamora actual 30m GLO-30 DSM pixels — PREACCEPTANCE" --notes-file "$RUNNER_TEMP/notes.txt"
+          gh release create "$tag" "$d/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" "$d/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-source-QA.json" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "MN-GEO-RAIL-001 A1 amended Airport–Zamora GLO-30 DSM pixels — PREACCEPTANCE" --notes-file "$RUNNER_TEMP/notes.txt"

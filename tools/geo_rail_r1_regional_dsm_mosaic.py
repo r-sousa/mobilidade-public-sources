@@ -26,13 +26,13 @@ SOURCE_LENGTHS = {
 SOURCE_DATE_LIST_SHA256="10604e3052c98a09e9216f1a8f0a555a04148419757575f783d4937fd44316dc"
 SOURCE_HOST="https://copernicus-dem-30m.s3.eu-central-1.amazonaws.com"
 LAT_TILE=41
-OUTPUT_BBOX_WGS84=(-8.65,41.08,-5.55,41.92)
+OUTPUT_BBOX_WGS84=(-8.75,41.08,-5.55,41.92)
 ARCSEC=1/3600
 MAX_SINGLE_COG_BYTES=55_000_000
 MAX_ALL_SOURCE_BYTES=200_000_000
 NODATA=-32767.0
-OUT_NAME="MN-GEO-RAIL-001-Porto-Zamora-GLO30-DSM-1arcsec.tif"
-QA_NAME="MN-GEO-RAIL-001-Porto-Zamora-GLO30-DSM-source-QA.json"
+OUT_NAME="MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif"
+QA_NAME="MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-source-QA.json"
 LICENSE_NOTICE="Produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved"
 LICENSE_URL="https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM"
 
