@@ -1,0 +1,68 @@
+name: MN-GEO-RAIL-001 G12C source backed road and terrain chart publishing
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g12-station-service-20261031
+      - main
+    paths:
+      - tools/geo_rail_g12c_plot_service_cost_gates.py
+      - .github/workflows/mn-geo-g12c-source-comparison-visuals.yml
+permissions:
+  contents: write
+  actions: read
+jobs:
+  six-option-source-visual-review:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install chart renderer only
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'matplotlib>=3.8,<4'
+      - name: Read successful G12B immutable run evidence and render two comparisons
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G12C"
+          gh run download 41248060891 --repo "$GITHUB_REPOSITORY" --name MN-GEO-RAIL-001-G12B-3-families-cost-service-data-gates --dir "$RUNNER_TEMP/G12C"
+          python tools/geo_rail_g12c_plot_service_cost_gates.py \
+            --report "$RUNNER_TEMP/G12C/G12B-three-families-six-alternatives-data-gates.json" \
+            --road "$RUNNER_TEMP/G12C/G12-six-combinations-six-city-road-heatmap.png" \
+            --terrain "$RUNNER_TEMP/G12C/G12-six-combinations-terrain-cost-pressure-proxy.png"
+          python - <<'PY'
+          import json,pathlib,os
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])/"G12C"
+          q=json.loads((d/"G12B-three-families-six-alternatives-data-gates.json").read_text())
+          assert q["cost_EUR_and_train_service_frequency_all_null"]
+          assert len(q["per_alternative_source_comparison"])==6
+          assert (d/"G12-six-combinations-six-city-road-heatmap.png").stat().st_size>10000
+          assert (d/"G12-six-combinations-terrain-cost-pressure-proxy.png").stat().st_size>10000
+          print("G12C: two quantitative maps, no fabricated CAPEX, no non-existent stations")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G12C-six-option-source-comparison-plots
+          path: |
+            ${{ runner.temp }}/G12C/G12-six-combinations-six-city-road-heatmap.png
+            ${{ runner.temp }}/G12C/G12-six-combinations-terrain-cost-pressure-proxy.png
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish preacceptance charts from main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g12c-real-source-service-chart-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G12C/G12-six-combinations-six-city-road-heatmap.png" "$RUNNER_TEMP/G12C/G12-six-combinations-terrain-cost-pressure-proxy.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G12C six source corridors × six road reference market times and 200kmh DSM pressure" \
+            --notes "G12A/G12B source-evidence only; OSRM car travel to road references near source 2km raster lines NOT approved railway stations, and 25permille Copernicus GLO30 surface vertical pressure NOT construction cost. No euro CAPEX, passenger OD, stations, Fxx or Site."
