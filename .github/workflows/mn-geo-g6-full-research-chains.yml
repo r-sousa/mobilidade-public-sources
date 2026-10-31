@@ -1,0 +1,87 @@
+name: MN-GEO-RAIL-001 G6 combine G3+G5 source paths into 3 full research chains
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g6-end-to-end-research-chains-20261031
+      - main
+    paths:
+      - tools/geo_rail_g6_full_research_chains.py
+      - .github/workflows/mn-geo-g6-full-research-chains.yml
+permissions:
+  contents: write
+jobs:
+  evidence-joined-five-source-modules-no-DGT-secrets:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install only coordinate/geometry libraries for explicit source-verified screening
+        run: python -m pip install --disable-pip-version-check 'pyproj>=3.6,<4' 'shapely>=2,<3'
+      - name: Validate source analysis script
+        run: python -m py_compile tools/geo_rail_g6_full_research_chains.py
+      - name: Fetch three immutable source reports (G3 lattice, G4 DGT QA, G5 source bands)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G6-source"
+          b="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$b/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json" -o "$RUNNER_TEMP/G6-source/G3.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$b/mn-geo-rail-001-g4-real-DGT2m-cover-gaps-41231342925/G4-actual-original-DGT2m-terrain-cover-and-five-link-gaps.json" -o "$RUNNER_TEMP/G6-source/G4.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$b/mn-geo-rail-001-g5-distinct-research-bands-41232865101/G5-three-modules-real-source-route-screens.json" -o "$RUNNER_TEMP/G6-source/G5.json"
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G6-source/G3.json" | sha256sum -c -
+          echo "7d7a513fd248fcef86453da1967baf20d7359e9f66672fd7e5c4d2e7899ed200  $RUNNER_TEMP/G6-source/G4.json" | sha256sum -c -
+          echo "a4cb8be1443b8be484303934595dfb8ffecaeb6b7857dc0a1ee1569956adfc32  $RUNNER_TEMP/G6-source/G5.json" | sha256sum -c -
+      - name: Join source path sectors, independently audit 121km2 original DGT receipts and identify actual information gaps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g6_full_research_chains.py \
+            --g3 "$RUNNER_TEMP/G6-source/G3.json" \
+            --g4 "$RUNNER_TEMP/G6-source/G4.json" \
+            --g5 "$RUNNER_TEMP/G6-source/G5.json" \
+            --b1 reports/mn-geo-rail-001/B1-DGT-native-2m-32km2-verified-ground-sector-review.json \
+            --catalogues reports/mn-geo-rail-001 \
+            --json "$RUNNER_TEMP/G6-3-complete-source-research-chains.json" \
+            --geojson "$RUNNER_TEMP/G6-3-complete-source-research-chains-EPSG4326.geojson" \
+            --markdown "$RUNNER_TEMP/G6-3-complete-source-research-chains.md"
+          python - <<'PY'
+          import os,json,pathlib
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])
+          x=json.loads((d/"G6-3-complete-source-research-chains.json").read_text())
+          geo=json.loads((d/"G6-3-complete-source-research-chains-EPSG4326.geojson").read_text())
+          assert len(x["end_to_end_research_chains"])==3
+          assert len(geo["features"])==3
+          assert x["two_metre_DGT_native_original_distinct_grid_footprint_km2"]==121
+          assert x["mandatory_service_areas"]==["Vila Real","Bragança"] and x["Sanabria_excluded"]
+          assert all(z["Vila_Real_and_Braganca_service_area_research_connectors_included"] for z in x["end_to_end_research_chains"])
+          assert len(x["next_at_most_12_source_review_cells_not_auto_acquisition"])<=12
+          assert not x["Fxx_accepted"] and not x["Site_authorized"]
+          print("G6 accepted: three complete research-chain source screens, no invented rail/station/continuous native DTM, no DGT credentials")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G6-three-end-to-end-source-research-chain-QA
+          path: |
+            ${{ runner.temp }}/G6-3-complete-source-research-chains.json
+            ${{ runner.temp }}/G6-3-complete-source-research-chains-EPSG4326.geojson
+            ${{ runner.temp }}/G6-3-complete-source-research-chains.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish tested G6 read-only preacceptance report on main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g6-three-complete-territorial-screens-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G6-3-complete-source-research-chains.json" "$RUNNER_TEMP/G6-3-complete-source-research-chains-EPSG4326.geojson" "$RUNNER_TEMP/G6-3-complete-source-research-chains.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "MN-GEO-RAIL-001 G6 3 Porto–Zamora study chains: preacceptance (not rail tracks)" \
+            --notes "Connect source G5 three-module alternatives to source G3 Vila Real and Bragança locality research screens. This is only 2km DSM terrain/data reconnaissance with spatial differentiation and first-party verified DGT2m ground coverage, not feasible railway alignments. Catalogued original IDs are candidates for a future protected download only after review and decision: no credentials, no DGT source acquisition here. Full PT–ES vertical and legal road-access QA, grade, curves, speed, tunnels, viaducts and cost remain unresolved. Mandatory city service areas maintained, no centre station assumption, Sanabria excluded, no Fxx/Site."
