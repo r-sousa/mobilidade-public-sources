@@ -3,6 +3,12 @@ name: MN-GEO-RAIL-001 protected DGT NP159 native 279503 tile
 # DGT secrets require explicit manual dispatch on protected main.
 on:
   workflow_dispatch:
+    inputs:
+      publish_native_CC_BY_prerelease:
+        type: boolean
+        description: 'After successful source QA, preserve original single tile in immutable DGT CC BY4 prerelease'
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -44,11 +50,17 @@ jobs:
         env:
           DGT_CDD_USERNAME: ${{ secrets.DGT_CDD_USERNAME }}
           DGT_CDD_PASSWORD: ${{ secrets.DGT_CDD_PASSWORD }}
+          PUBLISH_NATIVE: ${{ inputs.publish_native_CC_BY_prerelease }}
         shell: bash
         run: |
           set -euo pipefail
           umask 077
-          python tools/geo_rail_pt_cdd_rngap_tile279503.py --index reports/mn-geo-rail-001/pt-dgt-mdt-candidate-envelopes.geojson --RNGAP-source reports/mn-geo-rail-001/pt-rngap-three-window-complete-ALTH38-source.json --receipt "$RUNNER_TEMP/dgt-279503-native-safe-qa.json"
+          extra=()
+          if [[ "$PUBLISH_NATIVE" == 'true' ]]; then
+            mkdir -p "$RUNNER_TEMP/dgt-279503-verified-source-stage"
+            extra=(--retain-file "$RUNNER_TEMP/dgt-279503-verified-source-stage/original-DGT-279503.tif")
+          fi
+          python tools/geo_rail_pt_cdd_rngap_tile279503.py --index reports/mn-geo-rail-001/pt-dgt-mdt-candidate-envelopes.geojson --RNGAP-source reports/mn-geo-rail-001/pt-rngap-three-window-complete-ALTH38-source.json --description-source reports/mn-geo-rail-001/pt-rngap-np159-five-source-original-mark-descriptors.json --receipt "$RUNNER_TEMP/dgt-279503-native-safe-qa.json" "${extra[@]}"
       - name: Retain sanitized original-source hash, raster QA and raw mark comparisons
         if: always()
         uses: actions/upload-artifact@v4
@@ -57,7 +69,80 @@ jobs:
           path: ${{ runner.temp }}/dgt-279503-native-safe-qa.json
           if-no-files-found: warn
           retention-days: 30
+      - name: Stage ONLY original TIFF and source QA after complete protected QA and explicit prerelease opt-in
+        if: ${{ success() && inputs.publish_native_CC_BY_prerelease }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/dgt-279503-verified-source-stage"
+          test "$(find "$d" -name '*.tif' -maxdepth 1 -type f | wc -l)" -eq 1
+          cp "$RUNNER_TEMP/dgt-279503-native-safe-qa.json" "$d/dgt-279503-native-safe-QA.json"
+      - name: Pass validated native source to SEPARATE no-credentials publishing job
+        if: ${{ success() && inputs.publish_native_CC_BY_prerelease }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: dgt-279503-original-approved-${{ github.run_id }}
+          path: ${{ runner.temp }}/dgt-279503-verified-source-stage/
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
       - if: always()
         run: |
           echo 'DGT credentials, cookies, temporary source TIFF and signed asset URLs are never uploaded. Only sanitized QA is retained.' >> "$GITHUB_STEP_SUMMARY"
           echo 'Raster-to-NP159 comparisons are exploratory, not vertical geodetic calibration, rail-grade suitability, canonical Fxx or Site authorization.' >> "$GITHUB_STEP_SUMMARY"
+
+  publish-original-without-DGT-credentials:
+    needs: original-DGT-native-vs-NP159
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.publish_native_CC_BY_prerelease
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dgt-279503-original-approved-${{ github.run_id }}
+          path: ${{ runner.temp }}/dgt-279503-verified-source-stage/
+      - name: Independently verify approved source original TIFF and every safeguarded gate
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,hashlib,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'dgt-279503-verified-source-stage'
+          doc=json.loads((p/'dgt-279503-native-safe-QA.json').read_text())
+          source=p/'original-DGT-279503.tif'
+          assert doc['status']=='actual_original_DGT_RNGAP_tile_pixel_QA_passed'
+          assert doc['source_tile']=='MDT-2m-279503-09-2024'
+          assert doc['reviewed_raster_bbox_epsg3763']==[79000,202000,80000,203000]
+          assert doc['raster_source_QA']['source_license']=='DGT Centro de Dados, CC BY 4.0 attribution required'
+          assert doc['raster_source_QA']['raster']['valid_pixels']==250000
+          assert doc['raster_source_QA']['raster']['masked_pixels']==0
+          assert doc['original_native_raster_staged_for_nonsecret_prerelease'] is True
+          assert doc['Fxx_canonical_accepted'] is False and doc['Site_publication_authorized'] is False
+          assert doc['mark_terrain_nonaligned_descriptive_context']['individual_pointwise_raster_mark_residuals_not_computed'] is True
+          assert len(doc['mark_terrain_nonaligned_descriptive_context']['source_mark_descriptions_and_heights'])==5
+          assert source.stat().st_size==doc['native_source_file_bytes']<=25000000
+          assert hashlib.sha256(source.read_bytes()).hexdigest()==doc['native_source_file_sha256']
+          print('DGT_SOURCE_ORIGINAL_SHA256_VERIFIED_PREACCEPTANCE_ONLY')
+          PY
+      - name: Create NEW immutable CC BY 4.0 original DGT tile prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-dgt-279503-NP159-preacceptance-${GITHUB_RUN_ID}"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo '::error::Source tag exists, refusing overwrite'; exit 1
+          fi
+          cat > "$RUNNER_TEMP/notes.txt" <<'NOTE'
+          Source: Direcao-Geral do Territorio (DGT), native MDT 2m 1km2 tile 279503.
+          Source: https://cdd.dgterritorio.gov.pt/ — licensed CC BY 4.0 with DGT attribution.
+          Original GeoTIFF SHA256 is identified in sanitized native QA.
+          NP159/t variants have DISTINCT physical descriptions but a shared WFS surrogate XY.
+          Neither the five height values nor source pixel height are coincident point observations.
+          PREACCEPTANCE ONLY: no independent cross-border datum validation, rail design, Fxx or Site.
+          No registered DGT credentials, temporary signed hrefs or account cookies included.
+          NOTE
+          gh release create "$tag" "$RUNNER_TEMP/dgt-279503-verified-source-stage/original-DGT-279503.tif" "$RUNNER_TEMP/dgt-279503-verified-source-stage/dgt-279503-native-safe-QA.json" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title 'MN-GEO-RAIL-001 native DGT MDT2m NP159 preacceptance' --notes-file "$RUNNER_TEMP/notes.txt"
+          echo "Native source prerelease: https://github.com/${GITHUB_REPOSITORY}/releases/tag/${tag}" >> "$GITHUB_STEP_SUMMARY"
