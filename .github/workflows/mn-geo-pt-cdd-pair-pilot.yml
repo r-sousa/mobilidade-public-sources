@@ -1,0 +1,75 @@
+name: MN-GEO-RAIL-001 DGT protected Mirandela adjacent 2-tile QA
+
+# Deliberately manual. Only trusted main + protected dgt-cdd Environment.
+# No push/PR/schedule ever receives DGT registered-account credentials.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mn-geo-rail-001-protected-dgt-pair
+  cancel-in-progress: false
+
+jobs:
+  verify-protected-main:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Fail unless main branch remains protected
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          protected="$(curl --fail --silent --show-error \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/r-sousa/mobilidade-public-sources/branches/main" | jq -r '.protected')"
+          [[ "$protected" == "true" ]] || { echo "::error::main unprotected"; exit 1; }
+
+  acquire-two-native-tiles:
+    needs: verify-protected-main
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: dgt-cdd
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install minimal native QA runtime
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3' 'rasterio>=1.4,<2'
+      - name: Contract and synthetic raster seam QA without secrets
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_cdd_pair_pilot.py' -v
+      - name: Authenticate with protected environment secrets, fetch TWO reviewed tiles, QA seam, erase bytes
+        env:
+          DGT_CDD_USERNAME: ${{ secrets.DGT_CDD_USERNAME }}
+          DGT_CDD_PASSWORD: ${{ secrets.DGT_CDD_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python tools/geo_rail_pt_cdd_pair_pilot.py \
+            --index reports/mn-geo-rail-001/pt-dgt-mdt-candidate-envelopes.geojson \
+            --receipt "$RUNNER_TEMP/dgt-adjacent-pair-sanitized.json"
+      - name: Retain ONLY sanitized QA metadata (not pixels, cookies, URLs or credentials)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-dgt-pair-qa-${{ github.run_id }}
+          path: ${{ runner.temp }}/dgt-adjacent-pair-sanitized.json
+          if-no-files-found: warn
+          retention-days: 15
+      - name: Strict no-publication scope
+        if: always()
+        run: |
+          echo "This is a two-tile DGT registered-user pilot only; native source files are never committed, released or included in Actions artifacts." >> "$GITHUB_STEP_SUMMARY"
+          echo "Source vertical datum is documented but not benchmark-tested; whole-corridor coverage and G3–G5 are NOT accepted." >> "$GITHUB_STEP_SUMMARY"
