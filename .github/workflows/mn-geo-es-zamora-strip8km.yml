@@ -1,0 +1,68 @@
+name: MN-GEO-RAIL-001 W3 Zamora native 8km WCS raster seam verification
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-w3-zamora-strip-20261031
+    paths:
+      - tools/geo_rail_es_zamora_strip8km.py
+      - tests/test_geo_rail_es_zamora_strip8km.py
+      - .github/workflows/mn-geo-es-zamora-strip8km.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-w3-zamora-strip8km
+  cancel-in-progress: false
+
+jobs:
+  verify-real-public-mdt-grids:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-w3-zamora-strip-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install sample-only raster environment
+        run: python -m pip install --disable-pip-version-check 'numpy>=2,<3' 'rasterio>=1.4,<2' 'pyproj>=3.6,<4'
+      - name: Test comparison, spatial scope, safety contracts
+        run: python -m unittest discover -s tests -p 'test_geo_rail_es_zamora_strip8km.py' -v
+      - name: Acquire and validate one Zamora 8km WCS strip in temporary runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          if python tools/geo_rail_es_zamora_strip8km.py --output "$RUNNER_TEMP/w3-zamora-strip8km.json"; then
+            echo "Two full Zamora WCS strip/resolution comparisons passed"
+          else
+            echo "One or more comparisons not accepted; preserve sanitized receipt"
+          fi
+      - name: Preserve only SHA hashes and sanitized raster QA report
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=reports/mn-geo-rail-001/es-zamora-strip8km-real-mosaic-qa.json
+          test -s "$RUNNER_TEMP/w3-zamora-strip8km.json"
+          cp "$RUNNER_TEMP/w3-zamora-strip8km.json" "$p"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$p"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): record real IGN/CNIG 8km strip pixel QA"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+      - name: Fail closed for incomplete real raster QA
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open("reports/mn-geo-rail-001/es-zamora-strip8km-real-mosaic-qa.json"))
+          assert p["native_raster_bytes_persisted"] == 0
+          assert p["full_corridor_terrain_coverage_verified"] is False
+          if p["samples_validated"] != p["samples_expected"]:
+              raise SystemExit("Partial local raster coverage: not a validated continuous MDT.")
+          print("LOCAL_W3_8KM_STRIPS_RASTER_PIXEL_VALIDATED")
+          PY
