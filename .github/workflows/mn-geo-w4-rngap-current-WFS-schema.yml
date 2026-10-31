@@ -1,0 +1,53 @@
+name: MN-GEO-RAIL-001 verified DGT RNGAP catalogued WFS feature schema
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-w4-rngap-modern-source-20261031
+    paths:
+      - tools/geo_rail_rngap_catalogue_wfs_schema.py
+      - tests/test_geo_rail_rngap_catalogue_wfs_schema.py
+      - .github/workflows/mn-geo-w4-rngap-current-WFS-schema.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-W4-RNGAP-official-catalogue-WFS
+  cancel-in-progress: false
+
+jobs:
+  exact-official-OGC-RNGAP-schema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify exact WFS HTTPS host and catalog metadata contracts
+        run: python -m unittest discover -s tests -p 'test_geo_rail_rngap_catalogue_wfs_schema.py' -v
+      - name: Resolve exact source WFS resource via dados.gov and query only bounded capabilities and XSD
+        run: |
+          python tools/geo_rail_rngap_catalogue_wfs_schema.py \
+            --output "$RUNNER_TEMP/dgt-rngap-exact-WFS-schema.json"
+      - name: Persist sanitized layer and source schema evidence without survey marks
+        run: |
+          set -euo pipefail
+          target=reports/mn-geo-rail-001/pt-rngap-current-catalogued-WFS-schema.json
+          cp "$RUNNER_TEMP/dgt-rngap-exact-WFS-schema.json" "$target"
+          python - <<'PY'
+          import json
+          j=json.load(open("reports/mn-geo-rail-001/pt-rngap-current-catalogued-WFS-schema.json"))
+          assert j["DGT_actual_survey_marks_retrieved"]==0
+          assert j["official_PT_Cascais_heights_retrieved"]==0
+          assert j["Fxx_canonical_accepted"] is False
+          assert j["crossborder_datum_validated"] is False
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): record DGT RNGAP exact official WFS GetCapabilities and field metadata"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
