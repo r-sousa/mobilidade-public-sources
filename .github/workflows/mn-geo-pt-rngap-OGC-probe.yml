@@ -27,7 +27,7 @@ jobs:
           python-version: '3.12'
       - name: Run bounded no-credentials origin and OGC XML parsing tests
         run: python -m unittest discover -s tests -p 'test_geo_rail_pt_rngap_service_probe.py' -v
-      - name: Probe THREE official-host OGC geodesy capabilities, never GetFeature
+      - name: Probe SIX official-host legacy OGC geodesy capabilities (HTTPS and HTTP metadata only), never GetFeature
         run: |
           set -euo pipefail
           python tools/geo_rail_pt_rngap_service_probe.py \
@@ -42,7 +42,7 @@ jobs:
           import json
           p="reports/mn-geo-rail-001/pt-dgt-rngap-wfs-wms-capabilities-diagnostic.json"
           j=json.load(open(p))
-          assert len(j["results"])==3
+          assert len(j["results"])==6
           assert not j["crossborder_benchmark_validation_complete"]
           assert j["Portuguese_RNGAP_mark_coordinates_acquired"]==0
           assert j["full_country_source_feature_downloaded"] is False
