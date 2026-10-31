@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """G3 acquire DGT original MDT2m original cells only from reviewed pinned source IDs.
 
+Reviewed G3 proposed 80 tiles; 4 are ALREADY original sources in Mirandela.
+Avoid re-download of the whole overlapping 2km group: 76 NEW original source
+1km2 tiles in 19 non-overlapping sectors, not 80 new physical km2.
 Three bounded independently verifiable batches: Vila Real (7 study sectors),
-Bragança (5 sectors), inter-city research (8 sectors). This is NOT a railway
+Bragança (5 sectors), inter-city research (7 NEW sectors). This is NOT a railway
 alignment or station choice. Credentials only on manual protected-main GitHub
 Actions job with existing dgt-cdd Environment, never in published QA.
 """
@@ -15,7 +18,12 @@ from geo_rail_pt_cdd_authenticated import authenticated_session,IntakeError
 from geo_rail_pt_cdd_grid12 import compare_shared_edges
 
 PINNED_G3_SHA256="ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c"
-BATCHES={"vila_real":7,"braganca":5,"regional":8}
+BATCHES={"vila_real":7,"braganca":5,"regional":7}
+# EXACT 13 previously acquired original Mirandela producer tiles (12-tile 3x4 grid plus NP159).
+PRIOR_MIRANDELA_IDS={f"MDT-2m-{c}{r}-09-2024"
+ for c in (280,281,282) for r in (507,508,509,510)}|{"MDT-2m-279503-09-2024"}
+REVIEWED_DUPLICATE_BLOCK=[80000,206000,82000,208000]
+
 PAT=re.compile(r"^MDT-2m-(\d{3})(\d{3})-(\d{2})-(20\d{2})$")
 MAX_ONE_SOURCE_BYTES=25_000_000
 MAX_BATCH_SOURCE_BYTES=240_000_000
@@ -52,6 +60,7 @@ def load_review(path):
  groups=d.get("new_DGT2m_metadata_only_priority_targets")
  if not isinstance(groups,list) or len(groups)!=20:raise ValueError("G3_expected_twenty_reviewed_real_source_cells")
  ids=[]
+ excluded=[]
  counter={k:0 for k in BATCHES}
  ready=[]
  for i,g in enumerate(groups):
@@ -70,10 +79,27 @@ def load_review(path):
   expected={(x//1000+200+a,y//1000+301+b) for a in (0,1) for b in (0,1)}
   actual={parse_id(t) for t in originals}
   if len(actual)!=4 or actual!=expected:raise ValueError("G3_source_tile_ids_do_not_match_PT_TM06_grid")
+  # Earlier G3 source-only shortlist could see the four original Mirandela tiles
+  # as fresh metadata. Reject already downloaded producer originals BEFORE DGT login.
+  if set(originals)&PRIOR_MIRANDELA_IDS:
+   if (g["grid_epsg3763"]!=REVIEWED_DUPLICATE_BLOCK or
+       len(set(originals)&PRIOR_MIRANDELA_IDS)!=4 or category!="regional"):
+    raise ValueError("unreviewed_intersection_with_prior_original_DGT_sources")
+   excluded.append((g["grid_epsg3763"],tuple(originals)))
+   continue
   counter[batch]+=1;ids.extend(originals)
   ready.append({"grid_epsg3763":[x,y,x1,y1],"tile_ids":originals,
       "batch":batch,"group_id":f"G3-{batch}-{i+1:02d}"})
- if counter!=BATCHES or len(set(ids))!=80 or len(ids)!=80:
+ if len(excluded)!=1 or len(excluded[0][1])!=4:
+  raise ValueError("one_reviewed_4km2_Mirandela_overlap_must_be_excluded")
+ # Guard against repeating any of the 32 already verified B1 city original sources.
+ b1_path=Path("configs/MN-GEO-RAIL-001-B1-DGT32-source-IDs.json")
+ if not b1_path.is_file():raise ValueError("previous_B1_original_source_inventory_missing")
+ b1=json.loads(b1_path.read_text())
+ old={id for g in b1["groups"] for id in g["tile_ids"]}
+ if len(old)!=32 or set(ids)&(old|PRIOR_MIRANDELA_IDS):
+  raise ValueError("refusing_to_reacquire_previously_acquired_DGT_original_source")
+ if counter!=BATCHES or len(set(ids))!=76 or len(ids)!=76:
   raise ValueError("unexpected_unreviewed_80_original_DGT_tile_set")
  return ready
 
