@@ -217,7 +217,7 @@ class SecurityTests(unittest.TestCase):
         from unittest.mock import MagicMock,patch
         uri="https://cdd.dgterritorio.gov.pt/private/file"
         signed="https://storage.public-example.net:9000/some/object?signature=NEVER_LOG_THIS"
-        payload=b"II*\\x00"+b"\\x00"*1032
+        payload=b"II*\x00"+b"\x00"*1032
         first=StubResponse(uri,302,{"Location":signed})
         cdd=StubSession([first])
         remote=MagicMock()
