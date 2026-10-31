@@ -1,0 +1,103 @@
+name: MN-GEO-RAIL-001 G9 bounded lateral and vertical terrain source screening
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g9-lateral-vertical-screen-20261101
+      - main
+    paths:
+      - tools/geo_rail_g9_lateral_vertical_screen.py
+      - tests/test_geo_rail_g9_lateral_vertical_screen.py
+      - .github/workflows/mn-geo-g9-lateral-vertical-source.yml
+permissions:
+  contents: write
+jobs:
+  bounded-source-G9-lateral-and-vertical-geometry:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install geodesy / 2.5D source terrain tools only
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'scipy>=1.12,<2' 'rasterio>=1.4,<2' 'shapely>=2,<3' 'pyproj>=3.6,<4'
+      - name: Validate source gradient and lateral anchoring mathematical contracts
+        run: |
+          python -m py_compile tools/geo_rail_g9_lateral_vertical_screen.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g9_lateral_vertical_screen.py' -v
+      - name: Retrieve immutable public REAL DSM and G6 G8 G4 QA sources, no credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G9-source"
+          base="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 200 "$base/mn-geo-rail-001-r1-airport-zamora-dsm-preacceptance-41198485197/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" -o "$RUNNER_TEMP/G9-source/GLO30.tif"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g6-three-complete-territorial-screens-41233103738/G6-3-complete-source-research-chains.json" -o "$RUNNER_TEMP/G9-source/G6.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g8-preacquisition-speed-research-portfolio-41238412106/G8-priority-two-research-corridors-160-200-250.json" -o "$RUNNER_TEMP/G9-source/G8.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g4-real-DGT2m-cover-gaps-41231342925/G4-actual-original-DGT2m-terrain-cover-and-five-link-gaps.json" -o "$RUNNER_TEMP/G9-source/G4.json"
+          echo "a708b502b2eb86236c70f2d74322e9d8e2ea1417eb24094d0e43536845407bd9  $RUNNER_TEMP/G9-source/GLO30.tif" | sha256sum -c -
+          echo "faa2f1d218c79a3647a0d32217ab7bd460cc8aed418750ac62b41844d2d5bc9d  $RUNNER_TEMP/G9-source/G6.json" | sha256sum -c -
+          echo "be32b2c4a711aa311924772b3d8fc63e32d6c71deae9331291c2f402fff5294d  $RUNNER_TEMP/G9-source/G8.json" | sha256sum -c -
+          echo "7d7a513fd248fcef86453da1967baf20d7359e9f66672fd7e5c4d2e7899ed200  $RUNNER_TEMP/G9-source/G4.json" | sha256sum -c -
+      - name: Reoptimize both research corridors at three speeds without new DGT/IGN acquisition
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g9_lateral_vertical_screen.py \
+            --dsm "$RUNNER_TEMP/G9-source/GLO30.tif" \
+            --g6 "$RUNNER_TEMP/G9-source/G6.json" \
+            --g8 "$RUNNER_TEMP/G9-source/G8.json" \
+            --g4 "$RUNNER_TEMP/G9-source/G4.json" \
+            --b1 reports/mn-geo-rail-001/B1-DGT-native-2m-32km2-verified-ground-sector-review.json \
+            --catalogues reports/mn-geo-rail-001 \
+            --json "$RUNNER_TEMP/G9-two-corridors-3-speeds-local-3D-proxy.json" \
+            --geojson "$RUNNER_TEMP/G9-hotspots-winning-XY-geometry-not-rail.geojson" \
+            --markdown "$RUNNER_TEMP/G9-targeted-original-DGT-review-plan.md"
+          python - <<'PY'
+          import os,json,pathlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          data=json.loads((root/"G9-two-corridors-3-speeds-local-3D-proxy.json").read_text())
+          geo=json.loads((root/"G9-hotspots-winning-XY-geometry-not-rail.geojson").read_text())
+          v=data["all_source_terrain_study_scenarios"]
+          assert len(v)==6
+          assert all(x["candidate_count"]==7 for x in v)
+          assert set(x["speed_scenario_kmh"] for x in v)=={160,200,250}
+          assert set(x["source_G6_territorial_chain"] for x in v)=={"G6-SCREEN-1","G6-SCREEN-2"}
+          assert all(x["candidates_passed_xy_curvature_and_3km_source_envelope"]>=1 for x in v)
+          assert 0<=len(data["ranked_metadata_only_DGT_2km_sectors_for_further_review_max12"])<=12
+          assert data["new_original_DGT_rasters_acquired"]==0
+          assert data["official_original_DGT_tile_downloads_approved_or_performed"]==0
+          assert data["real_original_DGT_MDT2m_acquired_so_far_km2"]==121
+          assert data["mandatory_service_areas"]==["Vila Real","Bragança"] and data["Sanabria_excluded"]
+          assert data["not_validated_railway_alignment_or_speed"]
+          assert data["source_GLO30_is_DSM_including_vegetation_not_bare_earth"]
+          assert not data["Fxx_accepted"] and not data["Site_authorized"]
+          assert geo["type"]=="FeatureCollection"
+          print("G9: six complete source-screen comparisons, 42 lateral trials, 18/25permille model, verified GIS original IDs, no secrets/false rail engineering approval")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G9-lateral-plus-gradient-source-screen
+          path: |
+            ${{ runner.temp }}/G9-two-corridors-3-speeds-local-3D-proxy.json
+            ${{ runner.temp }}/G9-hotspots-winning-XY-geometry-not-rail.geojson
+            ${{ runner.temp }}/G9-targeted-original-DGT-review-plan.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish G9 source-only preacceptance release after successful protected main CI
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g9-lateral-vertical-source-screen-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G9-two-corridors-3-speeds-local-3D-proxy.json" "$RUNNER_TEMP/G9-hotspots-winning-XY-geometry-not-rail.geojson" "$RUNNER_TEMP/G9-targeted-original-DGT-review-plan.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "MN-GEO-RAIL-001 G9 constrained lateral+vertical DSM conflict screens, not rail alignments" \
+            --notes "Two G8 source corridors, 160/200/250 km/h research, bounded 1.2km lateral variations by regional module, unchanged local-city service research connectors, hypothetical curvature filters and mathematical 18‰ mixed/25‰ passenger vertical L1 profiles. All heights are actual sampled Copernicus GLO30 SURFACE, not DGT/IGN bare-earth ground nor vertical reference harmonized. Hotspot 5km windows and reviewed metadata-only DGT source IDs (at most 12 2km sectors) are review candidates, not tunnel/viaduct locations or downloads. No certified track, road access, cost, speeds, Fxx or Site; no protected credentials or new terrain acquisition."
