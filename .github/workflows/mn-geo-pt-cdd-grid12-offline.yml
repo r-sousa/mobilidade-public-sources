@@ -1,0 +1,39 @@
+name: MN-GEO-RAIL-001 DGT 3x4 grid offline acceptance tests
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-dgt-grid12-protected-20261031
+    paths:
+      - tools/geo_rail_pt_cdd_grid12.py
+      - tests/test_geo_rail_pt_cdd_grid12.py
+      - .github/workflows/mn-geo-pt-cdd-grid12-offline.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-source-grounded-twelve-tiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install offline raster dependencies only
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'requests>=2.32,<3'
+      - name: Test 12 indexed source identities, exact PT-TM06 bounds and 17 real synthetic GeoTIFF joins
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_cdd_grid12.py' -v
+      - name: Scope assertion
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"tools")
+          import geo_rail_pt_cdd_grid12 as m
+          assert len(m.GRID_TILES)==12
+          assert m.MAX_TOTAL_NATIVE_BYTES<=60_000_000
+          assert m.expected_bbox(280,507)==[80000,206000,81000,207000]
+          assert m.expected_bbox(282,510)==[82000,209000,83000,210000]
+          print("OFFLINE_GRID12_BOUNDARIES_VALIDATED")
+          PY
