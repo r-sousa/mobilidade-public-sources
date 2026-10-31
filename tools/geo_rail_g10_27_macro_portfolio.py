@@ -229,6 +229,14 @@ def compute(g3path,g4path,g5path,g6path,b1path,dsm_path,catalog_path,jpath,mdpat
    "pareto":pareto,"best_proxy_at_200":sorted([z for z in rows if z["speed_scenario_kmh"]==200 and z["horizontal_radius_research_screen_pass"]],key=lambda z:(z["passenger25_DSM_fraction_gt25m"],z["smoothed_research_grid_length_km_not_rail_track"]))[:8],
    "pass_radius_at_250":sum(z["horizontal_radius_research_screen_pass"] for z in rows if z["speed_scenario_kmh"]==250),
    "new_ground_acquisitions":0},ensure_ascii=False,separators=(',',':')))
+ print("G10_VISUAL_MATRIX="+json.dumps([
+   {"id":z["combination_id"],"v":z["speed_scenario_kmh"],"km":z.get("smoothed_research_grid_length_km_not_rail_track"),
+    "tm":z.get("hypothetical_length_divided_by_speed_minutes_NOT_train_travel_time"),
+    "t":z.get("passenger25_DSM_fraction_gt25m"),"p":z.get("passenger25_DSM_p90_m"),
+    "g":z.get("mixed18_DSM_fraction_gt25m"),
+    "m":z["module_options"]["P3"],"pass":z["horizontal_radius_research_screen_pass"],
+    "front":z["combination_id"] in pareto[str(z["speed_scenario_kmh"])]["passenger25"]}
+   for z in rows],separators=(',',':')))
  return result
 
 def main():
