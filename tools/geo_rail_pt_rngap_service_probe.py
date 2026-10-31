@@ -19,30 +19,35 @@ import xml.etree.ElementTree as ET
 
 HOST="mapas.dgterritorio.pt"
 BASE="https://mapas.dgterritorio.pt/ows/geodesia/continente"
+BASE_HTTP="http://mapas.dgterritorio.pt/ows/geodesia/continente"
 APPROVED=(
- ("WFS_2_0_0","WFS","2.0.0"),
- ("WFS_1_1_0","WFS","1.1.0"),
- ("WMS_1_3_0","WMS","1.3.0")
+ ("HTTPS_WFS_2_0_0","WFS","2.0.0","https"),
+ ("HTTPS_WFS_1_1_0","WFS","1.1.0","https"),
+ ("HTTPS_WMS_1_3_0","WMS","1.3.0","https"),
+ ("HTTP_WFS_2_0_0","WFS","2.0.0","http"),
+ ("HTTP_WFS_1_1_0","WFS","1.1.0","http"),
+ ("HTTP_WMS_1_3_0","WMS","1.3.0","http")
 )
 MAX_RESPONSE_BYTES=2_000_000
 KEYWORDS=("nivelamento","rngap","nivel","nivelacao","altim","geodes",
           "gravimet","marca","bench")
 
-def capabilities_url(service,version):
-    if (service,version) not in {(x[1],x[2]) for x in APPROVED}:
+def capabilities_url(service,version,scheme="https"):
+    if (service,version,scheme) not in {(x[1],x[2],x[3]) for x in APPROVED}:
         raise ValueError("unsupported_DGT_geodesy_capabilities_probe")
-    return BASE+"?"+urlencode({"SERVICE":service,"REQUEST":"GetCapabilities","VERSION":version})
+    base=BASE if scheme=="https" else BASE_HTTP
+    return base+"?"+urlencode({"SERVICE":service,"REQUEST":"GetCapabilities","VERSION":version})
 
 def bounded_fetch(url,opener=urlopen):
     parts=urlsplit(url)
-    if parts.scheme!="https" or parts.hostname!=HOST or parts.path!="/ows/geodesia/continente":
+    if parts.scheme not in ("https","http") or parts.hostname!=HOST or parts.path!="/ows/geodesia/continente":
         raise ValueError("unapproved_DGT_capabilities_origin")
     request=Request(url,headers={"User-Agent":"MN-GEO-RAIL-001-geodesy-metadata-probe/1.0",
                                  "Accept":"text/xml,application/xml"})
     total=0;parts_data=[];digest=hashlib.sha256()
     with opener(request,timeout=28) as response:
         final=urlsplit(response.geturl())
-        if response.status!=200 or final.scheme!="https" or final.hostname!=HOST:
+        if response.status!=200 or final.scheme not in ("https","http") or final.hostname!=HOST:
             raise ValueError("OGC_capabilities_redirect_or_status_not_approved")
         while chunk:=response.read(65536):
             total+=len(chunk)
@@ -87,6 +92,9 @@ def run(opener=urlopen):
        "DGT_official_service_information_page":"https://www.dgterritorio.gov.pt/node/1433",
        "OGC_endpoint_candidate_provenance":"DGT-hosted URL also indexed in third-party service catalogue; must verify live official response",
        "candidate_OGC_url":BASE,
+       "candidate_legacy_HTTP_url":BASE_HTTP,
+       "legacy_HTTP_used_only_for_public_GetCapabilities_no_secret_payload":True,
+       "legacy_HTTP_response_cannot_be_authenticated_as_original_authoritative_data":True,
        "results":[],"successful_valid_OGC_service_responses":0,
        "verified_DGT_RNGAP_feature_type_with_official_heights":False,
        "Portuguese_RNGAP_mark_coordinates_acquired":0,
@@ -95,10 +103,12 @@ def run(opener=urlopen):
        "absence_of_RNGAP_marks_inferred_from_failed_probe":False,
        "crossborder_benchmark_validation_complete":False,
        "canonical_Fxx_accepted":False}
-    for name,service,version in APPROVED:
-        rec={"probe":name,"service":service,"version":version,"status":"unverified"}
+    for name,service,version,scheme in APPROVED:
+        rec={"probe":name,"service":service,"version":version,
+             "transport_scheme":scheme,"status":"unverified",
+             "metadata_byte_integrity_guaranteed":scheme=="https"}
         try:
-            xml,metadata=bounded_fetch(capabilities_url(service,version),opener)
+            xml,metadata=bounded_fetch(capabilities_url(service,version,scheme),opener)
             rec.update(metadata);rec.update(parse_layers(xml));rec["status"]="valid_OGC_capabilities"
             report["successful_valid_OGC_service_responses"]+=1
         except Exception as e:
