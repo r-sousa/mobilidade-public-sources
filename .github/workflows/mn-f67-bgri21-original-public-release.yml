@@ -1,4 +1,4 @@
-name: F67 INE BGRI 2021 authentic public-source archive and release
+name: F67 INE BGRI 2021 verified private-original public source release
 on:
   push:
     branches:
@@ -30,41 +30,46 @@ jobs:
           grep -F '3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171' source_specs/F67.yml
           grep -F '246754080' source_specs/F67.yml
           grep -F 'private_only' source_specs/F67.yml
-      - name: Protected branch first probes producer exact original and connectivity (no large download before QA merge)
+      - name: Branch audit of preserved private archive identity and first-party reuse scope (no secrets)
         if: github.ref != 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import urllib.request,json
-          url="https://mapas.ine.pt/download/filesGPG/2021/BGRI21_CONT.zip"
-          req=urllib.request.Request(url,headers={
-            "Range":"bytes=0-2047",
-            "User-Agent":"MobilidadeNorte-F67-official-source-preflight/1.0",
-            "Accept":"application/zip,application/octet-stream,*/*"})
-          with urllib.request.urlopen(req,timeout=65) as resp:
-            head=resp.read(16)
-            detail={"http_status":resp.status,"final_domain":resp.url.split("/")[2],
-             "response_type":resp.headers.get("Content-Type"),
-             "length":resp.headers.get("Content-Length"),
-             "content_range":resp.headers.get("Content-Range"),
-             "magic_zip":head.startswith(b"PK\\x03\\x04")}
-            print("F67_OFFICIAL_ORIGINAL_PREFLIGHT="+json.dumps(detail))
-            assert detail["final_domain"]=="mapas.ine.pt"
-            assert head[:2]==b"PK"
+          import json,pathlib
+          r=json.loads(pathlib.Path("receipts/F67/03b729e73f0adf411f893c50cac6883878629b6b8ab0d66338fdf9ebcf096738.json").read_text())
+          a=r["assets"][0]
+          assert a["bytes"]==246754080 and a["sha256"]=="3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171"
+          assert r["disposition"]["status"]=="PRIVATE_SINK_PRESERVED"
+          print("F67: exact original preserved privately; re-download from INE unnecessary. Await protected main read-only binary copy and native GPKG validation.")
           PY
-      - name: Download and authenticate official original INE 2021 BGRI, inspect GPKG fields / metadata
+      - name: Protected main downloads ONLY verified pre-existing private release archive using configured secret
+        if: github.ref == 'refs/heads/main'
+        env:
+          MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$MN_PRIVATE_SINK_TOKEN" || { echo "PRIVATE_ARCHIVE_READ_SECRET_NOT_CONFIGURED; no invalid substitute allowed"; exit 7; }
+          mkdir -p "$RUNNER_TEMP/F67-original"
+          GH_TOKEN="$MN_PRIVATE_SINK_TOKEN" gh release download "mn-src-f67-03b729e73f0adf411f89" \
+            --repo r-sousa/EU-transp-weekly \
+            --pattern "F67-INE-BGRI21_CONT.zip" \
+            --dir "$RUNNER_TEMP/F67-original"
+          mv "$RUNNER_TEMP/F67-original/F67-INE-BGRI21_CONT.zip" "$RUNNER_TEMP/F67-original/BGRI21_CONT.zip"
+          echo "3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171  $RUNNER_TEMP/F67-original/BGRI21_CONT.zip" | sha256sum -c -
+          test "$(stat -c %s "$RUNNER_TEMP/F67-original/BGRI21_CONT.zip")" -eq 246754080
+      - name: Validate recovered original whole ZIP CRC and inspect native GPKG against first-party metadata
         if: github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/F67-original"
           python tools/f67_ine_bgri2021_public_original.py \
             --zip "$RUNNER_TEMP/F67-original/BGRI21_CONT.zip" \
             --receipt "$RUNNER_TEMP/F67-original/F67-original-INE-QA-and-licensing.json" \
-            --markdown "$RUNNER_TEMP/F67-original/F67-original-source-provenance-README.md"
-          echo "3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171  $RUNNER_TEMP/F67-original/BGRI21_CONT.zip" | sha256sum -c -
-          test "$(stat -c %s "$RUNNER_TEMP/F67-original/BGRI21_CONT.zip")" -eq 246754080
+            --markdown "$RUNNER_TEMP/F67-original/F67-original-source-provenance-README.md" \
+            --from-preserved-private-original
+          test -s "$RUNNER_TEMP/F67-original/F67-original-INE-QA-and-licensing.json"
       - name: Upload immutable original and QA as a NON canonical public GitHub release
         if: github.ref == 'refs/heads/main'
         shell: bash
@@ -83,4 +88,4 @@ jobs:
             "$RUNNER_TEMP/F67-original/F67-original-source-provenance-README.md" \
             --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
             --title "F67 INE BGRI 2021 Continental original producer ZIP — exact SHA256 verified" \
-            --notes "User-requested distinct immutable public source copy of original Instituto Nacional de Estatística Censos 2021 BGRI21_CONT.zip, SHA256 3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171, 246754080 bytes. Source https://mapas.ine.pt/download/filesGPG/2021/BGRI21_CONT.zip and producer metadata https://mapas.ine.pt/download/metadados/bgri.html indicating public access and use without conditions. Exact ZIP CRC and GPKG SQLite validation required. Not a third-party mirror or replacement F67 private canonical original. This release contains statistical geographic subsections, NOT origin-destination commuting, recent employment nor railway station ridership. Cite INE, Censos 2021 and the metadata page."
+            --notes "User-requested public binary mirror of the historically producer-sourced exact private F67 GitHub Release asset 589463486 from r-sousa/EU-transp-weekly, independently SHA verified and full GPKG native QA. Original Instituto Nacional de Estatística Censos 2021 BGRI21_CONT.zip, SHA256 3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171, 246754080 bytes. Source https://mapas.ine.pt/download/filesGPG/2021/BGRI21_CONT.zip and producer metadata https://mapas.ine.pt/download/metadados/bgri.html indicating public access and use without conditions. Exact ZIP CRC and GPKG SQLite validation required. Not a third-party mirror or replacement F67 private canonical original. This release contains statistical geographic subsections, NOT origin-destination commuting, recent employment nor railway station ridership. Cite INE, Censos 2021 and the metadata page."
