@@ -1,0 +1,84 @@
+name: MN-GEO-RAIL-001 G4 verified post-G3 native ground footprint and lattice gaps
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g4-post-g3-source-coverage-20261031
+      - main
+    paths:
+      - tools/geo_rail_g4_post_g3_coverage.py
+      - .github/workflows/mn-geo-g4-post-g3-coverage.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify-real-original-published-source-receipts-no-secrets:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install source metadata readers only
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3'
+      - name: Audit source code syntax before public-source reads
+        run: python -m py_compile tools/geo_rail_g4_post_g3_coverage.py
+      - name: Download exact immutable original-pixel QA receipts from already-published source releases
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/g4-source"
+          base="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json" -o "$RUNNER_TEMP/g4-source/g3-review.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g3-original-DGT2m-vila_real-preacceptance-41230495123/G3-DGT-native2m-vila_real-original-source-QA.json" -o "$RUNNER_TEMP/g4-source/vila_real.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g3-original-DGT2m-braganca-preacceptance-41230495123/G3-DGT-native2m-braganca-original-source-QA.json" -o "$RUNNER_TEMP/g4-source/braganca.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g3-DGT2m-regional-original-recovered-41222195065/G3-DGT-native2m-regional-original-source-QA.json" -o "$RUNNER_TEMP/g4-source/regional.json"
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/g4-source/g3-review.json" | sha256sum -c -
+          echo "54a9e80b7ffa23852c38857f751f7a1d140c17d7579940c3e5a171ddd7dffefe  $RUNNER_TEMP/g4-source/vila_real.json" | sha256sum -c -
+          echo "32a924bd2c58276f9de62502c5aaf4bff5b0a553695079ccfdb141620b1e8475  $RUNNER_TEMP/g4-source/braganca.json" | sha256sum -c -
+          echo "74ef0c8cfcf88d78d2747a1f6d85df1ac836087a408feb91bb3f75d0e6d244cd  $RUNNER_TEMP/g4-source/regional.json" | sha256sum -c -
+      - name: Reconcile 121 genuinely downloaded native DGT square-km, 2m NoData and 5 exploratory G3 links
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g4_post_g3_coverage.py \
+            --review "$RUNNER_TEMP/g4-source/g3-review.json" \
+            --b1 reports/mn-geo-rail-001/B1-DGT-native-2m-32km2-verified-ground-sector-review.json \
+            --vila-real "$RUNNER_TEMP/g4-source/vila_real.json" \
+            --braganca "$RUNNER_TEMP/g4-source/braganca.json" \
+            --regional "$RUNNER_TEMP/g4-source/regional.json" \
+            --output "$RUNNER_TEMP/G4-actual-original-DGT2m-terrain-cover-and-five-link-gaps.json"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G4-actual-original-DGT2m-terrain-cover-and-five-link-gaps.json"
+          a=json.loads(p.read_text())
+          assert a["DGT_2m_total_distinct_original_tile_footprint_km2"]==121
+          assert a["G3_total_native_NoData_2m_pixels"]==31451
+          assert len(a["five_reviewed_original_DSM_OSM_catalogue_lattice_links"])==5
+          assert not a["native_ground_2m_full_Porto_Zamora_rail_corridor_continuity_proven"]
+          assert not a["Fxx_accepted"] and not a["Site_authorized"] and a["Sanabria_excluded"]
+          print("G4_SOURCE_REAL: 121km2 DGT2m producer original footprint, 31451 G3 original voids, 5 measured source lattice links, still no rail geometry")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-G4-real-verified-native-terrain-gap-review
+          path: ${{ runner.temp }}/G4-actual-original-DGT2m-terrain-cover-and-five-link-gaps.json
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve passed no-secrets G4 report in a preacceptance public release on protected main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g4-real-DGT2m-cover-gaps-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G4-actual-original-DGT2m-terrain-cover-and-five-link-gaps.json" \
+             --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+             --title "MN-GEO-RAIL-001 G4 native DGT2m source gaps, not rail track" \
+             --notes "Read-only SHA256-pinned actual DGT originals QA: 121km2 footprint (13 Mirandela +32 B1 +76 G3). G3 source NoData retained, five exploratory DSM/OSM source lattice links scored for native ground coverage; neither missing cells nor 2m source gaps are inferred or filled. Both Vila Real and Bragança mandatory service, stations peripheral possible; Sanabria excluded. No authentic driving minutes, engineering geometry, PT–ES vertical RMSE, Fxx or Site."
