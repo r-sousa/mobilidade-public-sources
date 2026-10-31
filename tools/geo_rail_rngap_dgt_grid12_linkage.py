@@ -13,7 +13,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 
 DTM_BBOX=(80000,206000,83000,210000)
-ORIGINAL_DGT_TILE="MDT-2m-279502-09-2024"
+ORIGINAL_DGT_TILE="MDT-2m-279503-09-2024"
 VALIDATED_DGT_RELEASE="mn-geo-rail-001-dgt-grid12-preacceptance-41158397813"
 EXPECTED_ORIGINAL_MARKS=427
 
@@ -45,7 +45,7 @@ def source_sample(mark_file,sector_catalog_file):
             raise ValueError("WFS_source_mark_not_in_PT_TM06")
         x,y=xy
         dd=math.hypot(x-min(bx[2],max(x,bx[0])),y-min(bx[3],max(y,bx[1])))
-        tile=f"MDT-2m-{int(200+math.floor(x/1000))}{int(300+math.floor(y/1000))}-09-2024"
+        tile=f"MDT-2m-{int(200+math.floor(x/1000))}{int(301+math.floor(y/1000))}-09-2024"
         nearest.append({
           "WFS_feature_id":m["WFS_feature_id"],
           "mark":m["mark_label_MARCA"],"xy_PT_TM06":xy,
@@ -59,6 +59,13 @@ def source_sample(mark_file,sector_catalog_file):
         raise ValueError("no_real_RNGAP_mark_in_target_DGT_tile_candidate")
     if len({tuple(x["xy_PT_TM06"]) for x in target})!=1:
         raise ValueError("target_contains_multiple_control_positions_review_required")
+    # DGT naming: column 200 -> x=0 km, row 301 -> y=0 km.
+    # Confirm point containment in the actual square, not just STAC bbox.
+    expected_bounds=[79000,202000,80000,203000]
+    if any(not (expected_bounds[0]<=v["xy_PT_TM06"][0]<expected_bounds[2] and
+                expected_bounds[1]<=v["xy_PT_TM06"][1]<expected_bounds[3])
+           for v in target):
+        raise ValueError("RNGAP_survey_mark_not_in_selected_original_DGT_tile")
     values=[x["published_ALTH38_m"] for x in target]
     return {
       "mission":"MN-GEO-RAIL-001","stage":"DGT_verified_RNGAP_marks_vs_existing_original_native_DTM_scope",
@@ -72,6 +79,9 @@ def source_sample(mark_file,sector_catalog_file):
       "nearest_original_RNGAP_marks":near[:10],
       "next_priority_1km2_DGT_original_raster_candidate":ORIGINAL_DGT_TILE,
       "next_priority_candidate_is_in_existing_primary_DGT_STAC_inventory":True,
+      "next_priority_native_raster_bounds_epsg3763":expected_bounds,
+      "grid_index_formula":"col=200+floor(x/1000); row=301+floor(y/1000)",
+      "correction_notice":"Previous audit incorrectly identified tile 279502. The original mark y=202288 belongs to DGT row 503. No wrong-tile raster was acquired.",
       "selected_source_tile_is_NOT_yet_acquired_or_pixel_QA_validated":True,
       "next_priority_benchmark_mark_count":len(target),
       "next_priority_benchmark_distinct_planimetric_positions":1,
