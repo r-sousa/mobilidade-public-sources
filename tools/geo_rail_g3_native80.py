@@ -103,6 +103,13 @@ def load_review(path):
   raise ValueError("unexpected_unreviewed_80_original_DGT_tile_set")
  return ready
 
+def source_ground_mask(ds,window=None):
+ """Conserve DGT native validity mask and nonfinite original source gaps."""
+ import numpy as np
+ arr=ds.read(1,window=window,masked=True)
+ mask=np.ma.getmaskarray(arr)|~np.isfinite(arr.data)
+ return np.ma.array(arr.data,mask=mask,copy=False)
+
 def native_raster_QA(path,id):
  """Audit genuine ground and original NoData separately. NEVER fill source voids."""
  import rasterio,numpy as np
@@ -116,7 +123,7 @@ def native_raster_QA(path,id):
    raise ValueError("DGT_original_source_not_2m_resolution_500x500")
   if any(abs(v-w)>.002 for v,w in zip(ds.bounds,b)):
    raise ValueError("original_DGT_source_actual_bounds_disagree_with_producer_grid_id")
-  a=ds.read(1,masked=True)
+  a=source_ground_mask(ds)
   valid=int(a.count());missing=int(np.ma.count_masked(a))
   if valid+missing!=250000:
    raise ValueError("original_DGT2m_pixel_mask_count_inconsistent")
@@ -140,11 +147,11 @@ def observed_source_seam(path_a,path_b,orientation):
  import numpy as np,rasterio
  with rasterio.open(path_a) as a,rasterio.open(path_b) as b:
   if orientation=="west_east":
-   aa=a.read(1,window=((0,500),(499,500)),masked=True).ravel()
-   bb=b.read(1,window=((0,500),(0,1)),masked=True).ravel()
+   aa=source_ground_mask(a,((0,500),(499,500))).ravel()
+   bb=source_ground_mask(b,((0,500),(0,1))).ravel()
   elif orientation=="north_south":
-   aa=a.read(1,window=((499,500),(0,500)),masked=True).ravel()
-   bb=b.read(1,window=((0,1),(0,500)),masked=True).ravel()
+   aa=source_ground_mask(a,((499,500),(0,500))).ravel()
+   bb=source_ground_mask(b,((0,1),(0,500))).ravel()
   else:raise ValueError("unrecognized_DGT_original_seam_orientation")
   if aa.size!=500 or bb.size!=500:raise ValueError("original_DGT_source_edge_not_500_cells")
   ok=~np.ma.getmaskarray(aa)&~np.ma.getmaskarray(bb)
@@ -191,7 +198,7 @@ def create_mosaic(stage,g):
   if left not in (0,500) or top not in (0,500):
    raise ValueError("native_source_outside_exact_original_2km_group")
   with rasterio.open(src(stage,id)) as ds:
-   z=ds.read(1,masked=True)
+   z=source_ground_mask(ds)
    if z.dtype!=full.dtype:raise ValueError("mixed_source_original_DGT_dtype")
    # Explicit missing-value marker; no interpolation, resampling or extrapolation.
    full[top:top+500,left:left+500]=z.filled(nodata)
@@ -220,14 +227,14 @@ def verify_mosaic(stage,g,path):
      ds.nodata!=-9999.0 or
      any(abs(a-b)>.002 for a,b in zip(ds.bounds,(x,y,x1,y1)))):
    raise ValueError("native_source_mosaic_bad_geometry_or_missing_NoData_marker")
-  got=ds.read(1,masked=True)
+  got=source_ground_mask(ds)
   total_valid=0
   for id in g["tile_ids"]:
    col,row=parse_id(id)
    left=((col-200)*1000-x)//2
    top=(2000-((row-301)*1000-y)-1000)//2
    with rasterio.open(src(stage,id)) as original:
-    z=original.read(1,masked=True)
+    z=source_ground_mask(original)
    section=got[top:top+500,left:left+500]
    valid=~np.ma.getmaskarray(z)
    if not np.array_equal(np.ma.getmaskarray(section),np.ma.getmaskarray(z)):
