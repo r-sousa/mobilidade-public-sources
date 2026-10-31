@@ -121,7 +121,7 @@
   "grid_nominal_EPSG_accuracy_is_empirical_PT_ES_validation": false,
   "mission": "MN-GEO-RAIL-001",
   "numeric_grid_pipeline_tested": true,
-  "observed_utc": "2026-10-31T02:25:49.966828+00:00",
+  "observed_utc": "2026-10-31T02:27:33.018281+00:00",
   "official_sources": {
     "ES_IGN_MDT_orthometric_heights": "https://pnoa.ign.es/pnoa-lidar/productos-a-descarga",
     "ES_IGN_geodesic_calculator": "https://www.ign.es/web/calculadora-geodesica",
