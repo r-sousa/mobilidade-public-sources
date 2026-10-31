@@ -1,0 +1,122 @@
+{
+  "mission": "MN-GEO-RAIL-001",
+  "stage": "DGT protected native 12-tile 3x4km grid, verified primary-source evidence",
+  "observed_utc": "2026-10-31T02:06:20Z",
+  "run_id": 41158397813,
+  "run_url": "https://github.com/r-sousa/mobilidade-public-sources/actions/runs/41158397813",
+  "origin_release": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-geo-rail-001-dgt-grid12-preacceptance-41158397813",
+  "native_manifest_sha256": "6c2e064d2a43299ac26db127469f27eac183f96cd1dd8e6852c25d834a6d15ec",
+  "native_manifest_bytes": 38802,
+  "source": "Direção-Geral do Território (DGT), CDD, CC BY 4.0 attribution required",
+  "horizontal_crs": "EPSG:3763",
+  "source_vertical_documentation": "Cascais (not independently verified)",
+  "bbox_pttm06": [
+    80000,
+    206000,
+    83000,
+    210000
+  ],
+  "res_m": 2,
+  "source_tiles": [
+    {
+      "id": "MDT-2m-280507-09-2024",
+      "asset": "grid_280_507.tif",
+      "sha256": "e2135dcd721a2c149fa9c053d5af5f64a5fccd73fc2975af2c5094524a8475bc",
+      "bytes": 1179966,
+      "validated_native_cells": 250000
+    },
+    {
+      "id": "MDT-2m-281507-09-2024",
+      "asset": "grid_281_507.tif",
+      "sha256": "e39eaea7d6158f6fdb306d37b9e7be2f76646608f22b0b94b561d3240ab4d099",
+      "bytes": 1200907,
+      "validated_native_cells": 250000
+    },
+    {
+      "id": "MDT-2m-282507-09-2024",
+      "asset": "grid_282_507.tif",
+      "sha256": "6365ee96ef084ef64ea2c7495233d184d8554d75ab2866d602ced5c20b28c90e",
+      "bytes": 1226940,
+      "validated_native_cells": 250000
+    },
+    {
+      "id": "MDT-2m-280508-09-2024",
+      "asset": "grid_280_508.tif",
+      "sha256": "56d6d94c2db4b1245cac346bdafbd6ea78d227247af5b273c5ddbd403775b81f",
+      "bytes": 1206843,
+      "validated_native_cells": 250000
+    },
+    {
+      "id": "MDT-2m-281508-09-2024",
+      "asset": "grid_281_508.tif",
+      "sha256": "9e745e1e8bbc069b3de83653f493edd2b1790e410e4290242864e41a44e94307",
+      "bytes": 1209467,
+      "validated_native_cells": 250000
+    },
+    {
+      "id": "MDT-2m-282508-09-2024",
+      "asset": "grid_282_508.tif",
+      "sha256": "142e9c80676420f1024c4d66fbd85727245f9a1073374ad1ad14b7ba790bb82d",
+      "bytes": 1236000,
+      "validated_native_cells": 250000
+    },
+    {
+      "id": "MDT-2m-280509-09-2024",
+      "asset": "grid_280_509.tif",
+      "sha256": "d377fd59fc4af9a3b0be070328cdb54d795d52c62aad65a1169887185f3b99dc",
+      "bytes": 1218280,
+      "validated_native_cells": 250000
+    },
+    {
+      "id": "MDT-2m-281509-09-2024",
+      "asset": "grid_281_509.tif",
+      "sha256": "acdabdbc82aec4a0981b57b772dd3682af22f25c2a98a0b8ba160d160ef67890",
+      "bytes": 1216620,
+      "validated_native_cells": 250000
+    },
+    {
+      "id": "MDT-2m-282509-09-2024",
+      "asset": "grid_282_509.tif",
+      "sha256": "31027123ea8ba72cd0c24985467b0d1ba2ace562ef2523491144b07f2116af63",
+      "bytes": 1214414,
+      "validated_native_cells": 250000
+    },
+    {
+      "id": "MDT-2m-280510-09-2024",
+      "asset": "grid_280_510.tif",
+      "sha256": "b652672d8dd9ccaf647ba2dae678428aa796fd2b575867c5d729a3d3458",
+      "bytes": 1220066,
+      "validated_native_cells": 250000
+    },
+    {
+      "id": "MDT-2m-281510-09-2024",
+      "asset": "grid_281_510.tif",
+      "sha256": "6e560322bfb33fdc6324606d3a57284cd9d3543ace765c41d31a9bbb8b4626a9",
+      "bytes": 1189039,
+      "validated_native_cells": 250000
+    },
+    {
+      "id": "MDT-2m-282510-09-2024",
+      "asset": "grid_282_510.tif",
+      "sha256": "761bc7ee18ef9377cca97556b6dececc14b8765c017c168dbf15552d8c9d78ba",
+      "bytes": 1219159,
+      "validated_native_cells": 250000
+    }
+  ],
+  "native_bytes_total": 14537701,
+  "area_km2": 12,
+  "validated_cells": 3000000,
+  "missing_cells": 0,
+  "internal_seams_count": 17,
+  "validated_seam_neighbor_pairs": 8500,
+  "seam_orientations": {
+    "west_east": 8,
+    "north_south": 9
+  },
+  "all_native_bytes_preserved_in_prerelease": true,
+  "entire_north_zamora_corridor_covered": false,
+  "vertical_datums_crossborder_harmonized": false,
+  "canonical_Fxx_accepted": false,
+  "site_publication_authorized": false,
+  "not_a_rail_route": true
+}
