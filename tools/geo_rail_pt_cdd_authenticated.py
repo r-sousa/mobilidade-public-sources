@@ -20,12 +20,13 @@ import os
 import ipaddress
 import re
 import socket
+import shutil
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import urlencode, urljoin, urlsplit
 from datetime import datetime, timezone
 
-from geo_rail_pt_native_intake_qa import audit, MAX_NATIVE_BYTES
+from geo_rail_pt_native_intake_qa import audit, MAX_NATIVE_BYTES, stream_sha256
 
 PORTAL = "https://cdd.dgterritorio.gov.pt"
 STAC = PORTAL + "/dgt-be/v1/search"
@@ -398,9 +399,16 @@ def download_native(session, href, destination):
             storage_session.close()
 
 
-def execute(site,source_index):
+def execute(site,source_index, retain_verified_native=None):
     if site not in PILOT_SITES:
         raise IntakeError("unapproved_site")
+    if retain_verified_native is not None:
+        # Explicit initial release pilot only; unreviewed regions remain disabled.
+        if site != "mirandela":
+            raise IntakeError("native_release_pilot_only_mirandela")
+        target=Path(retain_verified_native)
+        if not target.is_absolute() or target.exists() or target.is_symlink():
+            raise IntakeError("unsafe_or_existing_native_release_staging_path")
     username=os.environ.get("DGT_CDD_USERNAME","")
     password=os.environ.get("DGT_CDD_PASSWORD","")
     if not username or not password:
@@ -428,6 +436,18 @@ def execute(site,source_index):
         result["data_did_not_pass_via_user_device"]=True
         result["native_file_preserved_after_runner_exit"]=False
         result["native_file_release_published"]=False
+        result["native_staged_for_reviewed_public_release"]=False
+        if retain_verified_native is not None:
+            # Copy only AFTER native SHA, shape, CRS and pixel QA passed.
+            # The staging path must be runner-managed; the next step uploads
+            # the exact same verified bytes to a prerelease.
+            target=Path(retain_verified_native)
+            shutil.copyfile(native,target,follow_symlinks=False)
+            copied_bytes,copied_sha=stream_sha256(target)
+            if copied_bytes!=downloaded_size or copied_sha!=downloaded_sha:
+                target.unlink(missing_ok=True)
+                raise IntakeError("staged_native_raster_sha256_mismatch")
+            result["native_staged_for_reviewed_public_release"]=True
         result["no_login_urls_credentials_cookies_or_signed_hrefs_saved"]=True
         return result
 
@@ -437,6 +457,8 @@ def main():
     p.add_argument("--site",choices=tuple(PILOT_SITES),required=True)
     p.add_argument("--index",type=Path,required=True)
     p.add_argument("--receipt",type=Path,required=True)
+    p.add_argument("--retain-verified-native",type=Path,default=None,
+                   help="restricted pilot: stage validated Mirandela GeoTIFF in runner temp for approved release upload")
     args=p.parse_args()
     status="not_attempted"
     report={
@@ -454,7 +476,7 @@ def main():
     try:
         if not args.index.is_file():
             raise IntakeError("reviewed_source_index_missing")
-        full=execute(args.site,args.index)
+        full=execute(args.site,args.index,args.retain_verified_native)
         report=full
         report["status"]="native_tiff_authenticated_and_validated_pilot"
         status="success"
