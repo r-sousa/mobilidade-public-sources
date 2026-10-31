@@ -13,7 +13,7 @@ from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request,urlopen
 from geo_rail_pt_cdd_rngap_tile279503 import SOURCE_MARKS,producer_mark_records
-from geo_rail_pt_rngap_catalogue_wfs_schema import HOST
+from geo_rail_rngap_catalogue_wfs_schema import HOST
 
 BASE="https://geo2.dgterritorio.gov.pt/geoserver/RGN/ows"
 WINDOW=(79418,202238,79518,202338)
