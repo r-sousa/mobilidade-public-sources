@@ -27,6 +27,7 @@ class ProvenanceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 m.bounded_grid("unexpected.tif",("0"*64,1),Path(d),fetcher=lambda *_:None)
 
+    @unittest.skipUnless(importlib.util.find_spec("pyproj"),"requires pyproj")
     def test_synthetic_vertical_closure_and_outside_portuguese_domain_fail_closed(self):
         class FakeTransform:
             def transform(self,lon,lat,h,direction=None,errcheck=False):
