@@ -31,21 +31,17 @@ jobs:
       - name: Offline G3 topology and source-original four-tile contracts
         run: python -m unittest discover -s tests -p 'test_geo_rail_g3_continuity_open_dsm_sources.py' -v
       - name: Retrieve verified REAL Copernicus GLO30 DSM with 1-arcsec source cells across study envelope
-        env:
-          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/G3-source"
-          gh release download "mn-geo-rail-001-r1-airport-zamora-dsm-preacceptance-41198485197" --repo "$GITHUB_REPOSITORY" --pattern "MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" --dir "$RUNNER_TEMP/G3-source"
+          curl --fail --location --silent --show-error --retry 2 --max-time 220 "https://github.com/r-sousa/mobilidade-public-sources/releases/download/mn-geo-rail-001-r1-airport-zamora-dsm-preacceptance-41198485197/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" --output "$RUNNER_TEMP/G3-source/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif"
           echo "a708b502b2eb86236c70f2d74322e9d8e2ea1417eb24094d0e43536845407bd9  $RUNNER_TEMP/G3-source/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" | sha256sum -c -
       - name: Retrieve verified REAL OSM geometry (2801 mapped ways, secondary ODbL)
-        env:
-          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
-          gh release download "mn-geo-rail-001-b1-a4-mandatory-city-roads-source-preacceptance-41200362181" --repo "$GITHUB_REPOSITORY" --pattern "B1-PT-A4-IP4-mandatory-city-road-reference-OSM.geojson" --dir "$RUNNER_TEMP/G3-source"
+          curl --fail --location --silent --show-error --retry 2 --max-time 180 "https://github.com/r-sousa/mobilidade-public-sources/releases/download/mn-geo-rail-001-b1-a4-mandatory-city-roads-source-preacceptance-41200362181/B1-PT-A4-IP4-mandatory-city-road-reference-OSM.geojson" --output "$RUNNER_TEMP/G3-source/B1-PT-A4-IP4-mandatory-city-road-reference-OSM.geojson"
           echo "170b3c49ae7dc118fd0380a464f1547d1bd897ff09effdc69f3abaac0d6eec24  $RUNNER_TEMP/G3-source/B1-PT-A4-IP4-mandatory-city-road-reference-OSM.geojson" | sha256sum -c -
       - name: Analyze actual DSM terrain, OSM road proximity, official DGT metadata continuity
         shell: bash
