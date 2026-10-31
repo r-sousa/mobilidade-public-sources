@@ -1,0 +1,88 @@
+{
+  "authority": "Instituto Geográfico Nacional de España, REDNAP",
+  "canonical_Fxx_accepted": false,
+  "cross_border_harmonization_validated": false,
+  "distinct_marks_with_both_heights": 0,
+  "distinct_survey_mark_candidates": 0,
+  "independent_geoid_holdout_data": false,
+  "mission": "MN-GEO-RAIL-001",
+  "no_DGT_authenticated_download": true,
+  "observations_used_for_rail_datum_control": false,
+  "published_height_pairs_not_independent_geoid_benchmarks": true,
+  "queries_successful": 3,
+  "request_windows": [
+    {
+      "bbox_wgs84": [
+        -6.85,
+        41.58,
+        -6.55,
+        41.88
+      ],
+      "name": "Border_Aliste",
+      "pages": [
+        {
+          "bytes": 1186,
+          "numberMatched": 0,
+          "offset": 0,
+          "response_SHA256": "2b1c682240524f3ea936ef1461a02ab7f9b04a5033da5c4f574dd782d68a536b",
+          "returned": 0
+        }
+      ],
+      "signals_retrieved": 0,
+      "signals_with_both_heights": 0,
+      "status": "complete"
+    },
+    {
+      "bbox_wgs84": [
+        -6.55,
+        41.58,
+        -6.18,
+        41.88
+      ],
+      "error_class": "ValueError",
+      "error_code": "REDNAP_signal_id_invalid",
+      "name": "Alcanices",
+      "pages": [
+        {
+          "bytes": 50708,
+          "numberMatched": 50,
+          "offset": 0,
+          "response_SHA256": "a9e6feee57a2b38b2711af49ffdd5a5f6e6eb44b00de6ba1c79ce1c5c2ba50f6",
+          "returned": 50
+        }
+      ],
+      "status": "failed_closed"
+    },
+    {
+      "bbox_wgs84": [
+        -5.97,
+        41.38,
+        -5.55,
+        41.69
+      ],
+      "error_class": "ValueError",
+      "error_code": "REDNAP_signal_id_invalid",
+      "name": "Zamora",
+      "pages": [
+        {
+          "bytes": 95380,
+          "numberMatched": 101,
+          "offset": 0,
+          "response_SHA256": "45a03865d3ae21de61123affdeaad09bee5b14781c9bde9bba3b2969118d7cc2",
+          "returned": 100
+        }
+      ],
+      "status": "failed_closed"
+    }
+  ],
+  "sampling_strategy": "three reviewed geographic windows; NOT total REDNAP dataset",
+  "source_collection": "https://api-features.ign.es/collections/red_nap",
+  "source_fully_retrieved_in_all_windows": false,
+  "source_original_WCS_MDT_grid_datum_verified": false,
+  "source_respects_CC_BY_attribution": "Instituto Geográfico Nacional / CNIG",
+  "stage": "official_IGN_RED_NAP_bounded_benchmark_candidates",
+  "survey_mark_candidates": [],
+  "timestamp_utc": "2026-10-31T02:37:59.783841+00:00",
+  "vertical_reference_documented": "Alicante / REDNAP",
+  "worker": "W4"
+}
