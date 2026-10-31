@@ -165,7 +165,9 @@ def compute(rawzip,g13file,jpath,csvpath,mdpath):
        "chosen_original_G13A_research_lonlat":[lon,lat],
        "chosen_reference_road_snap_minutes_not_station":seed["real_road_time_to_nearest_grid_road_snap_min"],
        "reference_local_surface_25permille_P90_m":seed["L1_25permille_p90_vertical_surface_residual_m"],
-       "research_site_is_not_station":True,**result})
+       "research_site_is_not_station":True,
+       "associated_urban_market_name_not_municipal_population":True,
+       "census_coverage_may_not_contain_named_urban_centre":True,**result})
     family_seeds[corridor]=points
    # Union whole-corridor 10 and 20 km research service envelopes:
    # do not add overlapping station-level census counts.
@@ -216,7 +218,7 @@ def compute(rawzip,g13file,jpath,csvpath,mdpath):
  md=["# G14 — Cobertura demográfica de 2021 dos pontos exploratórios de interface",
   "","Fonte original INE: BGRI 2021 (subsecções, Continente), release pública F67, 203264 registos, EPSG:3763, SHA256 inalterado. A população é de **2021**, não uma projeção para 2026.",
   "A avaliação utiliza áreas circulares de 5, 10 e 20 km em torno dos pontos G13A com menor tempo de acesso rodoviário a vias próximas; os pontos não constituem estações de caminho de ferro. Distância euclidiana não é tempo de acesso.",
-  "","## População residente em áreas de 10 km por cidade (contagem do ponto interior da subsecção)",
+  "","## População residente nos círculos de 10 km de cada ponto de estudo associado a um mercado urbano (não é população desse município)",
   "| Família | Guimarães | Amarante | Vila Real* | Mirandela | Macedo de Cavaleiros | Bragança* |",
   "|---|---:|---:|---:|---:|---:|---:|"]
  for corridor in FAMILIES:
@@ -232,6 +234,7 @@ def compute(rawzip,g13file,jpath,csvpath,mdpath):
   entries={x["union_geographic_radius_km"]:x for x in coverage if x["research_corridor"]==corridor}
   md.append(f"| {corridor} | {entries[10]['centroid_or_interior_point_population_counts']['N_INDIVIDUOS']} | {entries[20]['centroid_or_interior_point_population_counts']['N_INDIVIDUOS']} |")
  md+=["","## Limitações essenciais",
+  "- Os títulos Guimarães, Amarante, etc. identificam apenas o mercado associado ao ponto de estudo da linha. Cada valor é população residente **na envolvente do ponto**, não a população do município com esse nome. Pode haver desfasamento considerável entre esse ponto e o centro urbano.\n",
   "- As contagens por ponto usam o ponto representativo de cada subsecção; foi também calculada a sensibilidade ponderada pela área da interseção, assumindo distribuição uniforme no interior da subsecção. Nenhuma metodologia converte estas áreas em população que efetivamente chega à estação em 15/30 minutos.",
   "- Populações das áreas de várias estações sobrepõem-se e não podem ser somadas: utilizar as uniões por corredor. Cada referência urbana e posição de estudo continua sujeita a viabilidade física e acesso legal.",
   "- A origem BGRI 2021 contabiliza residentes, não empregos nos locais de destino, deslocações pendulares efetivamente ferroviárias, procura, rendimentos, custos ou preferências modais.",
