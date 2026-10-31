@@ -173,7 +173,7 @@ def run(opener=urlopen):
             w["error_class"]=type(e).__name__
             w["error_code"]=str(e)[:110] if isinstance(e,ValueError) else "network_or_schema_error"
         result["request_windows"].append(w)
-    result["survey_mark_candidates"]=sorted(dedup.values(),key=lambda z:z["producer_id"])
+    result["survey_mark_candidates"]=sorted(dedup.values(),key=lambda z:z["local_deduplication_key"])
     result["distinct_survey_mark_candidates"]=len(dedup)
     result["survey_marks_with_official_source_id"]=sum(x["official_source_id_available"] for x in dedup.values())
     result["survey_marks_without_official_source_id"]=sum(not x["official_source_id_available"] for x in dedup.values())
