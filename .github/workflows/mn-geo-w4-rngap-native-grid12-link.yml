@@ -1,0 +1,44 @@
+name: MN-GEO-RAIL-001 W4 real RNGAP marks vs original DGT 12km2 source linkage
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-w4-rngap-modern-source-20261031
+    paths:
+      - tools/geo_rail_rngap_dgt_grid12_linkage.py
+      - tests/test_geo_rail_rngap_dgt_grid12_linkage.py
+      - .github/workflows/mn-geo-w4-rngap-native-grid12-link.yml
+permissions:
+  contents: write
+jobs:
+  check-source-mark-catalogue-and-real-mosaic-footprint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prove no marks inside 12km2 and verify nearest source-indexed DGT tile
+        run: python -m unittest discover -s tests -p 'test_geo_rail_rngap_dgt_grid12_linkage.py' -v
+      - name: Record source-pinned target raster grid candidate and no-acceptance boundaries
+        run: |
+          set -euo pipefail
+          target=reports/mn-geo-rail-001/pt-rngap-original-427-marks-vs-dgt12km2-linkage.json
+          python tools/geo_rail_rngap_dgt_grid12_linkage.py \
+            --mark-source reports/mn-geo-rail-001/pt-rngap-three-window-complete-ALTH38-source.json \
+            --DGT-catalogue reports/mn-geo-rail-001/pt-dgt-mdt-sector-footprints.json \
+            --output "$target"
+          python - <<'PY'
+          import json
+          j=json.load(open("reports/mn-geo-rail-001/pt-rngap-original-427-marks-vs-dgt12km2-linkage.json"))
+          assert j["original_RNGAP_marks_in_validated_12km2_mosaic"]==0
+          assert j["selected_source_tile_is_NOT_yet_acquired_or_pixel_QA_validated"]
+          assert j["Fxx_accepted"] is False and j["Site_approved"] is False
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): record nearest original RNGAP marks and DGT tile still requiring protected raster QA"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi

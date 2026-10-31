@@ -1,0 +1,191 @@
+{
+  "DGT_account_secrets_used": false,
+  "PT_ES_crossborder_survey_benchmark_validation_complete": false,
+  "RNGAP_official_Cascais_altitudes_collected": 0,
+  "RNGAP_source_mark_coordinates_collected": 0,
+  "Site_publication_authorized": false,
+  "actual_source_feature_height_schema_validated": false,
+  "canonical_Fxx_accepted": false,
+  "metadata_sources_HTTP_200": 4,
+  "mission": "MN-GEO-RAIL-001",
+  "observed_utc": "2026-10-31T08:30:14.567278+00:00",
+  "official_height_products_are_free": true,
+  "results": [
+    {
+      "RNGAP_term_in_page": true,
+      "altitudes_term_in_page": true,
+      "bytes": 98278,
+      "document_title": "Infraestrutura Geodésica | Direção-Geral do Território",
+      "format": "HTML",
+      "name": "dgt_rngap_authoritative",
+      "nivelamento_term_in_page": true,
+      "reference_links": [
+        {
+          "href": "/atividades/geodesia",
+          "text": "Geodesia"
+        },
+        {
+          "href": "/atividades/geodesia/sistemas-referencia",
+          "text": "Sistemas de referência"
+        },
+        {
+          "href": "/atividades/geodesia/sistemas-referencia/portugal-continental/PT-TM06-ETRS89",
+          "text": "PT-TM06/ETRS89"
+        },
+        {
+          "href": "/atividades/geodesia/sistemas-referencia/regioes-autonomas/PTRA08-UTM-ITRF93",
+          "text": "PTRA08-UTM/ITRF93"
+        },
+        {
+          "href": "/atividades/geodesia/transformacao-coordenadas",
+          "text": "Transformação de Coordenadas"
+        },
+        {
+          "href": "/atividades/geodesia/infraestrutura-geodesica",
+          "text": "Infraestrutura Geodésica"
+        },
+        {
+          "href": "/atividades/geodesia/modelo-geoide",
+          "text": "Modelo do Geoide"
+        },
+        {
+          "href": "/atividades/geodesia/geodesia-2020",
+          "text": "Geodesia 2020"
+        },
+        {
+          "href": "/atividades/geodesia/informacao-documentacao",
+          "text": "Informação e documentação de apoio"
+        },
+        {
+          "href": "/atividades/geodesia/cooperacao-institucional",
+          "text": "Cooperação institucional"
+        },
+        {
+          "href": "/atividades/geodesia/legislacao",
+          "text": "Legislação"
+        },
+        {
+          "href": "/atividades/geodesia/publicacoes",
+          "text": "Publicações"
+        }
+      ],
+      "safe_final_host": "www.dgterritorio.gov.pt",
+      "sha256": "4dbcf835f3821ef1b2e536ae1e76cca57a523c9da6145cb78c2ea09f4ffe4f04",
+      "source_url": "https://www.dgterritorio.gov.pt/atividades/geodesia/infraestrutura-geodesica",
+      "status": "metadata_HTTP_200_integrity_sha_recorded"
+    },
+    {
+      "RNGAP_term_in_page": true,
+      "advertised_free_height_product": true,
+      "altitudes_term_in_page": true,
+      "bytes": 83243,
+      "document_title": "Geodesia | Direção-Geral do Território",
+      "format": "HTML",
+      "name": "dgt_official_digital_height_product",
+      "nivelamento_term_in_page": true,
+      "reference_links": [
+        {
+          "href": "/atividades/geodesia",
+          "text": "Geodesia"
+        },
+        {
+          "href": "/atividades/geodesia/sistemas-referencia",
+          "text": "Sistemas de referência"
+        },
+        {
+          "href": "/atividades/geodesia/sistemas-referencia/portugal-continental/PT-TM06-ETRS89",
+          "text": "PT-TM06/ETRS89"
+        },
+        {
+          "href": "/atividades/geodesia/sistemas-referencia/regioes-autonomas/PTRA08-UTM-ITRF93",
+          "text": "PTRA08-UTM/ITRF93"
+        },
+        {
+          "href": "/atividades/geodesia/transformacao-coordenadas",
+          "text": "Transformação de Coordenadas"
+        },
+        {
+          "href": "/atividades/geodesia/infraestrutura-geodesica",
+          "text": "Infraestrutura Geodésica"
+        },
+        {
+          "href": "/atividades/geodesia/modelo-geoide",
+          "text": "Modelo do Geoide"
+        },
+        {
+          "href": "/atividades/geodesia/geodesia-2020",
+          "text": "Geodesia 2020"
+        },
+        {
+          "href": "/atividades/geodesia/informacao-documentacao",
+          "text": "Informação e documentação de apoio"
+        },
+        {
+          "href": "/atividades/geodesia/cooperacao-institucional",
+          "text": "Cooperação institucional"
+        },
+        {
+          "href": "/atividades/geodesia/legislacao",
+          "text": "Legislação"
+        },
+        {
+          "href": "/atividades/geodesia/publicacoes",
+          "text": "Publicações"
+        }
+      ],
+      "safe_final_host": "www.dgterritorio.gov.pt",
+      "sha256": "02a4dbbfe1770b38630cbfeeb8cbf97c2d0602008d712dee471c3139f99c1157",
+      "source_url": "https://www.dgterritorio.gov.pt/loja/geodesia",
+      "status": "metadata_HTTP_200_integrity_sha_recorded"
+    },
+    {
+      "RNGAP_term_in_page": false,
+      "altitudes_term_in_page": false,
+      "bytes": 4818,
+      "document_title": "WebSIG - Direção Geral do Território",
+      "format": "HTML",
+      "name": "dgt_current_map_viewer",
+      "nivelamento_term_in_page": false,
+      "reference_links": [],
+      "safe_final_host": "geo2.dgterritorio.gov.pt",
+      "sha256": "c8b75d80b940d631243225344533d42cd477cff0262ad93964966b6f185f38de",
+      "source_url": "https://geo2.dgterritorio.gov.pt/dgt",
+      "status": "metadata_HTTP_200_integrity_sha_recorded"
+    },
+    {
+      "bytes": 5782,
+      "dataset_record_not_survey_observations": true,
+      "format": "national_open_data_metadata_JSON",
+      "metadata_dataset_title": "Rede de Nivelamento Geométrico de Alta Precisão - RNGAP",
+      "metadata_resource_count": 2,
+      "name": "national_catalogue_API_RNGAP",
+      "potential_official_catalogue_resources": [
+        {
+          "candidate_attribute_heights_verified": false,
+          "format": "wms",
+          "raw_url_deliberately_not_persisted": true,
+          "resource_id": "79d951b1-e83d-4948-ace3-d16f603a8eae",
+          "safe_url_host": "geo2.dgterritorio.gov.pt",
+          "title": "Rede de Nivelamento Geométrico de Alta Precisão - RNGAP",
+          "url_in_allowlisted_official_host": true
+        },
+        {
+          "candidate_attribute_heights_verified": false,
+          "format": "wfs",
+          "raw_url_deliberately_not_persisted": true,
+          "resource_id": "95bd9727-4119-43e4-9886-bfed5b05c6d6",
+          "safe_url_host": "geo2.dgterritorio.gov.pt",
+          "title": "Rede de Nivelamento Geométrico de Alta Precisão - RNGAP",
+          "url_in_allowlisted_official_host": true
+        }
+      ],
+      "safe_final_host": "dados.gov.pt",
+      "sha256": "805b25d53c8ba558d709dc6c000e16dcd1e24edef2d3e17bfd21bec4cbdac2fc",
+      "source_url": "https://dados.gov.pt/api/1/datasets/rede-de-nivelamento-geometrico-de-alta-precisao-rngap/",
+      "status": "metadata_HTTP_200_integrity_sha_recorded"
+    }
+  ],
+  "stage": "current_DGT_rngap_public_metadata_official_source_discovery",
+  "unverified_web_service_not_evidence_of_missing_marks": true,
+  "worker": "W4"
+}

@@ -1,0 +1,54 @@
+name: MN-GEO-RAIL-001 DGT RNGAP real ALTH38 survey mark WFS sampling
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-w4-rngap-modern-source-20261031
+    paths:
+      - tools/geo_rail_pt_rngap_alh38_source_sample.py
+      - tests/test_geo_rail_pt_rngap_alh38_source_sample.py
+      - .github/workflows/mn-geo-w4-rngap-real-ALH38-source-qa.yml
+permissions:
+  contents: write
+concurrency:
+  group: mn-geo-rail-001-w4-real-RNGAP-ALH38-source
+  cancel-in-progress: false
+jobs:
+  bounded-original-DGT-survey-marks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline WFS source original ALTH38 fields and geometry tests
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_rngap_alh38_source_sample.py' -v
+      - name: Query catalog verified HTTPS DGT WFS layer using only three bounded native PT TM06 spatial windows
+        run: |
+          python tools/geo_rail_pt_rngap_alh38_source_sample.py \
+            --output "$RUNNER_TEMP/pt-rngap-real-ALTH38-source-qa.json"
+      - name: Persist sanitized real DGT WFS mark sampling receipt without claiming datum validation
+        run: |
+          set -euo pipefail
+          target=reports/mn-geo-rail-001/pt-rngap-current-official-WFS-ALTH38-sample.json
+          cp "$RUNNER_TEMP/pt-rngap-real-ALTH38-source-qa.json" "$target"
+          python - <<'PY'
+          import json
+          p="reports/mn-geo-rail-001/pt-rngap-current-official-WFS-ALTH38-sample.json"
+          j=json.load(open(p))
+          assert j["Fxx_canonical_accepted"] is False
+          assert j["Site_approved"] is False
+          assert j["full_corridor_benchmark_coverage"] is False
+          assert j["independent_PT_ES_height_datum_harmonized"] is False
+          assert len(j["windows"])<=3
+          assert j["unique_source_mark_count"]<=120
+          print("SOURCE_NATIVE_RNGAP_WFS_MARKS",j["unique_source_mark_count"])
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): preserve bounded real official DGT RNGAP ALTH38 source mark sample"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi

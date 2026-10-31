@@ -1,0 +1,48 @@
+name: MN-GEO-RAIL-001 current DGT RNGAP digital height source discovery
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-w4-rngap-modern-source-20261031
+    paths:
+      - tools/geo_rail_rngap_modern_official_discovery.py
+      - tests/test_geo_rail_rngap_modern_official_discovery.py
+      - .github/workflows/mn-geo-w4-rngap-current-public-metadata.yml
+permissions:
+  contents: write
+jobs:
+  bounded-current-official-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run no-network strict source metadata contract tests
+        run: python -m unittest discover -s tests -p 'test_geo_rail_rngap_modern_official_discovery.py' -v
+      - name: Inspect four current official DGT public source/catalogue pages bounded to 1 MB each
+        run: |
+          python tools/geo_rail_rngap_modern_official_discovery.py \
+            --output "$RUNNER_TEMP/rngap-current-sources.json"
+      - name: Persist source metadata access evidence only
+        run: |
+          set -euo pipefail
+          target=reports/mn-geo-rail-001/pt-rngap-current-official-public-source-discovery.json
+          cp "$RUNNER_TEMP/rngap-current-sources.json" "$target"
+          python - <<'PY'
+          import json
+          j=json.load(open("reports/mn-geo-rail-001/pt-rngap-current-official-public-source-discovery.json"))
+          assert len(j["results"])==4
+          assert j["RNGAP_source_mark_coordinates_collected"]==0
+          assert j["RNGAP_official_Cascais_altitudes_collected"]==0
+          assert j["DGT_account_secrets_used"] is False
+          assert not j["PT_ES_crossborder_survey_benchmark_validation_complete"]
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): audit modern official RNGAP and Portuguese height product metadata"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi

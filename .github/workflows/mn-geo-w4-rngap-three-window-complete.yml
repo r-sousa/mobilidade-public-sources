@@ -1,0 +1,56 @@
+name: MN-GEO-RAIL-001 complete bounded RNGAP three-window WFS ALTH38 inventory
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-w4-rngap-modern-source-20261031
+    paths:
+      - tools/geo_rail_pt_rngap_three_window_full_paging.py
+      - tests/test_geo_rail_pt_rngap_three_window_full_paging.py
+      - .github/workflows/mn-geo-w4-rngap-three-window-complete.yml
+permissions:
+  contents: write
+concurrency:
+  group: mn-geo-rail-001-w4-DGT-RNGAP-three-window-100row-complete
+  cancel-in-progress: false
+jobs:
+  bounded-complete-three-original-DGT-RNGAP-windows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate exact per-request 100 feature bound and safe original ALTH38 parser
+        run: |
+          python -m unittest discover -s tests -p 'test_geo_rail_pt_rngap_three_window_full_paging.py' -v
+          python -m unittest discover -s tests -p 'test_geo_rail_pt_rngap_alh38_source_sample.py' -v
+      - name: Acquire full reviewed three official DGT WFS windows with pagination and source SHA receipts
+        run: |
+          python tools/geo_rail_pt_rngap_three_window_full_paging.py \
+            --output "$RUNNER_TEMP/rngap-3-window-marks-source-qa.json"
+      - name: Preserve limited producer marks with identifiers, original heights, coordinate QA and paged source hashes
+        run: |
+          set -euo pipefail
+          target=reports/mn-geo-rail-001/pt-rngap-three-window-complete-ALTH38-source.json
+          cp "$RUNNER_TEMP/rngap-3-window-marks-source-qa.json" "$target"
+          python - <<'PY'
+          import json
+          p="reports/mn-geo-rail-001/pt-rngap-three-window-complete-ALTH38-source.json"
+          j=json.load(open(p))
+          assert j["status"]=="complete_for_three_requested_windows_no_corridor_claim"
+          assert len(j["windows"])==3
+          assert j["unique_real_DGT_source_mark_count"]>0
+          assert j["unique_real_DGT_source_mark_count"]<=1500
+          assert j["Fxx_canonical_accepted"] is False
+          assert j["Site_publication_authorized"] is False
+          assert not j["independent_control_against_other_PT_ES_survey_geodesy"]
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): persist full page-complete reviewed original DGT RNGAP ALTH38 survey mark windows"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
