@@ -1,0 +1,145 @@
+{
+  "mission": "MN-GEO-RAIL-001",
+  "stage": "B1_registered_DGT_native_2m_study_sectors",
+  "review_receipt_sha256": "79c8811bf8be1a5c92d6aac1089b9a558db1ba0e6819ac3a07c250b1f38e1cfc",
+  "review_release": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-geo-rail-001-b1-review-source-tiles-after-road-DSM-join-41201246809",
+  "source_rights": "DGT Centro de Dados — CC BY 4.0 with attribution",
+  "mandatory_cities": [
+    "vila_real",
+    "braganca"
+  ],
+  "sanabria_excluded": true,
+  "active_railway_line_defined": false,
+  "station_location_determined": false,
+  "source_original_pixels_acquired_by_config": false,
+  "groups": [
+    {
+      "city": "vila_real",
+      "direction": "W",
+      "grid_epsg3763": [
+        20000,
+        180000,
+        22000,
+        182000
+      ],
+      "tile_ids": [
+        "MDT-2m-220481-07-2024",
+        "MDT-2m-221481-07-2024",
+        "MDT-2m-220482-07-2024",
+        "MDT-2m-221482-07-2024"
+      ]
+    },
+    {
+      "city": "vila_real",
+      "direction": "E",
+      "grid_epsg3763": [
+        40000,
+        184000,
+        42000,
+        186000
+      ],
+      "tile_ids": [
+        "MDT-2m-240485-07-2024",
+        "MDT-2m-241485-07-2024",
+        "MDT-2m-240486-07-2024",
+        "MDT-2m-241486-07-2024"
+      ]
+    },
+    {
+      "city": "vila_real",
+      "direction": "N",
+      "grid_epsg3763": [
+        34000,
+        184000,
+        36000,
+        186000
+      ],
+      "tile_ids": [
+        "MDT-2m-234485-07-2024",
+        "MDT-2m-235485-07-2024",
+        "MDT-2m-234486-07-2024",
+        "MDT-2m-235486-07-2024"
+      ]
+    },
+    {
+      "city": "vila_real",
+      "direction": "S",
+      "grid_epsg3763": [
+        34000,
+        176000,
+        36000,
+        178000
+      ],
+      "tile_ids": [
+        "MDT-2m-234477-07-2024",
+        "MDT-2m-235477-07-2024",
+        "MDT-2m-234478-07-2024",
+        "MDT-2m-235478-07-2024"
+      ]
+    },
+    {
+      "city": "braganca",
+      "direction": "W",
+      "grid_epsg3763": [
+        110000,
+        234000,
+        112000,
+        236000
+      ],
+      "tile_ids": [
+        "MDT-2m-310535-06-2024",
+        "MDT-2m-311535-06-2024",
+        "MDT-2m-310536-06-2024",
+        "MDT-2m-311536-06-2024"
+      ]
+    },
+    {
+      "city": "braganca",
+      "direction": "E",
+      "grid_epsg3763": [
+        116000,
+        238000,
+        118000,
+        240000
+      ],
+      "tile_ids": [
+        "MDT-2m-316539-06-2024",
+        "MDT-2m-317539-06-2024",
+        "MDT-2m-316540-06-2024",
+        "MDT-2m-317540-06-2024"
+      ]
+    },
+    {
+      "city": "braganca",
+      "direction": "N",
+      "grid_epsg3763": [
+        110000,
+        242000,
+        112000,
+        244000
+      ],
+      "tile_ids": [
+        "MDT-2m-310543-06-2024",
+        "MDT-2m-311543-06-2024",
+        "MDT-2m-310544-06-2024",
+        "MDT-2m-311544-06-2024"
+      ]
+    },
+    {
+      "city": "braganca",
+      "direction": "S",
+      "grid_epsg3763": [
+        110000,
+        232000,
+        112000,
+        234000
+      ],
+      "tile_ids": [
+        "MDT-2m-310533-06-2024",
+        "MDT-2m-311533-06-2024",
+        "MDT-2m-310534-06-2024",
+        "MDT-2m-311534-06-2024"
+      ]
+    }
+  ]
+}
