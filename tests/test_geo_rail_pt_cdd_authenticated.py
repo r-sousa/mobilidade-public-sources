@@ -213,5 +213,82 @@ class SecurityTests(unittest.TestCase):
         self.assertEqual(len(s.calls),1)
 
 
+    def test_single_DGT_issued_https_9000_hop_uses_isolated_cookie_free_session(self):
+        from unittest.mock import MagicMock,patch
+        uri="https://cdd.dgterritorio.gov.pt/private/file"
+        signed="https://storage.public-example.net:9000/some/object?signature=NEVER_LOG_THIS"
+        payload=b"II*\\x00"+b"\\x00"*1032
+        first=StubResponse(uri,302,{"Location":signed})
+        cdd=StubSession([first])
+        remote=MagicMock()
+        remote.request.return_value=StubResponse(signed,200,
+            {"Content-Type":"image/tiff","Content-Length":str(len(payload))},
+            payload)
+        with patch.object(m,"verified_public_storage_endpoint",return_value=True) as guard:
+            with patch("requests.Session",return_value=remote):
+                with TemporaryDirectory() as tmp:
+                    count,_=m.download_native(cdd,uri,Path(tmp)/"native.tif")
+        self.assertEqual(count,len(payload))
+        guard.assert_called_once_with(signed)
+        remote.headers.clear.assert_called()
+        remote.cookies.clear.assert_called()
+        remote.close.assert_called()
+        sent=remote.request.call_args
+        self.assertEqual(sent.args,("GET",signed))
+        self.assertFalse(sent.kwargs["allow_redirects"])
+        self.assertNotIn("Authorization",sent.kwargs["headers"])
+        self.assertNotIn("Cookie",sent.kwargs["headers"])
+        self.assertTrue(first.closed)
+
+    def test_external_storage_must_not_follow_second_redirect(self):
+        from unittest.mock import MagicMock,patch
+        uri="https://cdd.dgterritorio.gov.pt/assets/one"
+        signed="https://storage.public-example.net:9000/part?sig=SECRET"
+        initial=StubSession([StubResponse(uri,302,{"Location":signed})])
+        external=MagicMock()
+        external.request.return_value=StubResponse(signed,302,{"Location":"https://elsewhere.net/file"})
+        with patch.object(m,"verified_public_storage_endpoint",return_value=True):
+            with patch("requests.Session",return_value=external):
+                with TemporaryDirectory() as tmp:
+                    with self.assertRaises(m.IntakeError) as e:
+                        m.download_native(initial,uri,Path(tmp)/"native.tif")
+        self.assertEqual(e.exception.code,"storage_second_redirect_not_allowed")
+        self.assertNotIn("SECRET",str(e.exception))
+        external.close.assert_called()
+
+    def test_https_9000_storage_host_rejects_private_dns_and_untrusted_ports(self):
+        valid="https://example-public-storage.net:9000/obj?token=SECRET"
+        def public_dns(host,port,proto):
+            return [(2,1,6,"",("93.184.216.34",port))]
+        def private_dns(host,port,proto):
+            return [(2,1,6,"",("10.0.0.5",port))]
+        self.assertTrue(m.verified_public_storage_endpoint(valid,dns_lookup=public_dns))
+        self.assertFalse(m.verified_public_storage_endpoint(valid,dns_lookup=private_dns))
+        self.assertFalse(m.verified_public_storage_endpoint(
+            valid.replace(":9000",":8081"),dns_lookup=public_dns))
+        self.assertFalse(m.verified_public_storage_endpoint(
+            valid.replace("https:", "http:"),dns_lookup=public_dns))
+        self.assertFalse(m.verified_public_storage_endpoint(
+            "https://127.0.0.1:9000/private",dns_lookup=public_dns))
+        self.assertFalse(m.verified_public_storage_endpoint(
+            "https://169.254.169.254:9000/metadata",dns_lookup=public_dns))
+        self.assertFalse(m.verified_public_storage_endpoint(
+            "https://foo.local:9000/object",dns_lookup=public_dns))
+
+    def test_reject_unapproved_storage_hop_without_request(self):
+        from unittest.mock import patch
+        uri="https://cdd.dgterritorio.gov.pt/assets/x"
+        redirected="https://untrusted.example.org:9000/file?secret=HIDDEN"
+        cdd=StubSession([StubResponse(uri,302,{"Location":redirected})])
+        with patch.object(m,"verified_public_storage_endpoint",return_value=False):
+            with TemporaryDirectory() as tmp:
+                with self.assertRaises(m.IntakeError) as e:
+                    m.download_native(cdd,uri,Path(tmp)/"native.tif")
+        self.assertEqual(e.exception.code,"unapproved_redirect_destination")
+        self.assertEqual(e.exception.phase,"native_geotiff_download")
+        self.assertEqual(len(cdd.calls),1)
+        self.assertNotIn("HIDDEN",str(e.exception))
+
+
 if __name__=="__main__":
     unittest.main()
