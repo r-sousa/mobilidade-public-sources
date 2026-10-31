@@ -1,0 +1,50 @@
+name: MN-GEO-RAIL-001 B1 acquire actual A4 local road geometries and screen DSM city peripheries
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-b1-mandatory-city-roads-20261031
+    paths:
+      - tools/geo_rail_pt_b1_a4_road_screen.py
+      - tests/test_geo_rail_pt_b1_a4_road_screen.py
+      - .github/workflows/mn-geo-b1-a4-road-screen.yml
+permissions:
+  contents: read
+concurrency:
+  group: mn-geo-rail-001-b1-OSM-road-source-acquisition
+  cancel-in-progress: false
+jobs:
+  acquire-secondary-road-geometry-and-score-real-DSM-2km-sectors:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-b1-mandatory-city-roads-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check 'shapely>=2,<3' 'pyproj>=3.6,<4' 'numpy>=1.24,<3' 'rasterio>=1.4,<2'
+      - name: Offline fixed city constraints and OSM download boundaries tests
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_b1_a4_road_screen.py' -v
+      - name: Download EXACT corrected Copernicus DSM source baseline from repository release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/base-DSM"
+          gh release download "mn-geo-rail-001-r1-airport-zamora-dsm-preacceptance-41198485197" --repo "$GITHUB_REPOSITORY" --pattern "*.tif" --dir "$RUNNER_TEMP/base-DSM"
+          echo "a708b502b2eb86236c70f2d74322e9d8e2ea1417eb24094d0e43536845407bd9  $RUNNER_TEMP/base-DSM/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" | sha256sum -c -
+      - name: Collect actual OSM A4-area highway/local road geometries at two obligatory nodes and screen peripheral DSM cells
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_pt_b1_a4_road_screen.py --verified-dsm "$RUNNER_TEMP/base-DSM/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" --output "$RUNNER_TEMP/B1-CITY-ROAD"
+      - name: Preserve original road geometries and DSM research sectors in public source-QA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-B1-city-road-DSM-research-${{ github.run_id }}
+          path: ${{ runner.temp }}/B1-CITY-ROAD/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Summarize limits
+        run: |
+          echo "OSM road geometry is a SECONDARY source under ODbL, not official road inventory." >> "$GITHUB_STEP_SUMMARY"
+          echo "Road straight-line proximity + GLO30 DSM relief are DISCOVERY indicators, NOT actual driving access, stations, railroad engineering, or route approval." >> "$GITHUB_STEP_SUMMARY"
