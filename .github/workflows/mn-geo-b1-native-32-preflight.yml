@@ -5,6 +5,10 @@ on:
       - mn-geo-rail-001-b1-native-32-reviewed-20261031
     paths:
       - .github/workflows/mn-geo-b1-native-32-preflight.yml
+      - tools/geo_rail_pt_b1_native32.py
+      - tests/test_geo_rail_pt_b1_native32.py
+      - configs/MN-GEO-RAIL-001-B1-DGT32-source-IDs.json
+      - .github/workflows/mn-geo-pt-b1-32-native-registered.yml
 permissions:
   contents: read
 jobs:
@@ -13,6 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test reviewed fixed 32 producer IDs and native QA security contract offline
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_b1_native32.py' -v
       - name: Download exact-source SHA-pinned B1 DGT 2m review selection
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
