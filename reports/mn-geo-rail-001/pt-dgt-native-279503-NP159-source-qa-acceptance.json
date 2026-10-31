@@ -1,0 +1,93 @@
+{
+  "mission": "MN-GEO-RAIL-001",
+  "status": "verified_original_DGT_279503_and_preacceptance_preservation",
+  "observation_date_utc": "2026-10-31",
+  "stage": "W2_source_original_persistence_and_W4_local_noncoincident_terrain_sample",
+  "public_workflow_run": "https://github.com/r-sousa/mobilidade-public-sources/actions/runs/41191696943",
+  "workflow_id": 41191696943,
+  "conclusion": "success",
+  "release_url": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-geo-rail-001-dgt-279503-NP159-preacceptance-41191696943",
+  "release_tag": "mn-geo-rail-001-dgt-279503-NP159-preacceptance-41191696943",
+  "release_is_prerelease": true,
+  "issuer": "Direção-Geral do Território",
+  "license": "CC BY 4.0, attribution to DGT required",
+  "tile": "MDT-2m-279503-09-2024",
+  "original_tif": {
+    "asset": "original-DGT-279503.tif",
+    "size_bytes": 1212288,
+    "sha256": "b9ca562fa7890a39e32646e85fdd6abd87f12b51c4a7b6eb907e10a2aba49879",
+    "format": "GeoTIFF",
+    "crs": "EPSG:3763",
+    "bbox_epsg3763": [
+      79000,
+      202000,
+      80000,
+      203000
+    ],
+    "res_m": [
+      2,
+      2
+    ],
+    "shape_pixels": [
+      500,
+      500
+    ],
+    "valid_pixels": 250000,
+    "masked_pixels": 0,
+    "nodata_literal": -999,
+    "min_m": 212.57032775878906,
+    "max_m": 287.2668762207031,
+    "source_declared_vertical_datum": "Cascais (documentation only)",
+    "vertical_crs_embedded_in_GeoTIFF": false
+  },
+  "full_QA_file": {
+    "asset": "dgt-279503-native-safe-QA.json",
+    "size_bytes": 7696,
+    "sha256": "c0f86ac10f572b6fa24d4c0507abfad5f71acc632dbf033a0121f4725a332473"
+  },
+  "local_source_artifact_recheck": {
+    "authenticated_source_job": "success",
+    "separate_uncredentialed_publication_job": "success",
+    "original_sha256_matches_public_release_asset_digest": true,
+    "QA_sha256_matches_public_release_asset_digest": true,
+    "original_geotiff_independently_reopened": true,
+    "original_geotiff_metadata_matches_public_QA": true,
+    "credential_material_or_signed_download_urls_inspected": false
+  },
+  "NP159_context_only": {
+    "DGT_WFS_surrogate_XY_epsg3763": [
+      79468.618,
+      202288.178
+    ],
+    "sampled_cell_center_XY_epsg3763": [
+      79469,
+      202289
+    ],
+    "distance_from_surrogate_XY_to_cell_center_m": 0.9064259484230238,
+    "raster_cell_height_m": 229.54966735839844,
+    "surrounding_3x3_min_m": 229.3456573486328,
+    "surrounding_3x3_median_m": 229.54966735839844,
+    "surrounding_3x3_max_m": 229.74415588378906,
+    "original_DGT_mark_count_sharing_surrogate_XY": 5,
+    "distinct_physical_mark_descriptions": true,
+    "individual_survey_mark_positions_validated": false,
+    "per_mark_residuals_computed": false,
+    "vertical_DTM_RMSE_estimated": false
+  },
+  "relation_to_existing_native_DGT_mosaic": {
+    "prior_native_contiguous_grid12_area_km2": 12,
+    "newly_QA_native_tile_area_km2": 1,
+    "distinct_total_native_QA_area_km2": 13,
+    "newly_QA_tile_is_not_contiguous_with_grid12": true,
+    "full_corridor_native_coverage_verified": false
+  },
+  "accepted_G1": false,
+  "accepted_G2": false,
+  "accepted_G3": false,
+  "accepted_G4": false,
+  "accepted_G5": false,
+  "canonical_Fxx_assigned": false,
+  "site_publication_authorized": false,
+  "rail_alignment_ready": false,
+  "notes": "Original DGT 279503 preserved by separate no-credentials release job. Local NP159 terrain sample is not a survey benchmark observation because the WFS geometry is shared among five physically distinct marks."
+}
