@@ -1,0 +1,63 @@
+name: MN-GEO-RAIL-001 protected DGT NP159 native 279503 tile
+
+# DGT secrets require explicit manual dispatch on protected main.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: mn-geo-rail-001-protected-DGT-279503
+  cancel-in-progress: false
+jobs:
+  verify-main:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Verify protected main before accessing DGT environment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          protected="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/r-sousa/mobilidade-public-sources/branches/main" | jq -r '.protected')"
+          [[ "$protected" == 'true' ]] || { echo '::error::Main not protected'; exit 1; }
+  original-DGT-native-vs-NP159:
+    needs: verify-main
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: dgt-cdd
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install bounded DGT source and native QA dependencies
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3' 'rasterio>=1.4,<2'
+      - name: Test exact original marker sources and synthetic TIFF before reading secrets
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_cdd_rngap_tile279503.py' -v
+      - name: Authenticate and QA exactly source tile MDT-2m-279503-09-2024
+        env:
+          DGT_CDD_USERNAME: ${{ secrets.DGT_CDD_USERNAME }}
+          DGT_CDD_PASSWORD: ${{ secrets.DGT_CDD_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python tools/geo_rail_pt_cdd_rngap_tile279503.py --index reports/mn-geo-rail-001/pt-dgt-mdt-candidate-envelopes.geojson --RNGAP-source reports/mn-geo-rail-001/pt-rngap-three-window-complete-ALTH38-source.json --receipt "$RUNNER_TEMP/dgt-279503-native-safe-qa.json"
+      - name: Retain sanitized original-source hash, raster QA and raw mark comparisons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-DGT-279503-safe-source-QA-${{ github.run_id }}
+          path: ${{ runner.temp }}/dgt-279503-native-safe-qa.json
+          if-no-files-found: warn
+          retention-days: 30
+      - if: always()
+        run: |
+          echo 'DGT credentials, cookies, temporary source TIFF and signed asset URLs are never uploaded. Only sanitized QA is retained.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Raster-to-NP159 comparisons are exploratory, not vertical geodetic calibration, rail-grade suitability, canonical Fxx or Site authorization.' >> "$GITHUB_STEP_SUMMARY"
