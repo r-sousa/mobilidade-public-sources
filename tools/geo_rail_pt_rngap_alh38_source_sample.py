@@ -54,12 +54,13 @@ def normalize_original_ALTH38(source):
         return None
     return h if math.isfinite(h) and -20<h<2600 else None
 
-def parse_source_features(raw,bbox):
+def parse_source_features(raw,bbox,max_rows=LIMIT):
+    if max_rows not in (40,100):raise ValueError('unreviewed_WFS_source_page_limit')
     obj=json.loads(raw)
     if obj.get("type")!="FeatureCollection" or not isinstance(obj.get("features"),list):
         raise ValueError("DGT_WFS_response_not_GeoJSON_FeatureCollection")
     rows=obj["features"]
-    if len(rows)>LIMIT:raise ValueError("DGT_WFS_ignored_bounded_max_features")
+    if len(rows)>max_rows:raise ValueError("DGT_WFS_ignored_bounded_max_features")
     retained=[];invalid=[]
     for i,x in enumerate(rows):
         geom=x.get("geometry")
@@ -107,7 +108,7 @@ def parse_source_features(raw,bbox):
     matched=int(rawmatched) if isinstance(rawmatched,int) and not isinstance(rawmatched,bool) else None
     return {"returned_features":len(rows),
             "numberMatched":matched,
-            "source_response_potentially_paged":len(rows)==LIMIT or
+            "source_response_potentially_paged":len(rows)==max_rows or
               (matched is not None and matched>len(rows)),
             "observations_validated":retained,
             "invalid_records":invalid[:40],
