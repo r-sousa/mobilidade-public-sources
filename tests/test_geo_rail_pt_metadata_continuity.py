@@ -33,7 +33,7 @@ def fixture():
                 "metadata_footprint_count": 1,
                 "footprints": [{
                     "tile_id": f"{source}-{index:06d}-TEST",
-                    "bbox_wgs84": rect, "bbox_method": "source_bbox",
+                    "bbox_wgs84": rect.copy(), "bbox_method": "source_bbox",
                     "collection": source,
                 }],
             })
