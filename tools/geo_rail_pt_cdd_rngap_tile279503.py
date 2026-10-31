@@ -32,6 +32,7 @@ SOURCE_BOUNDS=[79000,202000,80000,203000]
 SOURCE_MARKS=("RedeNivelamento.4662","RedeNivelamento.4663",
               "RedeNivelamento.4664","RedeNivelamento.4665","RedeNivelamento.4666")
 TARGET_STAC_QUERY=[-7.195,41.478,-7.170,41.497]
+SOURCE_DESCRIPTORS="reports/mn-geo-rail-001/pt-rngap-np159-five-source-original-mark-descriptors.json"
 ORIGINAL_RNGAP_SOURCE="reports/mn-geo-rail-001/pt-rngap-three-window-complete-ALTH38-source.json"
 MAX_SOURCE_MARKS=427
 MAX_NATIVE_BYTES=25_000_000
@@ -80,7 +81,45 @@ def exact_source_asset(session):
         raise IntakeError("unapproved_source_DGT_native_asset")
     return href,sha
 
-def compare_real_mark_native_terrain(path,marks):
+def inspected_physical_mark_descriptions(source_path,marks):
+    source=Path(source_path)
+    if not source.is_file() or source.is_symlink():
+        raise ValueError("official_DGT_NP159_mark_original_descriptions_missing")
+    raw=source.read_bytes()
+    doc=json.loads(raw)
+    if (doc.get("matching_reviewed_source_records")!=5 or
+        doc.get("source_layer")!="RGN:RedeNivelamento" or
+        doc.get("actual_DGT_native_tile_pixel_comparison_performed") is not False):
+        raise ValueError("DGT_original_NP159_source_descriptions_not_accepted")
+    recs=doc.get("selected_mark_physical_identification_fields")
+    if not isinstance(recs,list) or len(recs)!=5:raise ValueError("five_original_description_records_missing")
+    expected={x["WFS_feature_id"]:x for x in marks}
+    distinct={}
+    for rec in recs:
+        ident=rec.get("WFS_source_feature_id")
+        if ident not in expected or ident in distinct:raise ValueError("NP159_original_description_ID_unreviewed")
+        details=rec.get("original_attributes")
+        if not isinstance(details,dict):raise ValueError("original_description_source_missing")
+        desc=details.get("DESCRICAO")
+        if not isinstance(desc,str) or len(desc)<35 or len(desc)>900:
+            raise ValueError("official_physical_mark_description_missing")
+        if (str(details.get("MARCA"))!=expected[ident]["mark_label_MARCA"] or
+            abs(float(details["ALTH38"])-expected[ident]["DGT_original_ALTH38_height_m"])>1e-7):
+            raise ValueError("NP159_original_physical_mark_metadata_disagrees")
+        distinct[ident]=desc
+    if len(set(distinct.values()))!=5:
+        raise ValueError("five_original_physical_mark_descriptions_not_distinct")
+    return distinct,hashlib.sha256(raw).hexdigest()
+
+
+def compare_real_mark_native_terrain(path,marks,descriptions):
+    """Sample a raster at shared WFS XY for CONTEXT; NO mark-point residual.
+
+    The DGT's five NP159/t variants have explicitly different physical
+    descriptions but the WFS reuses one planimetric coordinate for all five.
+    Treating raster sample at this coordinate as ground height at each mark
+    would create fictitious geodetic errors. Preserve source heights separately.
+    """
     import rasterio
     import numpy as np
     x,y=marks[0]["native_xy_epsg3763"]
@@ -92,46 +131,49 @@ def compare_real_mark_native_terrain(path,marks):
             raise ValueError("DGT_tile_279503_exact_bbox_did_not_match")
         row,col=ds.index(x,y)
         if not (1<=row<499 and 1<=col<499):
-            raise ValueError("mark_not_inside_source_raster_interior")
+            raise ValueError("source_WFS_shared_XY_not_inside_raster_interior")
         values=ds.read(1,window=((row-1,row+2),(col-1,col+2)),masked=True)
         if values.shape!=(3,3) or values.count()!=9:
-            raise ValueError("raster_3x3_at_NP159_has_nodata")
+            raise ValueError("raster_3x3_at_shared_WFS_XY_has_nodata")
         z=float(values[1,1])
         pixel_x,pixel_y=ds.xy(row,col)
         px_offset=math.hypot(pixel_x-x,pixel_y-y)
         if px_offset>math.sqrt(2)*ds.res[0]/2+.01:
-            raise ValueError("unexpected_pixel_center_versus_mark_offset")
+            raise ValueError("unexpected_pixel_center_versus_shared_WFS_XY_offset")
         per_mark=[]
         for mark in marks:
-            h=float(mark["DGT_original_ALTH38_height_m"])
             per_mark.append({
               "DGT_original_WFS_feature_id":mark["WFS_feature_id"],
-              "DGT_mark_label":mark["mark_label_MARCA"],
-              "producer_ALTH38_source_value":mark["DGT_ALTH38_original_source_value"],
-              "published_ALTH38_height_m":h,
-              "MDT_raw_nearest_pixel_minus_published_mark_m":z-h,
-              "same_geographic_XY_as_other_4_marks":True,
-              "mark_Z_may_refer_to_physical_offset_or_distinct_point_not_bare_ground":True})
-        return {"native_source_tile":SOURCE_TILE,
-          "mark_xy_epsg3763":[x,y],
-          "raw_DGT_2m_nearest_pixel_height_m":z,
-          "raw_DGT_2m_3x3_median_height_m":float(np.median(values.compressed())),
-          "raw_DGT_2m_3x3_min_height_m":float(values.min()),
-          "raw_DGT_2m_3x3_max_height_m":float(values.max()),
-          "pixel_center_distance_to_mark_m":px_offset,
-          "physical_mark_offset_not_verified":True,
-          "not_an_independent_survey_error_estimate":True,
-          "not_DGT_MDT_accuracy_RMSE":True,
-          "not_PT_ES_datum_validation":True,
-          "comparisons_to_five_mark_VARIANT_heights":per_mark}
+              "DGT_physical_mark_label":mark["mark_label_MARCA"],
+              "producer_ALTH38_original_source_value":mark["DGT_ALTH38_original_source_value"],
+              "published_ALTH38_height_m":float(mark["DGT_original_ALTH38_height_m"]),
+              "physical_original_DGT_description":descriptions[mark["WFS_feature_id"]],
+              "precise_physical_mark_xy_not_published_by_this_WFS":True,
+              "individual_ground_pixel_residual_m":None,
+              "pointwise_vertical_accuracy_statistic_allowed":False})
+        return {
+          "native_source_tile":SOURCE_TILE,
+          "shared_provider_surrogate_xy_epsg3763":[x,y],
+          "nominal_raster_pixel_at_shared_surrogate_xy_m":z,
+          "nominal_DGT_2m_3x3_median_height_m":float(np.median(values.compressed())),
+          "nominal_DGT_2m_3x3_min_height_m":float(values.min()),
+          "nominal_DGT_2m_3x3_max_height_m":float(values.max()),
+          "nominal_pixel_center_distance_to_shared_WFS_XY_m":px_offset,
+          "five_variants_share_WFS_surrogate_geometry_but_have_distinct_physical_descriptions":True,
+          "pixel_height_is_NOT_a_surrogate_for_each_physical_mark_ground_level":True,
+          "individual_pointwise_raster_mark_residuals_not_computed":True,
+          "vertical_MDT_accuracy_RMSE_not_estimated":True,
+          "crossborder_datum_validation":False,
+          "source_mark_descriptions_and_heights":per_mark}
 
-def run(index,mark_source,retain_file=None,phase=None):
+def run(index,mark_source,description_source,retain_file=None,phase=None):
     def step(label):
         if phase is not None:phase["safe_phase"]=label
     step("official_source_index_and_mark_QA")
     doc=json.loads(Path(index).read_text(encoding="utf-8"))
     catalogue_record(doc,COLLECTION,SOURCE_TILE)
     marks,mark_sha=producer_mark_records(mark_source)
+    descriptions,descriptors_sha=inspected_physical_mark_descriptions(description_source,marks)
     u=os.getenv("DGT_CDD_USERNAME","")
     p=os.getenv("DGT_CDD_PASSWORD","")
     if not (u and p):raise IntakeError("dgt_environment_credentials_missing")
@@ -159,7 +201,7 @@ def run(index,mark_source,retain_file=None,phase=None):
             any(abs(float(z)-t)>.01 for z,t in zip(ras["bounds_pttm06"],SOURCE_BOUNDS))):
             raise ValueError("native_source_pixels_or_shape_not_complete")
         step("real_RNGAP_source_vs_DGT_terrain_comparison")
-        pixels=compare_real_mark_native_terrain(dest,marks)
+        pixels=compare_real_mark_native_terrain(dest,marks,descriptions)
         staged=False
         if retain_file is not None:
             step("stage_verified_native_source_for_separate_no_credentials_release")
@@ -179,11 +221,12 @@ def run(index,mark_source,retain_file=None,phase=None):
           "source_tile":SOURCE_TILE,
           "reviewed_raster_bbox_epsg3763":list(SOURCE_BOUNDS),
           "original_RNGAP_427_marks_source_SHA256":mark_sha,
+          "five_original_NP159_physical_mark_descriptors_SHA256":descriptors_sha,
           "authenticated_DGT_STAC_response_SHA256":stac_sha,
           "native_source_file_sha256":native_sha,
           "native_source_file_bytes":native_bytes,
           "raster_source_QA":q,
-          "mark_terrain_descriptive_comparison":pixels,
+          "mark_terrain_nonaligned_descriptive_context":pixels,
           "original_native_raster_staged_for_nonsecret_prerelease":staged,
           "unverified_mark_physical_height_offsets":True,
           "observed_geodetic_PT_ES_vertical_harmonization":False,
@@ -196,13 +239,14 @@ def main():
     a.add_argument("--index",type=Path,required=True)
     a.add_argument("--RNGAP-source",type=Path,required=True)
     a.add_argument("--receipt",type=Path,required=True)
+    a.add_argument("--description-source",type=Path,default=Path(SOURCE_DESCRIPTORS))
     a.add_argument("--retain-file",type=Path,default=None)
     opt=a.parse_args()
     receipt={"mission":"MN-GEO-RAIL-001","status":"not_validated",
       "source_tile":SOURCE_TILE,"Fxx_canonical_accepted":False,
       "Site_publication_authorized":False}
     phase={"safe_phase":"not_started"}
-    try:receipt=run(opt.index,opt.RNGAP_source,opt.retain_file,phase)
+    try:receipt=run(opt.index,opt.RNGAP_source,opt.description_source,opt.retain_file,phase)
     except IntakeError as err:
         receipt["safe_error_code"]=err.code
         receipt["safe_failure_phase"]=phase["safe_phase"]
