@@ -1,0 +1,91 @@
+name: MN-GEO-RAIL-001 A1 acquire continuous regional GLO30 DSM original pixels
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-r1-continuous-30m-dsm-20261031
+    paths:
+      - tools/geo_rail_r1_regional_dsm_mosaic.py
+      - tests/test_geo_rail_r1_regional_dsm_mosaic.py
+      - .github/workflows/mn-geo-r1-regional-dsm.yml
+permissions:
+  contents: read
+concurrency:
+  group: mn-geo-rail-001-r1-regional-four-real-cogs
+  cancel-in-progress: false
+jobs:
+  acquire-four-full-producer-COGs-and-test-regional-native-pixel-DSM:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-r1-continuous-30m-dsm-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 23
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install public GeoTIFF raster validator
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
+      - name: Audit strict bounded source volume and regional envelope, no network
+        run: python -m unittest discover -s tests -p 'test_geo_rail_r1_regional_dsm_mosaic.py' -v
+      - name: Download exact 4 verified public 1deg COG sources, inspect all source pixels, create 1arcsec DSM
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_r1_regional_dsm_mosaic.py --acquire "$RUNNER_TEMP/MN-GEO-REGIONAL"
+          python tools/geo_rail_r1_regional_dsm_mosaic.py --verify-existing "$RUNNER_TEMP/MN-GEO-REGIONAL"
+          # Keep full source COG bytes in runner only, never stage for publication
+      - name: Upload only vetted clipped DSM GeoTIFF and source QA (never full original 1deg COGs)
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-r1-30m-regional-DSM-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/MN-GEO-REGIONAL/MN-GEO-RAIL-001-Porto-Zamora-GLO30-DSM-1arcsec.tif
+            ${{ runner.temp }}/MN-GEO-REGIONAL/MN-GEO-RAIL-001-Porto-Zamora-GLO30-DSM-source-QA.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+      - name: Explicitly report what the acquisition does and does not prove
+        run: |
+          echo "Full source pixels read in four independently hashed native Copernicus GLO-30 COGs; only clipped 1arcsec DSM exported." >> "$GITHUB_STEP_SUMMARY"
+          echo "Includes trees, buildings and other above-ground features; it is NOT DGT/IGN bare-earth DTM, railway gradients or geodetic datum validation." >> "$GITHUB_STEP_SUMMARY"
+  publish-independent-source-verified-region-without-acquisition-sessions:
+    needs: acquire-four-full-producer-COGs-and-test-regional-native-pixel-DSM
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
+      - uses: actions/download-artifact@v4
+        with:
+          name: mn-geo-rail-001-r1-30m-regional-DSM-${{ github.run_id }}
+          path: ${{ runner.temp }}/MN-GEO-REGIONAL-APPROVED
+      - name: Independently reopen full derived GeoTIFF and verify source SHA, cells, mask and seams
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_r1_regional_dsm_mosaic.py --verify-existing "$RUNNER_TEMP/MN-GEO-REGIONAL-APPROVED"
+      - name: Publish licensed, precisely qualified clipped DSM as immutable public prerelease
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/MN-GEO-REGIONAL-APPROVED"
+          tag="mn-geo-rail-001-r1-30m-porto-zamora-dsm-preacceptance-${GITHUB_RUN_ID}"
+          cat > "$RUNNER_TEMP/notes.txt" <<'EOF'
+          MN-GEO-RAIL-001: ACTUAL PIXELS of a regionally continuous Copernicus DEM GLO-30 Public digital SURFACE model (DSM).
+          Source producers: DLR e.V., Airbus Defence and Space; European Union / ESA Copernicus.
+          Derivative attribution:
+          Produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved
+          Terms: https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM
+          Only the clipped regional DSM and QA are published. Original four 1-degree producer COG source files are not rehosted.
+          Source grid: 1 arcsecond WGS84 EPSG:4326; source product nominal vertical EGM2008 EPSG:3855, not independently accepted geodetic benchmark.
+          Screening rectangle [-8.65,41.08,-5.55,41.92] includes Porto–Trás-os-Montes–Zamora review sectors, NOT selected line route.
+          DSM includes buildings and vegetation. NOT a bare-earth MDT / engineering-ready railway elevation profile.
+          Preacceptance only: no Fxx, no Site, no rail ruling gradients, no shared PT-ES geodetic calibration.
+          See the bundled QA JSON for validated real pixel counts, 3 tested source boundaries, original source SHA256 and output SHA256.
+          EOF
+          gh release create "$tag" "$d/MN-GEO-RAIL-001-Porto-Zamora-GLO30-DSM-1arcsec.tif" "$d/MN-GEO-RAIL-001-Porto-Zamora-GLO30-DSM-source-QA.json" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "MN-GEO-RAIL-001 A1 Porto–Zamora actual 30m GLO-30 DSM pixels — PREACCEPTANCE" --notes-file "$RUNNER_TEMP/notes.txt"
