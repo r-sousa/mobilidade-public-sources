@@ -104,6 +104,7 @@ def load_review(path):
  return ready
 
 def native_raster_QA(path,id):
+ """Audit genuine ground and original NoData separately. NEVER fill source voids."""
  import rasterio,numpy as np
  b=tile_bounds(id)
  if not(1024<=path.stat().st_size<=MAX_ONE_SOURCE_BYTES):
@@ -116,42 +117,73 @@ def native_raster_QA(path,id):
   if any(abs(v-w)>.002 for v,w in zip(ds.bounds,b)):
    raise ValueError("original_DGT_source_actual_bounds_disagree_with_producer_grid_id")
   a=ds.read(1,masked=True)
-  if a.count()!=250000 or int(np.ma.count_masked(a)):
-   raise ValueError("real_original_DGT2m_raster_has_NoData")
+  valid=int(a.count());missing=int(np.ma.count_masked(a))
+  if valid+missing!=250000:
+   raise ValueError("original_DGT2m_pixel_mask_count_inconsistent")
   v=a.compressed()
-  if not np.isfinite(v).all() or v.min()<-500 or v.max()>4000:
-   raise ValueError("source_original_DGT2m_unreasonable_terrain_values")
+  if v.size and (not np.isfinite(v).all() or v.min()<-500 or v.max()>4000):
+   raise ValueError("original_DGT_source_has_nonfinite_or_implausible_VALID_elevations")
   return {"native_original_source_tile_id":id,"bbox_pttm06_m":b,
           "horizontal_crs":"EPSG:3763","resolution_m":2,
-          "source_nodata_pixels":0,"real_valid_ground_pixels":250000,
-          "range_m":[float(v.min()),float(v.max())],
+          "source_nodata_pixels":missing,"real_valid_ground_pixels":valid,
+          "valid_ground_coverage_fraction":round(valid/250000,8),
+          "source_has_unfilled_NoData":bool(missing),
+          "range_m":[float(v.min()),float(v.max())] if v.size else None,
           "verified_independent_vertical_RMSE":False}
+
 
 def src(stage,id):
  parse_id(id);return stage/(id+".tif")
 
+def observed_source_seam(path_a,path_b,orientation):
+ """Record valid adjacent cell pairs without claiming real ground over NoData."""
+ import numpy as np,rasterio
+ with rasterio.open(path_a) as a,rasterio.open(path_b) as b:
+  if orientation=="west_east":
+   aa=a.read(1,window=((0,500),(499,500)),masked=True).ravel()
+   bb=b.read(1,window=((0,500),(0,1)),masked=True).ravel()
+  elif orientation=="north_south":
+   aa=a.read(1,window=((499,500),(0,500)),masked=True).ravel()
+   bb=b.read(1,window=((0,1),(0,500)),masked=True).ravel()
+  else:raise ValueError("unrecognized_DGT_original_seam_orientation")
+  if aa.size!=500 or bb.size!=500:raise ValueError("original_DGT_source_edge_not_500_cells")
+  ok=~np.ma.getmaskarray(aa)&~np.ma.getmaskarray(bb)
+  n=int(ok.sum())
+  diff=bb.data[ok].astype("float64")-aa.data[ok].astype("float64")
+  if not np.isfinite(diff).all():raise ValueError("nonfinite_actual_neighbor_pair_elevation")
+  return {"orientation":orientation,"pairs_total":500,"pairs_valid":n,
+      "pairs_with_at_least_one_unfilled_NoData":500-n,
+      "all_500_pairs_valid":n==500,
+      "median_abs_neighbor_diff_m":float(np.median(abs(diff))) if n else None,
+      "max_abs_neighbor_diff_m":float(np.max(abs(diff))) if n else None,
+      "signed_mean_second_minus_first_neighbor_diff_m":float(np.mean(diff)) if n else None,
+      "same_point_vertical_accuracy_comparison":False}
+
 def four_seams(stage,g):
- ids={(parse_id(id)):id for id in g["tile_ids"]}
+ ids={parse_id(id):id for id in g["tile_ids"]}
  cols=sorted({z[0] for z in ids});rows=sorted({z[1] for z in ids})
  s=[]
  for row in rows:
   a,b=ids[cols[0],row],ids[cols[1],row]
-  s.append({"a":a,"b":b,**compare_shared_edges(src(stage,a),src(stage,b),"west_east")})
+  s.append({"a":a,"b":b,**observed_source_seam(src(stage,a),src(stage,b),"west_east")})
  for col in cols:
   a,b=ids[col,rows[1]],ids[col,rows[0]]
-  s.append({"a":a,"b":b,**compare_shared_edges(src(stage,a),src(stage,b),"north_south")})
- if len(s)!=4 or any(v["pairs_valid"]!=500 for v in s):
-  raise ValueError("four_original_DGT_source_cell_edges_not_all_valid")
+  s.append({"a":a,"b":b,**observed_source_seam(src(stage,a),src(stage,b),"north_south")})
+ if len(s)!=4 or any(x["pairs_valid"]+x["pairs_with_at_least_one_unfilled_NoData"]!=500 for x in s):
+  raise ValueError("original_DGT_four_source_edges_inconsistent")
  return s
 
+
 def create_mosaic(stage,g):
+ """Preserve source originals and write mosaics with explicit unfilled NoData."""
  import rasterio,numpy as np
  from rasterio.transform import from_origin
  x,y,x1,y1=g["grid_epsg3763"]
  with rasterio.open(src(stage,g["tile_ids"][0])) as a:dtype=a.dtypes[0]
- if not np.issubdtype(np.dtype(dtype),np.number):
-  raise ValueError("non_numeric_original_DGT_source")
- full=np.zeros((1000,1000),dtype=dtype)
+ if not np.issubdtype(np.dtype(dtype),np.floating):
+  raise ValueError("native_DGT2m_source_should_be_float_to_preserve_exact_valid_values")
+ nodata=-9999.
+ full=np.full((1000,1000),nodata,dtype=dtype)
  for id in g["tile_ids"]:
   col,row=parse_id(id)
   left=((col-200)*1000-x)//2
@@ -159,20 +191,24 @@ def create_mosaic(stage,g):
   if left not in (0,500) or top not in (0,500):
    raise ValueError("native_source_outside_exact_original_2km_group")
   with rasterio.open(src(stage,id)) as ds:
-   z=ds.read(1)
+   z=ds.read(1,masked=True)
    if z.dtype!=full.dtype:raise ValueError("mixed_source_original_DGT_dtype")
-   full[top:top+500,left:left+500]=z
+   # Explicit missing-value marker; no interpolation, resampling or extrapolation.
+   full[top:top+500,left:left+500]=z.filled(nodata)
  name=f"{g['group_id']}-original-DGT2m-2000m-ground-mosaic.tif"
  output=stage/name
  with rasterio.open(output,"w",driver="GTiff",count=1,width=1000,height=1000,
      dtype=dtype,crs="EPSG:3763",transform=from_origin(x,y1,2,2),
+     nodata=nodata,
      compress="DEFLATE",tiled=True,blockxsize=256,blockysize=256,
-     predictor=(3 if np.issubdtype(full.dtype,np.floating) else 2)) as ds:
+     predictor=3) as ds:
   ds.write(full,1)
   ds.update_tags(DGT_original_source="Direção-Geral do Território / CDD",
       licensed_CC_BY_4_0="attribution to DGT mandatory",
+      source_voids="Original NoData preserved as -9999, never interpolated or filled",
       screening_only="G3 exploratory acquisition, NOT railway track or station")
  return output
+
 
 def verify_mosaic(stage,g,path):
  import rasterio,numpy as np
@@ -181,20 +217,32 @@ def verify_mosaic(stage,g,path):
   if (ds.crs is None or ds.crs.to_epsg()!=3763 or
      ds.driver!="GTiff" or ds.count!=1 or
      (ds.width,ds.height)!=(1000,1000) or
+     ds.nodata!=-9999.0 or
      any(abs(a-b)>.002 for a,b in zip(ds.bounds,(x,y,x1,y1)))):
-   raise ValueError("native_source_mosaic_bad_geometry")
+   raise ValueError("native_source_mosaic_bad_geometry_or_missing_NoData_marker")
   got=ds.read(1,masked=True)
-  if got.count()!=1_000_000:raise ValueError("mosaic_original_source_data_missing")
+  total_valid=0
   for id in g["tile_ids"]:
    col,row=parse_id(id)
    left=((col-200)*1000-x)//2
    top=(2000-((row-301)*1000-y)-1000)//2
    with rasterio.open(src(stage,id)) as original:
-    z=original.read(1)
-   if not np.array_equal(got.data[top:top+500,left:left+500],z):
-    raise ValueError("new_G3_mosaic_not_pixel_exact_with_original_source_tile")
- return {"cell_count":1000000,"all_cells_valid":True,
-         "pixel_exact_native_sources":4,"source_seams":4}
+    z=original.read(1,masked=True)
+   section=got[top:top+500,left:left+500]
+   valid=~np.ma.getmaskarray(z)
+   if not np.array_equal(np.ma.getmaskarray(section),np.ma.getmaskarray(z)):
+    raise ValueError("source_original_NoData_mask_not_preserved_in_2km_mosaic")
+   if not np.array_equal(section.data[valid],z.data[valid]):
+    raise ValueError("G3_mosaic_valid_native_elevations_not_exactly_original_pixel_values")
+   total_valid+=int(z.count())
+  if got.count()!=total_valid:
+   raise ValueError("mosaic_valid_original_pixels_total_not_equal_to_sources")
+ return {"cell_count":1000000,"real_valid_ground_pixels":total_valid,
+         "original_source_nodata_pixels":1000000-total_valid,
+         "all_cells_valid":total_valid==1000000,
+         "pixel_exact_native_sources":4,"source_seams":4,
+         "no_gap_fill_or_interpolation_performed":True}
+
 
 def batch_groups(all_groups,batch):
  if batch not in BATCHES:raise ValueError("unknown_or_unauthorized_DGT_original_source_batch")
@@ -207,7 +255,10 @@ def verify(stage,all_groups,batch,receipt):
  if (receipt["batch"]!=batch or
      receipt["real_original_DGT2m_tile_count"]!=len(gs)*4 or
      receipt["real_native_2m_ground_area_km2"]!=len(gs)*4 or
-     receipt["valid_original_ground_pixels"]!=len(gs)*1_000_000 or
+     receipt["valid_original_ground_pixels"]!=sum(z["native_original_QA"]["real_valid_ground_pixels"] for z in receipt["native_originals"]) or
+     receipt["source_original_nodata_pixels"]!=sum(z["native_original_QA"]["source_nodata_pixels"] for z in receipt["native_originals"]) or
+     receipt["valid_original_ground_pixels"]+receipt["source_original_nodata_pixels"]!=len(gs)*1_000_000 or
+     receipt["source_adjacent_valid_cell_pairs"]!=sum(x["pairs_valid"] for m in receipt["mosaics"] for x in m["seams"]) or
      len(receipt["mosaics"])!=len(gs) or
      len(receipt["native_originals"])!=len(gs)*4 or
      receipt["review_original_source_SHA256"]!=PINNED_G3_SHA256 or
@@ -270,10 +321,14 @@ def acquire(stage,all_groups,batch):
    "source_original_bytes":total,
    "real_original_DGT2m_tile_count":len(source),
    "real_native_2m_ground_area_km2":len(source),
-   "valid_original_ground_pixels":len(source)*250000,
-   "source_original_nodata_pixels":0,
+   "valid_original_ground_pixels":sum(a["native_original_QA"]["real_valid_ground_pixels"] for a in source),
+   "source_original_nodata_pixels":sum(a["native_original_QA"]["source_nodata_pixels"] for a in source),
+   "source_original_1km_tile_footprint_km2":len(source),
+   "actual_valid_original_ground_pixel_area_km2":sum(a["native_original_QA"]["real_valid_ground_pixels"] for a in source)*4/1000000,
+   "source_voids_preserved_without_fill":True,
    "source_four_tile_seams":len(mosaic_records)*4,
-   "source_adjacent_valid_cell_pairs":len(mosaic_records)*2000,
+   "source_adjacent_valid_cell_pairs":sum(z["pairs_valid"] for m in mosaic_records for z in m["seams"]),
+   "source_adjacent_unfilled_nodata_pairs":sum(z["pairs_with_at_least_one_unfilled_NoData"] for m in mosaic_records for z in m["seams"]),
    "native_originals":source,"mosaics":mosaic_records,
    "continuous_native_2m_DGT_railway_corridor_verified":False,
    "railway_vertical_datum_RMSE_verified":False,
@@ -301,5 +356,7 @@ def main():
  print(json.dumps({"status":"REAL_G3_DGT_2M_ORIGINALS_AND_SOURCE_MOSAICS_INDEPENDENT_QA",
   "batch":args.batch,"new_original_ground_km2":res["real_native_2m_ground_area_km2"],
   "original_source_files":res["real_original_DGT2m_tile_count"],
-  "valid_2m_source_pixels":res["valid_original_ground_pixels"]}))
+  "valid_2m_source_pixels":res["valid_original_ground_pixels"],
+  "original_source_NoData_pixels":res["source_original_nodata_pixels"],
+  "true_valid_ground_area_km2":res["actual_valid_original_ground_pixel_area_km2"]}))
 if __name__=="__main__":main()
