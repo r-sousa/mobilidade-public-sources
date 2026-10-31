@@ -1,0 +1,74 @@
+name: MN-GEO-RAIL-001 G16B georeferenced road-demography-terrain study site comparisons
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g16-station-site-portfolio-20261031
+      - main
+    paths:
+      - tools/geo_rail_g16b_station_reference_maps.py
+      - .github/workflows/mn-geo-g16b-research-site-maps.yml
+permissions:
+  contents: write
+  actions: read
+jobs:
+  G16B_54_original_geo_source_study_sites_visuals:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install only mapping requirements
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'matplotlib>=3.8,<4' 'shapely>=2.1,<3' 'pyproj>=3.6,<4'
+      - name: Reuse verified immutable G16 first-party census and 54 source-sites report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G16B"
+          gh run download 41251871165 --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G16-three-corridors-54-study-station-pareto \
+            --dir "$RUNNER_TEMP/G16B"
+      - name: Render georeferenced 54 real research points and each Pareto reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g16b_station_reference_maps.py \
+            --source "$RUNNER_TEMP/G16B/G16-54-source-research-point-city-population-access-terrain.json" \
+            --heatmap "$RUNNER_TEMP/G16B/G16B-source-research-site-Pareto-6-markets.png" \
+            --geojson "$RUNNER_TEMP/G16B/G16B-real-geometry-54-research-interface-reference-points.geojson"
+          python - <<'PY'
+          import os,pathlib,json
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])/"G16B"
+          f=json.loads((d/"G16B-real-geometry-54-research-interface-reference-points.geojson").read_text())
+          assert len(f["features"])==54
+          assert all(p["properties"]["not_a_real_station_or_approved_site"] for p in f["features"])
+          assert all(p["properties"]["PT_coverage_not_measured_not_assumed_zero"] for p in f["features"])
+          assert (d/"G16B-source-research-site-Pareto-6-markets.png").stat().st_size>10000
+          print("G16B: QA verified 54 original source research point locations, not stations, no PT missing-data bias")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G16B-source-map-54-station-reference-points
+          path: |
+            ${{ runner.temp }}/G16B/G16B-source-research-site-Pareto-6-markets.png
+            ${{ runner.temp }}/G16B/G16B-real-geometry-54-research-interface-reference-points.geojson
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish verified source data map after main integration
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g16b-station-study-source-geojson-maps-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G16B/G16B-source-research-site-Pareto-6-markets.png" "$RUNNER_TEMP/G16B/G16B-real-geometry-54-research-interface-reference-points.geojson" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G16B 54 georeferenced 2021 census/2026 road/DSM Pareto source references, NOT railway stations" \
+            --notes "G16 original source and INE2021 BGRI census counts within geometric radii, actual OSRM 2026 drive minutes to nonstation source grid references, true Copernicus DSM local surface pressure; data compiled in same original source 54 research points, not approved train platforms or property parcels. 18 city×research corridor no-weight Pareto location studies. Missing comparable NUTS II Norte public transport services have NO penalty or imputed zero. No INE re-download, Fxx, Site, engineering CAPEX or railway service cost claimed."
