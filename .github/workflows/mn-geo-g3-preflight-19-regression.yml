@@ -1,0 +1,52 @@
+name: MN-GEO-RAIL-001 G3 protected preflight end-to-end 19-sector regression (NO DGT secrets)
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g3-fix-19-group-guard-20261031
+    paths:
+      - .github/workflows/mn-geo-pt-g3-80-native-registered.yml
+      - tests/test_geo_rail_g3_workflow_review_consistency.py
+      - .github/workflows/mn-geo-g3-preflight-19-regression.yml
+permissions:
+  contents: read
+jobs:
+  pin-real-original-source-review-and-run-protected-preflight-without-secrets:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g3-fix-19-group-guard-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    env:
+      PYTHONPATH: tools
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Load QA dependency modules without DGT environment or permanent tokens
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=1.24,<3' 'requests>=2.32,<3'
+      - name: Verify protected workflow Python guards consistent with 19 screened source groups
+        run: python -m unittest discover -s tests -p 'test_geo_rail_g3_workflow_review_consistency.py' -v
+      - name: Also run existing native raster and batch tests
+        run: python -m unittest discover -s tests -p 'test_geo_rail_g3_native80.py' -v
+      - name: Get exactly the real source-selection receipt used by protected workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --max-time 100 "https://github.com/r-sousa/mobilidade-public-sources/releases/download/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json" --output "$RUNNER_TEMP/G3-real-source-2km-study.json"
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G3-real-source-2km-study.json" | sha256sum -c -
+      - name: Execute exact Python preflight embedded in protected workflow using real release report (no secrets)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,pathlib,re
+          y=pathlib.Path(".github/workflows/mn-geo-pt-g3-80-native-registered.yml").read_text()
+          match=re.search(r"          python - <<'PY'\n(.*?)\n          PY",y,re.S)
+          assert match,"exact protected preflight not found in source"
+          text="\n".join(line[10:] for line in match.group(1).splitlines())
+          compile(text,"protected_workflow_preflight.py","exec")
+          exec(text,{"__name__":"__main__"})
+          print("Protected preflight actually executed against pinned primary-source report, 76 original new DGT source IDs, 19 source groups, no secrets")
+          PY

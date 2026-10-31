@@ -62,9 +62,11 @@ jobs:
           from pathlib import Path
           from geo_rail_g3_native80 import load_review,BATCHES,batch_groups
           d=load_review(Path(os.environ["RUNNER_TEMP"])/"G3-real-source-2km-study.json")
-          assert len(d)==20
+          assert len(d)==sum(BATCHES.values())==19, "Expected 19 genuinely new G3 research sectors after Mirandela reuse"
+          assert sum(len(g["tile_ids"]) for g in d)==76, "Expected exactly 76 new native producer tile IDs"
+          assert len({tid for g in d for tid in g["tile_ids"]})==76, "Duplicate original producer tile IDs"
           assert all(len(batch_groups(d,k))==n for k,n in BATCHES.items())
-          print("approved source originals: 76 new IDs; 7 Vila Real study cells, 5 Bragança, 7 intercity after excluding 4 Mirandela duplicates")
+          print("G3 original-source review passed: exactly 19 disjoint source research groups / 76 new DGT2m tiles (7 Vila Real, 5 Bragança, 7 regional); four already-held Mirandela tiles explicitly excluded")
           PY
       - name: Protected DGT login, retrieve actual producer native 2m pixels and run 4 real source seams per group
         env:
