@@ -1,5 +1,5 @@
 """B1 strict static source and synthetic native tile QA; secrets never required."""
-import importlib.util,json,sys,unittest
+import importlib.util,json,sys,unittest,tempfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"tools"))
@@ -30,7 +30,10 @@ class Review(unittest.TestCase):
   with self.assertRaises(ValueError):m.city_groups(m.read_review(CONFIG),"sanabria")
   invalid=json.loads(CONFIG.read_text())
   invalid["mandatory_cities"]=["vila_real"]
-  with self.assertRaises(ValueError):m.read_review_dict(invalid) if hasattr(m,"read_review_dict") else self.assertTrue(invalid["mandatory_cities"]==["vila_real"]) and m.city_groups(invalid,"braganca")
+  with tempfile.TemporaryDirectory() as tmp:
+   bad=Path(tmp)/"bad.json"
+   bad.write_text(json.dumps(invalid))
+   with self.assertRaises(ValueError):m.read_review(bad)
  def test_one_tile_exact_producer_native_QA_if_geo_libraries_available(self):
   if not(importlib.util.find_spec("rasterio") and importlib.util.find_spec("numpy")):
    self.skipTest("source pixel QA runs with rasterio and numpy in protected workflow")
@@ -39,7 +42,7 @@ class Review(unittest.TestCase):
   with tempfile.TemporaryDirectory() as tmp:
    p=Path(tmp)/"MDT-2m-220481-07-2024.tif"
    with rasterio.open(p,"w",driver="GTiff",width=500,height=500,count=1,
-     crs="EPSG:3763",transform=from_origin(20000,182000,2,2),dtype="float32",compress="DEFLATE") as ds:
+     crs="EPSG:3763",transform=from_origin(20000,181000,2,2),dtype="float32",compress="DEFLATE") as ds:
     ds.write(np.full((500,500),120.,dtype="float32"),1)
    qa=m.native_qa(p,"MDT-2m-220481-07-2024")
    self.assertEqual(qa["valid_pixels"],250000)
