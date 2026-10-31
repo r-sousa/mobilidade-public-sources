@@ -1,0 +1,52 @@
+name: MN-GEO-RAIL-001 B1 join real OSM-road-DSM sectors to original DGT source 2m tiles
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-b1-road-DSM-DGT-joined-targets-20261031
+    paths:
+      - tools/geo_rail_pt_b1_joined_preacquisition.py
+      - tests/test_geo_rail_pt_b1_joined_preacquisition.py
+      - .github/workflows/mn-geo-b1-joined-preacquisition.yml
+permissions:
+  contents: write
+jobs:
+  intersect-original-DGT-source-tiles-and-actual-road-DSM-sector-screens:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-b1-road-DSM-DGT-joined-targets-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline deterministic source contract
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_b1_joined_preacquisition.py' -v
+      - name: Retrieve actual measured OSM road + 30m DSM research sectors from validated source release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/real-road"
+          gh release download "mn-geo-rail-001-b1-a4-mandatory-city-roads-source-preacceptance-41200362181" --repo "$GITHUB_REPOSITORY" --pattern "*priorities.json" --dir "$RUNNER_TEMP/real-road"
+      - name: Join 222 actual DSM sectors to 7,169 original producer STAC grid IDs and enforce binding city constraints
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_pt_b1_joined_preacquisition.py --dgt-reports reports/mn-geo-rail-001 --road-review "$RUNNER_TEMP/real-road/B1-PT-VilaReal-Braganca-2km-sector-priorities.json" --output "$RUNNER_TEMP/B1-joined-actual-sources.json"
+      - name: Preserve SHA-verified acquisition candidate list in public release, not native protected rasters
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-b1-review-source-tiles-after-road-DSM-join-${GITHUB_RUN_ID}"
+          cat > "$RUNNER_TEMP/notes.txt" <<'NOTE'
+          B1 PRE-ACQUISITION: mandatory service areas Vila Real and Bragança; no requirement of city-centre stations; Sanabria excluded.
+          Real secondary OSM road geometries (ODbL, OpenStreetMap contributors) and Copernicus GLO30 real DSM 30m relief screen are cross-referenced to ALL FIVE original DGT producer 2m STAC catalog receipts, source SHA verified.
+          Source DGT metadata are NOT acquired DGT raster pixels. The selected official original DGT tile IDs are prospective small grid areas, not railway station sites or approved track geometry.
+          Distances to road ways are straight-line, NOT drive time or legal motorway access; DSM includes trees/buildings and does NOT establish bare-earth construction terrain.
+          Protected registered actual DGT CDD downloads can only be executed via manual workflow_dispatch on protected main with the dgt-cdd Environment, not from this public branch.
+          Source attribution DGT CC BY 4.0, OpenStreetMap contributors ODbL, Copernicus required producers.
+          No secrets, no Fxx or Site.
+          NOTE
+          gh release create "$tag" "$RUNNER_TEMP/B1-joined-actual-sources.json" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "MN-GEO-RAIL-001 B1 official DGT2m actual source IDs after real road+DSM proximity checks" --notes-file "$RUNNER_TEMP/notes.txt"
