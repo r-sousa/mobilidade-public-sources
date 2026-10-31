@@ -1,0 +1,46 @@
+name: MN-GEO-RAIL-001 source verified original NP159 variants DGT WFS metadata
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-rngap-source-tile-correction-20261031
+    paths:
+      - tools/geo_rail_rngap_np159_original_descriptors.py
+      - tests/test_geo_rail_rngap_np159_original_descriptors.py
+      - .github/workflows/mn-geo-w4-rngap-np159-attrs.yml
+permissions:
+  contents: write
+jobs:
+  official-NP159-small-window:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify source mark identity and fail-closed original attributes without network
+        run: python -m unittest discover -s tests -p 'test_geo_rail_rngap_np159_original_descriptors.py' -v
+      - name: Query only a bounded original DGT RGN mark metadata 100m square
+        run: |
+          python tools/geo_rail_rngap_np159_original_descriptors.py --source reports/mn-geo-rail-001/pt-rngap-three-window-complete-ALTH38-source.json --output "$RUNNER_TEMP/np159-original-source-descriptors.json"
+      - name: Publish sourced mark variant descriptions and their original WFS response hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          target=reports/mn-geo-rail-001/pt-rngap-np159-five-source-original-mark-descriptors.json
+          cp "$RUNNER_TEMP/np159-original-source-descriptors.json" "$target"
+          python - <<'PY'
+          import json
+          d=json.load(open('reports/mn-geo-rail-001/pt-rngap-np159-five-source-original-mark-descriptors.json'))
+          assert d['matching_reviewed_source_records']==5
+          assert d['Fxx_canonical_accepted'] is False
+          assert d['actual_DGT_native_tile_pixel_comparison_performed'] is False
+          assert d['native_tile_source_candidate']=='MDT-2m-279503-09-2024'
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m 'data(geo): preserve DGT original NP159 mark variant identity and description metadata'
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
