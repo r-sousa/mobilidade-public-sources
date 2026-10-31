@@ -114,6 +114,7 @@ def main():
  p.add_argument("--zip",required=True,type=Path)
  p.add_argument("--receipt",required=True,type=Path)
  p.add_argument("--markdown",required=True,type=Path)
+ p.add_argument("--from-preserved-private-original",action="store_true")
  p.add_argument("--dry-local",action="store_true")
  a=p.parse_args()
  origin={"source":"INE Instituto Nacional de Estatística","year":2021,
@@ -123,10 +124,21 @@ def main():
    "exact_historical_original_bytes":EXPECTED_BYTES,
    "exact_historical_original_SHA256":EXPECTED_SHA256,
    "previous_PRIVATE_sink_receipt_SHA_provenance":"receipts/F67/03b729e73f0adf411f893c50cac6883878629b6b8ab0d66338fdf9ebcf096738.json",
-   "reproduction_note":"new independent exact producer acquisition, not Google Drive or third party",
+   "reproduction_note":"reuse exact historical original INE bytes already independently hash-pinned, not a new producer acquisition",
    "private_canonical_Fxx_state_unchanged":True,
-   "public_original_release_is_explicitly_requested_by_user":True}
- transfer={"original_bytes":EXPECTED_BYTES,"original_sha256":EXPECTED_SHA256,"download_attempt":0} if a.dry_local else get_original(a.zip)
+   "public_original_release_is_explicitly_requested_by_user":True,
+   "upstream_preserved_release_tag":"mn-src-f67-03b729e73f0adf411f89",
+   "upstream_preserved_asset_id":589463486}
+ transfer=(
+  {"original_bytes":EXPECTED_BYTES,"original_sha256":EXPECTED_SHA256,
+   "original_transport":"GH_PRIVATE_F67_RELEASE_ASSET_589463486",
+   "private_asset_source":"r-sousa/EU-transp-weekly release mn-src-f67-03b729e73f0adf411f89",
+   "not_reacquired_from_INE_because_exact_original_already_preserved":True,
+   "download_attempt":0}
+  if a.from_preserved_private_original else
+  ({"original_bytes":EXPECTED_BYTES,"original_sha256":EXPECTED_SHA256,
+    "original_transport":"pre_existing_local_verified_copy","download_attempt":0}
+   if a.dry_local else get_original(a.zip)))
  qa=inspect_archive(a.zip)
  receipt={**origin,**transfer,**qa,"acquisition_utc":datetime.now(timezone.utc).isoformat(),
    "release_gate":"approved_if_original_SHA_size_ZIP_CRC_and_SQLite_pass"}
@@ -134,10 +146,10 @@ def main():
  a.receipt.write_text(json.dumps(receipt,ensure_ascii=False,indent=2,sort_keys=True)+"\n")
  a.markdown.parent.mkdir(parents=True,exist_ok=True)
  a.markdown.write_text("# F67 — arquivo original INE BGRI2021 Continente\n\n"+
-   "Ficheiro binário original obtido diretamente do produtor, sem alterações: `BGRI21_CONT.zip`.\n\n"+
+   "Cópia exata do ficheiro original do produtor previamente preservado em release privada, sem alterações: `BGRI21_CONT.zip`.\n\n"+
    f"**SHA-256:** `{EXPECTED_SHA256}`; **bytes:** {EXPECTED_BYTES:,}.\n\n"+
    f"**Origem oficial:** {SOURCE}  \n**Entrada INE:** {LANDING}  \n**Metadados e direitos:** {META}\n\n"+
-   "O INE indica acesso público e uso sem condições no registo de metadados BGRI. A fonte original foi mantida intacta; a redistribuição é um arquivo adicional solicitado pelo utilizador, sem alterar o circuito canónico privado F67. Cite sempre INE, Censos 2021 e os metadados originais.\n\n"+
+   "O INE indica acesso público e uso sem condições no registo de metadados BGRI. A fonte original foi recuperada da release privada e validada byte-a-byte por SHA-256; a redistribuição é um arquivo adicional solicitado pelo utilizador, sem alterar o circuito canónico privado F67. Cite sempre INE, Censos 2021 e os metadados originais.\n\n"+
    "Contém informação estatística e geográfica de subsecção censitária de 2021. **Não contém, por si, emprego por estabelecimento, fluxos origem-destino, procura de comboio nem localização de estações.** Requer validação das colunas e dos métodos de proteção da confidencialidade.\n\n"+
    "## QA verificado\n\n"+
    f"- ZIP CRC: passou; GeoPackage SQLite: {qa['gpkg_sqlite_quick_check']}; número de camadas: {len(qa['gpkg_contents'])}\n"+
