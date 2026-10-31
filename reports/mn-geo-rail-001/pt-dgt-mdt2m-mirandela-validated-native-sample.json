@@ -1,0 +1,79 @@
+{
+  "mission": "MN-GEO-RAIL-001",
+  "worker": "W2",
+  "stage": "registered_CDD_native_MDT_2m_acquired_and_validated_sample",
+  "source_producer": "Direção-Geral do Território",
+  "source_collection": "MDT-2m",
+  "source_catalogue": "https://cdd.dgterritorio.gov.pt/",
+  "source_license": "CC BY 4.0 — indicar Direção-Geral do Território",
+  "source_license_reference": "https://www.dgterritorio.gov.pt/dados-abertos",
+  "provenance": {
+    "github_repository": "r-sousa/mobilidade-public-sources",
+    "authenticated_workflow_run_id": 41149632416,
+    "authenticated_workflow_run_url": "https://github.com/r-sousa/mobilidade-public-sources/actions/runs/41149632416",
+    "sanitized_original_receipt_artifact_id": 13022705713,
+    "sanitized_original_receipt_artifact_url": "https://github.com/r-sousa/mobilidade-public-sources/actions/runs/41149632416/artifacts/13022705713",
+    "workflow_commit_sha": "25507c3f75dd98b0045c1c61135e1984c47a5137",
+    "source_stac_response_sha256": "c732a8c1e5cbd3ba95eff40756f6dad26505f8247cda6941b2f2969433390a16",
+    "observed_utc": "2026-10-31T00:20:54.712683+00:00",
+    "registered_user_authenticated_native_download_confirmed": true,
+    "user_device_transfer_required": false,
+    "secrets_or_signed_urls_saved": false
+  },
+  "asset": {
+    "producer_tile_id": "MDT-2m-282510-09-2024",
+    "authenticated_native_transfer_observed": true,
+    "native_bytes": 1219159,
+    "original_native_sha256": "761bc7ee18ef9377cca97556b6dececc14b8765c017c168dbf15552d8c9d78ba",
+    "original_native_geotiff_persisted": false,
+    "original_native_geotiff_retrievable_from_this_repository": false,
+    "original_native_geotiff_published_in_release": false,
+    "sample_data_not_continuous_corridor_coverage": true
+  },
+  "raster_validation": {
+    "driver": "GTiff",
+    "bands": 1,
+    "dtype": "float32",
+    "CRS_horizontal": "EPSG:3763",
+    "resolution_m": [
+      2,
+      2
+    ],
+    "dimensions_px": [
+      500,
+      500
+    ],
+    "raster_area_km2": 1,
+    "bounds_PTTM06": [
+      82000,
+      209000,
+      83000,
+      210000
+    ],
+    "bounds_WGS84": [
+      -7.150335132341287,
+      41.54605202523893,
+      -7.138213789961611,
+      41.55515751593479
+    ],
+    "STAC_item_bbox_proxy_intersection_verified": true,
+    "valid_pixel_count": 250000,
+    "masked_pixel_count": 0,
+    "no_data_value": -999,
+    "altitude_min_raw_m": 295.46990966796875,
+    "altitude_max_raw_m": 427.7859802246094,
+    "altitude_mean_raw_m": 355.731013092041,
+    "vertical_datum_from_producer_documentation": "Datum Altimétrico de Cascais",
+    "vertical_datum_verified_in_raster": false,
+    "external_vertical_control_points_verified": false
+  },
+  "acceptance": {
+    "G2_authenticated_transfer_and_file_integrity_pilot": true,
+    "G2_preservation_of_native_bytes": false,
+    "G3_contiguous_study_corridor_coverage": false,
+    "G4_cross_border_vertical_harmonization": false,
+    "G5_canonical_Fxx_assigned": false,
+    "G5_site_publication_authorized": false
+  },
+  "integrity_note": "Transcrição de campos não sensíveis do recibo original da execução. O ZIP temporário no Actions pode expirar; o hash identifica os bytes nativos que não foram retidos após o job."
+}
