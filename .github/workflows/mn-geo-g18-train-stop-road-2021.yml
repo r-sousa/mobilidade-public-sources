@@ -1,0 +1,92 @@
+name: MN-GEO-RAIL-001 G18 rail stopping-pattern accessibility using actual road isochrone and INE
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g18-operating-pattern-road-service-20261031
+      - main
+    paths:
+      - tools/geo_rail_g18_rail_stop_pattern_road_2021.py
+      - tests/test_geo_rail_g18_real_road_patterns.py
+      - .github/workflows/mn-geo-g18-train-stop-road-2021.yml
+permissions:
+  contents: write
+jobs:
+  four_service_patterns_three_corridors_real_road_2021_pop:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 23
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install original official 2021 GeoPackage census and geometry tools
+        run: python -m pip install --disable-pip-version-check 'shapely>=2.1,<3' 'pyproj>=3.6,<4'
+      - name: Validate mandatory stop pattern contract and no original data imputation
+        run: |
+          python -m py_compile tools/geo_rail_g18_rail_stop_pattern_road_2021.py
+          python -m unittest discover -s tests -p test_geo_rail_g18_real_road_patterns.py -v
+      - name: Reuse exact public F67 and validated G17 immutable source release assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G18-sources"
+          gh release download mn-f67-bgri21-cont-original-INE-verified-20261031 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'BGRI21_CONT.zip' --dir "$RUNNER_TEMP/G18-sources"
+          gh release download mn-geo-rail-001-g17-15-30-45-real-road-2021-population-41253350703 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G17-*' --dir "$RUNNER_TEMP/G18-sources"
+          echo "3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171  $RUNNER_TEMP/G18-sources/BGRI21_CONT.zip" | sha256sum -c -
+          echo "f681c78b834823b3042319886001528c3660f0d8f2d0e19c36db8884d811d784  $RUNNER_TEMP/G18-sources/G17-real-road-15-30-45min-INE2021-census.json" | sha256sum -c -
+          echo "b8738dbbd8717ec4df76468fd02b7eb0a3585fef40ca18216ee7398021eb7110  $RUNNER_TEMP/G18-sources/G17-reverse-15-30-45min-road-isochrone-geometry.geojson" | sha256sum -c -
+      - name: Count exact INE resident 2021 road reach under four possible train stop portfolios, zero new Valhalla calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g18_rail_stop_pattern_road_2021.py \
+            --f67 "$RUNNER_TEMP/G18-sources/BGRI21_CONT.zip" \
+            --g17 "$RUNNER_TEMP/G18-sources/G17-real-road-15-30-45min-INE2021-census.json" \
+            --geojson "$RUNNER_TEMP/G18-sources/G17-reverse-15-30-45min-road-isochrone-geometry.geojson" \
+            --json "$RUNNER_TEMP/G18-three-families-four-stop-patterns-15-30-45min-2021-residents.json" \
+            --csv "$RUNNER_TEMP/G18-real-road-population-by-train-service-pattern.csv" \
+            --markdown "$RUNNER_TEMP/G18-service-pattern-territorial-population-comparison.md"
+          python - <<'PY'
+          import os,json,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])
+          q=json.loads((p/"G18-three-families-four-stop-patterns-15-30-45min-2021-residents.json").read_text())
+          assert len(q["36_family_stop_pattern_road_time_geographic_population_screens"])==36
+          assert q["source_original_valhalla_real_road_response_SHA_receipts_reused_no_new_OSM_queries"]
+          assert q["source_native_2021_population_QA"]["record_count"]==203264
+          assert q["two_obligatory_rail_service_cities"]==["Vila Real","Bragança"] and q["Sanabria_excluded"]
+          assert q["study_service_patterns_have_no_actual_railway_geometry_or_CBA_CAPEX"]
+          assert not q["Fxx_accepted"] and not q["Site_authorized"]
+          assert (p/"G18-real-road-population-by-train-service-pattern.csv").stat().st_size>500
+          print("G18 source verified: 36 true road source study-pattern resident 2021 subsets, all-six matches published G17 and only-VR/BR compulsory; NO GTFS")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G18-observed-real-road-by-hypothetical-rail-service-pattern
+          path: |
+            ${{ runner.temp }}/G18-three-families-four-stop-patterns-15-30-45min-2021-residents.json
+            ${{ runner.temp }}/G18-real-road-population-by-train-service-pattern.csv
+            ${{ runner.temp }}/G18-service-pattern-territorial-population-comparison.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish traceable rail operating scenario road-coverage study on protected main
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g18-four-service-stop-patterns-original-INE-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G18-three-families-four-stop-patterns-15-30-45min-2021-residents.json" \
+            "$RUNNER_TEMP/G18-real-road-population-by-train-service-pattern.csv" \
+            "$RUNNER_TEMP/G18-service-pattern-territorial-population-comparison.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "MN-GEO-RAIL-001 G18 4 possible rail stopping patterns vs actual OSM road resident reach at 15/30/45min, not schedules" \
+            --notes "Strict overlap-free original 2021 INE BGRI census resident road access using previous immutable G17 reverse-drive Valhalla isochrone shapes; four hypothetical rail stop patterns (Vila Real/Braganca compulsory, three variants of optional urban service) x3 geographies x3 auto travel-time thresholds. Population is NOT forecast train passengers, no actual station parcels/platforms, no rail operational frequencies, rail journey times, cost investment, or public transport GTFS imputed. Exact G17 all-six union validated, no new Valhalla/API routing or F67 acquisition; no Fxx/Site."
