@@ -134,11 +134,12 @@ def site_numeric_checks(converter):
     return result
 
 def source_mosaic_checks(mosaic,converter):
+    # Reject unauthenticated source bytes BEFORE importing optional raster libs.
+    if digest(mosaic)!=SOURCE_MOSAIC_SHA256:
+        raise ValueError("DGT_derived_source_mosaic_SHA256_not_as_published")
     import numpy as np
     import rasterio
     from pyproj import Transformer
-    if digest(mosaic)!=SOURCE_MOSAIC_SHA256:
-        raise ValueError("DGT_derived_source_mosaic_SHA256_not_as_published")
     geom=Transformer.from_crs(3763,4326,always_xy=True)
     points=[]
     with rasterio.open(mosaic) as ds:
