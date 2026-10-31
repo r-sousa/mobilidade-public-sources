@@ -22,3 +22,28 @@ Ao contrário dos controlos anteriores, esta aquisição passa de cabeçalhos/re
 ## Indicadores de execução
 
 Acompanhar **área válida real do raster**, fração NoData, contagem de píxeis, continuidade entre quadrículas originais, tamanhos, SHA256, licença e disponibilização da Release — e não quantidade de metadados STAC. **Sem Fxx nem Site** antes de um controlo de aceitação para dados de relevo no Mobilidade Norte.
+
+
+## A1 — execução efetiva e aceitação do primeiro mosaico territorial (31/10/2026)
+
+**Estado: adquirido e validado por píxeis reais; a fonte é MDS e não MDT.** Execução original [#41195781919](https://github.com/r-sousa/mobilidade-public-sources/actions/runs/41195781919) concluiu quatro downloads de fonte e detetou no ficheiro derivado uma coluna vazia (3 024 células) no extremo oriental — **recorte substituído e não usar como base de trabalho**. A execução **corrigida** [#41196011697](https://github.com/r-sousa/mobilidade-public-sources/actions/runs/41196011697) adicionou margem de leitura à direita, recortou os píxeis até ao limite exato e passou critérios com **zero NoData**.
+
+| Métrica da aquisição corrigida | Resultado |
+| --- | --- |
+| Fontes originais completas descarregadas, hasheadas e verificadas | 4 COG, 161 565 323 bytes |
+| Quadrículas fonte | N41 W009, W008, W007 e W006 |
+| Bounding box WGS84 de saída | `[-8.65,41.08,-5.55,41.92]` |
+| Grelha de saída | 11 160 × 3 024, 1 segundo de arco (sem redução da resolução espacial nominal) |
+| Células válidas | **33 747 840 / 33 747 840 (100%)** |
+| Células NoData | **0**, após correção do extremo leste |
+| Controlos de continuidade | Meridianos −8°, −7°, −6°: 3 024 pares válidos e 0 pares em falta por meridiano |
+| Dimensão do GeoTIFF derivado comprimido | 82 508 645 bytes |
+| SHA256 do GeoTIFF corrigido | `52845032afedda302a32f56c9dcd3f070b6b5c970f9fd84a43b8d284f1bcbbe2` |
+| Altimetria | Fonte nominal EGM2008 (EPSG:3855); sem transformação vertical realizada |
+| Tipo | **Modelo Digital de Superfície — edifícios/vegetação incluídos** |
+
+As quatro fontes provêm de um arquivo oficial aberto, sem token. As quatro *fontes originais de 1 grau* foram usadas para inspeção, cobertura e SHA256 mas **não foram redistribuídas**. Apenas o recorte MDS de cobertura regional é destinado à Release, com o aviso de atribuição exigido pelo [Copernicus](https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM).
+
+O facto de todos os píxeis existirem no **MDS** **não significa** que o solo nu tenha continuidade comprovada, que o relevo terrestre esteja livre de artefactos ou que seja possível estimar diretamente gradientes de via férrea, túneis, muros de suporte ou escavações. A1 elimina a lacuna de **base digital regional de superfície**, não os controlos técnicos de B1/C1/D1.
+
+**Recomendação operacional seguinte:** usar a grelha 30m real como **índice de priorização de blocos** de DGT2m e CNIG5m em vez de descarregar milhares de quadrículas de alta resolução sem áreas prioritárias verificadas. Documentar precisamente o perímetro, grelha e source ID dos blocos futuros.
