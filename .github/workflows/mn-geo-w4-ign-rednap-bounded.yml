@@ -1,0 +1,60 @@
+name: MN-GEO-RAIL-001 W4 bounded official IGN REDNAP benchmark mark acquisition
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-w4-rednap-bounded-20261031
+    paths:
+      - tools/geo_rail_rednap_bounded_api.py
+      - tests/test_geo_rail_rednap_bounded_api.py
+      - .github/workflows/mn-geo-w4-ign-rednap-bounded.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-w4-ign-REDNAP-public-marks
+  cancel-in-progress: false
+
+jobs:
+  public-IGN-survey-mark-source-intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test official API response, bounds and data-minimization contracts without network
+        run: python -m unittest discover -s tests -p 'test_geo_rail_rednap_bounded_api.py' -v
+      - name: Query three reviewed REDNAP OGC API-Features windows without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_rednap_bounded_api.py \
+            --output "$RUNNER_TEMP/w4-rednap-bounded-survey-mark-candidates.json"
+      - name: Persist only spatial survey mark candidate evidence, source hashes and published height pairs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          source="$RUNNER_TEMP/w4-rednap-bounded-survey-mark-candidates.json"
+          test -s "$source"
+          target=reports/mn-geo-rail-001/ign-rednap-aliste-zamora-bounded-benchmarks.json
+          cp "$source" "$target"
+          python - <<'PY'
+          import json
+          f="reports/mn-geo-rail-001/ign-rednap-aliste-zamora-bounded-benchmarks.json"
+          j=json.load(open(f))
+          assert j["cross_border_harmonization_validated"] is False
+          assert j["observations_used_for_rail_datum_control"] is False
+          assert j["no_DGT_authenticated_download"] is True
+          print("SOURCE_BOUNDED_RED_NAP_REPORT_SAVED",j["distinct_survey_mark_candidates"])
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): record bounded Spanish REDNAP survey mark observations near Aliste and Zamora"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
