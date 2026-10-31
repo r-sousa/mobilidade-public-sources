@@ -1,0 +1,76 @@
+name: MN-GEO-RAIL-001 source-backed comparison of five G3/G4 exploratory links
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g4-link-characterization-20261031
+      - main
+    paths:
+      - tools/geo_rail_g4_link_alternatives.py
+      - .github/workflows/mn-geo-g4-link-alternatives.yml
+permissions:
+  contents: write
+jobs:
+  analyze-five-source-lattice-links-no-secrets:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify Python source syntax
+        run: python -m py_compile tools/geo_rail_g4_link_alternatives.py
+      - name: Download already public G3 source route lattice and G4 DGT original evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G4-source"
+          base="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 100 "$base/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json" -o "$RUNNER_TEMP/G4-source/G3.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 100 "$base/mn-geo-rail-001-g4-real-DGT2m-cover-gaps-41231342925/G4-actual-original-DGT2m-terrain-cover-and-five-link-gaps.json" -o "$RUNNER_TEMP/G4-source/G4.json"
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G4-source/G3.json" | sha256sum -c -
+          echo "7d7a513fd248fcef86453da1967baf20d7359e9f66672fd7e5c4d2e7899ed200  $RUNNER_TEMP/G4-source/G4.json" | sha256sum -c -
+      - name: Audit all five actual source links, 14 path variants, 2km native terrain coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g4_link_alternatives.py \
+            --g3 "$RUNNER_TEMP/G4-source/G3.json" \
+            --g4 "$RUNNER_TEMP/G4-source/G4.json" \
+            --json "$RUNNER_TEMP/G4-five-links-ground-data-gaps.json" \
+            --markdown "$RUNNER_TEMP/G4-five-links-ground-data-gaps.md"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G4-five-links-ground-data-gaps.json"
+          d=json.loads(p.read_text())
+          assert d["source_alternative_link_count"]==5
+          assert d["source_lattice_path_variants"]==14
+          assert d["actual_all_DGT_2m_source_footprint_km2"]==121
+          assert d["distinct_missing_full_2km_native_DGT_terrain_cells_in_existing_source_lattice_variants"]==58
+          assert d["Sanabria_excluded"] and not d["Fxx_accepted"] and not d["Site_authorized"]
+          assert all(not q["no_validated_station_or_railway_alignment"]==False for q in d["links"])
+          print("G4_LINKS_VERIFIED: five source links, fourteen G3 variants, 58 distinct missing full ground sectors, zero rail alignment claims")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G4-5-links-gaps-and-characterization
+          path: |
+            ${{ runner.temp }}/G4-five-links-ground-data-gaps.json
+            ${{ runner.temp }}/G4-five-links-ground-data-gaps.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish vetted G4 link gap characterization on main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g4-five-links-data-gaps-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G4-five-links-ground-data-gaps.json" "$RUNNER_TEMP/G4-five-links-ground-data-gaps.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "MN-GEO-RAIL-001 G4 five source lattice links: DGT terrain coverage and gaps" \
+            --notes "Evidence for 5 G3 exploratory source lattice links and 14 proxy variants with real G4 original DGT2m coverage. Not rail alignment, not station site, not road network time, not project grade/curve/cost. Mandatory Vila Real and Bragança. Exclude Sanabria. No new DGT acquisition, no secrets, no Fxx/Site."
