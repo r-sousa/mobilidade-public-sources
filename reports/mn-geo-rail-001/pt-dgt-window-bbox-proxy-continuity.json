@@ -1,0 +1,148 @@
+{
+  "candidate_positions_paired_across_resolutions": 684,
+  "canonical_Fxx_accepted": false,
+  "full_corridor_coverage_verified": false,
+  "full_corridor_study_envelope_defined": false,
+  "input_complete_queries": 12,
+  "input_observed_utc": "2026-10-30T22:43:49.573279+00:00",
+  "input_source_sha256": "0c8d4b8bcfbeaf96613b09b6cb5acc405d9a53963822bce94e153bc8bd941ed2",
+  "metadata_bbox_proxy_not_valid_pixel_coverage": true,
+  "mission": "MN-GEO-RAIL-001",
+  "sectors": [
+    {
+      "mdt2m_candidate_items": 108,
+      "mdt50cm_candidate_items": 108,
+      "measurement": "WGS84 local degree-plane union of catalogue bounding boxes only",
+      "native_raster_valid_cell_coverage_verified": false,
+      "paired_item_suffixes_with_same_bbox": 108,
+      "query_window_bbox_wgs84": [
+        -6.9,
+        41.78,
+        -6.8,
+        41.88
+      ],
+      "sector_id": "E01_east_north",
+      "window_bbox_proxy_uncovered_fraction": 0.0,
+      "window_bbox_proxy_union_fraction": 1.0
+    },
+    {
+      "mdt2m_candidate_items": 108,
+      "mdt50cm_candidate_items": 108,
+      "measurement": "WGS84 local degree-plane union of catalogue bounding boxes only",
+      "native_raster_valid_cell_coverage_verified": false,
+      "paired_item_suffixes_with_same_bbox": 108,
+      "query_window_bbox_wgs84": [
+        -6.92,
+        41.52,
+        -6.82,
+        41.62
+      ],
+      "sector_id": "E02_east_south",
+      "window_bbox_proxy_uncovered_fraction": 0.0,
+      "window_bbox_proxy_union_fraction": 1.0
+    },
+    {
+      "mdt2m_candidate_items": 120,
+      "mdt50cm_candidate_items": 120,
+      "measurement": "WGS84 local degree-plane union of catalogue bounding boxes only",
+      "native_raster_valid_cell_coverage_verified": false,
+      "paired_item_suffixes_with_same_bbox": 120,
+      "query_window_bbox_wgs84": [
+        -7.08,
+        41.48,
+        -6.98,
+        41.58
+      ],
+      "sector_id": "E03_macedo_sector",
+      "window_bbox_proxy_uncovered_fraction": 0.0,
+      "window_bbox_proxy_union_fraction": 1.0
+    },
+    {
+      "mdt2m_candidate_items": 120,
+      "mdt50cm_candidate_items": 120,
+      "measurement": "WGS84 local degree-plane union of catalogue bounding boxes only",
+      "native_raster_valid_cell_coverage_verified": false,
+      "paired_item_suffixes_with_same_bbox": 120,
+      "query_window_bbox_wgs84": [
+        -7.25,
+        41.45,
+        -7.15,
+        41.55
+      ],
+      "sector_id": "E04_mirandela_sector",
+      "window_bbox_proxy_uncovered_fraction": 0.0,
+      "window_bbox_proxy_union_fraction": 1.0
+    },
+    {
+      "mdt2m_candidate_items": 120,
+      "mdt50cm_candidate_items": 120,
+      "measurement": "WGS84 local degree-plane union of catalogue bounding boxes only",
+      "native_raster_valid_cell_coverage_verified": false,
+      "paired_item_suffixes_with_same_bbox": 120,
+      "query_window_bbox_wgs84": [
+        -7.85,
+        41.25,
+        -7.75,
+        41.35
+      ],
+      "sector_id": "E05_vila_real_sector",
+      "window_bbox_proxy_uncovered_fraction": 0.0,
+      "window_bbox_proxy_union_fraction": 1.0
+    },
+    {
+      "mdt2m_candidate_items": 108,
+      "mdt50cm_candidate_items": 108,
+      "measurement": "WGS84 local degree-plane union of catalogue bounding boxes only",
+      "native_raster_valid_cell_coverage_verified": false,
+      "paired_item_suffixes_with_same_bbox": 108,
+      "query_window_bbox_wgs84": [
+        -8.15,
+        41.22,
+        -8.05,
+        41.32
+      ],
+      "sector_id": "E06_amarante_sector",
+      "window_bbox_proxy_uncovered_fraction": 0.0,
+      "window_bbox_proxy_union_fraction": 1.0
+    }
+  ],
+  "site_publication_authorized": false,
+  "source_collection": [
+    "MDT-2m",
+    "MDT-50cm"
+  ],
+  "stage": "W2_six_sample_windows_bbox_proxy_continuity_review",
+  "unsampled_window_separations": [
+    {
+      "does_not_measure_source_data_gap": true,
+      "east_sample": "E05_vila_real_sector",
+      "unqueried_longitude_interval_degrees": 0.2,
+      "west_sample": "E06_amarante_sector"
+    },
+    {
+      "does_not_measure_source_data_gap": true,
+      "east_sample": "E04_mirandela_sector",
+      "unqueried_longitude_interval_degrees": 0.5,
+      "west_sample": "E05_vila_real_sector"
+    },
+    {
+      "does_not_measure_source_data_gap": true,
+      "east_sample": "E03_macedo_sector",
+      "unqueried_longitude_interval_degrees": 0.07,
+      "west_sample": "E04_mirandela_sector"
+    },
+    {
+      "does_not_measure_source_data_gap": true,
+      "east_sample": "E02_east_south",
+      "unqueried_longitude_interval_degrees": 0.06,
+      "west_sample": "E03_macedo_sector"
+    },
+    {
+      "does_not_measure_source_data_gap": true,
+      "east_sample": "E01_east_north",
+      "unqueried_longitude_interval_degrees": 0.0,
+      "west_sample": "E02_east_south"
+    }
+  ],
+  "valid_raster_pixel_coverage_measured": false
+}
