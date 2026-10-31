@@ -77,20 +77,10 @@ jobs:
           assert all(z["source_tile_ids_from_five_official_catalogues"] for z in j["new_DGT2m_metadata_only_priority_targets"])
           print("valid_source_lattice",j["two_kilometre_cells_with_four_original_DGT_tile_IDs_and_real_DSM_pixels"],"new_DGT2m_source_tile_ids",len(ids))
           PY
-      - name: Publish G3 actual-source landscape and catalog continuity report, no DGT source pixels newly acquired
-        env:
-          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          tag="mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-\${GITHUB_RUN_ID}"
-          cat > "$RUNNER_TEMP/notes.txt" <<'NOTE'
-          Source inputs: real corrected Copernicus GLO30 1-arcsec DSM surface (SHA256 a708b502b2eb86236c70f2d74322e9d8e2ea1417eb24094d0e43536845407bd9), OSM 2,801 actual mapped road ways ODbL (SHA256 170b3c49ae7dc118fd0380a464f1547d1bd897ff09effdc69f3abaac0d6eec24), all 5 verified source DGT MDT2m catalogues and actual previously acquired 32km2 B1 source terrain.
-          Output: numerical 2km SOURCE-COVERAGE & DSM-terrain exploratory network for approaches to Vila Real and Bragança and intercity connectivity. Mandatory service at both cities, possible peripheral stations; Sanabria excluded.
-          Graph paths are coarse 2km tile sequences for deciding where to acquire ACTUAL 2m DGT native pixels. NOT railway geometry, grade, tunnel, radius, construction cost or station/road network drive-time. DSM includes trees/buildings; OSM roads are secondary; A4/IP4 is not railway alignment.
-          NO NEW ORIGINAL DGT2m raster pixels in this metadata-only source discovery. Fxx/Site not authorized. Attribute Copernicus and OpenStreetMap contributors under the relevant licences.
-          NOTE
-          gh release create "$tag" "$RUNNER_TEMP/G3-real-source-2km-study.json" \
-            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
-            --title "MN-GEO-RAIL-001 G3 measured DSM and DGT metadata connectivity (not rail design)" \
-            --notes-file "$RUNNER_TEMP/notes.txt"
+      - name: Preserve G3 public-source report as Actions artifact independent of private account tokens
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-G3-real-source-lattice-${{ github.run_id }}
+          path: ${{ runner.temp }}/G3-real-source-2km-study.json
+          retention-days: 60
+          if-no-files-found: error
