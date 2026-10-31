@@ -1,0 +1,95 @@
+name: MN-GEO-RAIL-001 G3 real-source 2km terrain/data continuity review
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g3-dsm-connected-source-options-20261031
+    paths:
+      - tools/geo_rail_g3_continuity_open_dsm_sources.py
+      - tests/test_geo_rail_g3_continuity_open_dsm_sources.py
+      - .github/workflows/mn-geo-g3-real-dsm-continuity.yml
+permissions:
+  contents: write
+concurrency:
+  group: mn-geo-rail-001-g3-open-ground-source-lattice
+  cancel-in-progress: false
+jobs:
+  analyze-real-source-corridor-lattice:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g3-dsm-connected-source-options-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact public-source terrain/graph dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'rasterio>=1.4,<2' 'shapely>=2,<3' 'pyproj>=3.6,<4'
+      - name: Offline G3 topology and source-original four-tile contracts
+        run: python -m unittest discover -s tests -p 'test_geo_rail_g3_continuity_open_dsm_sources.py' -v
+      - name: Retrieve verified REAL Copernicus GLO30 DSM with 1-arcsec source cells across study envelope
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G3-source"
+          curl --fail --location --silent --show-error --retry 2 --max-time 220 "https://github.com/r-sousa/mobilidade-public-sources/releases/download/mn-geo-rail-001-r1-airport-zamora-dsm-preacceptance-41198485197/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" --output "$RUNNER_TEMP/G3-source/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif"
+          echo "a708b502b2eb86236c70f2d74322e9d8e2ea1417eb24094d0e43536845407bd9  $RUNNER_TEMP/G3-source/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" | sha256sum -c -
+      - name: Retrieve verified REAL OSM geometry (2801 mapped ways, secondary ODbL)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 2 --max-time 180 "https://github.com/r-sousa/mobilidade-public-sources/releases/download/mn-geo-rail-001-b1-a4-mandatory-city-roads-source-preacceptance-41200362181/B1-PT-A4-IP4-mandatory-city-road-reference-OSM.geojson" --output "$RUNNER_TEMP/G3-source/B1-PT-A4-IP4-mandatory-city-road-reference-OSM.geojson"
+          echo "170b3c49ae7dc118fd0380a464f1547d1bd897ff09effdc69f3abaac0d6eec24  $RUNNER_TEMP/G3-source/B1-PT-A4-IP4-mandatory-city-road-reference-OSM.geojson" | sha256sum -c -
+      - name: Analyze actual DSM terrain, OSM road proximity, official DGT metadata continuity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g3_continuity_open_dsm_sources.py \
+            --dsm "$RUNNER_TEMP/G3-source/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" \
+            --roads "$RUNNER_TEMP/G3-source/B1-PT-A4-IP4-mandatory-city-road-reference-OSM.geojson" \
+            --catalogues reports/mn-geo-rail-001 \
+            --already-acquired reports/mn-geo-rail-001/B1-DGT-native-2m-32km2-verified-ground-sector-review.json \
+            --output "$RUNNER_TEMP/G3-real-source-2km-study.json"
+      - name: Refuse unsupported railway interpretation and verify linked target source IDs
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G3-real-source-2km-study.json"
+          j=json.loads(p.read_text())
+          assert j["mandatory_cities"]==["Vila Real","Bragança"] and j["Sanabria_excluded"]
+          assert j["lattice_path_is_not_a_railway_or_road_alignment"]
+          assert not j["railway_slope_curvature_tunnel_and_viaduct_evaluated"]
+          assert not j["actual_road_travel_times_or_legal_highway_access_evaluated"]
+          assert j["real_original_DGT_2m_raster_source_pixels_newly_acquired"]==0
+          assert not j["Fxx_accepted"] and not j["Site_authorized"]
+          assert len(j["links"])==5
+          ids=[s for z in j["new_DGT2m_metadata_only_priority_targets"] for s in z["official_original_DGT2m_1km_tile_IDs"]]
+          assert len(ids)==len(set(ids))
+          assert 0<len(ids)<=80 and len(ids)%4==0
+          assert all(z["source_tile_ids_from_five_official_catalogues"] for z in j["new_DGT2m_metadata_only_priority_targets"])
+          print("valid_source_lattice",j["two_kilometre_cells_with_four_original_DGT_tile_IDs_and_real_DSM_pixels"],"new_DGT2m_source_tile_ids",len(ids))
+          PY
+      - name: Preserve G3 public-source report as Actions artifact independent of private account tokens
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-G3-real-source-lattice-${{ github.run_id }}
+          path: ${{ runner.temp }}/G3-real-source-2km-study.json
+          retention-days: 60
+          if-no-files-found: error
+
+      - name: Publish source-hashed G3 report as immutable public GitHub prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-$GITHUB_RUN_ID"
+          cat > "$RUNNER_TEMP/G3-licences-and-method.txt" <<'NOTE'
+          SOURCE PROVENANCE: corrected Copernicus GLO30 original-grid 1-arcsec DSM SHA256 a708b502b2eb86236c70f2d74322e9d8e2ea1417eb24094d0e43536845407bd9; OpenStreetMap contributors actual bounded road ODbL ways SHA256 170b3c49ae7dc118fd0380a464f1547d1bd897ff09effdc69f3abaac0d6eec24; all five official DGT CDD MDT2m STAC catalogue receipts source SHA256 pinned within attachment.
+          This report uses real Copernicus SURFACE elevations and original-source DGT METADATA to assess 2-km source coverage between different native terrain samples. It does not acquire new DGT 2m ORIGINAL pixels and does not establish railway alignments, actual road route access, railway gradients, construction costs, station locations or cross-border height harmonization. No Sanabria. Both Vila Real and Bragança service territories compulsory, potentially with peripheral stations.
+          NOTE
+          gh release create "$tag" "$RUNNER_TEMP/G3-real-source-2km-study.json" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "MN-GEO-RAIL-001 G3 measured source connectivity (not rail line)" --notes-file "$RUNNER_TEMP/G3-licences-and-method.txt"
