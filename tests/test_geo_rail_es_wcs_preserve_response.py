@@ -30,6 +30,11 @@ class CNIGWCSOriginalResponse(unittest.TestCase):
             ds.write(np.full((n,n),645.25,dtype="float32"),1)
 
     def test_real_binary_contract_in_synthetic_small_local_files(self):
+        try:
+            import rasterio  # provided by the W3 source workflow; optional in lean global CI
+            import numpy
+        except ImportError:
+            self.skipTest("rasterio/numpy are source-raster QA extras; W3 workflow installs and executes this test")
         from geo_rail_es_wcs_preserve_response import _check_tiff
         with tempfile.TemporaryDirectory() as tmp:
             for coverage in m.FILE_BY_COVERAGE:
