@@ -1,0 +1,91 @@
+{
+  "mission": "MN-GEO-RAIL-001",
+  "worker": "W2",
+  "stage": "DGT_Mirandela_native_two_adjacent_tiles_1km2_each",
+  "observed_utc": "2026-10-31T01:53:01.044502+00:00",
+  "evidence_type": "sanitized_primary_source_native_raster_QA_derivative",
+  "producer": "Direção-Geral do Território",
+  "source_collection": "MDT-2m",
+  "acquisition": "DGT CDD registered account, protected GitHub Environment dgt-cdd",
+  "github_run": "https://github.com/r-sousa/mobilidade-public-sources/actions/runs/41157391300",
+  "github_workflow_sha": "4bf21b67ab9b332d028e64947a53dd635c7a0648",
+  "github_artifact_id": 13025677170,
+  "github_artifact_name": "mn-geo-rail-001-dgt-pair-qa-41157391300",
+  "github_artifact_retained_until_utc": "2026-11-15T01:53:01Z",
+  "original_sanitized_receipt_sha256": "542973c7e7be017e522d554c2d1a48c6e45032b1a1d213a4df6e2be7b593ed8c",
+  "original_sanitized_receipt_bytes": 6655,
+  "original_GitHub_artifact_zip_sha256": "a47a91c30da9829c6b3b8ae4e7d563969a81b542c3e283c35e6763c5c3161aa5",
+  "source_stac_response_sha256": "d482de728de299005ae2e7d1fdc8a1e0a2d1a4b092af427a7c6cec33d69c39a9",
+  "horizontal_crs": "EPSG:3763",
+  "source_documented_vertical_datum": "Cascais",
+  "independent_vertical_benchmark_confirmed": false,
+  "source_rasters": [
+    {
+      "producer_tile_id": "MDT-2m-282510-09-2024",
+      "status": "validated_native_raster",
+      "bytes": 1219159,
+      "sha256": "761bc7ee18ef9377cca97556b6dececc14b8765c017c168dbf15552d8c9d78ba",
+      "bbox_epsg3763": [
+        82000,
+        209000,
+        83000,
+        210000
+      ],
+      "pixel_size_m": 2,
+      "dimensions": [
+        500,
+        500
+      ],
+      "valid_cells": 250000,
+      "nodata_cells": 0,
+      "elevation_min_m": 295.46990966796875,
+      "elevation_max_m": 427.7859802246094
+    },
+    {
+      "producer_tile_id": "MDT-2m-282509-09-2024",
+      "status": "validated_native_raster",
+      "bytes": 1214414,
+      "sha256": "31027123ea8ba72cd0c24985467b0d1ba2ace562ef2523491144b07f2116af63",
+      "bbox_epsg3763": [
+        82000,
+        208000,
+        83000,
+        209000
+      ],
+      "pixel_size_m": 2,
+      "dimensions": [
+        500,
+        500
+      ],
+      "valid_cells": 250000,
+      "nodata_cells": 0,
+      "elevation_min_m": 280.0735168457031,
+      "elevation_max_m": 399.0325927734375
+    }
+  ],
+  "adjacent_native_area_km2": 2,
+  "shared_boundary": {
+    "coordinate_axis": "Y (PT-TM06)",
+    "y_coordinate_m": 209000,
+    "length_m": 1000,
+    "neighbor_cell_pairs": 500,
+    "both_valid": 500,
+    "incomplete": 0,
+    "median_abs_difference_m": 0.202392578125,
+    "max_abs_difference_m": 2.16339111328125,
+    "mean_signed_south_minus_north_difference_m": -0.10162591552734375,
+    "interpretation": "neighboring terrain cells differ naturally; this does not measure a reprojection error"
+  },
+  "all_native_files_archived": false,
+  "already_preserved_north_native_source": {
+    "public_GitHub_release": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-geo-rail-001-dgt-mdt2m-mirandela-sha256-761bc7ee18ef9377",
+    "sha256": "761bc7ee18ef9377cca97556b6dececc14b8765c017c168dbf15552d8c9d78ba"
+  },
+  "south_native_file_preserved": false,
+  "source_licence_source_documentation": "DGT CDD CC BY 4.0, per-source release rights not rechecked",
+  "source_only_2km2": true,
+  "whole_corridor_continuity_confirmed": false,
+  "rail_alignment_suitability_confirmed": false,
+  "source_publication_authorized": false,
+  "canonical_Fxx_accepted": false
+}
