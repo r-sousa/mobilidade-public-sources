@@ -22,7 +22,6 @@
   "original_2m_source_tiles_previous_Mirandela_km2": 13,
   "actual_new_nonoverlapping_native_ground_area_km2": 32,
   "total_distinct_native_DGT_ground_2m_area_km2": 45,
-  "producer_native_source_tiles_without_direct_vertical_RMSE": false,
   "independent_vertical_benchmark_accuracy_established": false,
   "railway_corridor_continuous_original_2m_DGT_coverage": false,
   "actual_driving_time_to_station_measured": false,
@@ -232,5 +231,7 @@
       "railway_station_selected": false,
       "ground_source_release": "https://github.com/r-sousa/mobilidade-public-sources/releases/tag/mn-geo-rail-001-b1-DGT2m-braganca-native-source-preacceptance-41209791341"
     }
-  ]
+  ],
+  "vertical_accuracy_RMSE_from_survey_controls_verified": false,
+  "previous_Mirandela_source_regions_proven_nonoverlapping_using_projected_EPSG3763_rectangles": true
 }
