@@ -1,0 +1,66 @@
+name: MN-GEO-RAIL-001 W2 anonymous DGT redirect host audit
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-cdd-download-host-audit-20261031
+    paths:
+      - .github/workflows/mn-geo-pt-cdd-redirect-host-audit.yml
+      - tools/geo_rail_pt_cdd_redirect_authority_audit.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-pt-cdd-redirect-host-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  one-anonymous-stac-and-head:
+    if: github.ref == 'refs/heads/mn-geo-rail-001-cdd-download-host-audit-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install HTTPS client without user secrets
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3'
+      - name: Read public CDD source metadata and ONE native HTTP HEAD
+        id: probe
+        shell: bash
+        run: |
+          if python tools/geo_rail_pt_cdd_redirect_authority_audit.py \
+             --output=reports/mn-geo-rail-001/pt-dgt-cdd-anonymous-redirect-authority.json; then
+            echo "failed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Save only sanitized host/port evidence
+        run: |
+          set -euo pipefail
+          receipt=reports/mn-geo-rail-001/pt-dgt-cdd-anonymous-redirect-authority.json
+          cp "$receipt" "$RUNNER_TEMP/host-authority.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            mkdir -p "$(dirname "$receipt")"
+            cp "$RUNNER_TEMP/host-authority.json" "$receipt"
+            git add "$receipt"
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "data(geo): anonymous DGT CDD redirect host evidence"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
+          done
+          exit 1
+      - name: Reject incomplete audit as a basis for future allowlisting
+        env:
+          FAILED: ${{ steps.probe.outputs.failed }}
+        run: |
+          if [[ "$FAILED" == "true" ]]; then
+            echo "No verified redirect; do not relax host security." >&2
+            exit 1
+          fi
