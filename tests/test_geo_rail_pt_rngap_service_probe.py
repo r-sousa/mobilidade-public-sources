@@ -11,9 +11,9 @@ spec.loader.exec_module(m)
 
 class DGTServiceProbeContracts(unittest.TestCase):
     def test_only_three_official_source_metadata_queries(self):
-        self.assertEqual(len(m.APPROVED),3)
-        self.assertTrue(all(m.capabilities_url(s,v).startswith(m.BASE+"?")
-                            for _,s,v in m.APPROVED))
+        self.assertEqual(len(m.APPROVED),6)
+        self.assertTrue(all(m.capabilities_url(s,v,scheme).startswith((m.BASE if scheme=="https" else m.BASE_HTTP)+"?")
+                            for _,s,v,scheme in m.APPROVED))
         with self.assertRaises(ValueError):
             m.capabilities_url("WFS","3.0.0")
         with self.assertRaises(ValueError):
@@ -41,6 +41,8 @@ class DGTServiceProbeContracts(unittest.TestCase):
             raise OSError("network unavailable")
         out=m.run(opener=fake_fetch)
         self.assertEqual(out["successful_valid_OGC_service_responses"],0)
+        self.assertEqual(len(out["results"]),6)
+        self.assertTrue(out["legacy_HTTP_response_cannot_be_authenticated_as_original_authoritative_data"])
         self.assertEqual(out["Portuguese_RNGAP_mark_coordinates_acquired"],0)
         self.assertFalse(out["absence_of_RNGAP_marks_inferred_from_failed_probe"])
         self.assertFalse(out["crossborder_benchmark_validation_complete"])
