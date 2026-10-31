@@ -1,0 +1,32 @@
+name: MN G14 original BGRI2021 native attribute schema prerequisite
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g14-bgri21-demographic-catchments-20261031
+    paths:
+      - .github/workflows/mn-g14-bgri21-attribute-preflight.yml
+permissions:
+  contents: read
+jobs:
+  inspect_archive_native_fields:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fetch small exact original producer QA receipt only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/f67"
+          gh release download mn-f67-bgri21-cont-original-INE-verified-20261031 \
+            --repo r-sousa/mobilidade-public-sources \
+            --pattern 'F67-original-INE-QA-and-licensing.json' --dir "$RUNNER_TEMP/f67"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"f67/F67-original-INE-QA-and-licensing.json"
+          r=json.loads(p.read_text())
+          assert r["original_bytes"]==246754080
+          assert r["original_sha256"]=="3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171"
+          for t in r["gpkg_contents"]:
+            print("G14_BRGI_NATIVE_SCHEMA="+json.dumps({"layer":t["name"],"records":t["row_count_exact_if_below_1GB"],"crs":t["srs_id"],"all_columns":t["original_field_names"]},ensure_ascii=False))
+          PY
