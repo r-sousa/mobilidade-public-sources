@@ -9,9 +9,15 @@ class R1RegionalContract(unittest.TestCase):
     def test_four_prelisted_native_sources_and_bounded_envelope(self):
         self.assertEqual(m.SOURCE_LENGTHS,{-9:37449439,-8:44038002,-7:41406815,-6:38671067})
         self.assertEqual(sum(m.SOURCE_LENGTHS.values()),161565323)
-        self.assertEqual(m.OUTPUT_BBOX_WGS84,(-8.65,41.08,-5.55,41.92))
+        self.assertEqual(m.OUTPUT_BBOX_WGS84,(-8.75,41.08,-5.55,41.92))
         self.assertEqual(m.ARCSEC,1/3600)
         self.assertTrue(all(x in m.SOURCE_LENGTHS for x in (-9,-8,-7,-6)))
+        # Official LPPR airport reference point 41°14'08"N, 008°40'41"W
+        airport=(-8-(40+41/60)/60,41+(14+8/60)/60)
+        self.assertTrue(m.OUTPUT_BBOX_WGS84[0] < airport[0] < m.OUTPUT_BBOX_WGS84[2])
+        self.assertTrue(m.OUTPUT_BBOX_WGS84[1] < airport[1] < m.OUTPUT_BBOX_WGS84[3])
+        self.assertGreater((airport[0]-m.OUTPUT_BBOX_WGS84[0])*111195*0.753,6000)
+        self.assertEqual(round((m.OUTPUT_BBOX_WGS84[2]-m.OUTPUT_BBOX_WGS84[0])*3600),11520)
         for x in (-9,-8,-7,-6):
             self.assertIn(m.source_id(x),m.source_url(x))
             self.assertIn("amazonaws.com",m.source_url(x))
