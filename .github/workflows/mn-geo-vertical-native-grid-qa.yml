@@ -1,0 +1,68 @@
+name: MN-GEO-RAIL-001 W4 authoritative PT ES vertical grid numeric QA
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-w4-datum-qa-20261031
+    paths:
+      - tools/geo_rail_vertical_native_mosaic_checks.py
+      - tests/test_geo_rail_vertical_native_mosaic_checks.py
+      - .github/workflows/mn-geo-vertical-native-grid-qa.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-W4-geoid-audit-only
+  cancel-in-progress: false
+
+jobs:
+  official-geoids-and-pinned-real-DGT-mosaic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install minimal independent raster and PROJ tools
+        run: python -m pip install --disable-pip-version-check 'pyproj>=3.6,<4' 'rasterio>=1.4,<2' 'numpy>=2,<3'
+      - name: Run offline source integrity, grid domain and numerical invariants
+        run: python -m unittest discover -s tests -p 'test_geo_rail_vertical_native_mosaic_checks.py' -v
+      - name: Retrieve the PRE-VERIFIED source DGT mosaic without account credentials
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/w4-dgt-source"
+          gh release download mn-geo-rail-001-pt-dgt-grid12-mosaic-41158983022 \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir "$RUNNER_TEMP/w4-dgt-source" \
+            --pattern 'dgt-grid12-mosaic-pttm06-2m.tif'
+      - name: Verify two public producer grids and numerically transform 9 real DGT source heights
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_vertical_native_mosaic_checks.py \
+            --DGT-mosaic "$RUNNER_TEMP/w4-dgt-source/dgt-grid12-mosaic-pttm06-2m.tif" \
+            --output "$RUNNER_TEMP/w4-numerical-vertical-grid-evidence.json"
+      - name: Persist source-hashed official operation and real source sample QA on review branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          target=reports/mn-geo-rail-001/vertical-cascais-alicante-native-mosaic-numeric-qa.json
+          test -s "$RUNNER_TEMP/w4-numerical-vertical-grid-evidence.json"
+          cp "$RUNNER_TEMP/w4-numerical-vertical-grid-evidence.json" "$target"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): preserve numerical PT Cascais to ES Alicante PROJ grid QA with nine DGT source heights"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+      - name: Safety interpretation
+        shell: bash
+        run: |
+          echo "Official numeric grid conversion and source data samples are NOT independent benchmark observations or PT ES rail-ready datum harmonization." >> "$GITHUB_STEP_SUMMARY"
+          echo "No GitHub source account credentials, DGT authenticated URLs, grid rasters or native DGT raster bytes have been committed." >> "$GITHUB_STEP_SUMMARY"

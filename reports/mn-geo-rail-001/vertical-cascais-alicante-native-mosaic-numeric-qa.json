@@ -1,0 +1,220 @@
+{
+  "DGT_Mirandela_3x3_candidate_offset_max_m": 0.1244542450967856,
+  "DGT_Mirandela_3x3_candidate_offset_min_m": 0.09815265414960095,
+  "DGT_mosaic_release": "mn-geo-rail-001-pt-dgt-grid12-mosaic-41158983022",
+  "DGT_source_mosaic_SHA256": "3e0ccefb89035565f9329320ed83ff39dc38ab1a56a4903846f930d018ffef17",
+  "IGN_WCS_original_raster_vertical_CRS_proven_by_GeoTIFF": false,
+  "actual_DGT_points_9_processed": true,
+  "actual_DGT_terrain_sample_candidate_conversions": [
+    {
+      "PTTM06_x_m": 80751.0,
+      "PTTM06_y_m": 209499.0,
+      "candidate_offset_m": 0.1185731250808999,
+      "candidate_transformed_Alicante_height_m": 292.48716443367465,
+      "latitude_ETRS89": 41.55077426453072,
+      "longitude_ETRS89": -7.165235373641223,
+      "mosaic_cell_column": 375,
+      "mosaic_cell_row": 250,
+      "original_DGT_Cascais_terrain_height_m": 292.36859130859375,
+      "verified_vertical_reference_control_point": false
+    },
+    {
+      "PTTM06_x_m": 81501.0,
+      "PTTM06_y_m": 209499.0,
+      "candidate_offset_m": 0.12126828135421874,
+      "candidate_transformed_Alicante_height_m": 320.29415036143234,
+      "latitude_ETRS89": 41.55069825439922,
+      "longitude_ETRS89": -7.156247203115964,
+      "mosaic_cell_column": 750,
+      "mosaic_cell_row": 250,
+      "original_DGT_Cascais_terrain_height_m": 320.1728820800781,
+      "verified_vertical_reference_control_point": false
+    },
+    {
+      "PTTM06_x_m": 82251.0,
+      "PTTM06_y_m": 209499.0,
+      "candidate_offset_m": 0.1244542450967856,
+      "candidate_transformed_Alicante_height_m": 327.71582387400304,
+      "latitude_ETRS89": 41.55062154184423,
+      "longitude_ETRS89": -7.147259067260675,
+      "mosaic_cell_column": 1125,
+      "mosaic_cell_row": 250,
+      "original_DGT_Cascais_terrain_height_m": 327.59136962890625,
+      "verified_vertical_reference_control_point": false
+    },
+    {
+      "PTTM06_x_m": 80751.0,
+      "PTTM06_y_m": 207999.0,
+      "candidate_offset_m": 0.10305636539951024,
+      "candidate_transformed_Alicante_height_m": 243.41540377750889,
+      "latitude_ETRS89": 41.53727052194246,
+      "longitude_ETRS89": -7.165436741668095,
+      "mosaic_cell_column": 375,
+      "mosaic_cell_row": 1000,
+      "original_DGT_Cascais_terrain_height_m": 243.31234741210938,
+      "verified_vertical_reference_control_point": false
+    },
+    {
+      "PTTM06_x_m": 81501.0,
+      "PTTM06_y_m": 207999.0,
+      "candidate_offset_m": 0.10701958946680179,
+      "candidate_transformed_Alicante_height_m": 284.7432195406387,
+      "latitude_ETRS89": 41.53719454765481,
+      "longitude_ETRS89": -7.156450440429559,
+      "mosaic_cell_column": 750,
+      "mosaic_cell_row": 1000,
+      "original_DGT_Cascais_terrain_height_m": 284.6361999511719,
+      "verified_vertical_reference_control_point": false
+    },
+    {
+      "PTTM06_x_m": 82251.0,
+      "PTTM06_y_m": 207999.0,
+      "candidate_offset_m": 0.11188828981414645,
+      "candidate_transformed_Alicante_height_m": 290.25840318239227,
+      "latitude_ETRS89": 41.53711787127483,
+      "longitude_ETRS89": -7.147464173833783,
+      "mosaic_cell_column": 1125,
+      "mosaic_cell_row": 1000,
+      "original_DGT_Cascais_terrain_height_m": 290.1465148925781,
+      "verified_vertical_reference_control_point": false
+    },
+    {
+      "PTTM06_x_m": 80751.0,
+      "PTTM06_y_m": 206499.0,
+      "candidate_offset_m": 0.09815265414960095,
+      "candidate_transformed_Alicante_height_m": 266.0981526541496,
+      "latitude_ETRS89": 41.523766746735426,
+      "longitude_ETRS89": -7.1656379723979855,
+      "mosaic_cell_column": 375,
+      "mosaic_cell_row": 1750,
+      "original_DGT_Cascais_terrain_height_m": 266.0,
+      "verified_vertical_reference_control_point": false
+    },
+    {
+      "PTTM06_x_m": 81501.0,
+      "PTTM06_y_m": 206499.0,
+      "candidate_offset_m": 0.10125941081207657,
+      "candidate_transformed_Alicante_height_m": 249.41284388346833,
+      "latitude_ETRS89": 41.523690808276896,
+      "longitude_ETRS89": -7.156653539172104,
+      "mosaic_cell_column": 750,
+      "mosaic_cell_row": 1750,
+      "original_DGT_Cascais_terrain_height_m": 249.31158447265625,
+      "verified_vertical_reference_control_point": false
+    },
+    {
+      "PTTM06_x_m": 82251.0,
+      "PTTM06_y_m": 206499.0,
+      "candidate_offset_m": 0.10638593233250049,
+      "candidate_transformed_Alicante_height_m": 284.283754096395,
+      "latitude_ETRS89": 41.52361416805705,
+      "longitude_ETRS89": -7.147669140561802,
+      "mosaic_cell_column": 1125,
+      "mosaic_cell_row": 1750,
+      "original_DGT_Cascais_terrain_height_m": 284.1773681640625,
+      "verified_vertical_reference_control_point": false
+    }
+  ],
+  "actual_PT_ES_vertical_transform_acceptance": false,
+  "canonical_Fxx_accepted": false,
+  "geodesic_observed_benchmarks_used": 0,
+  "grid_nominal_EPSG_accuracy_is_empirical_PT_ES_validation": false,
+  "mission": "MN-GEO-RAIL-001",
+  "numeric_grid_pipeline_tested": true,
+  "observed_utc": "2026-10-31T02:27:33.018281+00:00",
+  "official_sources": {
+    "ES_IGN_MDT_orthometric_heights": "https://pnoa.ign.es/pnoa-lidar/productos-a-descarga",
+    "ES_IGN_geodesic_calculator": "https://www.ign.es/web/calculadora-geodesica",
+    "PT_DGT_MDT": "https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-topografica/modelos-digitais",
+    "PT_DGT_geoid": "https://www.dgterritorio.gov.pt/atividades/geodesia/modelo-geoide"
+  },
+  "producer_licence": "DGT GeodPT08 DGT+FCUL CC BY 4.0; Spain IGN EGM08-REDNAP per IGN",
+  "pyproj_version": "3.8.0",
+  "raster_independently_verified_vertical_datum": false,
+  "stage": "source_geoid_grid_sha_pinned_numerical_vertical_checks",
+  "synthetic_site_checks": [
+    {
+      "computed_Cascais_to_Alicante_vertical_offset_m": 0.08300006841230356,
+      "latitude": 41.26,
+      "longitude": -8.1,
+      "site": "PT_Amarante",
+      "synthetic_PT_Cascais_input_height_m": 100.0,
+      "synthetic_candidate_ES_Alicante_output_height_m": 100.0830000684123,
+      "synthetic_forward_inverse_residual_m": 1.4210854715202004e-14,
+      "synthetic_only": true,
+      "vertical_transform_supported": true,
+      "within_compatibility_grid_overlap": true
+    },
+    {
+      "computed_Cascais_to_Alicante_vertical_offset_m": 0.1027486335475345,
+      "latitude": 41.5,
+      "longitude": -7.2,
+      "site": "PT_Mirandela",
+      "synthetic_PT_Cascais_input_height_m": 100.0,
+      "synthetic_candidate_ES_Alicante_output_height_m": 100.10274863354753,
+      "synthetic_forward_inverse_residual_m": 0.0,
+      "synthetic_only": true,
+      "vertical_transform_supported": true,
+      "within_compatibility_grid_overlap": true
+    },
+    {
+      "computed_Cascais_to_Alicante_vertical_offset_m": -0.030254531111381766,
+      "latitude": 41.75,
+      "longitude": -6.9,
+      "site": "PT_Nordeste",
+      "synthetic_PT_Cascais_input_height_m": 100.0,
+      "synthetic_candidate_ES_Alicante_output_height_m": 99.96974546888862,
+      "synthetic_forward_inverse_residual_m": 1.4210854715202004e-14,
+      "synthetic_only": true,
+      "vertical_transform_supported": true,
+      "within_compatibility_grid_overlap": true
+    },
+    {
+      "computed_Cascais_to_Alicante_vertical_offset_m": -0.057913319255021634,
+      "latitude": 41.6994,
+      "longitude": -6.34647,
+      "site": "ES_Alcanices",
+      "synthetic_PT_Cascais_input_height_m": 100.0,
+      "synthetic_candidate_ES_Alicante_output_height_m": 99.94208668074498,
+      "synthetic_forward_inverse_residual_m": 0.0,
+      "synthetic_only": true,
+      "vertical_transform_supported": true,
+      "within_compatibility_grid_overlap": true
+    },
+    {
+      "latitude": 41.50378,
+      "longitude": -5.746992,
+      "site": "ES_Zamora",
+      "synthetic_only": true,
+      "vertical_transform_supported": false,
+      "within_compatibility_grid_overlap": false
+    }
+  ],
+  "transformation_operation": {
+    "EPSG_declared_operation_accuracy_m": 0.09,
+    "EPSG_operation_description": "Inverse of ETRS89 to Cascais height (1) + ETRS89 to Alicante height (1)",
+    "axis_swap_removed_explicitly_for_lonlat": true,
+    "direct_lonlat_pipeline": "proj=pipeline  step proj=unitconvert xy_in=deg xy_out=rad step proj=vgridshift grids=pt_dgt_GeodPT08.tif multiplier=1 step inv proj=vgridshift grids=es_ign_egm08-rednap.tif multiplier=1 step proj=unitconvert xy_in=rad xy_out=deg ",
+    "proj_operation_contains_both_signed_official_grids": true,
+    "source_vertical_crs": "EPSG:5780",
+    "target_vertical_crs": "EPSG:5782"
+  },
+  "verified_geoid_grids": [
+    {
+      "SHA256_matches_previous_reproducible_W4_audit": true,
+      "bytes": 81638,
+      "name": "pt_dgt_GeodPT08.tif",
+      "sha256": "8c006ae3afa037c214d30e7ec97736452705773ccb663274e003ced1d08ccaa0",
+      "source_url": "https://cdn.proj.org/pt_dgt_GeodPT08.tif"
+    },
+    {
+      "SHA256_matches_previous_reproducible_W4_audit": true,
+      "bytes": 827857,
+      "name": "es_ign_egm08-rednap.tif",
+      "sha256": "d1758a580c2acc7cddcb814c2aebe1e5ab83f74dfaed8c1a885355bb3f85df58",
+      "source_url": "https://cdn.proj.org/es_ign_egm08-rednap.tif"
+    }
+  ],
+  "whole_corridor_harmonization_done": false,
+  "worker": "W4"
+}
