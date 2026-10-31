@@ -112,8 +112,10 @@ class FullGridSyntheticRasterTests(unittest.TestCase):
                 patch.object(m,"audit",side_effect=fake_audit),
                 patch.dict(m.os.environ,{"DGT_CDD_USERNAME":"dummy","DGT_CDD_PASSWORD":"dummy"}),
             ):
-                receipt=m.run(index,progress)
+                receipt=m.run(index,progress,folder/"staged")
             self.assertEqual(progress["safe_phase"],"validated")
+            self.assertEqual(receipt["native_files_sha_verified_in_temporary_release_staging"],12)
+            self.assertEqual(len(list((folder/"staged").glob("grid_*.tif"))),12)
             self.assertEqual(receipt["tile_count"],12)
             self.assertEqual(receipt["joins_total"],17)
             self.assertEqual(receipt["joint_neighbor_cell_pairs_valid"],8500)

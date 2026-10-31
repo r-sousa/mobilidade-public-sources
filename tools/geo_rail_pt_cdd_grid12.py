@@ -12,6 +12,7 @@ import argparse
 from datetime import datetime, timezone
 import json
 import os
+import shutil
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -141,7 +142,7 @@ def evaluate_seams(paths):
         raise ValueError("expected_seventeen_complete_DGT_grid_joins")
     return seams
 
-def run(index,progress=None):
+def run(index,progress=None,retain_dir=None):
     def phase(x):
         if progress is not None:
             progress["safe_phase"]=x
@@ -185,6 +186,23 @@ def run(index,progress=None):
         validate_native_grid_geometry(per_tile)
         phase("native_17_seam_pixel_validation")
         seams=evaluate_seams(all_paths)
+        preserved_native_files=0
+        if retain_dir is not None:
+            # Release staging is optional, explicit and possible only after 12/12
+            # genuine native QA and all 17 internal pixel-seam checks pass.
+            phase("stage_sha_verified_native_rasters")
+            target=Path(retain_dir)
+            if not target.is_absolute() or target.exists() or target.is_symlink():
+                raise IntakeError("unsafe_or_existing_grid_native_staging_directory")
+            target.mkdir(parents=True,mode=0o700)
+            for col,row,tile in GRID_TILES:
+                dest=target/f"grid_{col}_{row}.tif"
+                shutil.copyfile(all_paths[tile],dest,follow_symlinks=False)
+                from geo_rail_pt_native_intake_qa import stream_sha256
+                length,digest=stream_sha256(dest,max_bytes=25_000_000)
+                if (length,digest)!=downloaded[tile]:
+                    raise IntakeError("staged_native_grid_SHA256_mismatch")
+                preserved_native_files+=1
         phase("validated")
         return {
             "mission":"MN-GEO-RAIL-001","worker":"W2",
@@ -201,9 +219,12 @@ def run(index,progress=None):
             "joins_total":len(seams),
             "joint_neighbor_cell_pairs_valid":sum(x["pairs_valid"] for x in seams),
             "native_total_downloaded_bytes":total,
+            "native_files_sha_verified_in_temporary_release_staging":preserved_native_files,
             "tile_receipts":list(per_tile.values()),
             "seams":seams,
             "original_native_rasters_preserved_after_job":False,
+            "public_preacceptance_release_staged_only":bool(preserved_native_files),
+            "actual_public_release_created_by_this_script":False,
             "registered_CDD_credentials_signed_links_never_persisted":True,
             "no_source_raster_publication":True,
             "complete_Norte_Zamora_terrain_coverage_verified":False,
@@ -216,6 +237,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--index",required=True,type=Path)
     p.add_argument("--receipt",required=True,type=Path)
+    p.add_argument("--retain-dir",type=Path,default=None,
+                   help="Optional reviewed SHA-verified native 12-file staging for separate opt-in prerelease job")
     args=p.parse_args()
     progress={"safe_phase":"not_started"}
     receipt={"mission":"MN-GEO-RAIL-001","stage":"W2_DGT_protected_12_real_tiles_3_by_4km_grid",
@@ -224,7 +247,7 @@ def main():
              "source_native_rasters_preserved":False,
              "observed_utc":datetime.now(timezone.utc).isoformat()}
     try:
-        receipt=run(args.index,progress)
+        receipt=run(args.index,progress,args.retain_dir)
     except IntakeError as e:
         receipt["safe_error_code"]=e.code
         receipt["safe_failure_phase"]=progress["safe_phase"]
