@@ -1,0 +1,97 @@
+name: MN-GEO-RAIL-001 G12A station research and operating service portfolio
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g12-station-service-20261031
+      - main
+    paths:
+      - tools/geo_rail_g12_station_siting_and_operations.py
+      - tests/test_geo_rail_g12_station_service.py
+      - .github/workflows/mn-geo-g12-station-service.yml
+permissions:
+  contents: write
+jobs:
+  research_six_corridors_six_cities_three_station_reference_points:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install geodesy and source QA requirements
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'scipy>=1.12,<2' 'rasterio>=1.4,<2' 'shapely>=2,<3' 'pyproj>=3.6,<4'
+      - name: Validate G12A source-siting and service-pattern invariant tests
+        run: |
+          python -m py_compile tools/geo_rail_g12_station_siting_and_operations.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g12_station_service.py' -v
+      - name: Retrieve and sha-verify original G3 G5 G10 G11 only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G12-source"
+          b="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 75 "$b/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json" --output "$RUNNER_TEMP/G12-source/G3.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 75 "$b/mn-geo-rail-001-g5-distinct-research-bands-41232865101/G5-three-modules-real-source-route-screens.json" --output "$RUNNER_TEMP/G12-source/G5.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 75 "$b/mn-geo-rail-001-g10-27-macro-portfolio-41243658672/G10-27-combinations-81-speed-source-only.json" --output "$RUNNER_TEMP/G12-source/G10.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 75 "$b/mn-geo-rail-001-g11-six-city-27-options-service-41246280802/G11-six-city-27-source-study-service-evidence.json" --output "$RUNNER_TEMP/G12-source/G11.json"
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G12-source/G3.json" | sha256sum -c -
+          echo "a4cb8be1443b8be484303934595dfb8ffecaeb6b7857dc0a1ee1569956adfc32  $RUNNER_TEMP/G12-source/G5.json" | sha256sum -c -
+          echo "7677ed95f822ee8ada510f984f50ee498851e3bd948f9ed960e08f8620cc7287  $RUNNER_TEMP/G12-source/G10.json" | sha256sum -c -
+          echo "ab09a1d383e0152b79c0fb1ca36c050d938021e6e11775dd158cb3b675990e46  $RUNNER_TEMP/G12-source/G11.json" | sha256sum -c -
+      - name: Sample 108 reference points and optionally six low-rate real-road routing requests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g12_station_siting_and_operations.py \
+            --g3 "$RUNNER_TEMP/G12-source/G3.json" \
+            --g5 "$RUNNER_TEMP/G12-source/G5.json" \
+            --g10 "$RUNNER_TEMP/G12-source/G10.json" \
+            --g11 "$RUNNER_TEMP/G12-source/G11.json" \
+            --json "$RUNNER_TEMP/G12A-108-siting-source-road-service.json" \
+            --geojson "$RUNNER_TEMP/G12A-108-research-station-seeds-NOT-real-stations.geojson" \
+            --markdown "$RUNNER_TEMP/G12A-six-alternatives-service-patterns-review.md"
+          python - <<'PY'
+          import os,json,pathlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          j=json.loads((root/"G12A-108-siting-source-road-service.json").read_text())
+          g=json.loads((root/"G12A-108-research-station-seeds-NOT-real-stations.geojson").read_text())
+          assert j["cities_x_corridors_x_source_research_point_offsets"]==[6,6,3]
+          assert len(g["features"])==108
+          assert len(j["six_corridor_city_reference_road_snap_minute_matrix"])==6
+          assert len(j["station_stop_penalty_sensitivity_not_schedules"])==72
+          assert len(j["OSRM_demo_source_receipts"])==6
+          assert j["railway_urban_nodes_mandatory"]==["Vila Real","Bragança"]
+          assert j["Sanabria_excluded"] and j["zero_confirmed_railway_station_locations"]
+          assert j["zero_observed_population_or_employment_catchment"]
+          assert j["no_source_DGT_new_acquisition"]
+          assert not j["Fxx_accepted"] and not j["Site_authorized"]
+          print("G12A verified: six corridors, six urban markets, 108 study points, 72 service-plan sensitivities, no actual station/cost/population claims")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G12A-six-corridors-real-road-station-research
+          path: |
+            ${{ runner.temp }}/G12A-108-siting-source-road-service.json
+            ${{ runner.temp }}/G12A-108-research-station-seeds-NOT-real-stations.geojson
+            ${{ runner.temp }}/G12A-six-alternatives-service-patterns-review.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish source-grounded preacceptance on main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g12a-station-siting-stop-sensitivity-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G12A-108-siting-source-road-service.json" \
+            "$RUNNER_TEMP/G12A-108-research-station-seeds-NOT-real-stations.geojson" \
+            "$RUNNER_TEMP/G12A-six-alternatives-service-patterns-review.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G12A 108 research station-reference points; six options and multi-stop sensitivity, NOT stations" \
+            --notes "Six source-grounded alternatives x 6 urban markets x3 longitudinal offset study point seeds =108 NO real stations, with best-effort six OSM road network queries to nearby snapped road points and 72 train stop-penalty what-ifs (160,200,250 km/h, four conceptual service patterns). Every city and route research point preserve source SHA, no verified railway station, no urban catchments, legal station access or cost, no rail timetable. Two mandatory Vila Real and Braganca markets, four optional Guimaraes/Amarante/Mirandela/Macedo, Sanabria excluded, no new DGT originals or Fxx/Site."
