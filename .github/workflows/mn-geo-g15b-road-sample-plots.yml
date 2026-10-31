@@ -1,0 +1,80 @@
+name: MN-GEO-RAIL-001 G15B source-reliability and road-only partial accessibility charts
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g15-roadonly-20261031
+      - main
+    paths:
+      - tools/geo_rail_g15b_road_sample_visuals.py
+      - .github/workflows/mn-geo-g15b-road-sample-plots.yml
+permissions:
+  contents: write
+  actions: read
+jobs:
+  G15B_census_OSRM_roadonly_partial_access_without_PT:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install source graph visualisation dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'matplotlib>=3.8,<4' 'shapely>=2.1,<3' 'pyproj>=3.6,<4'
+      - name: Reuse completed G15 archived full census and OSRM source table, not new network requests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G15B"
+          gh run download 41251627578 --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G15-road-only-2021-population-sampling --dir "$RUNNER_TEMP/G15B"
+      - name: Plot sampled accessibility and unknown resident coverage and geographic 4km sample points
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g15b_road_sample_visuals.py \
+            --json "$RUNNER_TEMP/G15B/G15-3-families-six-city-census-OSRM-road-classification.json" \
+            --coverage "$RUNNER_TEMP/G15B/G15B-known-and-unknown-population-screen-reliability.png" \
+            --minutes "$RUNNER_TEMP/G15B/G15B-2021-pop-15-30min-road-only-sample-comparison.png" \
+            --geojson "$RUNNER_TEMP/G15B/G15B-source-BGRI-grid-road-representative-points.geojson"
+          python - <<'PY'
+          import pathlib,os,json
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])/"G15B"
+          s=json.loads((d/"G15-3-families-six-city-census-OSRM-road-classification.json").read_text())
+          assert s["no_weight_or_zero_penalty_for_missing_PT_data"]
+          g=json.loads((d/"G15B-source-BGRI-grid-road-representative-points.geojson").read_text())
+          assert len(g["features"])>20
+          assert all(z["properties"]["4km_population_cell_representative_point_NOT_exact_population_location"] for z in g["features"])
+          assert (d/"G15B-known-and-unknown-population-screen-reliability.png").stat().st_size>10000
+          assert (d/"G15B-2021-pop-15-30min-road-only-sample-comparison.png").stat().st_size>10000
+          print("G15B verified original 2021 census population and observed road-only sampling plus uncertainty map")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G15B-road-only-2021-pop-sample-uncertainty-charts
+          path: |
+            ${{ runner.temp }}/G15B/G15B-known-and-unknown-population-screen-reliability.png
+            ${{ runner.temp }}/G15B/G15B-2021-pop-15-30min-road-only-sample-comparison.png
+            ${{ runner.temp }}/G15B/G15B-source-BGRI-grid-road-representative-points.geojson
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish uncertainty-explicit road sample charts on main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g15b-population-OSM-road-only-source-maps-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G15B/G15B-known-and-unknown-population-screen-reliability.png" \
+            "$RUNNER_TEMP/G15B/G15B-2021-pop-15-30min-road-only-sample-comparison.png" \
+            "$RUNNER_TEMP/G15B/G15B-source-BGRI-grid-road-representative-points.geojson" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G15B bounded sampled 2021 census road-route accessibility evidence and coverage uncertainty" \
+            --notes "2021 Census INE BGRI residents in 4km population-prioritized source cells and 2026 OSRM to NON station research road references. Classified residents vs unknown residents shown separately; source points are NOT residential addresses; 15/30 min counts of *sampled* cells NOT complete road isochrones nor transit service. NUTS II Norte PT coverage unverified: no bus/PT service ranking and missing NEVER means zero. Fxx/Site unchanged."
