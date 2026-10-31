@@ -10,7 +10,7 @@ be exact PT-TM06 points; nonpoint features are diagnosed and NOT counted as
 official benchmark marks. No DGT credentials or huge transfers.
 """
 from __future__ import annotations
-import argparse,hashlib,json,math
+import argparse,hashlib,json,math,re
 from datetime import datetime,timezone
 from pathlib import Path
 from urllib.parse import urlencode
@@ -37,6 +37,23 @@ def feature_url(base,bbox):
         ("bbox",",".join(str(x) for x in bbox)+",EPSG:3763"),
         ("outputFormat","application/json")])
 
+def normalize_original_ALTH38(source):
+    """Preserve original published height, normalize strict PT/decimal representations.
+
+    Never interpret dotted thousand separators, missing heights, unit-suffixed
+    strings, or untrusted expressions as valid altitudes.
+    """
+    if isinstance(source,bool) or source is None:
+        return None
+    if isinstance(source,(int,float)):
+        h=float(source)
+    elif isinstance(source,str) and re.fullmatch(
+             r"[+-]?[0-9]{1,4}(?:[.,][0-9]{1,9})?",source.strip()):
+        h=float(source.strip().replace(",","."))
+    else:
+        return None
+    return h if math.isfinite(h) and -20<h<2600 else None
+
 def parse_source_features(raw,bbox):
     obj=json.loads(raw)
     if obj.get("type")!="FeatureCollection" or not isinstance(obj.get("features"),list):
@@ -58,12 +75,15 @@ def parse_source_features(raw,bbox):
             invalid.append({"row":i,"reason":"bad_source_coordinate"});continue
         if not bbox[0]-1<=xx<=bbox[2]+1 or not bbox[1]-1<=yy<=bbox[3]+1:
             invalid.append({"row":i,"reason":"coordinate_not_in_PT_TM06_bbox"});continue
-        h=props.get(HEIGHT_FIELD)
-        if h is None or isinstance(h,bool):
+        original_height=props.get(HEIGHT_FIELD)
+        if original_height is None:
             invalid.append({"row":i,"reason":"missing_original_ALTH38"});continue
-        # Never silently coerce a qualitative or ambiguous height value.
-        if not isinstance(h,(int,float)) or not math.isfinite(h) or not -20<h<2600:
-            invalid.append({"row":i,"reason":"non_numeric_or_out_of_range_ALTH38"});continue
+        h=normalize_original_ALTH38(original_height)
+        if h is None:
+            invalid.append({"row":i,"reason":"non_numeric_or_out_of_range_ALTH38",
+              "original_type":type(original_height).__name__,
+              "original_string_length":len(str(original_height)),
+              "original_example":str(original_height)[:48]});continue
         id_value=x.get("id")
         if not isinstance(id_value,(int,str)) or not str(id_value).strip() or len(str(id_value))>160:
             invalid.append({"row":i,"reason":"missing_official_source_feature_ID"});continue
@@ -75,6 +95,8 @@ def parse_source_features(raw,bbox):
             "mark_label_MARCA":str(name),
             "native_xy_epsg3763":[float(xx),float(yy)],
             "DGT_original_ALTH38_height_m":float(h),
+            "DGT_ALTH38_original_source_value":original_height,
+            "source_original_height_was_text":isinstance(original_height,str),
             "source_vertical_reference":"Cascais Helmert 38 (ALTH38; DGT official documentation)",
             "original_layer":LAYER,
             "original_property_keys_present":sorted(str(k) for k in props.keys())[:45],
