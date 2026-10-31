@@ -1,0 +1,67 @@
+name: MN-GEO-RAIL-001 W4 real REDNAP survey marks versus native IGN MDT pixel check
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-w4-rednap-wcs-local-20261031
+    paths:
+      - tools/geo_rail_rednap_wcs_ground_sample.py
+      - tests/test_geo_rail_rednap_wcs_ground_sample.py
+      - .github/workflows/mn-geo-w4-rednap-wcs-ground-qa.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-w4-REDNAP-mark-vs-source-WCS
+  cancel-in-progress: false
+
+jobs:
+  native-IGN-pixel-versus-mark-reports:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install official source 2m window raster and ETRS89 projection tools
+        run: python -m pip install --disable-pip-version-check 'numpy>=2,<3' 'rasterio>=1.4,<2' 'pyproj>=3.6,<4'
+      - name: Test reviewed native WCS request boundaries and deterministic REDNAP mark selection
+        run: python -m unittest discover -s tests -p 'test_geo_rail_rednap_wcs_ground_sample.py' -v
+      - name: Request only twelve bounded original IGN WCS 2x2km terrains and sample six official REDNAP marks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_rednap_wcs_ground_sample.py \
+            --REDNAP-source reports/mn-geo-rail-001/ign-rednap-aliste-zamora-bounded-benchmarks.json \
+            --output "$RUNNER_TEMP/rednap-wcs-marker-pixel-qa.json"
+      - name: Persist sanitized mark heights vs terrain raster source QA without source GeoTIFFs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          source="$RUNNER_TEMP/rednap-wcs-marker-pixel-qa.json"
+          test -s "$source"
+          target=reports/mn-geo-rail-001/ign-rednap-vs-wcs-5m25m-local-ground-qa.json
+          cp "$source" "$target"
+          python - <<'PY'
+          import json
+          x=json.load(open("reports/mn-geo-rail-001/ign-rednap-vs-wcs-5m25m-local-ground-qa.json"))
+          assert x["canonical_Fxx_accepted"] is False
+          assert x["raster_elevation_accuracy_certified_by_this_test"] is False
+          assert x["real_crossborder_vertical_benchmark_harmonization_proven"] is False
+          assert x["total_WCS_native_requests"]==12
+          assert len(x["comparisons"])==6
+          assert not x["native_rasters_preserved"]
+          print("REDNAP_VS_IGN_WCS_DESCRIPTIVE_GROUND_CELL_REPORT",len(x["comparisons"]))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): preserve six real IGN REDNAP survey mark vs 5m25m native terrain pixel comparisons"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
