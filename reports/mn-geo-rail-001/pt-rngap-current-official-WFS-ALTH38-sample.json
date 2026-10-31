@@ -1,0 +1,567 @@
+{
+  "Fxx_canonical_accepted": false,
+  "Site_approved": false,
+  "WFS_feature_type_XSD_sha256": "974a9d5804a57fe57150c59172f15db53655c77fec021c60b57ef1b2b605fa64",
+  "WFS_getcapabilities_sha256": "d130a5aaca7bf52d4ad01e1538835d33fe40039a9d72b9ab39eedfa9ec495ebf",
+  "WFS_resource_ID": "95bd9727-4119-43e4-9886-bfed5b05c6d6",
+  "benchmark_remeasured_physically": false,
+  "catalogue_sha256": "805b25d53c8ba558d709dc6c000e16dcd1e24edef2d3e17bfd21bec4cbdac2fc",
+  "expected_WFS_service": "https://geo2.dgterritorio.gov.pt/geoserver/RGN/ows",
+  "features_limit_per_window": 40,
+  "full_corridor_benchmark_coverage": false,
+  "independent_PT_ES_height_datum_harmonized": false,
+  "mission": "MN-GEO-RAIL-001",
+  "original_height_field": "ALTH38",
+  "original_source_height_validation_without_independent_control": true,
+  "selected_layer": "RGN:RedeNivelamento",
+  "source_catalogue": "https://dados.gov.pt/pt/datasets/rede-de-nivelamento-geometrico-de-alta-precisao-rngap",
+  "source_producer": "Direção-Geral do Território",
+  "spatial_crs": "EPSG:3763",
+  "stage": "bounded_real_DGT_RNGAP_WFS_ALTH38_source_mark_intake",
+  "timestamp_utc": "2026-10-31T08:33:19.602093+00:00",
+  "unique_source_mark_count": 0,
+  "vertical_reference_documented": "Cascais Helmert 38",
+  "window_count": 3,
+  "windows": [
+    {
+      "bbox_PT_TM06": [
+        70000,
+        175000,
+        105000,
+        235000
+      ],
+      "invalid_records": [
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 0
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 1
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 2
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 3
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 4
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 5
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 6
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 7
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 8
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 9
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 10
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 11
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 12
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 13
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 14
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 15
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 16
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 17
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 18
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 19
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 20
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 21
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 22
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 23
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 24
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 25
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 26
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 27
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 28
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 29
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 30
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 31
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 32
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 33
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 34
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 35
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 36
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 37
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 38
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 39
+        }
+      ],
+      "name": "Mirandela",
+      "not_full_source_coverage": true,
+      "numberMatched": 66,
+      "observations_validated": [],
+      "returned_features": 40,
+      "source_bytes": 23402,
+      "source_payload_SHA256": "4bf7f3f38ab3dca1afee1411cfc118fc0155d68311feae0ca31dfe9d207e8b49",
+      "source_response_potentially_paged": true,
+      "status": "sampled_original_DGT_WFS_feature_response",
+      "valid_original_marks": 0
+    },
+    {
+      "bbox_PT_TM06": [
+        10000,
+        125000,
+        85000,
+        205000
+      ],
+      "invalid_records": [
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 0
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 1
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 2
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 3
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 4
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 5
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 6
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 7
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 8
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 9
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 10
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 11
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 12
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 13
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 14
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 15
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 16
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 17
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 18
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 19
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 20
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 21
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 22
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 23
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 24
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 25
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 26
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 27
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 28
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 29
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 30
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 31
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 32
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 33
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 34
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 35
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 36
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 37
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 38
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 39
+        }
+      ],
+      "name": "VilaReal_Mirandela",
+      "not_full_source_coverage": true,
+      "numberMatched": 233,
+      "observations_validated": [],
+      "returned_features": 40,
+      "source_bytes": 20154,
+      "source_payload_SHA256": "8b8d3439676fcfaaaefced33ed42ddd13feb99407606a3187570e8e5b6afa971",
+      "source_response_potentially_paged": true,
+      "status": "sampled_original_DGT_WFS_feature_response",
+      "valid_original_marks": 0
+    },
+    {
+      "bbox_PT_TM06": [
+        105000,
+        205000,
+        175000,
+        290000
+      ],
+      "invalid_records": [
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 0
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 1
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 2
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 3
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 4
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 5
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 6
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 7
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 8
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 9
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 10
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 11
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 12
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 13
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 14
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 15
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 16
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 17
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 18
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 19
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 20
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 21
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 22
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 23
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 24
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 25
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 26
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 27
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 28
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 29
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 30
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 31
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 32
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 33
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 34
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 35
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 36
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 37
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 38
+        },
+        {
+          "reason": "non_numeric_or_out_of_range_ALTH38",
+          "row": 39
+        }
+      ],
+      "name": "Nordeste_fronteira",
+      "not_full_source_coverage": true,
+      "numberMatched": 133,
+      "observations_validated": [],
+      "returned_features": 40,
+      "source_bytes": 22774,
+      "source_payload_SHA256": "4bcaf97e8df402616e267f6bad444fc58cf33f6155d8c0e0aeb3b6ac20510d69",
+      "source_response_potentially_paged": true,
+      "status": "sampled_original_DGT_WFS_feature_response",
+      "valid_original_marks": 0
+    }
+  ]
+}
