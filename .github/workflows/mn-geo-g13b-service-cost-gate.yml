@@ -1,0 +1,91 @@
+name: MN-GEO-RAIL-001 G13B urban service, terrain site and cost evidence gate
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g13-dsm-station-access-audit-20261031
+      - main
+    paths:
+      - tools/geo_rail_g13b_service_site_cost_evidence.py
+      - tests/test_geo_rail_g13b_service_cost_gates.py
+      - .github/workflows/mn-geo-g13b-service-cost-gate.yml
+permissions:
+  contents: write
+  actions: read
+jobs:
+  three_civil_geography_families_source_service_cost_gates:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate source evidence comparison and typed cost bill of materials
+        run: |
+          python -m py_compile tools/geo_rail_g13b_service_site_cost_evidence.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g13b_service_cost_gates.py' -v
+      - name: Acquire no new geodata; reuse original G10 G12B and completed G13A source run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G13B-sources"
+          b="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 60 "$b/mn-geo-rail-001-g10-27-macro-portfolio-41243658672/G10-27-combinations-81-speed-source-only.json" -o "$RUNNER_TEMP/G13B-sources/G10.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 60 "$b/mn-geo-rail-001-g12b-service-cost-evidence-gate-41248196861/G12B-three-families-six-alternatives-data-gates.json" -o "$RUNNER_TEMP/G13B-sources/G12B.json"
+          echo "7677ed95f822ee8ada510f984f50ee498851e3bd948f9ed960e08f8620cc7287  $RUNNER_TEMP/G13B-sources/G10.json" | sha256sum -c -
+          echo "6a238e90e6eef962079e5b7704c3e143524eecf009d1ee12af7a27e3a065ba57  $RUNNER_TEMP/G13B-sources/G12B.json" | sha256sum -c -
+          gh run download 41248709022 --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G13A-original-DSM-station-reference-108 \
+            --dir "$RUNNER_TEMP/G13B-sources"
+          test -s "$RUNNER_TEMP/G13B-sources/G13A-108-station-research-site-surface-graded-access.json"
+          sha256sum "$RUNNER_TEMP/G13B-sources/G13A-108-station-research-site-surface-graded-access.json"
+      - name: Compare source service-quality and relief flags and retain cost figures as missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g13b_service_site_cost_evidence.py \
+            --g10 "$RUNNER_TEMP/G13B-sources/G10.json" \
+            --g12b "$RUNNER_TEMP/G13B-sources/G12B.json" \
+            --g13a "$RUNNER_TEMP/G13B-sources/G13A-108-station-research-site-surface-graded-access.json" \
+            --json "$RUNNER_TEMP/G13B-3-corridor-family-service-DSM-finance-gates.json" \
+            --markdown "$RUNNER_TEMP/G13B-three-alternative-pre-feasibility-issues.md"
+          python - <<'PY'
+          import os,pathlib,json
+          path=pathlib.Path(os.environ["RUNNER_TEMP"])
+          d=json.loads((path/"G13B-3-corridor-family-service-DSM-finance-gates.json").read_text())
+          assert d["three_prioritized_diverse_not_cost_optimal_corridor_families"]==["P1-2-1","P2-2-1","P2-2-3"]
+          assert len(d["18_speed_scenario_geometry_and_surface_checks"])==18
+          assert len(d["engineering_and_financial_COST_BOM_schema_all_unknowns"])==10
+          assert all(x["investment_EUR"] is None and x["validated_construction_quantity"] is None for x in d["engineering_and_financial_COST_BOM_schema_all_unknowns"])
+          assert len(d["all_six_source_combinations_access_and_surface_screen"])==6
+          assert d["georeferenced_station_sites_validated"]==0
+          assert not d["cost_EUR_estimates_validated"]
+          assert d["mandatory_stops"]==["Vila Real","Bragança"] and d["Sanabria_excluded"]
+          assert d["no_new_source_terrain_downloads"] and not d["Fxx_accepted"] and not d["Site_authorized"]
+          print("G13B accepted 3 source geographies, 18 speed checks, six-city access & local relief, ten null construction BOM cost fields")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G13B-service-terrain-risk-and-cost-input-audit
+          path: |
+            ${{ runner.temp }}/G13B-3-corridor-family-service-DSM-finance-gates.json
+            ${{ runner.temp }}/G13B-three-alternative-pre-feasibility-issues.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish G13B source/engineering data preacceptance on main
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g13b-three-service-ground-cost-gates-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G13B-3-corridor-family-service-DSM-finance-gates.json" "$RUNNER_TEMP/G13B-three-alternative-pre-feasibility-issues.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G13B pre-feasibility 3 macro options and surface/service evidence gates; NO euro cost estimation" \
+            --notes "Original SHA locked G10/G12B plus G13A real 108 Copernicus DSM profiles. Three diverse source-grid research families, speed 160/200/250 geometric screens (P2-2-3 250 may not pass within current 3km proxy), road routing to road-snap points not valid railway station interfaces. Actual bare-earth DTM, F67 private census access, observed OD, quantified civil work, construction/lifecycle pricing, verified train travel times and all actual station sites still missing. No new DGT acquisition, no Fxx/Site."

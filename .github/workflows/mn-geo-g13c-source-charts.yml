@@ -1,0 +1,70 @@
+name: MN-GEO-RAIL-001 G13C three-family road access and local surface terrain comparisons
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g13-dsm-station-access-audit-20261031
+      - main
+    paths:
+      - tools/geo_rail_g13c_visual_compare.py
+      - .github/workflows/mn-geo-g13c-source-charts.yml
+permissions:
+  contents: write
+  actions: read
+jobs:
+  G13C_three_family_source_urban_comparison:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install plotting-only scientific library
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'matplotlib>=3.8,<4'
+      - name: Reuse immutable successful G13A original-DSM profiles, no new authenticated raster
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G13C-source"
+          gh run download 41248709022 --repo "$GITHUB_REPOSITORY" --name MN-GEO-RAIL-001-G13A-original-DSM-station-reference-108 --dir "$RUNNER_TEMP/G13C-source"
+          test -s "$RUNNER_TEMP/G13C-source/G13A-108-station-research-site-surface-graded-access.json"
+      - name: Plot 3 family x 6 urban markets road reference and DSM pressure matrices
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g13c_visual_compare.py \
+            --report "$RUNNER_TEMP/G13C-source/G13A-108-station-research-site-surface-graded-access.json" \
+            --road "$RUNNER_TEMP/G13C-three-families-six-cities-road-access-proxy.png" \
+            --terrain "$RUNNER_TEMP/G13C-three-families-six-cities-DSM-terrain-pressure.png"
+          python - <<'PY'
+          import pathlib,os
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])
+          assert (d/"G13C-three-families-six-cities-road-access-proxy.png").stat().st_size>10000
+          assert (d/"G13C-three-families-six-cities-DSM-terrain-pressure.png").stat().st_size>10000
+          print("G13C actual OSRM and Copernicus DSM source charts; real station construction data absent")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G13C-three-family-source-service-pressure-charts
+          path: |
+            ${{ runner.temp }}/G13C-three-families-six-cities-road-access-proxy.png
+            ${{ runner.temp }}/G13C-three-families-six-cities-DSM-terrain-pressure.png
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish graphical results only from protected main
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g13c-station-service-DSM-visuals-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G13C-three-families-six-cities-road-access-proxy.png" "$RUNNER_TEMP/G13C-three-families-six-cities-DSM-terrain-pressure.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G13C three research corridors six city road reference minutes and surface relief (not stations)" \
+            --notes "G13A real archived Copernicus DSM surface 108 profiles, OSRM verified road network travel minutes to reference road snapped points, not actual railway stations. No title, legal site, real rail timetable, financial CAPEX, census or actual access to a built station is claimed; source-only research charts."
