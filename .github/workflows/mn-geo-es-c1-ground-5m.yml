@@ -1,0 +1,80 @@
+name: MN-GEO-RAIL-001 C1 acquire IGN CNIG 5m real ground terrain for N122 options
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-c1-alcanices-muelas-20261031
+    paths:
+      - tools/geo_rail_es_c1_ground_5m.py
+      - tests/test_geo_rail_es_c1_ground_5m.py
+      - .github/workflows/mn-geo-es-c1-ground-5m.yml
+permissions:
+  contents: read
+concurrency:
+  group: mn-geo-rail-001-c1-96km2-CNIG-real-DTM
+  cancel-in-progress: false
+jobs:
+  acquire-and-verify-real-original-CNIG-WCS-MDT5m-responses:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-c1-alcanices-muelas-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'rasterio>=1.4,<2'
+      - name: No-network precise geographic 2x2 km whitelist and mandatory nodes contract tests
+        run: python -m unittest discover -s tests -p 'test_geo_rail_es_c1_ground_5m.py' -v
+      - name: Acquire all 24 exact 2km CNIG WCS 5m terrain blocks, keep original response bytes and build panels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_es_c1_ground_5m.py --acquire "$RUNNER_TEMP/C1-DTM-5M"
+          python tools/geo_rail_es_c1_ground_5m.py --verify "$RUNNER_TEMP/C1-DTM-5M"
+      - name: Archive 24 real original GetCoverage TIFF responses, 2 ground mosaics and QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-C1-real-MDT-5m-96km2-${{ github.run_id }}
+          path: ${{ runner.temp }}/C1-DTM-5M/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+  independently-preserve-attributed-24-source-GeoTIFFs-and-2-5m-panels:
+    needs: acquire-and-verify-real-original-CNIG-WCS-MDT5m-responses
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'rasterio>=1.4,<2'
+      - uses: actions/download-artifact@v4
+        with:
+          name: mn-geo-rail-001-C1-real-MDT-5m-96km2-${{ github.run_id }}
+          path: ${{ runner.temp }}/C1-DTM-5M
+      - name: Independent complete 3.84million pixel QA, rehash all 24 original WCS response bytes and 2 mosaics
+        run: python tools/geo_rail_es_c1_ground_5m.py --verify "$RUNNER_TEMP/C1-DTM-5M"
+      - name: Publish original WCS response source files and reusable derived 5m ground panels with attribution
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/C1-DTM-5M"
+          tag="mn-geo-rail-001-c1-cnig-n122-96km2-ground-preacceptance-${GITHUB_RUN_ID}"
+          cat > "$RUNNER_TEMP/notes.txt" <<'EOF'
+          Actual bare-earth digital TERRAIN model (MDT05) from official Instituto Geografico Nacional (IGN)/Centro Nacional de Informacion Geografica (CNIG) public WCS, NOT digital surface model.
+          CC BY 4.0, attribution required to IGN/CNIG: https://datos.gob.es/es/catalogo/e0dat0002-wcs-de-modelos-digitales-del-terreno-de-espana1
+          24 original GetCoverage TIFF response bytes preserved; these are NOT originals of CNIG public archived COG tile products.
+          Two separate 8x6km study zones, Alcañices and Muelas del Pan, TOTAL 96 distinct km2 in the Spanish N-122 reference zone.
+          Derived lossless 5m mosaics preserve ALL original 24 source WCS pixel values; SHA256 each source and each mosaic recorded in attached JSON receipt.
+          Regional rail objective mandatory Vila Real & Bragança; towns may be served at accessible peripheral sites.
+          A4/IP4 and N122 are transport accessibility references, NOT a chosen railway alignment. Sanabria excluded.
+          Geographic areas sampled do not establish full Portuguese-Spanish corridor ground continuity.
+          EPSG25830 is horizontal CRS; no claim individual WCS vertical datum independently surveyed or PT-ES vertical transformation verified.
+          No Fxx acceptance, railway slope, Site, cost or final route approval.
+          EOF
+          gh release create "$tag" "$d"/*tif "$d/C1-IGN-CNIG-5m-N122-reference-source-QA.json" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "MN-GEO-RAIL-001 C1 two real IGN terrain 5m panels, 96 km2 PREACCEPTANCE" --notes-file "$RUNNER_TEMP/notes.txt"
