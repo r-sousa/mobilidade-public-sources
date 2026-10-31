@@ -1,0 +1,79 @@
+name: MN-GEO-RAIL-001 A1b acquire real north Sanabria DSM pixels
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-a1b-sanabria-north-dsm-20261031
+    paths:
+      - tools/geo_rail_r1_north_sanabria_dsm.py
+      - tests/test_geo_rail_r1_north_sanabria_dsm.py
+      - .github/workflows/mn-geo-r1-north-sanabria-dsm.yml
+permissions:
+  contents: read
+concurrency:
+  group: mn-geo-rail-001-a1b-sanabria-real-COGs
+  cancel-in-progress: false
+jobs:
+  acquire-original-N41-N42-source-COGs-and-native-pixel-review:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-a1b-sanabria-north-dsm-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
+      - name: Strict four original COGs approved and coverage bounds tested
+        run: python -m unittest discover -s tests -p 'test_geo_rail_r1_north_sanabria_dsm.py' -v
+      - name: Acquire 4 public original DSM COGs and derive actual 1-arcsec 0-NoData Sanabria coverage
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_r1_north_sanabria_dsm.py --acquire "$RUNNER_TEMP/A1b-NORTH"
+          python tools/geo_rail_r1_north_sanabria_dsm.py --verify-existing "$RUNNER_TEMP/A1b-NORTH"
+      - name: Archive only verified north-region derived DSM and QA, not four producer COGs
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-A1b-Sanabria-north-DSM-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/A1b-NORTH/MN-GEO-RAIL-001-A1b-Sanabria-northern-GLO30-DSM.tif
+            ${{ runner.temp }}/A1b-NORTH/MN-GEO-RAIL-001-A1b-Sanabria-northern-DSM-QA.json
+          compression-level: 0
+          retention-days: 7
+          if-no-files-found: error
+  independently-verify-and-preserve-sanitized-north-source-coverage:
+    needs: acquire-original-N41-N42-source-COGs-and-native-pixel-review
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
+      - uses: actions/download-artifact@v4
+        with:
+          name: mn-geo-rail-001-A1b-Sanabria-north-DSM-${{ github.run_id }}
+          path: ${{ runner.temp }}/A1b-NORTH-VERIFIED
+      - name: Reopen every pixel, compare SHA256 and test N41/N42 and W007/W006 seams
+        run: python tools/geo_rail_r1_north_sanabria_dsm.py --verify-existing "$RUNNER_TEMP/A1b-NORTH-VERIFIED"
+      - name: Publish derived northern surface, IGN/CNIG NOT substituted
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/A1b-NORTH-VERIFIED"
+          tag="mn-geo-rail-001-a1b-sanabria-north-DSM-preacceptance-${GITHUB_RUN_ID}"
+          cat > "$RUNNER_TEMP/notes.txt" <<'EOF'
+          Copernicus DEM GLO30 Public: actual full-source COG pixels of N41/N42 W007/W006, native 1 arcsecond.
+          Produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved
+          Terms: https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM
+          Study addition [-7,41.92,-5.55,42.30], EPSG4326. Includes Puebla de Sanabria city; contiguous geographical bbox abutting prior A1 at latitude 41.92.
+          This is DSM including trees and buildings, NOT DGT/IGN original bare-earth DTM.
+          Original producer COG files are not redistributed; only clipped 1 arcsecond DSM and original source-hash QA JSON.
+          No independent GLO30 vertical error control, no PT-ES national datum calibration, no railway alignment or Fxx/Site acceptance.
+          Cross-release *pixel seam* between A1 and A1b has NOT been independently compared; only internal source seams are checked.
+          EOF
+          gh release create "$tag" "$d/MN-GEO-RAIL-001-A1b-Sanabria-northern-GLO30-DSM.tif" "$d/MN-GEO-RAIL-001-A1b-Sanabria-northern-DSM-QA.json" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "MN-GEO-RAIL-001 A1b Sanabria north original DSM pixels, PREACCEPTANCE" --notes-file "$RUNNER_TEMP/notes.txt"
