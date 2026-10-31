@@ -53,8 +53,9 @@ def compare_sources(g10,a):
    "fare_and_rail_frequency_current_data":None,
    "all_missing_are_explicit":True}
   rows.append(info)
- if [x["research_combination"] for x in rows]!=list(A_OPTIONS):
-  raise ValueError("source_shortlist_order_changed")
+ if set(x["research_combination"] for x in rows)!=set(A_OPTIONS):
+  raise ValueError("source_shortlist_membership_changed")
+ rows.sort(key=lambda x:A_OPTIONS.index(x["research_combination"]))
  return rows
 
 def contrasts(rows):
