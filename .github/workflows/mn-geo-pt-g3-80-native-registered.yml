@@ -1,0 +1,140 @@
+name: MN-GEO-RAIL-001 G3 protected actual DGT 2m 80 original tiles 20 study cells
+# Secret-based DGT acquisition only via explicit manual workflow_dispatch on PROTECTED main.
+# Never run DGT credentials on push/PR/release/schedule, never publish credential-bearing links.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-geo-rail-001-g3-DGT2m-manual-original-source-80
+  cancel-in-progress: false
+jobs:
+  verify-protected-main:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Verify main branch remains protected before protected DGT access
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          protected="$(curl --fail --silent --show-error --header "Authorization: Bearer $GH_TOKEN"             --header "Accept: application/vnd.github+json"             "https://api.github.com/repos/r-sousa/mobilidade-public-sources/branches/main" | jq -r '.protected')"
+          [[ "$protected" == "true" ]] || { echo "::error::Reject DGT credential use on unprotected main"; exit 1; }
+  acquire-reviewed-native-originals:
+    needs: verify-protected-main
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: dgt-cdd
+    runs-on: ubuntu-latest
+    timeout-minutes: 42
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        batch: [vila_real, braganca, regional]
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install reviewed source geospatial validation and DGT HTTP dependencies
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=1.24,<3' 'requests>=2.32,<3'
+      - name: Offline tests before credentials read
+        run: python -m unittest discover -s tests -p 'test_geo_rail_g3_native80.py' -v
+      - name: Retrieve SHA256-pinned reviewed 80 exact DGT original tile IDs from real-source G3 release
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --max-time 100              "https://github.com/r-sousa/mobilidade-public-sources/releases/download/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json"              --output "$RUNNER_TEMP/G3-real-source-2km-study.json"
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G3-real-source-2km-study.json" | sha256sum -c -
+      - name: Verify approved 80 source original tile IDs and batch geography WITHOUT DGT secrets
+        env:
+          PYTHONPATH: tools
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from geo_rail_g3_native80 import load_review,BATCHES,batch_groups
+          d=load_review(Path(os.environ["RUNNER_TEMP"])/"G3-real-source-2km-study.json")
+          assert len(d)==20
+          assert all(len(batch_groups(d,k))==n for k,n in BATCHES.items())
+          print("approved source original producer G3 80 exact IDs; 7 Vila Real study cells, 5 Bragança and 8 intercity")
+          PY
+      - name: Protected DGT login, retrieve actual producer native 2m pixels and run 4 real source seams per group
+        env:
+          DGT_CDD_USERNAME: ${{ secrets.DGT_CDD_USERNAME }}
+          DGT_CDD_PASSWORD: ${{ secrets.DGT_CDD_PASSWORD }}
+          BATCH: ${{ matrix.batch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python tools/geo_rail_g3_native80.py --review "$RUNNER_TEMP/G3-real-source-2km-study.json"             --batch "$BATCH" --acquire "$RUNNER_TEMP/G3-$BATCH-native-originals"
+          python tools/geo_rail_g3_native80.py --review "$RUNNER_TEMP/G3-real-source-2km-study.json"             --batch "$BATCH" --verify "$RUNNER_TEMP/G3-$BATCH-native-originals"
+      - name: Upload ONLY verified DGT source GeoTIFF bytes and sanitized SHA256 QA for independent no-DGT-credentials publisher
+        uses: actions/upload-artifact@v4
+        with:
+          name: mn-geo-rail-001-G3-native2m-${{ matrix.batch }}-verified-${{ github.run_id }}
+          path: ${{ runner.temp }}/G3-${{ matrix.batch }}-native-originals/
+          compression-level: 0
+          retention-days: 5
+          if-no-files-found: error
+  publish-independent-source-QA:
+    needs: acquire-reviewed-native-originals
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    strategy:
+      fail-fast: false
+      matrix:
+        batch: [vila_real, braganca, regional]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install independent non-credentialed raster verification dependencies
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=1.24,<3' 'requests>=2.32,<3'
+      - name: Fetch exact approved 80 original DGT tile IDs from public source, SHA-verified
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --max-time 100             "https://github.com/r-sousa/mobilidade-public-sources/releases/download/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json"             --output "$RUNNER_TEMP/G3-real-source-2km-study.json"
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G3-real-source-2km-study.json" | sha256sum -c -
+      - uses: actions/download-artifact@v4
+        with:
+          name: mn-geo-rail-001-G3-native2m-${{ matrix.batch }}-verified-${{ github.run_id }}
+          path: ${{ runner.temp }}/G3-${{ matrix.batch }}-independent-QA
+      - name: Independently reopen and SHA256-check EVERY original 2m raster, every seam and 100-percent pixel-preserving mosaic
+        env:
+          BATCH: ${{ matrix.batch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g3_native80.py --review "$RUNNER_TEMP/G3-real-source-2km-study.json"             --batch "$BATCH" --verify "$RUNNER_TEMP/G3-$BATCH-independent-QA"
+      - name: Publish native original 2m source rasters and validated mosaics with DGT attribution (no DGT credentials)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BATCH: ${{ matrix.batch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G3-$BATCH-independent-QA"
+          tag="mn-geo-rail-001-g3-original-DGT2m-$BATCH-preacceptance-$GITHUB_RUN_ID"
+          cat > "$RUNNER_TEMP/G3-original-source-terms.txt" <<'NOTE'
+          PRODUCER: Direção-Geral do Território (DGT), Centro de Dados, Portugal; reuse under CC BY 4.0 with attribution to DGT.
+          Each 1km2 source raster is the verified real producer-original MDT2m GeoTIFF in EPSG3763; exact SHA256 source receipts and independent 2km native-mosaic re-open QA published. No DGT secrets, authenticated session cookies or source signed URLs published.
+          G3 source screens are research grids to determine next acquisition, NOT authorized railway station, track, rail speed, slope or cost; bare-earth 2m sample areas do NOT prove continuity across Porto–Bragança–Zamora. Both Vila Real and Bragança compulsory service areas (station cores not compulsory); Sanabria excluded.
+          No independent vertical datum reconciliation PT–ES, no station accessibility network times, no Fxx or Site acceptance.
+          NOTE
+          gh release create "$tag" "$d"/*.tif "$d"/G3-DGT-native2m-$BATCH-original-source-QA.json             --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease             --title "MN-GEO-RAIL-001 G3 actual original DGT 2m $BATCH terrain, independent QA"             --notes-file "$RUNNER_TEMP/G3-original-source-terms.txt"
