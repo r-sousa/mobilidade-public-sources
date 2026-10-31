@@ -1,0 +1,102 @@
+name: MN-GEO-RAIL-001 G11 six-city service and bounded OSM road access screen
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g11-urban-service-20261031
+      - main
+    paths:
+      - tools/geo_rail_g11_urban_service.py
+      - tools/geo_rail_g11_service_visualization.py
+      - tests/test_geo_rail_g11_city_service.py
+      - .github/workflows/mn-geo-g11-urban-service.yml
+permissions:
+  contents: write
+jobs:
+  source_grounded_six_city_service:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install geometry plot and source QA dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'scipy>=1.12,<2' 'rasterio>=1.4,<2' 'shapely>=2,<3' 'pyproj>=3.6,<4' 'matplotlib>=3.8,<4'
+      - name: Test six-city scope and stop-time sensitivity (not timetable)
+        run: |
+          python -m py_compile tools/geo_rail_g11_urban_service.py tools/geo_rail_g11_service_visualization.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g11_city_service.py' -v
+      - name: Reuse existing immutable G3 G5 and G10 27-alternative public evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G11-source"
+          base="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json" -o "$RUNNER_TEMP/G11-source/G3.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g5-distinct-research-bands-41232865101/G5-three-modules-real-source-route-screens.json" -o "$RUNNER_TEMP/G11-source/G5.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g10-27-macro-portfolio-41243658672/G10-27-combinations-81-speed-source-only.json" -o "$RUNNER_TEMP/G11-source/G10.json"
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G11-source/G3.json" | sha256sum -c -
+          echo "a4cb8be1443b8be484303934595dfb8ffecaeb6b7857dc0a1ee1569956adfc32  $RUNNER_TEMP/G11-source/G5.json" | sha256sum -c -
+          echo "7677ed95f822ee8ada510f984f50ee498851e3bd948f9ed960e08f8620cc7287  $RUNNER_TEMP/G11-source/G10.json" | sha256sum -c -
+      - name: Audit city proximity, check OSRM public network access best effort, never fabricate missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g11_urban_service.py \
+            --g3 "$RUNNER_TEMP/G11-source/G3.json" \
+            --g5 "$RUNNER_TEMP/G11-source/G5.json" \
+            --g10 "$RUNNER_TEMP/G11-source/G10.json" \
+            --json "$RUNNER_TEMP/G11-six-city-27-source-study-service-evidence.json" \
+            --geojson "$RUNNER_TEMP/G11-urban-service-reference-lines-not-stations.geojson" \
+            --markdown "$RUNNER_TEMP/G11-six-city-intermodality-review.md"
+          python tools/geo_rail_g11_service_visualization.py \
+            --report "$RUNNER_TEMP/G11-six-city-27-source-study-service-evidence.json" \
+            --heatmap "$RUNNER_TEMP/G11-27-combinations-6-cities-service-proximity-heatmap.png" \
+            --roadmap "$RUNNER_TEMP/G11-OSRM-road-reference-access-not-stations.png"
+          python - <<'PY'
+          import os,json,pathlib
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])
+          q=json.loads((d/"G11-six-city-27-source-study-service-evidence.json").read_text())
+          assert q["city_route_pairs"]==162 and q["total_source_research_27_corridors"]==27
+          assert q["mandatory_nodes"]==["Vila Real","Bragança"] and q["Sanabria_excluded"]
+          assert len(q["secondary_service_nodes"])==4
+          assert all(x["city_reference_source"] for x in q["all_162_source_route_city_pairs"])
+          assert not q["city_station_locations_approved"] and not q["genuine_station_sites_road_legal_access_verified"]
+          assert q["all_road_minutes_are_to_a_snapped_road_near_an_unbuilt_study_geometry_not_to_a_station"]
+          assert not q["Fxx_accepted"] and not q["Site_authorized"]
+          assert len(q["OSRM_demo_road_routing_receipts"])==6
+          assert (d/"G11-27-combinations-6-cities-service-proximity-heatmap.png").stat().st_size>10000
+          assert (d/"G11-OSRM-road-reference-access-not-stations.png").stat().st_size>10000
+          print("G11 source-checked: 162 city-route samples, 6 source coordinates, bounded OSM access snapshots or declared gaps, no false real station")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G11-six-city-service-access-audit
+          path: |
+            ${{ runner.temp }}/G11-six-city-27-source-study-service-evidence.json
+            ${{ runner.temp }}/G11-urban-service-reference-lines-not-stations.geojson
+            ${{ runner.temp }}/G11-six-city-intermodality-review.md
+            ${{ runner.temp }}/G11-27-combinations-6-cities-service-proximity-heatmap.png
+            ${{ runner.temp }}/G11-OSRM-road-reference-access-not-stations.png
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish validated G11 preacceptance service audit from main
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g11-six-city-27-options-service-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G11-six-city-27-source-study-service-evidence.json" \
+            "$RUNNER_TEMP/G11-urban-service-reference-lines-not-stations.geojson" \
+            "$RUNNER_TEMP/G11-six-city-intermodality-review.md" \
+            "$RUNNER_TEMP/G11-27-combinations-6-cities-service-proximity-heatmap.png" \
+            "$RUNNER_TEMP/G11-OSRM-road-reference-access-not-stations.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "MN-GEO-RAIL-001 G11 six city service screen across 27 source research corridors (not stations)" \
+            --notes "Guimaraes, Amarante, Mirandela, Macedo de Cavaleiros are secondary service quality cases; Vila Real and Braganca remain mandatory service areas; Sanabria excluded. Original archived G3/G5/G10 SHA-verified route sectors, authentic source-point provenance and max six low-rate OSRM table requests for car routing to road-snapped research locations. The latter are NOT stations and no legal access, transfer, public transport catchment or actual rail time proved. Sensitivity to hypothetical stopping cost not train schedule. No DGT acquisitions or Fxx/Site."
