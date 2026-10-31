@@ -1,0 +1,78 @@
+name: MN-GEO-RAIL-001 G8 pre-acquisition two-corridor speed convergence gate
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g8-DSM-relief-convergence-20261031
+      - main
+    paths:
+      - tools/geo_rail_g8_speed_portfolio_gate.py
+      - .github/workflows/mn-geo-g8-preacquisition-gate.yml
+permissions:
+  contents: write
+jobs:
+  G8-audited-3-speed-2-corridor-preacquisition-gate:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify source-only gate syntax
+        run: python -m py_compile tools/geo_rail_g8_speed_portfolio_gate.py
+      - name: Retrieve existing verified G6 and G7 release JSON without DGT secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G8-sources"
+          base="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g6-three-complete-territorial-screens-41233103738/G6-3-complete-source-research-chains.json" --output "$RUNNER_TEMP/G8-sources/G6.json"
+          curl --fail --location --silent --show-error --retry 3 --max-time 90 "$base/mn-geo-rail-001-g7-speed-radius-dsm-research-41238004580/G7-160-200-250-curve-terrain-necessary-condition-screens.json" --output "$RUNNER_TEMP/G8-sources/G7.json"
+          echo "faa2f1d218c79a3647a0d32217ab7bd460cc8aed418750ac62b41844d2d5bc9d  $RUNNER_TEMP/G8-sources/G6.json" | sha256sum -c -
+          echo "9379e6d07b8bca0aec43052224477c11928299008f5caca8e04934c1e52205fd  $RUNNER_TEMP/G8-sources/G7.json" | sha256sum -c -
+      - name: Evaluate preacquisition speed scenarios and source-original review-only shortlist
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g8_speed_portfolio_gate.py \
+            --g6 "$RUNNER_TEMP/G8-sources/G6.json" \
+            --g7 "$RUNNER_TEMP/G8-sources/G7.json" \
+            --json "$RUNNER_TEMP/G8-priority-two-research-corridors-160-200-250.json" \
+            --markdown "$RUNNER_TEMP/G8-priority-two-research-corridors-160-200-250.md"
+          python - <<'PY'
+          import os,json,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G8-priority-two-research-corridors-160-200-250.json"
+          r=json.loads(p.read_text())
+          assert r["speed_scenarios"]==[160,200,250]
+          assert r["retained_research_chains"]==["G6-SCREEN-1","G6-SCREEN-2"]
+          assert r["reserve_only_research_chain"]=="G6-SCREEN-3"
+          assert len(r["speed_sensitivity"])==3
+          assert all(v["all_retained_chains_have_critical_vertical_DSM_pressure"] for v in r["speed_sensitivity"])
+          assert not r["original_source_DGT2m_acquisition_now_authorized"]
+          assert r["no_railway_corridor_certified_feasible"] and r["Sanabria_excluded"]
+          assert not r["Fxx_accepted"] and not r["Site_authorized"]
+          print("G8_VERIFIED: two retained geographic screens, high structural topography proxy, no acquired original DGT tiles")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G8-speed-scoped-no-extensive-terrain-acquisition-gate
+          path: |
+            ${{ runner.temp }}/G8-priority-two-research-corridors-160-200-250.json
+            ${{ runner.temp }}/G8-priority-two-research-corridors-160-200-250.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish preacceptance decision evidence on main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g8-preacquisition-speed-research-portfolio-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G8-priority-two-research-corridors-160-200-250.json" "$RUNNER_TEMP/G8-priority-two-research-corridors-160-200-250.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "MN-GEO-RAIL-001 G8 160-200-250 preacquisition 2 geographic alternatives, no feasible railway claim" \
+            --notes "Source-pinned G6 actual 2km study lattice and G7 real Copernicus GLO30 DSM (not DTM) L1 grade-bound + horizontal radius screening. Two retained research corridors for all speeds (G6 1 shorter; G6 2 lower relief pressure); G6 3 reserve, not engineering-excluded. No rail alignment, confirmed speed, portal, station, road access or structure quantities. No new DGT source originals, no extensive acquisition, no Fxx/Site. Sanabria excluded; Vila Real and Bragança compulsory services."
