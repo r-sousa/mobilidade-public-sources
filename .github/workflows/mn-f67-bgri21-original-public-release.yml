@@ -1,0 +1,91 @@
+name: F67 INE BGRI 2021 verified private-original public source release
+on:
+  push:
+    branches:
+      - mn-f67-bgri21-original-public-release-20261031
+      - main
+    paths:
+      - tools/f67_ine_bgri2021_public_original.py
+      - .github/workflows/mn-f67-bgri21-original-public-release.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  F67_official_archive_redistribution_only_after_exact_original_validation:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate code syntax and historic source original fingerprint
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile tools/f67_ine_bgri2021_public_original.py
+          grep -F '3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171' source_specs/F67.yml
+          grep -F '246754080' source_specs/F67.yml
+          grep -F 'private_only' source_specs/F67.yml
+      - name: Branch audit of preserved private archive identity and first-party reuse scope (no secrets)
+        if: github.ref != 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,pathlib
+          r=json.loads(pathlib.Path("receipts/F67/03b729e73f0adf411f893c50cac6883878629b6b8ab0d66338fdf9ebcf096738.json").read_text())
+          a=r["assets"][0]
+          assert a["bytes"]==246754080 and a["sha256"]=="3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171"
+          assert r["disposition"]["status"]=="PRIVATE_SINK_PRESERVED"
+          print("F67: exact original preserved privately; re-download from INE unnecessary. Await protected main read-only binary copy and native GPKG validation.")
+          PY
+      - name: Protected main downloads ONLY verified pre-existing private release archive using configured secret
+        if: github.ref == 'refs/heads/main'
+        env:
+          MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$MN_PRIVATE_SINK_TOKEN" || { echo "PRIVATE_ARCHIVE_READ_SECRET_NOT_CONFIGURED; no invalid substitute allowed"; exit 7; }
+          mkdir -p "$RUNNER_TEMP/F67-original"
+          GH_TOKEN="$MN_PRIVATE_SINK_TOKEN" gh release download "mn-src-f67-03b729e73f0adf411f89" \
+            --repo r-sousa/EU-transp-weekly \
+            --pattern "F67-INE-BGRI21_CONT.zip" \
+            --dir "$RUNNER_TEMP/F67-original"
+          mv "$RUNNER_TEMP/F67-original/F67-INE-BGRI21_CONT.zip" "$RUNNER_TEMP/F67-original/BGRI21_CONT.zip"
+          echo "3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171  $RUNNER_TEMP/F67-original/BGRI21_CONT.zip" | sha256sum -c -
+          test "$(stat -c %s "$RUNNER_TEMP/F67-original/BGRI21_CONT.zip")" -eq 246754080
+      - name: Validate recovered original whole ZIP CRC and inspect native GPKG against first-party metadata
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/f67_ine_bgri2021_public_original.py \
+            --zip "$RUNNER_TEMP/F67-original/BGRI21_CONT.zip" \
+            --receipt "$RUNNER_TEMP/F67-original/F67-original-INE-QA-and-licensing.json" \
+            --markdown "$RUNNER_TEMP/F67-original/F67-original-source-provenance-README.md" \
+            --from-preserved-private-original
+          test -s "$RUNNER_TEMP/F67-original/F67-original-INE-QA-and-licensing.json"
+      - name: Upload immutable original and QA as a NON canonical public GitHub release
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="mn-f67-bgri21-cont-original-INE-verified-20261031"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Original public release already exists; do not mutate original release automatically"
+            exit 0
+          fi
+          gh release create "$tag" \
+            "$RUNNER_TEMP/F67-original/BGRI21_CONT.zip" \
+            "$RUNNER_TEMP/F67-original/F67-original-INE-QA-and-licensing.json" \
+            "$RUNNER_TEMP/F67-original/F67-original-source-provenance-README.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "F67 INE BGRI 2021 Continental original producer ZIP — exact SHA256 verified" \
+            --notes "User-requested public binary mirror of the historically producer-sourced exact private F67 GitHub Release asset 589463486 from r-sousa/EU-transp-weekly, independently SHA verified and full GPKG native QA. Original Instituto Nacional de Estatística Censos 2021 BGRI21_CONT.zip, SHA256 3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171, 246754080 bytes. Source https://mapas.ine.pt/download/filesGPG/2021/BGRI21_CONT.zip and producer metadata https://mapas.ine.pt/download/metadados/bgri.html indicating public access and use without conditions. Exact ZIP CRC and GPKG SQLite validation required. Not a third-party mirror or replacement F67 private canonical original. This release contains statistical geographic subsections, NOT origin-destination commuting, recent employment nor railway station ridership. Cite INE, Censos 2021 and the metadata page."
