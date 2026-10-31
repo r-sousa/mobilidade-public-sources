@@ -38,6 +38,17 @@ class ContractTests(unittest.TestCase):
         self.assertNotIn("resena",r) # No PDF links or bulk source identifiers unnecessary for spatial QA.
         self.assertEqual(r["original_source"],"IGN REDNAP OGC API-Features public survey mark")
 
+    def test_missing_official_ID_remains_null_with_local_dedup_key(self):
+        row=marker(-6.4,41.70,123)
+        del row["id"]
+        del row["properties"]["numero"]
+        out=m.parse_public_signal(row,m.WINDOWS[1][1])
+        self.assertIsNone(out["producer_id"])
+        self.assertFalse(out["official_source_id_available"])
+        self.assertTrue(out["local_deduplication_key"].startswith("local_no_official_id_sha256:"))
+        self.assertEqual(out["local_deduplication_key"],
+                         m.parse_public_signal(row,m.WINDOWS[1][1])["local_deduplication_key"])
+
     def test_height_missing_is_not_invented(self):
         row=marker(-5.75,41.5,321,h=None)
         r=m.parse_public_signal(row,m.WINDOWS[2][1])
