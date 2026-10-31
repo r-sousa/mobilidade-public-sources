@@ -1,0 +1,204 @@
+{
+  "DGT_MDТ_candidate_catalogue_SHA256": "0c8d4b8bcfbeaf96613b09b6cb5acc405d9a53963822bce94e153bc8bd941ed2",
+  "Fxx_accepted": false,
+  "RNGAP_source_427_original_mark_SHA256": "11250447b2a5908332b6986bf598ed96976353045c0a2f87fdd2f088440b6a05",
+  "Site_approved": false,
+  "correction_notice": "Previous audit incorrectly identified tile 279502. The original mark y=202288 belongs to DGT row 503. No wrong-tile raster was acquired.",
+  "crossborder_vertical_benchmark_control_accepted": false,
+  "grid_index_formula": "col=200+floor(x/1000); row=301+floor(y/1000)",
+  "mission": "MN-GEO-RAIL-001",
+  "multiple_RNGAP_heights_at_same_XY_must_not_be_averaged": true,
+  "nearest_original_RNGAP_marks": [
+    {
+      "WFS_feature_id": "RedeNivelamento.4662",
+      "distance_to_real_mosaic_bbox_m": 3749.6652370055504,
+      "mark": "NP159",
+      "published_ALTH38_m": 229.52099,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-279503-09-2024",
+      "xy_PT_TM06": [
+        79468.618,
+        202288.178
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4663",
+      "distance_to_real_mosaic_bbox_m": 3749.6652370055504,
+      "mark": "NP159-t1",
+      "published_ALTH38_m": 229.437,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-279503-09-2024",
+      "xy_PT_TM06": [
+        79468.618,
+        202288.178
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4664",
+      "distance_to_real_mosaic_bbox_m": 3749.6652370055504,
+      "mark": "NP159-t3",
+      "published_ALTH38_m": 230.376,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-279503-09-2024",
+      "xy_PT_TM06": [
+        79468.618,
+        202288.178
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4665",
+      "distance_to_real_mosaic_bbox_m": 3749.6652370055504,
+      "mark": "NP159-t4",
+      "published_ALTH38_m": 230.228,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-279503-09-2024",
+      "xy_PT_TM06": [
+        79468.618,
+        202288.178
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4666",
+      "distance_to_real_mosaic_bbox_m": 3749.6652370055504,
+      "mark": "NP159-t5",
+      "published_ALTH38_m": 229.24,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-279503-09-2024",
+      "xy_PT_TM06": [
+        79468.618,
+        202288.178
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4678",
+      "distance_to_real_mosaic_bbox_m": 14713.490999999995,
+      "mark": "NP158",
+      "published_ALTH38_m": 556.79434,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-297509-09-2024",
+      "xy_PT_TM06": [
+        97713.491,
+        208350.192
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4679",
+      "distance_to_real_mosaic_bbox_m": 14713.490999999995,
+      "mark": "NP158-t1",
+      "published_ALTH38_m": 556.826,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-297509-09-2024",
+      "xy_PT_TM06": [
+        97713.491,
+        208350.192
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4680",
+      "distance_to_real_mosaic_bbox_m": 14713.490999999995,
+      "mark": "NP158-t2",
+      "published_ALTH38_m": 557.632,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-297509-09-2024",
+      "xy_PT_TM06": [
+        97713.491,
+        208350.192
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4681",
+      "distance_to_real_mosaic_bbox_m": 14713.490999999995,
+      "mark": "NP158-t4",
+      "published_ALTH38_m": 557.368,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-297509-09-2024",
+      "xy_PT_TM06": [
+        97713.491,
+        208350.192
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4682",
+      "distance_to_real_mosaic_bbox_m": 14713.490999999995,
+      "mark": "NP158-t5",
+      "published_ALTH38_m": 557.475,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-297509-09-2024",
+      "xy_PT_TM06": [
+        97713.491,
+        208350.192
+      ]
+    }
+  ],
+  "next_priority_1km2_DGT_original_raster_candidate": "MDT-2m-279503-09-2024",
+  "next_priority_benchmark_distinct_planimetric_positions": 1,
+  "next_priority_benchmark_mark_count": 5,
+  "next_priority_candidate_is_in_existing_primary_DGT_STAC_inventory": true,
+  "next_priority_mark_records": [
+    {
+      "WFS_feature_id": "RedeNivelamento.4662",
+      "distance_to_real_mosaic_bbox_m": 3749.6652370055504,
+      "mark": "NP159",
+      "published_ALTH38_m": 229.52099,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-279503-09-2024",
+      "xy_PT_TM06": [
+        79468.618,
+        202288.178
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4663",
+      "distance_to_real_mosaic_bbox_m": 3749.6652370055504,
+      "mark": "NP159-t1",
+      "published_ALTH38_m": 229.437,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-279503-09-2024",
+      "xy_PT_TM06": [
+        79468.618,
+        202288.178
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4664",
+      "distance_to_real_mosaic_bbox_m": 3749.6652370055504,
+      "mark": "NP159-t3",
+      "published_ALTH38_m": 230.376,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-279503-09-2024",
+      "xy_PT_TM06": [
+        79468.618,
+        202288.178
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4665",
+      "distance_to_real_mosaic_bbox_m": 3749.6652370055504,
+      "mark": "NP159-t4",
+      "published_ALTH38_m": 230.228,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-279503-09-2024",
+      "xy_PT_TM06": [
+        79468.618,
+        202288.178
+      ]
+    },
+    {
+      "WFS_feature_id": "RedeNivelamento.4666",
+      "distance_to_real_mosaic_bbox_m": 3749.6652370055504,
+      "mark": "NP159-t5",
+      "published_ALTH38_m": 229.24,
+      "source_tile_candidate_by_1km_grid": "MDT-2m-279503-09-2024",
+      "xy_PT_TM06": [
+        79468.618,
+        202288.178
+      ]
+    }
+  ],
+  "next_priority_native_raster_bounds_epsg3763": [
+    79000,
+    202000,
+    80000,
+    203000
+  ],
+  "next_priority_same_XY_published_height_spread_m": 1.1359999999999957,
+  "original_DGT_WFS_marks_in_three_reviewed_windows": 427,
+  "original_RNGAP_marks_in_validated_12km2_mosaic": 0,
+  "potential_multiple_marks_or_height_reference_attributes_must_be_verified": true,
+  "real_mosaic_bbox_PT_TM06": [
+    80000,
+    206000,
+    83000,
+    210000
+  ],
+  "real_mosaic_source_release": "mn-geo-rail-001-dgt-grid12-preacceptance-41158397813",
+  "selected_source_tile_is_NOT_yet_acquired_or_pixel_QA_validated": true,
+  "stage": "DGT_verified_RNGAP_marks_vs_existing_original_native_DTM_scope",
+  "timestamp_utc": "2026-10-31T09:00:40.441707+00:00"
+}

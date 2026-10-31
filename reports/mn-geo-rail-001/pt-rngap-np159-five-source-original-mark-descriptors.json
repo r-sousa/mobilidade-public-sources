@@ -1,0 +1,145 @@
+{
+  "Fxx_canonical_accepted": false,
+  "Site_publication_authorized": false,
+  "actual_DGT_native_tile_pixel_comparison_performed": false,
+  "all_source_feature_identifiers_matched_previous_427_RNGAP_WFS": true,
+  "all_source_mark_original_ALTH38_match_previous_catalogue": true,
+  "bbox_epsg3763": [
+    79418,
+    202238,
+    79518,
+    202338
+  ],
+  "catalogue_mark_original_SHA256": "11250447b2a5908332b6986bf598ed96976353045c0a2f87fdd2f088440b6a05",
+  "independent_remeasurement_of_marks_performed": false,
+  "matching_reviewed_source_records": 5,
+  "mission": "MN-GEO-RAIL-001",
+  "native_tile_source_candidate": "MDT-2m-279503-09-2024",
+  "observed_utc": "2026-10-31T08:59:29.602340+00:00",
+  "physical_mark_height_offset_explained_by_detailed_source": false,
+  "producer": "Direção-Geral do Território",
+  "same_WFS_XY_does_not_prove_same_physical_reference_point": true,
+  "selected_mark_physical_identification_fields": [
+    {
+      "WFS_source_feature_id": "RedeNivelamento.4662",
+      "native_provider_xy_epsg3763": [
+        79468.618,
+        202288.178
+      ],
+      "original_attributes": {
+        "ALTH38": "229.52099",
+        "DESCRICAO": "Mirandela. Marca cimentada na Praça 5 de Outubro, na Igreja da Misericórdia, junto à pilastra direita, numa pedra de cantaria na junção desta Igreja com o edifício do Asilo das Freiras.",
+        "ESTLADO": "",
+        "ESTRADA": "",
+        "LIN_SEC": "5400-0900",
+        "LIN_SEC2": "",
+        "LIN_SEC3": "",
+        "LIN_SEC4": "",
+        "LIN_SEC5": "",
+        "MARCA": "NP159",
+        "MARCA2": "",
+        "MARCA3": "",
+        "MARCA4": "",
+        "MARCA5": ""
+      }
+    },
+    {
+      "WFS_source_feature_id": "RedeNivelamento.4663",
+      "native_provider_xy_epsg3763": [
+        79468.618,
+        202288.178
+      ],
+      "original_attributes": {
+        "ALTH38": "229.43700",
+        "DESCRICAO": "Marca cimentada na Praça 5 de Outubro, numa laje, a cerca de 0.20m do cunhal esquerdo da Igreja da Misericórdia.",
+        "ESTLADO": "",
+        "ESTRADA": "",
+        "LIN_SEC": "5400-0900",
+        "LIN_SEC2": "",
+        "LIN_SEC3": "",
+        "LIN_SEC4": "",
+        "LIN_SEC5": "",
+        "MARCA": "NP159-t1",
+        "MARCA2": "",
+        "MARCA3": "",
+        "MARCA4": "",
+        "MARCA5": ""
+      }
+    },
+    {
+      "WFS_source_feature_id": "RedeNivelamento.4664",
+      "native_provider_xy_epsg3763": [
+        79468.618,
+        202288.178
+      ],
+      "original_attributes": {
+        "ALTH38": "230.37600",
+        "DESCRICAO": "Marca cimentada na Praça 5 de Outubro, na bordadura do passeio da tesouraria, a 0.38m do cunhal direito W, hoje dependência da Escola Técnica (fica junto à Travessa da Cadeia).",
+        "ESTLADO": "",
+        "ESTRADA": "",
+        "LIN_SEC": "5400-0900",
+        "LIN_SEC2": "",
+        "LIN_SEC3": "",
+        "LIN_SEC4": "",
+        "LIN_SEC5": "",
+        "MARCA": "NP159-t3",
+        "MARCA2": "",
+        "MARCA3": "",
+        "MARCA4": "",
+        "MARCA5": ""
+      }
+    },
+    {
+      "WFS_source_feature_id": "RedeNivelamento.4665",
+      "native_provider_xy_epsg3763": [
+        79468.618,
+        202288.178
+      ],
+      "original_attributes": {
+        "ALTH38": "230.22800",
+        "DESCRICAO": "Marca cimentada na Praça 5 de Outubro, Biblioteca GulbenKian, porta N° 10, na soleira da porta, lado esquerdo E.",
+        "ESTLADO": "",
+        "ESTRADA": "",
+        "LIN_SEC": "5400-0900",
+        "LIN_SEC2": "",
+        "LIN_SEC3": "",
+        "LIN_SEC4": "",
+        "LIN_SEC5": "",
+        "MARCA": "NP159-t4",
+        "MARCA2": "",
+        "MARCA3": "",
+        "MARCA4": "",
+        "MARCA5": ""
+      }
+    },
+    {
+      "WFS_source_feature_id": "RedeNivelamento.4666",
+      "native_provider_xy_epsg3763": [
+        79468.618,
+        202288.178
+      ],
+      "original_attributes": {
+        "ALTH38": "229.24000",
+        "DESCRICAO": "Marca cimentada na Praça 5 de Outubro, edifício da Escola Comercial, junto à Rua Padre Ernesto Sales, a 0.21m para E do cunhal direito W e a 0.14m da pare-de.",
+        "ESTLADO": "",
+        "ESTRADA": "",
+        "LIN_SEC": "5400-0900",
+        "LIN_SEC2": "",
+        "LIN_SEC3": "",
+        "LIN_SEC4": "",
+        "LIN_SEC5": "",
+        "MARCA": "NP159-t5",
+        "MARCA2": "",
+        "MARCA3": "",
+        "MARCA4": "",
+        "MARCA5": ""
+      }
+    }
+  ],
+  "source_bytes": 3076,
+  "source_height_field": "ALTH38",
+  "source_layer": "RGN:RedeNivelamento",
+  "source_response_sha256": "66733e862f31b4374ffc7710eb7ca2ad88dbaf1fa33cc10b7ddb0ecbd3d797b5",
+  "stage": "W4_DGT_NP159_original_5_mark_variants_descriptive_metadata",
+  "vertical_crossborder_benchmark_accepted": false
+}

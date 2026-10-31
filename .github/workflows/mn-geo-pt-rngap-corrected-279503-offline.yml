@@ -1,0 +1,49 @@
+name: MN-GEO-RAIL-001 NP159 corrected 279503 safe offline proof
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-rngap-source-tile-correction-20261031
+    paths:
+      - tools/geo_rail_rngap_dgt_grid12_linkage.py
+      - tests/test_geo_rail_rngap_dgt_grid12_linkage.py
+      - tools/geo_rail_pt_cdd_rngap_tile279503.py
+      - tests/test_geo_rail_pt_cdd_rngap_tile279503.py
+      - .github/workflows/mn-geo-pt-rngap-corrected-279503-offline.yml
+permissions:
+  contents: write
+jobs:
+  prove-source-geometry-and-synthetic-2m-tiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fake raster QA library but NO DGT credential dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=2,<3' 'rasterio>=1.4,<2'
+      - name: Offline mark and exact DGT row geometry tests, including wrong 279502 rejection
+        run: |
+          python -m unittest discover -s tests -p 'test_geo_rail_rngap_dgt_grid12_linkage.py' -v
+          python -m unittest discover -s tests -p 'test_geo_rail_pt_cdd_rngap_tile279503.py' -v
+      - name: Commit revised source-index QA preserving prior erroneous audit as historical evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          target=reports/mn-geo-rail-001/pt-rngap-original-427-marks-vs-dgt12km2-linkage-ERRATUM.json
+          python tools/geo_rail_rngap_dgt_grid12_linkage.py --mark-source reports/mn-geo-rail-001/pt-rngap-three-window-complete-ALTH38-source.json --DGT-catalogue reports/mn-geo-rail-001/pt-dgt-mdt-sector-footprints.json --output "$target"
+          python - <<'PY'
+          import json
+          j=json.load(open('reports/mn-geo-rail-001/pt-rngap-original-427-marks-vs-dgt12km2-linkage-ERRATUM.json'))
+          assert j['next_priority_1km2_DGT_original_raster_candidate']=='MDT-2m-279503-09-2024'
+          assert j['next_priority_native_raster_bounds_epsg3763']==[79000,202000,80000,203000]
+          assert j['original_RNGAP_marks_in_validated_12km2_mosaic']==0
+          assert j['selected_source_tile_is_NOT_yet_acquired_or_pixel_QA_validated'] is True
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m 'data(geo): correct NP159 original DGT 279503 raster target after grid row offset audit'
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi

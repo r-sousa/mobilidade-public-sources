@@ -11,8 +11,13 @@ class Tests(unittest.TestCase):
                     ROOT/"reports/mn-geo-rail-001/pt-dgt-mdt-sector-footprints.json")
   self.assertEqual(d["original_DGT_WFS_marks_in_three_reviewed_windows"],427)
   self.assertEqual(d["original_RNGAP_marks_in_validated_12km2_mosaic"],0)
-  self.assertEqual(d["next_priority_1km2_DGT_original_raster_candidate"],"MDT-2m-279502-09-2024")
+  self.assertEqual(d["next_priority_1km2_DGT_original_raster_candidate"],"MDT-2m-279503-09-2024")
   self.assertEqual(d["next_priority_benchmark_mark_count"],5)
+  self.assertEqual(d["next_priority_native_raster_bounds_epsg3763"],[79000,202000,80000,203000])
+  self.assertEqual(d["grid_index_formula"],"col=200+floor(x/1000); row=301+floor(y/1000)")
+  self.assertTrue(all(79000<=m["xy_PT_TM06"][0]<80000 and
+                      202000<=m["xy_PT_TM06"][1]<203000
+                      for m in d["next_priority_mark_records"]))
   self.assertEqual(d["next_priority_benchmark_distinct_planimetric_positions"],1)
   self.assertGreater(d["next_priority_same_XY_published_height_spread_m"],1)
   self.assertTrue(d["selected_source_tile_is_NOT_yet_acquired_or_pixel_QA_validated"])
