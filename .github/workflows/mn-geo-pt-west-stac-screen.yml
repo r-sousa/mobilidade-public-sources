@@ -1,0 +1,76 @@
+name: MN-GEO-RAIL-001 DGT anonymous Porto Amarante Vila Real west metadata pilot
+
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-porto-vilareal-stac-20261031
+    paths:
+      - tools/geo_rail_pt_west_stac_screen.py
+      - tests/test_geo_rail_pt_west_stac_screen.py
+      - .github/workflows/mn-geo-pt-west-stac-screen.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-dgt-west-sector-review-only
+  cancel-in-progress: false
+
+jobs:
+  anonymous-review-strip:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-porto-vilareal-stac-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - name: Checkout isolated no-secrets review branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Contract/safety tests without network
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_west_stac_screen.py' -v
+      - name: Thirty-two bounded anonymous public STAC metadata queries
+        shell: bash
+        run: |
+          set -euo pipefail
+          if python tools/geo_rail_pt_west_stac_screen.py \
+            --output "$RUNNER_TEMP/dgt-west-sample.json"; then
+            echo "All sampled queries completed"
+          else
+            echo "Incomplete STAC observations will be preserved for diagnosis"
+          fi
+      - name: Preserve sanitized sampling results on isolated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          source="$RUNNER_TEMP/dgt-west-sample.json"
+          test -s "$source"
+          target=reports/mn-geo-rail-001/pt-dgt-porto-vilareal-anonymous-strip.json
+          mkdir -p "$(dirname "$target")"
+          cp "$source" "$target"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$target"
+          if git diff --cached --quiet; then
+            echo "No source observations changed"
+          else
+            git commit -m "data(geo): preserve anonymous DGT gap-strip STAC screening"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+      - name: Never interpret partial STAC as absence of coverage
+        shell: bash
+        run: |
+          echo "Search strip is 16 query windows, 2 DGT collections, NOT a rail alignment or proven raster coverage." >> "$GITHUB_STEP_SUMMARY"
+          echo "No authenticated requests, native assets, asset URLs or secrets are persisted." >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path("reports/mn-geo-rail-001/pt-dgt-porto-vilareal-anonymous-strip.json").read_text())
+          if not p["queries_all_complete"]:
+              raise SystemExit("At least one STAC window incomplete: not evidence of unavailable source data.")
+          assert p["query_count"] == 32 and p["source_raster_bytes_transferred"] == 0
+          print("DGT_GAP_STRIP_ANONYMOUS_METADATA_COMPLETE")
+          PY
