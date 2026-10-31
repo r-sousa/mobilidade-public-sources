@@ -14,7 +14,6 @@ from datetime import datetime,timezone
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request,urlopen
-import numpy as np
 
 SERVICE="https://servicios.idee.es/wcs-inspire/mdt"
 COVERAGE="Elevacion25830_5"
@@ -53,6 +52,7 @@ def url_for(bbox):
 
 def inspect_source(path,bbox):
     import rasterio
+    import numpy as np
     with rasterio.open(path) as ds:
         if (ds.driver!="GTiff" or ds.crs is None or ds.crs.to_epsg()!=25830
             or ds.count!=1 or (ds.width,ds.height)!=(400,400)
@@ -93,6 +93,7 @@ def download_response(site,row,col,bbox,folder):
 
 def combine_site(site,folder,blocks):
     import rasterio
+    import numpy as np
     from rasterio.transform import from_origin
     west,south,east,north=SITE_BOXES[site]
     height=(north-south)//RES
@@ -127,6 +128,7 @@ def combine_site(site,folder,blocks):
 
 def inspect_joined(site,path,blocks,folder):
     import rasterio
+    import numpy as np
     west,south,east,north=SITE_BOXES[site]
     with rasterio.open(path) as ds:
         if (ds.crs is None or ds.crs.to_epsg()!=25830 or ds.driver!="GTiff"
