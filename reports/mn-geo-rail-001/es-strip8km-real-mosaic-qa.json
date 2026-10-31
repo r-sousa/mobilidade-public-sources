@@ -1,0 +1,515 @@
+{
+  "Fxx_canonical_accepted": false,
+  "crossborder_vertical_harmonization_verified": false,
+  "distinct_total_tested_area_km2": 32,
+  "expected_resolutions_m": [
+    5,
+    25
+  ],
+  "full_corridor_terrain_coverage_verified": false,
+  "horizontal_crs": "EPSG:25830",
+  "mission": "MN-GEO-RAIL-001",
+  "native_raster_bytes_persisted": 0,
+  "native_vertical_datum_verified": false,
+  "observed_utc": "2026-10-31T01:38:35.838728+00:00",
+  "producer": "IGN/CNIG WCS",
+  "regional_sites_are_separate_not_joined": true,
+  "requested_native_rasters_per_site_and_resolution": 5,
+  "requests_maximum": 20,
+  "sample_area_per_site_km2": 16,
+  "samples_expected": 4,
+  "samples_validated": 4,
+  "site_publication_authorized": false,
+  "sites": [
+    {
+      "bbox_union_epsg25830": [
+        217525,
+        4620825,
+        225525,
+        4622825
+      ],
+      "centre_wgs84": [
+        -6.34647,
+        41.6994
+      ],
+      "files": [
+        {
+          "bbox_utm30": [
+            217525,
+            4620825,
+            219525,
+            4622825
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 869.0,
+          "min_m": 803.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "285c223b6c8e275cb85fae0303674c070b6d12dfff14db0a0ff3a251c6f68cc1",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            219525,
+            4620825,
+            221525,
+            4622825
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 855.0,
+          "min_m": 763.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "7e9d8ced08f1444d03c2fcd058ea267039bacec73c2b2fd744c751f3ccfed652",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            221525,
+            4620825,
+            223525,
+            4622825
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 854.0,
+          "min_m": 759.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "3e1ec1d002701becc049983df7555ec05729559307b29cd4da310c9d73f831d7",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            223525,
+            4620825,
+            225525,
+            4622825
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 863.0,
+          "min_m": 815.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "53f0acfaea5ba9d599d73edde0beffa972837d6b8dae39acf0d92f3dc23743dd",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            217525,
+            4620825,
+            225525,
+            4622825
+          ],
+          "bytes": 1282056,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 869.0,
+          "min_m": 759.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "aca5d37f26d3a23d89bf629ad82cedb732df9a3bbcdcfff8242ed3fde9573fcd",
+          "valid_cells": 640000,
+          "width_px": 1600
+        }
+      ],
+      "native_geo_tiffs_saved": false,
+      "qa": {
+        "masked_or_missing_cells": 0,
+        "maximum_abs_difference_m": 0.0,
+        "same_mask": true,
+        "same_valid_pixels": true,
+        "total_cells": 640000,
+        "valid_cells": 640000,
+        "verified": true
+      },
+      "resolution_m": 5,
+      "site": "Alcanices",
+      "status": "validated_local_8km_strip"
+    },
+    {
+      "bbox_union_epsg25830": [
+        217525,
+        4620825,
+        225525,
+        4622825
+      ],
+      "centre_wgs84": [
+        -6.34647,
+        41.6994
+      ],
+      "files": [
+        {
+          "bbox_utm30": [
+            217525,
+            4620825,
+            219525,
+            4622825
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 869.0,
+          "min_m": 803.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "5d2814f0bb50fd18318def14faf5c3fa2344466d2339d91de7028ea3260a2d7d",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            219525,
+            4620825,
+            221525,
+            4622825
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 855.0,
+          "min_m": 764.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "1f1ea9ee262638a284ac403aa5f98f47f0c8a4f0eb75d4ddacd70425b60886c5",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            221525,
+            4620825,
+            223525,
+            4622825
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 853.0,
+          "min_m": 760.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "e674cca18f508af84177a70034326d5b310fe5eb1c9f4d00e6fcbc66eeebadf8",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            223525,
+            4620825,
+            225525,
+            4622825
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 863.0,
+          "min_m": 815.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "0605b982795502579b34ed20a63cb5bbd65995783c0bfd136b9e62f1c24dcd63",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            217525,
+            4620825,
+            225525,
+            4622825
+          ],
+          "bytes": 51712,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 869.0,
+          "min_m": 760.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "c17013fcd4baeca8898a2717a0c4cd9b5e22fd95715feba148dac0827a5ca390",
+          "valid_cells": 25600,
+          "width_px": 320
+        }
+      ],
+      "native_geo_tiffs_saved": false,
+      "qa": {
+        "masked_or_missing_cells": 0,
+        "maximum_abs_difference_m": 0.0,
+        "same_mask": true,
+        "same_valid_pixels": true,
+        "total_cells": 25600,
+        "valid_cells": 25600,
+        "verified": true
+      },
+      "resolution_m": 25,
+      "site": "Alcanices",
+      "status": "validated_local_8km_strip"
+    },
+    {
+      "bbox_union_epsg25830": [
+        207500,
+        4629425,
+        215500,
+        4631425
+      ],
+      "centre_wgs84": [
+        -6.47116,
+        41.7733
+      ],
+      "files": [
+        {
+          "bbox_utm30": [
+            207500,
+            4629425,
+            209500,
+            4631425
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 797.0,
+          "min_m": 596.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "935893fe9b3ab130cef70dabebe049c081263aae59b4d1a722c143ba3d4ac6b8",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            209500,
+            4629425,
+            211500,
+            4631425
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 796.0,
+          "min_m": 605.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "8a5a7b9ef886ace9a2f522297794a1e785ce2349b502c6c5d7887bf0f977eb87",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            211500,
+            4629425,
+            213500,
+            4631425
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 829.0,
+          "min_m": 634.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "987d1e047767f40e76cbd701159df936530fdf33c9e3fd9f28a89f4d140b5533",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            213500,
+            4629425,
+            215500,
+            4631425
+          ],
+          "bytes": 320776,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 880.0,
+          "min_m": 666.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "34d8f26966ac63836dbad69118668f2b5073b4ddbc5241f858fffc575411e3aa",
+          "valid_cells": 160000,
+          "width_px": 400
+        },
+        {
+          "bbox_utm30": [
+            207500,
+            4629425,
+            215500,
+            4631425
+          ],
+          "bytes": 1282056,
+          "dtype": "int16",
+          "height_px": 400,
+          "masked_values": 0,
+          "max_m": 880.0,
+          "min_m": 596.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "b525e3db6e733d58d905900ef413dffc6e630c9e9c83fa45fcfd32b4901ba238",
+          "valid_cells": 640000,
+          "width_px": 1600
+        }
+      ],
+      "native_geo_tiffs_saved": false,
+      "qa": {
+        "masked_or_missing_cells": 0,
+        "maximum_abs_difference_m": 0.0,
+        "same_mask": true,
+        "same_valid_pixels": true,
+        "total_cells": 640000,
+        "valid_cells": 640000,
+        "verified": true
+      },
+      "resolution_m": 5,
+      "site": "Vinas",
+      "status": "validated_local_8km_strip"
+    },
+    {
+      "bbox_union_epsg25830": [
+        207500,
+        4629425,
+        215500,
+        4631425
+      ],
+      "centre_wgs84": [
+        -6.47116,
+        41.7733
+      ],
+      "files": [
+        {
+          "bbox_utm30": [
+            207500,
+            4629425,
+            209500,
+            4631425
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 797.0,
+          "min_m": 596.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "e05759e5434071b9f0a6883c476c36685d280b4266b1fc8432aaa430282e0c47",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            209500,
+            4629425,
+            211500,
+            4631425
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 796.0,
+          "min_m": 606.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "93335ac16ed6b9e4879b6bf3daf31a864d19898de1c936ab550399e624362b40",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            211500,
+            4629425,
+            213500,
+            4631425
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 828.0,
+          "min_m": 634.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "02349cb51ff1f3bdc7989627ece657cdaa8b5d408caa9b17f377efed5d462b31",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            213500,
+            4629425,
+            215500,
+            4631425
+          ],
+          "bytes": 13272,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 880.0,
+          "min_m": 666.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "31b477454c59f0d595d659d398ec85dedeec2874ff95bad6738416082666afee",
+          "valid_cells": 6400,
+          "width_px": 80
+        },
+        {
+          "bbox_utm30": [
+            207500,
+            4629425,
+            215500,
+            4631425
+          ],
+          "bytes": 51712,
+          "dtype": "int16",
+          "height_px": 80,
+          "masked_values": 0,
+          "max_m": 880.0,
+          "min_m": 596.0,
+          "missing_cells": 0,
+          "nodata_reported": null,
+          "sha256": "a82b2c4ab1d75aec1ec594334178460edd42769f74c6b1ced57204dca2203619",
+          "valid_cells": 25600,
+          "width_px": 320
+        }
+      ],
+      "native_geo_tiffs_saved": false,
+      "qa": {
+        "masked_or_missing_cells": 0,
+        "maximum_abs_difference_m": 0.0,
+        "same_mask": true,
+        "same_valid_pixels": true,
+        "total_cells": 25600,
+        "valid_cells": 25600,
+        "verified": true
+      },
+      "resolution_m": 25,
+      "site": "Vinas",
+      "status": "validated_local_8km_strip"
+    }
+  ],
+  "stage": "W3_two_local_8_by_2_km_real_MDT_seam_validation",
+  "worker": "W3"
+}
