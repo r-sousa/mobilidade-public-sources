@@ -1,0 +1,58 @@
+name: MN-GEO-RAIL-001 W2 G10 DGT review interface metadata pilot
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g10-interface-stac-20261031
+    paths:
+      - tools/geo_rail_pt_g10_interface_stac_screen.py
+      - tests/test_geo_rail_pt_g10_interface_stac_screen.py
+      - .github/workflows/mn-geo-pt-g10-interface-stac.yml
+permissions:
+  contents: write
+concurrency:
+  group: mn-geo-rail-001-g10-gap-only
+  cancel-in-progress: false
+jobs:
+  anonymous-G08-G07-interface:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g10-interface-stac-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Strict no-network spatial scope and fail-closed regression tests
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_g10_interface_stac_screen.py' -v
+      - name: Four anonymous bounded official STAC metadata queries, two rectangles
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_pt_g10_interface_stac_screen.py --output "$RUNNER_TEMP/dgt-g10-observation.json" || true
+          test -s "$RUNNER_TEMP/dgt-g10-observation.json"
+      - name: Preserve sanitized observation on isolated branch, independent of completeness
+        shell: bash
+        run: |
+          set -euo pipefail
+          target=reports/mn-geo-rail-001/pt-dgt-g10-g08-g07-interface-anonymous-strip.json
+          mkdir -p "$(dirname "$target")"
+          cp "$RUNNER_TEMP/dgt-g10-observation.json" "$target"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$target"
+          if ! git diff --cached --quiet; then
+            git commit -m "data(geo): archive anonymous G10 interface source STAC observations"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+      - name: Assert complete metadata before reporting reviewed interface
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path("reports/mn-geo-rail-001/pt-dgt-g10-g08-g07-interface-anonymous-strip.json").read_text())
+          assert p["queries_all_complete"] and p["query_count"]==4 and p["grid_window_count"]==2
+          assert p["source_raster_bytes_transferred"]==0
+          assert p["continuous_native_MDT_verified"] is False
+          print("G10_INTERFACE_METADATA_ONLY_COMPLETE_NO_NATIVE_PIXEL_CLAIMS")
+          PY
