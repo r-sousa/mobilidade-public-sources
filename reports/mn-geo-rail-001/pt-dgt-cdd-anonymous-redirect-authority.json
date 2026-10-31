@@ -1,0 +1,22 @@
+{
+  "asset_head_http_status": 302,
+  "cookies_tokens_query_paths_stored": false,
+  "mission": "MN-GEO-RAIL-001",
+  "native_bytes_downloaded": 0,
+  "observed_utc": "2026-10-31T00:15:15.266487+00:00",
+  "redirect_destination_host_class": "dns_hostname",
+  "redirect_destination_hostname": "cdd.dgterritorio.gov.pt",
+  "redirect_destination_port": null,
+  "redirect_destination_scheme": "https",
+  "redirect_followed": false,
+  "redirect_location_has_query": false,
+  "request_method": "one_STAC_POST_and_one_asset_HEAD_without_redirect",
+  "source_host": "cdd.dgterritorio.gov.pt",
+  "stac_http_status": 200,
+  "stage": "public_anonymous_DGT_native_redirect_host_audit",
+  "status": "observed_redirect_without_following",
+  "submitted_credentials": false,
+  "target_collection": "MDT-2m",
+  "target_id": "MDT-2m-282510-09-2024",
+  "worker": "W2"
+}
