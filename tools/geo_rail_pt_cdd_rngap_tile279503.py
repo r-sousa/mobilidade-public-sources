@@ -85,8 +85,8 @@ def compare_real_mark_native_terrain(path,marks):
     import numpy as np
     x,y=marks[0]["native_xy_epsg3763"]
     with rasterio.open(path) as ds:
-        if ds.crs.to_epsg()!=3763 or ds.count!=1 or
-            ds.width!=500 or ds.height!=500:
+        if (ds.crs.to_epsg()!=3763 or ds.count!=1 or
+            ds.width!=500 or ds.height!=500):
             raise ValueError("native_DGT_279503_1km_geometry_unexpected")
         if any(abs(float(a)-b)>0.01 for a,b in zip(ds.bounds,SOURCE_BOUNDS)):
             raise ValueError("DGT_tile_279503_exact_bbox_did_not_match")
@@ -153,10 +153,10 @@ def run(index,mark_source,retain_file=None,phase=None):
         if (q["native_file_bytes"],q["native_sha256"])!=(native_bytes,native_sha):
             raise ValueError("source_native_SHA256_not_equal_to_authenticated_download")
         ras=q["raster"]
-        if ras["width_px"]!=500 or ras["height_px"]!=500 or
+        if (ras["width_px"]!=500 or ras["height_px"]!=500 or
             ras["masked_pixels"]!=0 or ras["valid_pixels"]!=250000 or
             ras["resolution_m"]!=[2,2] or
-            any(abs(float(z)-t)>.01 for z,t in zip(ras["bounds_pttm06"],SOURCE_BOUNDS)):
+            any(abs(float(z)-t)>.01 for z,t in zip(ras["bounds_pttm06"],SOURCE_BOUNDS))):
             raise ValueError("native_source_pixels_or_shape_not_complete")
         step("real_RNGAP_source_vs_DGT_terrain_comparison")
         pixels=compare_real_mark_native_terrain(dest,marks)
