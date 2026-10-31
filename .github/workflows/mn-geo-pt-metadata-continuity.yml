@@ -1,0 +1,73 @@
+name: MN-GEO-RAIL-001 DGT metadata-only continuity QA
+
+# No source credentials, authenticated downloads or native raster access.
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-dgt-metadata-continuity-20261031
+    paths:
+      - tools/geo_rail_pt_metadata_continuity.py
+      - tests/test_geo_rail_pt_metadata_continuity.py
+      - .github/workflows/mn-geo-pt-metadata-continuity.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mn-geo-rail-001-dgt-metadata-continuity-review
+  cancel-in-progress: false
+
+jobs:
+  audit-candidate-envelopes-no-secrets:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-dgt-metadata-continuity-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Checkout isolated review branch (no CDD credentials)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline safety and union arithmetic tests
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_metadata_continuity.py' -v
+      - name: Review 12 persisted anonymous STAC responses (no source network)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_pt_metadata_continuity.py \
+            --input reports/mn-geo-rail-001/pt-dgt-mdt-sector-footprints.json \
+            --output "$RUNNER_TEMP/dgt-window-review.json"
+          python - "$RUNNER_TEMP/dgt-window-review.json" <<'PY'
+          import json,sys
+          p=json.load(open(sys.argv[1],encoding="utf-8"))
+          assert len(p["sectors"])==6
+          assert p["candidate_positions_paired_across_resolutions"]==684
+          assert p["full_corridor_coverage_verified"] is False
+          assert p["canonical_Fxx_accepted"] is False
+          assert p["valid_raster_pixel_coverage_measured"] is False
+          print("SAFE_DGT_METADATA_WINDOW_AUDIT_VALIDATED")
+          PY
+      - name: Commit report only to isolated review branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          target=reports/mn-geo-rail-001/pt-dgt-window-bbox-proxy-continuity.json
+          mkdir -p "$(dirname "$target")"
+          cp "$RUNNER_TEMP/dgt-window-review.json" "$target"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$target"
+          if git diff --cached --quiet; then
+            echo "Metadata report unchanged"
+            exit 0
+          fi
+          git commit -m "data(geo): persist bounded STAC window bbox-proxy QA"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - name: Explain evidence scope
+        run: |
+          echo "This is an audit of 6 anonymous STAC search windows and 684 two-resolution catalogue positions." >> "$GITHUB_STEP_SUMMARY"
+          echo "Bounding rectangles are not native pixel footprints, a corridor study area or permission to distribute data." >> "$GITHUB_STEP_SUMMARY"
+          echo "No DGT secrets, TLS bypass, authenticated download, canonical Fxx or Site publication." >> "$GITHUB_STEP_SUMMARY"
