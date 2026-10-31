@@ -23,7 +23,7 @@ LAT_BANDS = ((41.40,41.55),(41.55,41.70),(41.70,41.85),(41.85,42.00))
 WINDOWS = tuple(
     (f"G09_{col+1:02d}_{band+1:02d}",
      [LON_EDGES[col], LAT_BANDS[band][0], LON_EDGES[col+1], LAT_BANDS[band][1]])
-    for col in range(8) for band in range(2)
+    for col in range(len(LON_EDGES)-1) for band in range(len(LAT_BANDS))
 )
 EXPECTED_QUERIES = len(WINDOWS) * len(COLLECTIONS)
 assert EXPECTED_QUERIES == 48
