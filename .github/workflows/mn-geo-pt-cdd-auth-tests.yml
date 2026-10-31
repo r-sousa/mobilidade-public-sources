@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - mn-geo-rail-001-pt-public-stac-20261030
+      - mn-geo-rail-001-dgt-native-release-retention-20261031
       - mn-geo-rail-001-cdd-storage-redirect-20261031
       - mn-geo-rail-001-dgt-redirect-diagnostics-20261030
     paths:
       - .github/workflows/mn-geo-pt-cdd-auth-tests.yml
       - tools/geo_rail_pt_cdd_authenticated.py
       - tests/test_geo_rail_pt_cdd_authenticated.py
+      - tests/test_geo_rail_pt_cdd_preserve_manifest.py
+      - tools/geo_rail_pt_cdd_preserve_manifest.py
+      - .github/workflows/mn-geo-pt-cdd-registered.yml
   workflow_dispatch:
 
 permissions:
@@ -17,7 +21,7 @@ permissions:
 
 jobs:
   verify-authentication-adapter-without-secrets:
-    if: github.ref == 'refs/heads/mn-geo-rail-001-pt-public-stac-20261030' || github.ref == 'refs/heads/mn-geo-rail-001-cdd-storage-redirect-20261031' || github.ref == 'refs/heads/mn-geo-rail-001-dgt-redirect-diagnostics-20261030'
+    if: github.ref == 'refs/heads/mn-geo-rail-001-pt-public-stac-20261030' || github.ref == 'refs/heads/mn-geo-rail-001-dgt-native-release-retention-20261031' || github.ref == 'refs/heads/mn-geo-rail-001-cdd-storage-redirect-20261031' || github.ref == 'refs/heads/mn-geo-rail-001-dgt-redirect-diagnostics-20261030'
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -31,5 +35,7 @@ jobs:
         run: python -m py_compile tools/geo_rail_pt_cdd_authenticated.py
       - name: Verify strict host/redirect/Keycloak-form/file-download contracts offline
         run: python -m unittest discover -s tests -p 'test_geo_rail_pt_cdd_authenticated.py' -v
+      - name: Verify native preservation manifest security and checked release contract offline
+        run: python -m unittest discover -s tests -p 'test_geo_rail_pt_cdd_preserve_manifest.py' -v
       - name: Confirm zero credentials and zero native DGT bytes used by tests
         run: echo "No authentication, environment secrets, native DGT files, public data upload or workflow token writes."
