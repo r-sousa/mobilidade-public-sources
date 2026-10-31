@@ -72,5 +72,76 @@ class NativeSeamTests(unittest.TestCase):
             self.assertEqual(report["max_abs_neighbor_cell_elevation_difference_m"],1.0)
             self.assertTrue(report["edge_mask_continuity_all_valid"])
 
+
+class FullProtectedPairFlowTests(unittest.TestCase):
+    """Exercise complete run() contract without credentials, network or real downloads."""
+
+    def _fake_run(self, fail_at_seam=False):
+        import hashlib
+        import json
+
+        with TemporaryDirectory() as d:
+            index=Path(d)/"reviewed-index.json"
+            index.write_text(json.dumps({"type":"FeatureCollection","features":[]}))
+            fake_session=MagicMock()
+            fake_secret_href="https://cdd.dgterritorio.gov.pt/path?signature=DO_NOT_PERSIST"
+            assets={tile:fake_secret_href for tile in m.ITEMS}
+
+            def fake_download(session,href,destination):
+                self.assertEqual(session,fake_session)
+                self.assertEqual(href,fake_secret_href)
+                content=(destination.name+"-mock-geotiff").encode()
+                destination.write_bytes(content)
+                return len(content),hashlib.sha256(content).hexdigest()
+
+            def fake_audit(destination,index_path,tile,collection):
+                content=destination.read_bytes()
+                bounds=([82000,209000,83000,210000] if tile==m.NORTH_TILE
+                        else [82000,208000,83000,209000])
+                return dict(info(tile,bounds),
+                            native_file_bytes=len(content),
+                            native_sha256=hashlib.sha256(content).hexdigest())
+
+            def inspect_seam(north,south):
+                self.assertIsInstance(north,Path)
+                self.assertIsInstance(south,Path)
+                self.assertTrue(north.is_file() and south.is_file())
+                self.assertEqual((north.name,south.name),("north.tif","south.tif"))
+                if fail_at_seam:
+                    raise ValueError("synthetic_raster_test_failure")
+                return {"edge_mask_continuity_all_valid":True,"edge_pairs_total":500,
+                        "edge_pairs_both_valid":500}
+
+            progress={}
+            with (
+                patch.object(m,"catalogue_record",return_value={"bbox_wgs84":[-7.2,41.5,-7.19,41.51]}),
+                patch.object(m,"authenticated_session",return_value=fake_session),
+                patch.object(m,"select_exact_assets",return_value=(assets,"a"*64)),
+                patch.object(m,"download_small_native",side_effect=fake_download),
+                patch.object(m,"audit",side_effect=fake_audit),
+                patch.object(m,"seam_report",side_effect=inspect_seam),
+                patch.dict(m.os.environ,{"DGT_CDD_USERNAME":"fake","DGT_CDD_PASSWORD":"fake"}),
+            ):
+                if fail_at_seam:
+                    with self.assertRaisesRegex(ValueError,"synthetic_raster_test_failure"):
+                        m.run(index,progress)
+                    self.assertEqual(progress["safe_phase"],"native_seam_pixels")
+                    return None
+                result=m.run(index,progress)
+                self.assertEqual(progress["safe_phase"],"validated")
+                self.assertTrue(result["native_pair_geometry"]["adjacent_1km_tiles_confirmed"])
+                self.assertEqual(result["native_pair_seam_qa"]["edge_pairs_both_valid"],500)
+                self.assertNotIn("DO_NOT_PERSIST",json.dumps(result))
+                self.assertEqual(result["source_rasters_newly_published"],0)
+                return result
+
+    def test_full_flow_passes_and_uses_paths_not_nested_indices(self):
+        result=self._fake_run()
+        self.assertEqual(result["status"],"two_native_GeoTIFFs_authenticated_QA_and_seam_validated")
+
+    def test_failures_record_only_safe_phase(self):
+        self._fake_run(fail_at_seam=True)
+
+
 if __name__=="__main__":
     unittest.main()
