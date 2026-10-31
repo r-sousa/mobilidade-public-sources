@@ -1,0 +1,67 @@
+name: MN-GEO-RAIL-001 B1 publish inspected real OSM road geometries + 30m DSM sectors
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-b1-mandatory-city-roads-20261031
+    paths:
+      - .github/workflows/mn-geo-b1-roads-evidence-publish.yml
+      - docs/MN-GEO-RAIL-001-B1-ROAD-PERIPHERAL-SCREEN.md
+permissions:
+  contents: write
+  actions: read
+jobs:
+  release-source-linked-B1-city-road-DMS-evidence:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-b1-mandatory-city-roads-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify source workflow SUCCESS and download immutable source data from known run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(gh run view 41200362181 --repo "$GITHUB_REPOSITORY" --json conclusion -q .conclusion)" == "success" ]]
+          mkdir -p "$RUNNER_TEMP/B1-ROAD"
+          gh run download 41200362181 --repo "$GITHUB_REPOSITORY" --name "mn-geo-rail-001-B1-city-road-DSM-research-41200362181" --dir "$RUNNER_TEMP/B1-ROAD"
+      - name: Validate actual OSM geometry source count and audited sector scope
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os,pathlib,hashlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])/"B1-ROAD"
+          roads=json.loads((root/"B1-PT-A4-IP4-mandatory-city-road-reference-OSM.geojson").read_text())
+          review=json.loads((root/"B1-PT-VilaReal-Braganca-2km-sector-priorities.json").read_text())
+          assert roads["type"]=="FeatureCollection" and len(roads["features"])==2801
+          assert review["mandatory_service_areas"]==["Vila Real","Bragança"]
+          assert review["Sanabria_excluded"] and not review["railway_station_siting_approved"]
+          assert review["road_proximity_screen_by_city"]=={"Vila_Real":65,"Braganca":31}
+          assert review["sectors_total"]==222
+          assert review["road_ways_total"]==2801
+          assert not review["street_network_accessibility_time_verified"]
+          assert not review["Fxx_accepted"] and not review["site_authorized"]
+          print("verified 2801 OSM road ways and 222 real DSM sectors without station assertions")
+          for p in sorted(root.iterdir()):
+            print(p.name,p.stat().st_size,hashlib.sha256(p.read_bytes()).hexdigest())
+          PY
+      - name: Publish CC ODbL attributed secondary highway geometry evidence
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/B1-ROAD"
+          tag="mn-geo-rail-001-b1-a4-mandatory-city-roads-source-preacceptance-41200362181"
+          cat > "$RUNNER_TEMP/notes.txt" <<'NOTE'
+          REAL extracted OpenStreetMap contributors road geometry; source ODbL: https://www.openstreetmap.org/copyright
+          Acquisition from https://overpass-api.de/api/interpreter, original Overpass response SHA256 per city in attached QA.
+          2,801 OSM highway/major-road geometries within two areas Vila Real and Bragança.
+          Mandatory nodes Vila Real and Bragança, peripheral station areas allowed; Sanabria excluded.
+          222 research sectors of 2km x 2km screened with real GLO30 DSM surface relief and spatial proximity to mapped major roads.
+          96 sectors pass an exploratory proximity filter (65 Vila Real, 31 Bragança). These are NOT station sites and not optimized railway track segments.
+          Road geometry is SECONDARY citizen-mapped source, not official IP road inventory; motorway proximity is NOT measured car travel accessibility or legal interchange access.
+          The GLO30 DSM includes trees/buildings and does not independently measure native 2m ground DTM or rail gradients.
+          No new original DGT MDT2m rasters obtained in this release, no Fxx/Site, no geodetic vertical engineering endorsement.
+          NOTE
+          gh release create "$tag" "$d"/B1-PT-*.geojson "$d"/B1-PT-*.json --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "MN-GEO-RAIL-001 B1 Vila Real+Bragança real OSM road geometry and DSM screening (not stations)" --notes-file "$RUNNER_TEMP/notes.txt"
