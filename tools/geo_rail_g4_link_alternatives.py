@@ -104,9 +104,10 @@ def main():
     a.add_argument("--g4",type=Path,required=True)
     a.add_argument("--json",type=Path,required=True)
     a.add_argument("--markdown",type=Path,required=True)
-    z=describe(json.loads(a.g3.read_text()),json.loads(a.g4.read_text()))
-    a.json.parent.mkdir(parents=True,exist_ok=True)
-    a.json.write_text(json.dumps(z,indent=2,ensure_ascii=False,sort_keys=True)+"\n")
+    args=a.parse_args()
+    z=describe(json.loads(args.g3.read_text()),json.loads(args.g4.read_text()))
+    args.json.parent.mkdir(parents=True,exist_ok=True)
+    args.json.write_text(json.dumps(z,indent=2,ensure_ascii=False,sort_keys=True)+"\n")
     md=["# MN-GEO-RAIL-001 — G4 avaliação das cinco ligações exploratórias",
         "",
         "**Estado: análise de cobertura e relevo superficial, não traçado ferroviário nem tempos de viagem.**",
@@ -132,6 +133,6 @@ def main():
     for row in z["high_recurrence_uncovered_source_lattice_cells"]:
         md.append(f"| {row['cell_SW_grid_epsg3763']} | {row['study_variant_crossings']} | {'; '.join(row['links_crossing_without_full_native_DGT2m'])} |")
     md += ["","**Nota:** priorização indicativa para a próxima recolha MDT, nunca escolha de estações ou decisão ferroviária. Devem seguir-se continuidade do solo nu, critérios de raio/gradiente por cenário, obras de arte, topografia e acessibilidade rodoviária por rede navegável. Não integrar no catálogo Fxx/Site sem aceitação técnica.",""]
-    a.markdown.write_text("\n".join(md))
+    args.markdown.write_text("\n".join(md))
     print("G4_SOURCE_CHARACTERISATION="+json.dumps(z,ensure_ascii=False,separators=(',',':')))
 if __name__=="__main__":main()
