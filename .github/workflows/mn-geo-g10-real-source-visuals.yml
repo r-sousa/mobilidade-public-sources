@@ -1,0 +1,82 @@
+name: MN-GEO-RAIL-001 G10 source-georeferenced maps and 27-option comparison charts
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g10-27-portfolio-combinations-20261031
+      - main
+    paths:
+      - tools/geo_rail_g10_visualization.py
+      - .github/workflows/mn-geo-g10-real-source-visuals.yml
+permissions:
+  contents: write
+  actions: read
+jobs:
+  plot-source-linked-study-routes:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install source data geometry and plotting dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.24,<3' 'scipy>=1.12,<2' 'rasterio>=1.4,<2' 'shapely>=2,<3' 'pyproj>=3.6,<4' 'matplotlib>=3.8,<4'
+      - name: Reuse immutable G3 G5 original public report and successful G10 27x3 metrics artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G10-visual-source"
+          b="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 "$b/mn-geo-rail-001-g3-real-DSM-OSM-DGT2m-catalog-lattice-41211968220/G3-real-source-2km-study.json" -o "$RUNNER_TEMP/G10-visual-source/G3.json"
+          curl --fail --location --silent --show-error --retry 3 "$b/mn-geo-rail-001-g5-distinct-research-bands-41232865101/G5-three-modules-real-source-route-screens.json" -o "$RUNNER_TEMP/G10-visual-source/G5.json"
+          echo "ab001fb17ba359d939294b505bc199d459d474095f255f17099c1cdaafd57d9c  $RUNNER_TEMP/G10-visual-source/G3.json" | sha256sum -c -
+          echo "a4cb8be1443b8be484303934595dfb8ffecaeb6b7857dc0a1ee1569956adfc32  $RUNNER_TEMP/G10-visual-source/G5.json" | sha256sum -c -
+          gh run download 41243517270 --repo "$GITHUB_REPOSITORY" --name MN-GEO-RAIL-001-G10-27-portfolio-proxy-matrix --dir "$RUNNER_TEMP/G10-visual-source"
+          test -s "$RUNNER_TEMP/G10-visual-source/G10-27-combinations-81-speed-source-only.json"
+      - name: Produce geographic research map and quantitative comparison chart, source-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g10_visualization.py \
+            --g3 "$RUNNER_TEMP/G10-visual-source/G3.json" \
+            --g5 "$RUNNER_TEMP/G10-visual-source/G5.json" \
+            --portfolio "$RUNNER_TEMP/G10-visual-source/G10-27-combinations-81-speed-source-only.json" \
+            --geojson "$RUNNER_TEMP/G10-27-research-real-source-paths.geojson" \
+            --map "$RUNNER_TEMP/G10-27-actual-spatial-research-paths.png" \
+            --scatter "$RUNNER_TEMP/G10-27-200kmh-scenario-comparison.png"
+          python - <<'PY'
+          import os,pathlib,json
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])
+          g=json.loads((d/"G10-27-research-real-source-paths.geojson").read_text())
+          assert len(g["features"])==27
+          assert all(f["properties"]["this_is_not_an_approved_or_proposed_railway_alignment"] for f in g["features"])
+          assert (d/"G10-27-actual-spatial-research-paths.png").stat().st_size>10000
+          assert (d/"G10-27-200kmh-scenario-comparison.png").stat().st_size>10000
+          print("G10 verified 27 exactly source-coordinate plot geometries + two actual data visualizations")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G10-georeferenced-source-map-and-quantitative-chart
+          path: |
+            ${{ runner.temp }}/G10-27-research-real-source-paths.geojson
+            ${{ runner.temp }}/G10-27-actual-spatial-research-paths.png
+            ${{ runner.temp }}/G10-27-200kmh-scenario-comparison.png
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish real-source graphic results from main on public read-only release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g10-27-geographic-visuals-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G10-27-research-real-source-paths.geojson" "$RUNNER_TEMP/G10-27-actual-spatial-research-paths.png" "$RUNNER_TEMP/G10-27-200kmh-scenario-comparison.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G10 actual 27 research-grid geography + 200 kmh DSM proxy tradeoffs (not tracks)" \
+            --notes "27 original G5/G3 research route sector-centre geometries, not railway alignments. Quantitative 200kmh/25permille DSM source pressure vs index distance/speed is a research graph ONLY, not train running time or euro cost. Road-network access and station catchments not measured. Always mandatory Vila Real/Braganca service and Sanabria excluded."
