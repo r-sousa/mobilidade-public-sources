@@ -4,6 +4,12 @@ name: MN-GEO-RAIL-001 DGT protected 12-tile Mirandela grid native QA
 # may access protected DGT Environment credentials.
 on:
   workflow_dispatch:
+    inputs:
+      preserve_native_preacceptance:
+        type: boolean
+        description: 'Publish 12 SHA-checked open DGT CC BY 4.0 GeoTIFFs in a noncanonical prerelease'
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -53,13 +59,18 @@ jobs:
         env:
           DGT_CDD_USERNAME: ${{ secrets.DGT_CDD_USERNAME }}
           DGT_CDD_PASSWORD: ${{ secrets.DGT_CDD_PASSWORD }}
+          PRESERVE_NATIVE: ${{ inputs.preserve_native_preacceptance }}
         shell: bash
         run: |
           set -euo pipefail
           umask 077
+          extra_args=()
+          if [[ "$PRESERVE_NATIVE" == 'true' ]]; then
+            extra_args=(--retain-dir "$RUNNER_TEMP/dgt-grid12-native-stage")
+          fi
           python tools/geo_rail_pt_cdd_grid12.py \
             --index reports/mn-geo-rail-001/pt-dgt-mdt-candidate-envelopes.geojson \
-            --receipt "$RUNNER_TEMP/dgt-grid12-sanitized-qa.json"
+            --receipt "$RUNNER_TEMP/dgt-grid12-sanitized-qa.json" "${extra_args[@]}"
       - name: Store sanitized SHA hashes, native CRS/pixel/seam QA, not native data
         if: always()
         uses: actions/upload-artifact@v4
@@ -68,9 +79,102 @@ jobs:
           path: ${{ runner.temp }}/dgt-grid12-sanitized-qa.json
           if-no-files-found: warn
           retention-days: 15
+      - name: Stage original rasters only after complete real grid QA and explicit opt-in
+        if: ${{ success() && inputs.preserve_native_preacceptance }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/dgt-grid12-sanitized-qa.json" "$RUNNER_TEMP/dgt-grid12-native-stage/dgt-grid12-sanitized-qa.json"
+          test "$(find "$RUNNER_TEMP/dgt-grid12-native-stage" -name '*.tif' -type f | wc -l)" -eq 12
+      - name: Hand source data to no-credentials publishing job
+        if: ${{ success() && inputs.preserve_native_preacceptance }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: dgt-grid12-native-source-approved-${{ github.run_id }}
+          path: ${{ runner.temp }}/dgt-grid12-native-stage/
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
       - name: Explain status boundaries
         if: always()
         shell: bash
         run: |
           echo "DGT private credential contents and signed raster URLs were not logged or uploaded." >> "$GITHUB_STEP_SUMMARY"
-          echo "Native rasters are runner-only; this is 12 km² local Mirandela QA, not a Porto-Zamora alignment or cross-border vertical harmonization." >> "$GITHUB_STEP_SUMMARY"
+          echo "Rasters are temporary unless explicitly opted into a CC BY 4.0 prerelease; this QA does not prove corridor coverage or vertical harmonization." >> "$GITHUB_STEP_SUMMARY"
+
+  publish-licensed-native-prerelease:
+    needs: twelve-reviewed-native-source-tiles
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.preserve_native_preacceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    # No DGT account secrets in the separate publisher job.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: dgt-grid12-native-source-approved-${{ github.run_id }}
+          path: ${{ runner.temp }}/dgt-grid12-native-stage/
+      - name: Recompute SHA256s and verify original source identity before public distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,pathlib
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])/"dgt-grid12-native-stage"
+          j=json.loads((d/"dgt-grid12-sanitized-qa.json").read_text())
+          assert j["status"]=="twelve_native_DGT_GeoTIFFs_and_all_17_seams_validated"
+          assert (j["tile_count"],j["joins_total"],j["joint_neighbor_cell_pairs_valid"])==(12,17,8500)
+          assert j["native_files_sha_verified_in_temporary_release_staging"]==12
+          assert j["valid_native_pixel_cells"]==3000000 and not j["canonical_Fxx_accepted"]
+          target={f"grid_{c}_{r}.tif" for c in (280,281,282) for r in (507,508,509,510)}
+          found={x.name for x in d.glob("*.tif")}
+          assert found==target
+          total=0
+          for item in j["tile_receipts"]:
+            ident=item["producer_tile_id"]
+            assert ident.startswith("MDT-2m-") and ident.endswith("-09-2024")
+            stem=ident[len("MDT-2m-"):-len("-09-2024")]
+            assert len(stem)==6 and stem.isdigit()
+            file=d/f"grid_{int(stem[:3])}_{int(stem[3:])}.tif"
+            assert file.is_file() and file.name in target
+            size=file.stat().st_size
+            assert size==item["native_file_bytes"] and size<=25000000
+            assert hashlib.sha256(file.read_bytes()).hexdigest()==item["native_sha256"]
+            assert item["source_license"]=="DGT Centro de Dados, CC BY 4.0 attribution required"
+            total+=size
+          assert len(j["tile_receipts"])==12 and total<=60000000
+          print("SOURCE_SHA256_VERIFIED_PREACCEPTANCE_ONLY")
+          PY
+      - name: Publish immutable 12 source GeoTIFF CC BY 4.0 prerelease
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-dgt-grid12-preacceptance-${GITHUB_RUN_ID}"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::Existing tag must never be overwritten" >&2
+            exit 1
+          fi
+          cat > "$RUNNER_TEMP/dgt-source-notes.txt" <<'NOTE'
+          MN-GEO-RAIL-001 — original 12 km2 DGT 2m MDT, source QA only.
+          Required attribution: Direção-Geral do Território.
+          Official DGT CDD source: https://cdd.dgterritorio.gov.pt/
+          Open data licence: CC BY 4.0, https://www.dgterritorio.gov.pt/dados-abertos
+          Original source GeoTIFFs are identified by SHA256 in the QA manifest.
+          All 12 rasters and 17 internal seams were checked in native EPSG:3763.
+          PREACCEPTANCE ONLY: no canonical Fxx or Site approval, no complete
+          Porto-Zamora coverage, no vertical benchmark harmonization.
+          No account credentials, cookies or signed original asset URLs.
+          NOTE
+          gh release create "$tag" \
+            "$RUNNER_TEMP"/dgt-grid12-native-stage/grid_*.tif \
+            "$RUNNER_TEMP"/dgt-grid12-native-stage/dgt-grid12-sanitized-qa.json \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "MN-GEO-RAIL-001 DGT native MDT 12km2 preacceptance" \
+            --notes-file "$RUNNER_TEMP/dgt-source-notes.txt"
+          echo "Source prerelease: https://github.com/${GITHUB_REPOSITORY}/releases/tag/${tag}" >> "$GITHUB_STEP_SUMMARY"
