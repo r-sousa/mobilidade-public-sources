@@ -85,16 +85,31 @@ def parse_public_signal(item,bbox):
         raise ValueError("REDNAP_geometry_longitude_disagrees_with_attribute")
     if isinstance(latattr,(float,int)) and abs(lat-latattr)>0.002:
         raise ValueError("REDNAP_geometry_latitude_disagrees_with_attribute")
-    signal_id=item.get("id",props.get("numero"))
-    if not isinstance(signal_id,(int,str)) or len(str(signal_id))>80:
-        raise ValueError("REDNAP_signal_id_invalid")
+    # Some public OGC API features have no standard GeoJSON id and no
+    # 'numero' in properties. Do NOT invent an authoritative IGN number.
+    signal_id=item.get("id")
+    if signal_id is None or signal_id=="":
+        signal_id=props.get("numero")
+    authority_id=(str(signal_id) if isinstance(signal_id,(int,str)) and
+                  signal_id!="" and len(str(signal_id))<=80 else None)
+    if authority_id is None:
+        fingerprint=json.dumps({"coordinates":[lon,lat],
+                    "name":props.get("nombre"),"line":props.get("linea")},
+                    sort_keys=True,ensure_ascii=False)
+        local_key="local_no_official_id_sha256:"+hashlib.sha256(
+                    fingerprint.encode("utf-8")).hexdigest()[:24]
+    else:
+        local_key="IGN_RED_NAP:"+authority_id
     h_orth=props.get("ortometrica")
     h_ell=props.get("altitud_elipsoidal")
     for h in (h_orth,h_ell):
         if h is not None and(not isinstance(h,(int,float)) or not math.isfinite(h)
                              or not -100<h<4500):
             raise ValueError("nonfinite_or_outlying_RED_NAP_height")
-    out={"producer_id":str(signal_id),"lon_etrs89":lon,"lat_etrs89":lat,
+    out={"producer_id":authority_id,
+         "official_source_id_available":authority_id is not None,
+         "local_deduplication_key":local_key,
+         "lon_etrs89":lon,"lat_etrs89":lat,
          "orthometric_height_m":h_orth,"ellipsoidal_height_m":h_ell,
          "both_heights_published":h_orth is not None and h_ell is not None,
          "original_source":"IGN REDNAP OGC API-Features public survey mark"}
@@ -145,7 +160,7 @@ def run(opener=urlopen):
             if w["status"]!="complete":
                 result["source_fully_retrieved_in_all_windows"]=False
             for signal in collected:
-                key=signal["producer_id"]
+                key=signal["local_deduplication_key"]
                 previous=dedup.get(key)
                 if previous is not None and previous!=signal:
                     raise ValueError("same_RED_NAP_signal_conflicting_values_across_windows")
@@ -160,6 +175,8 @@ def run(opener=urlopen):
         result["request_windows"].append(w)
     result["survey_mark_candidates"]=sorted(dedup.values(),key=lambda z:z["producer_id"])
     result["distinct_survey_mark_candidates"]=len(dedup)
+    result["survey_marks_with_official_source_id"]=sum(x["official_source_id_available"] for x in dedup.values())
+    result["survey_marks_without_official_source_id"]=sum(not x["official_source_id_available"] for x in dedup.values())
     result["distinct_marks_with_both_heights"]=sum(s["both_heights_published"] for s in dedup.values())
     result["published_height_pairs_not_independent_geoid_benchmarks"]=True
     return result
