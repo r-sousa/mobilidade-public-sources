@@ -1,0 +1,623 @@
+{
+  "REDNAP_public_source_sha256": "b7a128c97367d9ff03fdcc5e35a16f74a85f695f9d5abdb89941575b629dd41b",
+  "REDNAP_source_observation_count": 151,
+  "Site_publication_authorized": false,
+  "WCS_source_native_vertical_datum_explicit_from_GeoTIFF": false,
+  "canonical_Fxx_accepted": false,
+  "comparisons": [
+    {
+      "NOT_same_point_ground_survey": true,
+      "WCS_pilots": [
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": 0.30292742120900584,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              219850,
+              4624375,
+              221850,
+              4626375
+            ],
+            "bytes": 320776,
+            "dtype": "int16",
+            "height_px": 400,
+            "masked_values": 0,
+            "max_m": 880.0,
+            "min_m": 814.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "574c123e22ac473e6fdbefde45d24011e94d55c42efa8ef8b07a83bc8cecfabd",
+            "valid_cells": 160000,
+            "width_px": 400
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 5,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 5.0,
+            "nearest_pixel_distance_to_mark_m": 1.0996072795732075,
+            "neighbor_3x3_max_m": 857.0,
+            "neighbor_3x3_median_m": 857.0,
+            "neighbor_3x3_min_m": 856.0,
+            "pixel_column": 201,
+            "pixel_row": 198,
+            "sample_value_m": 857.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        },
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": 0.30292742120900584,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              219850,
+              4624375,
+              221850,
+              4626375
+            ],
+            "bytes": 13272,
+            "dtype": "int16",
+            "height_px": 80,
+            "masked_values": 0,
+            "max_m": 880.0,
+            "min_m": 815.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "a3bbb1ec311654d72e0e4233adb48c12de8a54d5f5001c5bdd65dbdcc357481f",
+            "valid_cells": 6400,
+            "width_px": 80
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 25,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 25.0,
+            "nearest_pixel_distance_to_mark_m": 8.168199642260454,
+            "neighbor_3x3_max_m": 861.0,
+            "neighbor_3x3_median_m": 857.0,
+            "neighbor_3x3_min_m": 853.0,
+            "pixel_column": 40,
+            "pixel_row": 39,
+            "sample_value_m": 857.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        }
+      ],
+      "anchor_label": "Alcanices_west",
+      "anchor_lonlat": [
+        -6.48,
+        41.7
+      ],
+      "mark_lonlat_etrs89": [
+        -6.356269056,
+        41.731234722
+      ],
+      "native_window_bbox_epsg25830": [
+        219850,
+        4624375,
+        221850,
+        4626375
+      ],
+      "rednap_mark_local_key": "local_no_official_id_sha256:6cc9a7732093678da3c11ca0",
+      "rednap_mark_name": "SSK 38,2",
+      "rednap_published_ellipsoidal_height_m": 913.205,
+      "rednap_published_orthometric_height_m": 856.697072578791,
+      "same_vertical_CRS_not_confirmed_from_WCS_GeoTIFF": true
+    },
+    {
+      "NOT_same_point_ground_survey": true,
+      "WCS_pilots": [
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": 0.18723321017603212,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              220125,
+              4623375,
+              222125,
+              4625375
+            ],
+            "bytes": 320776,
+            "dtype": "int16",
+            "height_px": 400,
+            "masked_values": 0,
+            "max_m": 877.0,
+            "min_m": 799.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "31d5f10b569d7f8a33737871b7037f90a89eaa3392b8d8f25c9e81fb8b0be297",
+            "valid_cells": 160000,
+            "width_px": 400
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 5,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 5.0,
+            "nearest_pixel_distance_to_mark_m": 1.1328955050437366,
+            "neighbor_3x3_max_m": 820.0,
+            "neighbor_3x3_median_m": 819.0,
+            "neighbor_3x3_min_m": 818.0,
+            "pixel_column": 197,
+            "pixel_row": 202,
+            "sample_value_m": 819.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        },
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": 0.18723321017603212,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              220125,
+              4623375,
+              222125,
+              4625375
+            ],
+            "bytes": 13272,
+            "dtype": "int16",
+            "height_px": 80,
+            "masked_values": 0,
+            "max_m": 877.0,
+            "min_m": 799.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "4ecd97c0dab44d88fdc6f5c8c7110834028f091f1eb5f46762b35cf4f95f7f2a",
+            "valid_cells": 6400,
+            "width_px": 80
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 25,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 25.0,
+            "nearest_pixel_distance_to_mark_m": 1.1328955050437366,
+            "neighbor_3x3_max_m": 823.0,
+            "neighbor_3x3_median_m": 819.0,
+            "neighbor_3x3_min_m": 815.0,
+            "pixel_column": 39,
+            "pixel_row": 40,
+            "sample_value_m": 819.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        }
+      ],
+      "anchor_label": "Alcanices_central",
+      "anchor_lonlat": [
+        -6.36,
+        41.72
+      ],
+      "mark_lonlat_etrs89": [
+        -6.352715333,
+        41.722169111
+      ],
+      "native_window_bbox_epsg25830": [
+        220125,
+        4623375,
+        222125,
+        4625375
+      ],
+      "rednap_mark_local_key": "local_no_official_id_sha256:3d2d23c2cb1383623118d85b",
+      "rednap_mark_name": "SSK 39,2",
+      "rednap_published_ellipsoidal_height_m": 875.283,
+      "rednap_published_orthometric_height_m": 818.812766789824,
+      "same_vertical_CRS_not_confirmed_from_WCS_GeoTIFF": true
+    },
+    {
+      "NOT_same_point_ground_survey": true,
+      "WCS_pilots": [
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": 0.5396007749900491,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              228775,
+              4618100,
+              230775,
+              4620100
+            ],
+            "bytes": 320776,
+            "dtype": "int16",
+            "height_px": 400,
+            "masked_values": 0,
+            "max_m": 853.0,
+            "min_m": 815.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "14ff7c0a7c662fceff804f2ddfe627cb8b9f8bbac4ec01b0a1063f6a10d4bfe1",
+            "valid_cells": 160000,
+            "width_px": 400
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 5,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 5.0,
+            "nearest_pixel_distance_to_mark_m": 2.3935685981638684,
+            "neighbor_3x3_max_m": 847.0,
+            "neighbor_3x3_median_m": 847.0,
+            "neighbor_3x3_min_m": 847.0,
+            "pixel_column": 200,
+            "pixel_row": 198,
+            "sample_value_m": 847.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        },
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": 0.5396007749900491,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              228775,
+              4618100,
+              230775,
+              4620100
+            ],
+            "bytes": 13272,
+            "dtype": "int16",
+            "height_px": 80,
+            "masked_values": 0,
+            "max_m": 853.0,
+            "min_m": 815.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "0032c19d1e6df7886598419eee9b398dde40ba8e13a70f734c126a7b2adedb80",
+            "valid_cells": 6400,
+            "width_px": 80
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 25,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 25.0,
+            "nearest_pixel_distance_to_mark_m": 12.675869179190084,
+            "neighbor_3x3_max_m": 848.0,
+            "neighbor_3x3_median_m": 847.0,
+            "neighbor_3x3_min_m": 846.0,
+            "pixel_column": 40,
+            "pixel_row": 39,
+            "sample_value_m": 847.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        }
+      ],
+      "anchor_label": "Alcanices_east",
+      "anchor_lonlat": [
+        -6.25,
+        41.66
+      ],
+      "mark_lonlat_etrs89": [
+        -6.246340139,
+        41.677873361
+      ],
+      "native_window_bbox_epsg25830": [
+        228775,
+        4618100,
+        230775,
+        4620100
+      ],
+      "rednap_mark_local_key": "local_no_official_id_sha256:c2b9183bb2ceb3761c6fcada",
+      "rednap_mark_name": "SSK 508,540",
+      "rednap_published_ellipsoidal_height_m": 902.664,
+      "rednap_published_orthometric_height_m": 846.46039922501,
+      "same_vertical_CRS_not_confirmed_from_WCS_GeoTIFF": true
+    },
+    {
+      "NOT_same_point_ground_survey": true,
+      "WCS_pilots": [
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": -0.17787999999995918,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              260350,
+              4588425,
+              262350,
+              4590425
+            ],
+            "bytes": 320776,
+            "dtype": "int16",
+            "height_px": 400,
+            "masked_values": 0,
+            "max_m": 775.0,
+            "min_m": 704.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "ed54b4cefb42bb9a1713b7eda8e75af61c40ec87da1ef5eca1b6f795926bd804",
+            "valid_cells": 160000,
+            "width_px": 400
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 5,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 5.0,
+            "nearest_pixel_distance_to_mark_m": 2.6721592931717737,
+            "neighbor_3x3_max_m": 754.0,
+            "neighbor_3x3_median_m": 754.0,
+            "neighbor_3x3_min_m": 754.0,
+            "pixel_column": 198,
+            "pixel_row": 198,
+            "sample_value_m": 754.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        },
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": -0.17787999999995918,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              260350,
+              4588425,
+              262350,
+              4590425
+            ],
+            "bytes": 13272,
+            "dtype": "int16",
+            "height_px": 80,
+            "masked_values": 0,
+            "max_m": 775.0,
+            "min_m": 704.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "0e989306a7297742590c892e8100dbd71d0e5bf6a73861436ab8a858bb5e7bcd",
+            "valid_cells": 6400,
+            "width_px": 80
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 25,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 25.0,
+            "nearest_pixel_distance_to_mark_m": 6.91614708902467,
+            "neighbor_3x3_max_m": 754.0,
+            "neighbor_3x3_median_m": 754.0,
+            "neighbor_3x3_min_m": 752.0,
+            "pixel_column": 39,
+            "pixel_row": 39,
+            "sample_value_m": 754.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        }
+      ],
+      "anchor_label": "Zamora_west",
+      "anchor_lonlat": [
+        -5.88,
+        41.48
+      ],
+      "mark_lonlat_etrs89": [
+        -5.855816419,
+        41.421039186
+      ],
+      "native_window_bbox_epsg25830": [
+        260350,
+        4588425,
+        262350,
+        4590425
+      ],
+      "rednap_mark_local_key": "local_no_official_id_sha256:eaa4968be02c5caaf7655cc0",
+      "rednap_mark_name": "SSK13,890",
+      "rednap_published_ellipsoidal_height_m": 809.7236,
+      "rednap_published_orthometric_height_m": 754.17788,
+      "same_vertical_CRS_not_confirmed_from_WCS_GeoTIFF": true
+    },
+    {
+      "NOT_same_point_ground_survey": true,
+      "WCS_pilots": [
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": -0.8724399999999832,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              269775,
+              4597275,
+              271775,
+              4599275
+            ],
+            "bytes": 320776,
+            "dtype": "int16",
+            "height_px": 400,
+            "masked_values": 0,
+            "max_m": 668.0,
+            "min_m": 620.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "ef66b60ade6724178b5a7777c5c608e1fbe7e0c079643884465067312f70ba6b",
+            "valid_cells": 160000,
+            "width_px": 400
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 5,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 5.0,
+            "nearest_pixel_distance_to_mark_m": 1.786625286523842,
+            "neighbor_3x3_max_m": 649.0,
+            "neighbor_3x3_median_m": 649.0,
+            "neighbor_3x3_min_m": 649.0,
+            "pixel_column": 197,
+            "pixel_row": 200,
+            "sample_value_m": 649.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        },
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": -0.8724399999999832,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              269775,
+              4597275,
+              271775,
+              4599275
+            ],
+            "bytes": 13272,
+            "dtype": "int16",
+            "height_px": 80,
+            "masked_values": 0,
+            "max_m": 668.0,
+            "min_m": 620.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "4f6f74e8f879039a58a2ac309b123398f4dfd707a2ee0c9f4ed56497386545dd",
+            "valid_cells": 6400,
+            "width_px": 80
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 25,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 25.0,
+            "nearest_pixel_distance_to_mark_m": 10.385887110129012,
+            "neighbor_3x3_max_m": 650.0,
+            "neighbor_3x3_median_m": 649.0,
+            "neighbor_3x3_min_m": 648.0,
+            "pixel_column": 39,
+            "pixel_row": 40,
+            "sample_value_m": 649.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        }
+      ],
+      "anchor_label": "Zamora_central",
+      "anchor_lonlat": [
+        -5.76,
+        41.51
+      ],
+      "mark_lonlat_etrs89": [
+        -5.746572022,
+        41.503297461
+      ],
+      "native_window_bbox_epsg25830": [
+        269775,
+        4597275,
+        271775,
+        4599275
+      ],
+      "rednap_mark_local_key": "local_no_official_id_sha256:b0d5d6877d90c3e31829c072",
+      "rednap_mark_name": "NP-1487",
+      "rednap_published_ellipsoidal_height_m": 705.3474,
+      "rednap_published_orthometric_height_m": 649.87244,
+      "same_vertical_CRS_not_confirmed_from_WCS_GeoTIFF": true
+    },
+    {
+      "NOT_same_point_ground_survey": true,
+      "WCS_pilots": [
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": 0.5978699999999435,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              278300,
+              4599725,
+              280300,
+              4601725
+            ],
+            "bytes": 320776,
+            "dtype": "int16",
+            "height_px": 400,
+            "masked_values": 0,
+            "max_m": 645.0,
+            "min_m": 628.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "ed150d1e7c7a3743e86b0088f220b12d976a8e19803f7d1658fb09283de70fba",
+            "valid_cells": 160000,
+            "width_px": 400
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 5,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 5.0,
+            "nearest_pixel_distance_to_mark_m": 1.9799153195224684,
+            "neighbor_3x3_max_m": 633.0,
+            "neighbor_3x3_median_m": 633.0,
+            "neighbor_3x3_min_m": 633.0,
+            "pixel_column": 197,
+            "pixel_row": 200,
+            "sample_value_m": 633.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        },
+        {
+          "WCS_cell_minus_RED_NAP_mark_orthometric_height_m": 0.5978699999999435,
+          "original_WCS_object": {
+            "bbox_utm30": [
+              278300,
+              4599725,
+              280300,
+              4601725
+            ],
+            "bytes": 13272,
+            "dtype": "int16",
+            "height_px": 80,
+            "masked_values": 0,
+            "max_m": 645.0,
+            "min_m": 628.0,
+            "missing_cells": 0,
+            "nodata_reported": null,
+            "sha256": "f4076725f16e1e81d58e9f96749fd52f7fb0724cdbcef1eb9fb7006b274deea4",
+            "valid_cells": 6400,
+            "width_px": 80
+          },
+          "raster_original_not_persisted": true,
+          "residual_is_not_surveyed_ground_error": true,
+          "resolution_m": 25,
+          "terrain_pixel_sampling": {
+            "native_resolution_m": 25.0,
+            "nearest_pixel_distance_to_mark_m": 8.128450393017802,
+            "neighbor_3x3_max_m": 633.0,
+            "neighbor_3x3_median_m": 632.0,
+            "neighbor_3x3_min_m": 632.0,
+            "pixel_column": 39,
+            "pixel_row": 40,
+            "sample_value_m": 633.0,
+            "source_raster_horizontal_crs": "EPSG:25830"
+          }
+        }
+      ],
+      "anchor_label": "Zamora_east",
+      "anchor_lonlat": [
+        -5.64,
+        41.52
+      ],
+      "mark_lonlat_etrs89": [
+        -5.645448467,
+        41.527715767
+      ],
+      "native_window_bbox_epsg25830": [
+        278300,
+        4599725,
+        280300,
+        4601725
+      ],
+      "rednap_mark_local_key": "local_no_official_id_sha256:266f0b3a2452d48fe41ceeb3",
+      "rednap_mark_name": "SSK449,207",
+      "rednap_published_ellipsoidal_height_m": 687.7353,
+      "rednap_published_orthometric_height_m": 632.40213,
+      "same_vertical_CRS_not_confirmed_from_WCS_GeoTIFF": true
+    }
+  ],
+  "descriptive_terrain_mark_residual_statistics": {
+    "25": {
+      "interpretation": "includes geometry/mark-type/support and pixel scale differences; NOT datum bias or certified raster accuracy",
+      "max_signed_raster_minus_mark_m": 0.5978699999999435,
+      "mean_signed_raster_minus_mark_m": 0.09621856772918136,
+      "median_signed_raster_minus_mark_m": 0.24508031569251898,
+      "min_signed_raster_minus_mark_m": -0.8724399999999832,
+      "n_mark_cell_comparisons": 6
+    },
+    "5": {
+      "interpretation": "includes geometry/mark-type/support and pixel scale differences; NOT datum bias or certified raster accuracy",
+      "max_signed_raster_minus_mark_m": 0.5978699999999435,
+      "mean_signed_raster_minus_mark_m": 0.09621856772918136,
+      "median_signed_raster_minus_mark_m": 0.24508031569251898,
+      "min_signed_raster_minus_mark_m": -0.8724399999999832,
+      "n_mark_cell_comparisons": 6
+    }
+  },
+  "mark_vs_raster_differences_not_assessed_as_vertical_datum_bias": true,
+  "mission": "MN-GEO-RAIL-001",
+  "native_WCS_provider": "IGN/CNIG WCS 2.0.1",
+  "native_rasters_preserved": false,
+  "observed_utc": "2026-10-31T02:42:40.644862+00:00",
+  "official_mark_source": "IGN REDNAP OGC API-Features",
+  "published_mark_not_necessarily_local_bare_ground_height": true,
+  "raster_elevation_accuracy_certified_by_this_test": false,
+  "real_crossborder_vertical_benchmark_harmonization_proven": false,
+  "selection_method": "fixed six geographic anchors; nearest available REDNAP height pair; NO elevation/residual-based filtering",
+  "source_marks_with_both_height_types": 119,
+  "stage": "REDNAP_orthometric_marks_vs_original_IGN_WCS_ground_cells_exploratory",
+  "total_WCS_native_requests": 12,
+  "worker": "W4"
+}
