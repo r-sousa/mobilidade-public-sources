@@ -166,6 +166,14 @@ def probe_wcs(outdir):
                     tif,t_meta=safe_get(covurl,MAX_TIFF_BYTES,timeout=30)
                     rec.update(t_meta)
                     qa=sanity_ground_tiff(tif)
+                    sb=qa["geographic_source_bounds_as_native_CRS"]
+                    if qa["source_crs"]!="EPSG:25830":
+                        raise ValueError("G38_actual_raster_not_requested_UTM30")
+                    if not (sb[0]-25<=x<=sb[2]+25 and sb[1]-25<=y<=sb[3]+25):
+                        raise ValueError("G38_actual_raster_does_not_contain_the_requested_Zamora_point")
+                    if not (600<=sb[2]-sb[0]<=1500 and 600<=sb[3]-sb[1]<=1500):
+                        raise ValueError("G38_source_raster_not_small_1km_pilot_envelope")
+                    qa["sample_UTM30_center_covered"]=True
                     rec["status"]="SOURCE_ORIGINAL_Geotiff_SHA_AND_RASTER_QA_PASS"
                     receipts.append(rec)
                     out=(outdir/"G38-IGN-CNIG-WCS-actual-MDT25-1km-Zamora-pilot.tif")
@@ -254,6 +262,7 @@ def run(g37,outdir,jsonout,mdout):
     mdout.write_text("\n".join(md)+"\n")
     print("G38_WCS_CAPABILITY_ID_SAMPLE",json.dumps([{"endpoint":r.get("source_endpoint"),"candidate":r.get("matching_mdt25_coverage_id"),"ids":r.get("reported_coverage_ids_sample")} for r in wcs["source_query_receipts"] if r.get("stage")=="GetCapabilities"],ensure_ascii=False),flush=True)
     print("G38_SOURCE_DIAGNOSTICS",json.dumps([{"endpoint":r.get("source_endpoint"),"step":r.get("stage"),"status":r.get("status"),"error":r.get("error")} for r in wcs["source_query_receipts"]],ensure_ascii=False),flush=True)
+    print("G38_ACTUAL_TERRAIN_PIXEL_QA",json.dumps(wcs.get("verified_raster_QA"),ensure_ascii=False),flush=True)
     print("G38_RESULT",json.dumps({"actual_IGN_CNIG_GeoTIFF_sample":wcs["real_original_IGN_MDT25_GeoTIFF_acquired_and_QA"],
          "WCS_requests":len(wcs["source_query_receipts"]),"LNEG_catalog_probe":lneg.get("catalog_HTTP_status",None),
          "no_new_DGT":True,"all30_retained":True},ensure_ascii=False),flush=True)
