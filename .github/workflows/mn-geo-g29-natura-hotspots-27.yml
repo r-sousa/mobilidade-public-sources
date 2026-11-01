@@ -1,0 +1,125 @@
+name: MN-GEO-RAIL-001 G29 Natura hotspots source maps and 27 environmental exposure ranking
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g29-natura-aware-macro-diversification-20261101
+      - main
+    paths:
+      - tools/geo_rail_g29_natura_hotspot_and_macro_reranking.py
+      - tests/test_geo_rail_g29_natura_macro_hotspots.py
+      - .github/workflows/mn-geo-g29-natura-hotspots-27.yml
+permissions:
+  contents: read
+jobs:
+  branch-g29-environmental-crossing-hotspots:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g29-natura-aware-macro-diversification-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: GIS plotting with original producer geometries
+        run: python -m pip install --disable-pip-version-check 'matplotlib>=3.8,<4' 'shapely>=2,<3' 'pyproj>=3.6,<4'
+      - name: Strict source-only G29 tests
+        run: |
+          python -m py_compile tools/geo_rail_g29_natura_hotspot_and_macro_reranking.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g29_natura_macro_hotspots.py' -v
+      - name: Reuse G10 and G28 independent verified GitHub release geometry ONLY; no DGT/MITECO/ICNF source calls
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G29"
+          gh release download mn-geo-rail-001-g10-27-geographic-visuals-41243658608 --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G10-27-research-real-source-paths.geojson' --dir "$RUNNER_TEMP/G29"
+          gh release download mn-geo-rail-001-g28-natura-PT-ES-PIC-source-preacceptance-41276204753 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G28-original-ICNF-MITECO-natura-clipped-geometry.geojson' \
+            --pattern 'G28-27-corridor-7-city-Natura-PIC-original-source-screen.json' --dir "$RUNNER_TEMP/G29"
+      - name: Project original Natura polygons, rank all 27, identify shared 2km conflict cells, render two source maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g29_natura_hotspot_and_macro_reranking.py \
+            --g10 "$RUNNER_TEMP/G29/G10-27-research-real-source-paths.geojson" \
+            --g28 "$RUNNER_TEMP/G29/G28-27-corridor-7-city-Natura-PIC-original-source-screen.json" \
+            --polygons "$RUNNER_TEMP/G29/G28-original-ICNF-MITECO-natura-clipped-geometry.geojson" \
+            --map "$RUNNER_TEMP/G29/G29-27-PT-ES-Natura-true-geographic-studies.png" \
+            --hotspot "$RUNNER_TEMP/G29/G29-common-2km-Natura-study-conflict-cells.png" \
+            --markdown "$RUNNER_TEMP/G29/G29-environmental-geography-and-27-exposure-rank.md" \
+            --json "$RUNNER_TEMP/G29/G29-27-original-Natura-source-exposure-and-conflict-grid.json"
+          python - <<'PY'
+          import json,pathlib,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G29"
+          j=json.loads((p/"G29-27-original-Natura-source-exposure-and-conflict-grid.json").read_text())
+          assert j["G10_original_source_27_paths"]==27 and len(j["ranked_27_research_line_Natura_overlaps_NOT_rail_or_impact"])==27
+          assert j["all_require_PIC_source"] and not j["new_alignment_families_generated"] and j["no_G29_DGT_or_MITECO_download"]
+          assert all((p/n).stat().st_size>25000 for n in
+            ("G29-27-PT-ES-Natura-true-geographic-studies.png","G29-common-2km-Natura-study-conflict-cells.png"))
+          print("G29 maps original-source verified; no false newly engineered track")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G29-source-hotspots-and-27-portfolio-visuals
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G29/G29-27-PT-ES-Natura-true-geographic-studies.png
+            ${{ runner.temp }}/G29/G29-common-2km-Natura-study-conflict-cells.png
+            ${{ runner.temp }}/G29/G29-environmental-geography-and-27-exposure-rank.md
+            ${{ runner.temp }}/G29/G29-27-original-Natura-source-exposure-and-conflict-grid.json
+  main-publish-source-reuse-only:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Reuse exact branch G29 verified maps, require identical Git source blob
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g29-natura-hotspots-27.yml"
+          b="mn-geo-rail-001-g29-natura-aware-macro-diversification-20261101"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=4" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          refsha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          path="tools/geo_rail_g29_natura_hotspot_and_macro_reranking.py"
+          blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/$path?ref=$refsha" --jq '.sha')"
+          test "$blob" = "$(git hash-object "$path")"
+          mkdir -p "$RUNNER_TEMP/G29-publish"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G29-source-hotspots-and-27-portfolio-visuals \
+            --dir "$RUNNER_TEMP/G29-publish"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G29-publish"
+          q=json.loads((p/"G29-27-original-Natura-source-exposure-and-conflict-grid.json").read_text())
+          assert q["G10_original_source_27_paths"]==27 and q["all_require_PIC_source"]
+          assert not q["new_alignment_families_generated"] and q["no_G29_DGT_or_MITECO_download"]
+          assert (p/"G29-27-PT-ES-Natura-true-geographic-studies.png").stat().st_size>25000
+          PY
+      - name: Publish maps and source Pareto as main prerelease
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G29-publish"
+          gh release create "mn-geo-rail-001-g29-natura-hotspots-27-$GITHUB_RUN_ID" \
+            "$d/G29-27-PT-ES-Natura-true-geographic-studies.png" \
+            "$d/G29-common-2km-Natura-study-conflict-cells.png" \
+            "$d/G29-environmental-geography-and-27-exposure-rank.md" \
+            "$d/G29-27-original-Natura-source-exposure-and-conflict-grid.json" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G29 27 real research-grid options and Natura source maps, pre-diversification not railway lines" \
+            --notes "Reuses immutable G10 research lines and G28 ICNF+MITECO polygons; 2 source-based geography maps, full 27 option Natura exposure table, common 2km research conflict cells. No new physical alignments or environmental/railway permission; PIC unknown; no producer downloads, DGT/Fxx/Site."
