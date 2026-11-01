@@ -1,0 +1,126 @@
+name: MN-GEO-RAIL-001 G30 tunnel-aware Natura and NEW study research corridors
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g30-tunnel-aware-diverse-20261101
+      - main
+    paths:
+      - tools/geo_rail_g30_tunnel_aware_new_research_corridors.py
+      - tests/test_geo_rail_g30_tunnel_aware_new_corridors.py
+      - .github/workflows/mn-geo-g30-tunnel-aware-diverse.yml
+permissions:
+  contents: read
+jobs:
+  branch-g30-generate-independent-legal-source-research:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g30-tunnel-aware-diverse-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install spatial projection and geometry stack, no new official download
+        run: python -m pip install --disable-pip-version-check 'matplotlib>=3.8,<4' 'shapely>=2,<3' 'pyproj>=3.6,<4'
+      - name: Verify source-independent synthetic legal and routing tests
+        run: |
+          python -m py_compile tools/geo_rail_g30_tunnel_aware_new_research_corridors.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g30_tunnel_aware_new_corridors.py' -v
+      - name: Reuse immutable verified G10 and G28 original-source GitHub release artifacts
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G30"
+          gh release download mn-geo-rail-001-g10-27-geographic-visuals-41243658608 --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G10-27-research-real-source-paths.geojson' --dir "$RUNNER_TEMP/G30"
+          gh release download mn-geo-rail-001-g28-natura-PT-ES-PIC-source-preacceptance-41276204753 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G28-original-ICNF-MITECO-natura-clipped-geometry.geojson' \
+            --pattern 'G28-27-corridor-7-city-Natura-PIC-original-source-screen.json' --dir "$RUNNER_TEMP/G30"
+      - name: Build new Natura-avoiding and possible deep-tunnel research lattice alternatives
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g30_tunnel_aware_new_research_corridors.py \
+            --g10 "$RUNNER_TEMP/G30/G10-27-research-real-source-paths.geojson" \
+            --g28 "$RUNNER_TEMP/G30/G28-27-corridor-7-city-Natura-PIC-original-source-screen.json" \
+            --polygons "$RUNNER_TEMP/G30/G28-original-ICNF-MITECO-natura-clipped-geometry.geojson" \
+            --json "$RUNNER_TEMP/G30/G30-new-research-corridor-comparison.json" \
+            --geojson "$RUNNER_TEMP/G30/G30-three-new-Natura-aware-study-routes.geojson" \
+            --map "$RUNNER_TEMP/G30/G30-new-alternative-Natura-tunnel-hypotheses.png" \
+            --markdown "$RUNNER_TEMP/G30/G30-legal-and-new-research-corridor-review.md"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G30"
+          j=json.loads((p/"G30-new-research-corridor-comparison.json").read_text())
+          geo=json.loads((p/"G30-three-new-Natura-aware-study-routes.geojson").read_text())
+          assert j["number_new_independent_search_scenarios"]==3
+          assert len(geo["features"])==3 and len({str(f["geometry"]) for f in geo["features"]})==3
+          assert j["deep_tunnel_is_only_hypothesis_no_verified_3D_alignment"] and j["PIC_UNRESOLVED"]
+          assert j["additional_DGT_tiles"]==0 and not j["Site_authorized"] and not j["Fxx_accepted"]
+          assert (p/"G30-new-alternative-Natura-tunnel-hypotheses.png").stat().st_size>25000
+          print("G30 source locked, 3 research-only routes, no legal or tunnel misclassification")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G30-new-tunnel-aware-Natura-research
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G30/G30-new-research-corridor-comparison.json
+            ${{ runner.temp }}/G30/G30-three-new-Natura-aware-study-routes.geojson
+            ${{ runner.temp }}/G30/G30-new-alternative-Natura-tunnel-hypotheses.png
+            ${{ runner.temp }}/G30/G30-legal-and-new-research-corridor-review.md
+  main-publish-verified-G30-only:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download verified branch work only after checking identical producer code blob
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g30-tunnel-aware-diverse.yml"
+          b="mn-geo-rail-001-g30-tunnel-aware-diverse-20261101"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=4" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          refsha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          path="tools/geo_rail_g30_tunnel_aware_new_research_corridors.py"
+          blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/$path?ref=$refsha" --jq '.sha')"
+          test "$blob" = "$(git hash-object "$path")"
+          mkdir -p "$RUNNER_TEMP/G30-publish"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G30-new-tunnel-aware-Natura-research --dir "$RUNNER_TEMP/G30-publish"
+          python - <<'PY'
+          import json,pathlib,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G30-publish"
+          d=json.loads((p/"G30-new-research-corridor-comparison.json").read_text())
+          assert d["number_new_independent_search_scenarios"]==3 and d["PIC_UNRESOLVED"]
+          assert d["deep_tunnel_is_only_hypothesis_no_verified_3D_alignment"]
+          assert (p/"G30-new-alternative-Natura-tunnel-hypotheses.png").stat().st_size>25000
+          PY
+      - name: Publish the 3 new research paths, source facts and map on main release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G30-publish"
+          gh release create "mn-geo-rail-001-g30-tunnel-aware-new-corridors-$GITHUB_RUN_ID" \
+            "$d/G30-new-research-corridor-comparison.json" \
+            "$d/G30-three-new-Natura-aware-study-routes.geojson" \
+            "$d/G30-new-alternative-Natura-tunnel-hypotheses.png" \
+            "$d/G30-legal-and-new-research-corridor-review.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G30 Natura environmental gate with 3 newly generated rail research-grid corridors" \
+            --notes "3 newly searched 2km geographic research chains using source-verified G10 and G28 official Portugal/Spain Natura geometries. Tunnel is ONLY an unverified construction hypothesis; no 3D railway, no depth, portals, groundwater, costs or law exemption. PIC still unresolved; no DGT download or Fxx/Site."
