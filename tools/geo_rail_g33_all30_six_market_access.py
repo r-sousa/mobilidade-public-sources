@@ -193,13 +193,17 @@ def execute(g10,g30,g30geo,g32,source_bytes,report,citycsv,widejson,patternsjson
     rows=build_refs(entries)
     receipts=route_road(rows,enabled=network)
     wide,modes=combine_all(entries,g32,rows)
-    populations_benchmark={k:None for k in entries}
+    distinct_reference_count={city:len({tuple(r["nearest_2km_lattice_point_WGS84"]) for r in rows if r["urban_key"]==city}) for city in CITIES}
+    mandatory_reference_identical_by_source=all(distinct_reference_count[k]==1 for k in MANDATORY)
     out={"mission":"MN-GEO-RAIL-001","stage":"G33_27_G10_plus_3_G30_six_city_equitable_service_road_snap",
          "portfolio_30_in_all_future_assessments":True,
          "source_G32_sha256":hashlib.sha256(source_bytes).hexdigest(),
          "source_30_research_routes":30,"urban_markets_six":list(CITIES),
          "G10":27,"G30":3,"six_city_combinations":len(rows),
          "speed_sensitive_scenario_rows":len(wide),"hypothetical_stopping_patterns":len(modes),
+         "distinct_grid_reference_coordinates_per_city_across_30":distinct_reference_count,
+         "mandatory_city_reference_identical_across_30_by_original_grid_connectors":mandatory_reference_identical_by_source,
+         "mandatory_service_quality_cannot_be_discriminated_from_fixed_research_reference":True,
          "source_road_snap_rule_max_m":OSRM_SNAP_MAX_M,
          "road_network_source_receipts":receipts,
          "OSRM_source_actual_queries_max":6 if network else 0,
@@ -251,7 +255,8 @@ def execute(g10,g30,g30geo,g32,source_bytes,report,citycsv,widejson,patternsjson
        "|---|---:|---:|---|"]
     for q in receipts:
         mdlines.append(f"| {CITY[q['urban_key']]['label']} | {q['unique_destinations'] if 'unique_destinations' in q else '—'} | {q.get('qualified_rows',0)} | {q['status']} |")
-    mdlines+=["","## Quatro padrões hipotéticos de exploração, aplicados igualmente aos 30 corredores e três velocidades",
+    mdlines+=["","**Atenção aos nós obrigatórios:** Vila Real e Bragança apresentam apenas "+str(distinct_reference_count["Vila_Real"])+" e "+str(distinct_reference_count["Braganca"])+" referências de grelha distintas, respetivamente, para o universo das 30 alternativas. Isto é uma igualdade **por construção** (ligações urbanas comuns G10), não prova igual qualidade de serviço. A comparação efetiva exige localizar múltiplas estações periféricas e traçados de aproximação a testar.",
+       "","## Quatro padrões hipotéticos de exploração, aplicados igualmente aos 30 corredores e três velocidades",
        "","Expresso VR–Bragança; regional com Amarante/Mirandela/Macedo; regional com Guimarães/Mirandela/Macedo; regional com os seis mercados. Os intervalos adicionais estimam só desaceleração, aceleração e paragem de uma operação idealizada, sem marcha ferroviária ou cotas de estação; não são tempo porta-a-porta nem promessa de paragens.",
        "","**Demografia:** G14/G17/G18 já produziram BGRI2021 e isócronas rodoviárias para **três famílias antigas**, com referências de posição diferentes. Não se extrapola uma contagem 2021 ou acessibilidade em automóvel a todas as 30 variantes; estes campos permanecem **N/D** até fazer 30 avaliações comparáveis sobre a mesma fonte BGRI.",
        "","**Transporte público:** sem cobertura sistemática verificável GTFS/horários para toda a NUTS2 Norte, não imputar ausência de serviço, frequência zero ou tempos inventados.",
