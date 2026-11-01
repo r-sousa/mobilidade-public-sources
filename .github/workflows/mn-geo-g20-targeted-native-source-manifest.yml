@@ -1,0 +1,92 @@
+name: MN-GEO-RAIL-001 G20 source-identified bounded DGT2m native tile shortlist (NO download)
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g20-targeted-DGT2m-acquisition-manifest-20261031
+      - main
+    paths:
+      - tools/geo_rail_g20_targeted_DGT_original_station_grid.py
+      - tests/test_geo_rail_g20_targeted_native_source.py
+      - .github/workflows/mn-geo-g20-targeted-native-source-manifest.yml
+permissions:
+  contents: write
+jobs:
+  original_producer_STAC_only_no_credential:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install geospatial geometry only, never native data credentials
+        run: python -m pip install --disable-pip-version-check 'shapely>=2.1,<3' 'pyproj>=3.6,<4'
+      - name: G20 source-index grid, budget and no impossible-source tests
+        run: |
+          python -m py_compile tools/geo_rail_g20_targeted_DGT_original_station_grid.py
+          python -m unittest discover -s tests -p test_geo_rail_g20_targeted_native_source.py -v
+      - name: Reuse exact G19 published original native-ground inventory plus five existing DGT public STAC receipts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G20-source"
+          gh release download mn-geo-rail-001-g19-native-ground-site-feasibility-audit-41254929309 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G19-54-native-DGT-2m-research-site-coverage-and-priority.json' \
+            --dir "$RUNNER_TEMP/G20-source"
+          echo "9f4d290f3fb2718c1a49a921c10d17b7f8c4dd97ccd28e3e6854486a8917dbe2  $RUNNER_TEMP/G20-source/G19-54-native-DGT-2m-research-site-coverage-and-priority.json" | sha256sum -c -
+      - name: Delimit no more than 6 unique mandatory station research seeds and <=54 original source tile IDs excluding preserved ground
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g20_targeted_DGT_original_station_grid.py \
+            --g19 "$RUNNER_TEMP/G20-source/G19-54-native-DGT-2m-research-site-coverage-and-priority.json" \
+            --b1 reports/mn-geo-rail-001/B1-DGT-native-2m-32km2-verified-ground-sector-review.json \
+            --grid12 reports/mn-geo-rail-001/pt-dgt-native-grid12-preserved-audit.json \
+            --tile279503 reports/mn-geo-rail-001/pt-dgt-native-279503-NP159-source-qa-acceptance.json \
+            --reports reports/mn-geo-rail-001 \
+            --json "$RUNNER_TEMP/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" \
+            --markdown "$RUNNER_TEMP/G20-mandatory-station-native-original-terrain-acquisition-review.md"
+          python - <<'PY'
+          import json,os,pathlib
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])
+          j=json.loads((d/"G20-original-DGT2m-mandatory-research-source-tile-manifest.json").read_text())
+          assert 2<=j["study_reference_points_selected_for_two_mandatory_urban_markets"]<=6
+          assert j["source_3x3km_neighbourhoods_union_tile_count"]<=54
+          assert j["new_original_DGT_1km_tiles_targeted"]<=54
+          assert len(j["DGT_new_target_manifest_exact_verified_public_source_metadata"])==j["new_original_DGT_1km_tiles_targeted"]
+          assert len({x["producer_ID"] for x in j["DGT_new_target_manifest_exact_verified_public_source_metadata"]})==j["new_original_DGT_1km_tiles_targeted"]
+          assert all(not x["actual_original_GeoTIFF_bytes_present"] and not x["native_2m_pixels_proven"]
+              for x in j["DGT_new_target_manifest_exact_verified_public_source_metadata"])
+          assert j["DGT_credentialed_original_source_requires_manual_dispatch_on_protected_main_and_environment"]=="dgt-cdd"
+          assert j["do_not_trigger_credentialed_acquisition_via_branch_push_or_PR"]
+          assert j["mandatory_urban_markets"]==["Vila Real","Bragança"] and j["Sanabria_excluded"]
+          assert not j["Fxx_accepted"] and not j["Site_authorized"]
+          print("G20 official original DGT catalog only targeted 3x3km per mandatory source seed, deduplicated, no credentials or pixels")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G20-native-original-2m-target-source-review
+          path: |
+            ${{ runner.temp }}/G20-original-DGT2m-mandatory-research-source-tile-manifest.json
+            ${{ runner.temp }}/G20-mandatory-station-native-original-terrain-acquisition-review.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish only transparent source catalogue acquisition manifest (not native DGT pixels)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g20-DGT2m-original-mandatory-study-source-manifest-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" \
+            "$RUNNER_TEMP/G20-mandatory-station-native-original-terrain-acquisition-review.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G20 source-identified limited original DGT 2m tiles around mandatory Vila Real/Braganca research points; NOT a download" \
+            --notes "Exact original DGT MDT2m producer STAC source IDs matched to 1km cell coordinates from prior 5 source receipts. Only nearest terrain around at most 3 research points per compulsory city, with preserved native 45km2 tile overlap removed. No station selected or CAPEX. No original source tiles downloaded by G20; protected dgt-cdd manual main workflow required to acquire, independently audit and publish source pixels. SANABRIA excluded; Fxx/Site not authorized."
