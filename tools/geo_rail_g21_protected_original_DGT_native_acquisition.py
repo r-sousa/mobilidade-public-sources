@@ -18,6 +18,9 @@ from geo_rail_pt_cdd_authenticated import (
  authenticated_session,request_bounded_redirects,read_metadata,allowed_url,
  TRUSTED_AUTH_REDIRECTS,TRUSTED_DATA_REDIRECTS,STAC,COLLECTION,IntakeError)
 from geo_rail_pt_cdd_pair_pilot import download_small_native
+# Reuse established G3 primary-source DGT mask semantics, including explicit
+# NoData and nonfinite cells. Do not fill, interpolate or count voids as ground.
+from geo_rail_g3_native80 import native_raster_QA
 
 MANIFEST_SHA=None
 TILE=re.compile(r"^MDT-2m-(\d{3})(\d{3})-(0[67])-2024$")
@@ -56,28 +59,37 @@ def review(path):
  return root,ids
 
 def original_qa(path,entry):
- if path.stat().st_size>MAX_BYTES_PER_TILE or path.stat().st_size<1000:
-  raise ValueError("DGT_native_source_file_byte_size_out_of_bounds")
- with rasterio.open(path) as ds:
-  if ds.driver!="GTiff" or ds.count!=1 or ds.crs is None or ds.crs.to_epsg()!=3763:
-   raise ValueError("original_DGT_single_band_native_EPSG3763_required")
-  if (ds.width,ds.height)!=(500,500) or any(abs(x-2)>.001 for x in ds.res):
-   raise ValueError("original_DGT_natively_500x500_2m_required")
-  if any(abs(a-b)>.005 for a,b in zip(ds.bounds,entry["expected_original_GeoTIFF_bbox_EPSG3763_m"])):
-   raise ValueError("unexpected_original_DGT_native_raster_cell_bounds")
-  z=ds.read(1,masked=True)
-  data=z.compressed()
-  if (data.size!=NATIVE_PIXELS_PER_TILE or np.ma.count_masked(z) or
-     not np.isfinite(data).all() or float(data.min())< -500 or float(data.max())>4000):
-   raise ValueError("original_DGT_native_terrain_pixels_missing_or_invalid")
-  return {"source_original_bytes":path.stat().st_size,
+ """Audit original 500×500 MDT2m pixels, preserving every source void.
+
+ A valid GeoTIFF source product is not necessarily 100% valid terrain.
+ Source NoData/nonfinite cells MUST remain unavailable for engineering,
+ never interpolated, converted to zero height, or called usable ground.
+ G3 and G21 deliberately share the same battle-tested native QA.
+ """
+ if not (1000<=path.stat().st_size<=MAX_BYTES_PER_TILE):
+  raise ValueError("G21_original_source_bytes_outside_validated_budget")
+ original_id=entry["producer_ID"]
+ result=native_raster_QA(path,original_id)
+ if result["bbox_pttm06_m"]!=entry["expected_original_GeoTIFF_bbox_EPSG3763_m"]:
+  raise ValueError("G21_original_DGT_tile_location_disagrees_with_exact_G20")
+ ground=result["real_valid_ground_pixels"]
+ missing=result["source_nodata_pixels"]
+ if ground+missing!=NATIVE_PIXELS_PER_TILE:
+  raise ValueError("G21_original_source_valid_plus_nodata_not_250000")
+ return {"source_original_bytes":path.stat().st_size,
    "source_original_sha256":sha(path),
    "EPSG":3763,"source_resolution_m":2,
-   "source_native_valid_pixels":len(data),
-   "source_nodata_pixels":0,
+   "source_native_valid_pixels":ground,
+   "source_nodata_pixels":missing,
+   "source_valid_ground_fraction":result["valid_ground_coverage_fraction"],
+   "source_has_unfilled_NoData":result["source_has_unfilled_NoData"],
+   "source_original_tile_is_entirely_NoData_unusable_as_ground":ground==0,
    "original_native_grid_bbox_EPSG3763_m":list(entry["expected_original_GeoTIFF_bbox_EPSG3763_m"]),
-   "source_terrain_original_z_min_max_m":[round(float(data.min()),3),round(float(data.max()),3)],
+   "source_terrain_original_z_min_max_m":(
+     [round(float(v),3) for v in result["range_m"]] if result["range_m"] is not None else None),
+   "no_synthetic_ground_gap_filling_interpolation_or_zero_elevation":True,
    "independent_vertical_survey_benchmark_not_done":True}
+
 
 def original_urls(session,manifest):
  wanted={z["producer_ID"] for z in manifest["DGT_new_target_manifest_exact_verified_public_source_metadata"]}
@@ -144,6 +156,11 @@ def acquire(manifestpath,folder):
    "producer":"Direção-Geral do Território","licence":"DGT CC BY 4.0; cite DGT Centro de Dados",
    "source_original_tiles_acquired":len(rows),
    "source_original_native_pixels_verified":sum(x["source_native_valid_pixels"] for x in rows),
+   "source_original_nodata_pixels_preserved":sum(x["source_nodata_pixels"] for x in rows),
+   "source_original_tile_count_with_partial_or_full_NoData":sum(x["source_has_unfilled_NoData"] for x in rows),
+   "source_original_tile_count_entirely_NoData_unusable_for_ground":sum(x["source_original_tile_is_entirely_NoData_unusable_as_ground"] for x in rows),
+   "theoretical_all_tiles_full_valid_pixels_NOT_assumed":True,
+   "no_fill_or_interpolation_of_original_ground":True,
    "source_original_native_byte_count":total,
    "source_STAC_response_hash_receipts_without_URLs":receipts,
    "native_GeoTIFF_producer_source_checksums_and_QA":rows,
@@ -174,6 +191,14 @@ def verify(manifestpath,folder):
   nbytes+=qa["source_original_bytes"]
  if nbytes!=receipt["source_original_native_byte_count"]:
   raise ValueError("G21_source_total_native_bytes_changed")
+ if (sum(z["source_native_valid_pixels"] for z in old.values())!=receipt["source_original_native_pixels_verified"]
+     or sum(z["source_nodata_pixels"] for z in old.values())!=receipt["source_original_nodata_pixels_preserved"]
+     or sum(z["source_has_unfilled_NoData"] for z in old.values())!=receipt["source_original_tile_count_with_partial_or_full_NoData"]
+     or sum(z["source_original_tile_is_entirely_NoData_unusable_as_ground"] for z in old.values())!=receipt["source_original_tile_count_entirely_NoData_unusable_for_ground"]
+     or not receipt["no_fill_or_interpolation_of_original_ground"]
+     or not receipt["theoretical_all_tiles_full_valid_pixels_NOT_assumed"]
+     or receipt["source_original_native_pixels_verified"]+receipt["source_original_nodata_pixels_preserved"]!=len(ids)*NATIVE_PIXELS_PER_TILE):
+  raise ValueError("G21_source_original_nodata_ground_conservation_or_total_count_drift")
  return receipt
 
 def main():
@@ -187,7 +212,10 @@ def main():
  data=acquire(v.manifest,v.stage) if v.acquire else verify(v.manifest,v.stage)
  print("G21_NATIVE_ORIGINAL_QA="+json.dumps({
    "source_original_verified_tiles":data["source_original_tiles_acquired"],
-   "original_2m_pixels":data["source_original_native_pixels_verified"],
+   "original_valid_ground_2m_pixels":data["source_original_native_pixels_verified"],
+   "unfilled_original_NoData_pixels":data["source_original_nodata_pixels_preserved"],
+   "tiles_containing_source_NoData":data["source_original_tile_count_with_partial_or_full_NoData"],
+   "tiles_entirely_source_NoData":data["source_original_tile_count_entirely_NoData_unusable_for_ground"],
    "original_bytes":data["source_original_native_byte_count"],
    "no_secret_persisted":True},separators=(",",":")))
 if __name__=="__main__":main()

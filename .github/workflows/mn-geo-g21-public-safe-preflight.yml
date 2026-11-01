@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - mn-geo-rail-001-g21-protected-target-native-intake-20261031
+      - mn-geo-g21-fix-native-source-nodata-20261101
     paths:
       - tools/geo_rail_g21_protected_original_DGT_native_acquisition.py
       - tests/test_geo_rail_g21_secure_DGT_acquisition.py
