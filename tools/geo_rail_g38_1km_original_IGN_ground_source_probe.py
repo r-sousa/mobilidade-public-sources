@@ -67,6 +67,9 @@ def parse_wcs_capabilities(raw):
             found.extend(rawids)
     return sorted(set(found))
 def choose_candidate(ids):
+    # Actual official IGN/CNIG WCS 2.0.1 GetCapabilities response (2026-11-01)
+    # advertises Elevacion25830_25, NOT a coverage named MDT25.
+    if "Elevacion25830_25" in ids:return "Elevacion25830_25"
     preferred=sorted((name for name in ids if any(v in name.lower() for v in ("mdt25","mdt_25","mdt25m"))),key=len)
     return preferred[0] if preferred else None
 def parse_wcs_description(raw):
