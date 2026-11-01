@@ -256,7 +256,7 @@ def run(g32,g33,g34,g35,jsonout,csvout,mdout,scatter,heat):
          "","| Alternativa | Presenças no top8/12 | Próxima análise de engenharia sugerida? |",
          "|---|---:|---|"]
     for e in ranking:
-        lines.append(f"| {e['option_id']} | {e['in_top8_of_nine_sensitivity_tests']} | {'sim, hipótese de pesquisa' if e['next_engineering_work_priority_only'] else 'não prioritária neste teste; manter'} |")
+        lines.append(f"| {e['option_id']} | {e['in_top8_of_twelve_sensitivity_tests']} | {'sim, hipótese de pesquisa' if e['next_engineering_work_priority_only'] else 'não prioritária neste teste; manter'} |")
     lines+=["","**Salvaguarda subterrânea:** o quarto perfil não pontua a sobreposição Natura 2D, porque tal sobreposição não permite distinguir superfície de túnel; NÃO transforma a restrição Natura em zero jurídico ou autorização. A variante G30-potential_deep_tunnel permanece no grupo de estudo tridimensional e hidrogeológico, qualquer que seja a sua frequência no top8. É uma decisão de cobertura de hipóteses, não uma recomendação baseada em custos ou impacte comprovados.",
         "","## Fronteiras não dominadas — apenas 5 variáveis investigadas",
         "","| Cenário | Linhas não dominadas do estudo (sem decisão de investimento) |",
@@ -274,7 +274,7 @@ def run(g32,g33,g34,g35,jsonout,csvout,mdout,scatter,heat):
        "","**Nenhuma alternativa é excluída automaticamente. Nenhuma é autorizada ou é uma escolha de investimento.**"]
     mdout.write_text("\n".join(lines)+"\n")
     freq=[v for v in ranking if v["next_engineering_work_priority_only"]]
-    print("G36_RESULT",json.dumps({"rows":len(rows),"top8_frequency_9_trials":ranking,
+    print("G36_RESULT",json.dumps({"rows":len(rows),"top8_frequency_12_trials":ranking,
        "next_engineering_research_count":len(freq),
        "source_pareto_count":{key:len(value["source_only_pareto_5dimensions"]) for key,value in profiles.items()},
        "no_imputed_cost_time_EIA":True},ensure_ascii=False))
