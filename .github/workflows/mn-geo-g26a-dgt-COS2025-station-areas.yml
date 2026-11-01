@@ -1,13 +1,8 @@
 name: MN-GEO-RAIL-001 G26A targeted original DGT COS2025 landuse seven station research sectors
+# Fallback OGC item service, currently HTTP500 on all bounded feature queries.
+# NEVER auto-run on main and break public source CI while producer is down.
 on:
-  push:
-    branches:
-      - mn-geo-rail-001-g26-cos2025-proximity-and-dgt-gap-gates-20261101
-      - main
-    paths:
-      - tools/geo_rail_g26a_cos2025_original_local_landuse.py
-      - tests/test_geo_rail_g26a_cos2025.py
-      - .github/workflows/mn-geo-g26a-dgt-COS2025-station-areas.yml
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
