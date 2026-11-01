@@ -1,0 +1,138 @@
+name: MN-GEO-RAIL-001 G36 robust source-only all30 service Natura terrain portfolio
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g36-robust-all30-service-environment-20261101
+      - main
+    paths:
+      - tools/geo_rail_g36_all30_robust_source_only_selection.py
+      - tests/test_geo_rail_g36_robust_all30.py
+      - .github/workflows/mn-geo-g36-source-robust-all30.yml
+permissions:
+  contents: read
+jobs:
+  branch-G36-robust-all30:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g36-robust-all30-service-environment-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Source-only numeric and visual dependencies; no new raw acquisition
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'matplotlib>=3.8,<4'
+      - name: Mathematically check ranking, no missing as zero and retain full30
+        run: |
+          python -m py_compile tools/geo_rail_g36_all30_robust_source_only_selection.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g36_robust_all30.py' -v
+      - name: Reuse immutable all30 geometry + road + INE2021 + previously studied station evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G36"
+          gh release download mn-geo-rail-001-g32-unified-30-90-41280190620 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G32-full-30-options-90-scenarios.json' --dir "$RUNNER_TEMP/G36"
+          gh release download mn-geo-rail-001-g33-all30-six-city-41281265827 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G33-all30-six-city-access-source.json' --dir "$RUNNER_TEMP/G36"
+          gh release download mn-geo-rail-001-g34-all30-original-INE2021-41281574735 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G34-INE2021-all30-six-market-geographic-census.json' --dir "$RUNNER_TEMP/G36"
+          gh release download mn-geo-rail-001-g35-previous-station-work-all30-41283129280 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G35-all30-reuse-351-prior-station-physical-screen.json' --dir "$RUNNER_TEMP/G36"
+      - name: Compute 90 equally sourced multiobjective rows and explicit three-profile sensitivities
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g36_all30_robust_source_only_selection.py \
+            --g32 "$RUNNER_TEMP/G36/G32-full-30-options-90-scenarios.json" \
+            --g33 "$RUNNER_TEMP/G36/G33-all30-six-city-access-source.json" \
+            --g34 "$RUNNER_TEMP/G36/G34-INE2021-all30-six-market-geographic-census.json" \
+            --g35 "$RUNNER_TEMP/G36/G35-all30-reuse-351-prior-station-physical-screen.json" \
+            --json "$RUNNER_TEMP/G36/G36-30-all-90-technical-service-environmental-sensitivity.json" \
+            --csv "$RUNNER_TEMP/G36/G36-30-all-90-scenario-sensitivity-comparison.csv" \
+            --markdown "$RUNNER_TEMP/G36/G36-all30-robust-review-and-explicit-unknown-costs.md" \
+            --scatter "$RUNNER_TEMP/G36/G36-all30-optional-road-versus-research-length.png" \
+            --heatmap "$RUNNER_TEMP/G36/G36-200kmh-30-alternatives-five-dimensions.png"
+          python - <<'PY'
+          import os,json,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G36"
+          j=json.loads((p/"G36-30-all-90-technical-service-environmental-sensitivity.json").read_text())
+          assert j["source_all_original_G10_count"]==27 and j["source_all_original_G30_count"]==3
+          assert j["rows_n"]==90 and len(j["rows_90"])==90
+          assert len(j["review_priority_NOT_viability_OR_final_selection"])==30
+          assert j["PIC_still_UNRESOLVED_official_source"]
+          assert j["Natura2000_overlap_is_2D_surface_research_not_an_EIA_or_hard_tunnel_exclusion"]
+          assert j["G35_all_30_share_same_7_prior_station_site_coordinates_and_29_contexts_not_discriminating"]
+          assert j["no_actual_rail_timings_or_EUR_CAPEX_or_tunnel_quantities"]
+          assert j["no_new_DGT_INE_OSRM_or_other_original_data_acquisition"]
+          assert not j["Fxx_accepted"] and not j["Site_authorized"]
+          for name in ("G36-all30-optional-road-versus-research-length.png","G36-200kmh-30-alternatives-five-dimensions.png"):
+              assert (p/name).stat().st_size>20000
+          print("G36 VERIFIED: full 30 retained, three speeds, source-only weights explicit, Natura PIC unapproved")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G36-all30-3speed-service-terrain-Natura-multisensitivity
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G36/G36-30-all-90-technical-service-environmental-sensitivity.json
+            ${{ runner.temp }}/G36/G36-30-all-90-scenario-sensitivity-comparison.csv
+            ${{ runner.temp }}/G36/G36-all30-robust-review-and-explicit-unknown-costs.md
+            ${{ runner.temp }}/G36/G36-all30-optional-road-versus-research-length.png
+            ${{ runner.temp }}/G36/G36-200kmh-30-alternatives-five-dimensions.png
+  main-publish-verified-G36-only:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check tested source blob on G36 branch and retrieve exact data product
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g36-source-robust-all30.yml"
+          b="mn-geo-rail-001-g36-robust-all30-service-environment-20261101"
+          run="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$run" && test "$run" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" --jq '.head_sha')"
+          f="tools/geo_rail_g36_all30_robust_source_only_selection.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$f?ref=$sha" --jq '.sha')" = "$(git hash-object "$f")"
+          mkdir -p "$RUNNER_TEMP/G36-pub"
+          gh run download "$run" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G36-all30-3speed-service-terrain-Natura-multisensitivity \
+            --dir "$RUNNER_TEMP/G36-pub"
+          python - <<'PY'
+          import pathlib,os,json
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G36-pub"
+          d=json.loads((p/"G36-30-all-90-technical-service-environmental-sensitivity.json").read_text())
+          assert d["source_all_original_G10_count"]==27 and d["source_all_original_G30_count"]==3
+          assert d["rows_n"]==90 and d["PIC_still_UNRESOLVED_official_source"]
+          assert d["no_actual_rail_timings_or_EUR_CAPEX_or_tunnel_quantities"]
+          PY
+      - name: Publish G36 complete 30 route source-only decision research
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G36-pub"
+          gh release create "mn-geo-rail-001-g36-robust-all30-$GITHUB_RUN_ID" \
+            "$d/G36-30-all-90-technical-service-environmental-sensitivity.json" \
+            "$d/G36-30-all-90-scenario-sensitivity-comparison.csv" \
+            "$d/G36-all30-robust-review-and-explicit-unknown-costs.md" \
+            "$d/G36-all30-optional-road-versus-research-length.png" \
+            "$d/G36-200kmh-30-alternatives-five-dimensions.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G36 all 30 G10+G30 service-Natura-relief source-only comparative sensitivities, 3 speeds" \
+            --notes "All original 27 G10 and 3 G30 research paths preserved in all 90 speed cases; historical G35 7 actual terrain station study sites retained but common so not used as differentiating scores. Three transparently arbitrary weight research profiles for measured length, Natura 2D, DSM relief proxy, 2026 OSRM road to grid, historical 2021 population in 10km circles. No actual construction costs, rail travel times, tunnel depth, legal Natura/PIC clearance, confirmed stations, demography-based demand, EIA or Fxx/Site."
