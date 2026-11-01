@@ -1,0 +1,133 @@
+name: MN-GEO-RAIL-001 G44 seven real prior DGT ground station study sites and railway research tangent screen
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g44-reuse7-station-approach-geometry-20261101
+      - main
+    paths:
+      - tools/geo_rail_g44_seven_original_station_sites_horizontal_chords.py
+      - tests/test_geo_rail_g44_prior_station_tangency.py
+      - .github/workflows/mn-geo-g44-prior-seven-stations-160-200-250.yml
+permissions:
+  contents: read
+jobs:
+  branch-original-seven-site-geom:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g44-reuse7-station-approach-geometry-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Existing DGT original site geometry study numerical dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.12,<2' 'shapely>=2.1,<3' 'pyproj>=3.6,<4' 'matplotlib>=3.8,<4'
+      - name: Source seven sites and two-chord conditional tangent QA
+        run: |
+          python -m py_compile tools/geo_rail_g44_seven_original_station_sites_horizontal_chords.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g44_prior_station_tangency.py' -v
+      - name: Reuse immutable original seven DGT2m sites and G42 all30 five shared modules
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G44"
+          gh release download mn-geo-rail-001-g35-previous-station-work-all30-41283129280 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G35-all30-reuse-351-prior-station-physical-screen.json' --dir "$RUNNER_TEMP/G44"
+          gh release download mn-geo-rail-001-g42-real-railgrade-limits-all30-41320331517 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G42-source-30-five-sectors-and-real-MDT25-vertical-LP.json' --dir "$RUNNER_TEMP/G44"
+      - name: Test all seven original locations from G25 across existing mandatory city two chords and three radius assumptions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g44_seven_original_station_sites_horizontal_chords.py \
+            --g35 "$RUNNER_TEMP/G44/G35-all30-reuse-351-prior-station-physical-screen.json" \
+            --g42 "$RUNNER_TEMP/G44/G42-source-30-five-sectors-and-real-MDT25-vertical-LP.json" \
+            --json "$RUNNER_TEMP/G44/G44-seven-original-DGT2m-sites-two-mandatory-cities-and-30-corridors.json" \
+            --csv "$RUNNER_TEMP/G44/G44-seven-physical-sites-21-horizontal-circular-arc-necessary-tests.csv" \
+            --markdown "$RUNNER_TEMP/G44/G44-old-stations-reused-to-redesign-city-approaches.md" \
+            --map "$RUNNER_TEMP/G44/G44-original-7-DGT-station-sites-city-anchors-geometry.png" \
+            --geojson "$RUNNER_TEMP/G44/G44-seven-preexisting-original-station-study-site-points.geojson"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G44"
+          d=json.loads((p/"G44-seven-original-DGT2m-sites-two-mandatory-cities-and-30-corridors.json").read_text())
+          assert d["all_original_G10_27_G30_3_maintained"]
+          assert len(d["all30_side_by_side_mandatory_station_site_candidates"])==30
+          assert len(d["original_seven_previous_physical_DGT2m_station_study_refs"])==7
+          assert d["original_29_previous_DGT2m_platform_bearing_contexts_preserved"]==29
+          assert len(d["two_city_station_site_original_tangent_tests"])==21
+          assert d["no_design_3D_aligned_approach_grade_or_platform_level"]
+          assert d["Natura_PIC_REN_RAN_PDM_access_legal_not_cleared"]
+          assert not d["Fxx_accepted"] and not d["Site_authorized"]
+          assert (p/"G44-original-7-DGT-station-sites-city-anchors-geometry.png").stat().st_size>20000
+          print("G44 QUALIFIED SOURCE: historical seven sites, 29 original orientation cases, 21 circle-tangent constraints and full30")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G44-original-seven-city-station-study-approaches
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G44/G44-seven-original-DGT2m-sites-two-mandatory-cities-and-30-corridors.json
+            ${{ runner.temp }}/G44/G44-seven-physical-sites-21-horizontal-circular-arc-necessary-tests.csv
+            ${{ runner.temp }}/G44/G44-old-stations-reused-to-redesign-city-approaches.md
+            ${{ runner.temp }}/G44/G44-original-7-DGT-station-sites-city-anchors-geometry.png
+            ${{ runner.temp }}/G44/G44-seven-preexisting-original-station-study-site-points.geojson
+  main-publish-original-seven-G44:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verified exact source blob tested branch and all30 old station source QA
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g44-prior-seven-stations-160-200-250.yml"
+          b="mn-geo-rail-001-g44-reuse7-station-approach-geometry-20261101"
+          run="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$run" && test "$run" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" --jq '.head_sha')"
+          file="tools/geo_rail_g44_seven_original_station_sites_horizontal_chords.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$sha" --jq '.sha')" = "$(git hash-object "$file")"
+          mkdir -p "$RUNNER_TEMP/G44-pub"
+          gh run download "$run" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G44-original-seven-city-station-study-approaches \
+            --dir "$RUNNER_TEMP/G44-pub"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G44-pub"
+          d=json.loads((p/"G44-seven-original-DGT2m-sites-two-mandatory-cities-and-30-corridors.json").read_text())
+          assert len(d["original_seven_previous_physical_DGT2m_station_study_refs"])==7
+          assert len(d["all30_side_by_side_mandatory_station_site_candidates"])==30
+          assert d["original_29_previous_DGT2m_platform_bearing_contexts_preserved"]==29
+          assert d["Natura_PIC_REN_RAN_PDM_access_legal_not_cleared"] and not d["Fxx_accepted"]
+          PY
+      - name: Release original physical city station study geometry and 21 circular chord checks without approval
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G44-pub"
+          gh release create "mn-geo-rail-001-g44-seven-old-DGT-stations-railchord-$GITHUB_RUN_ID" \
+            "$d/G44-seven-original-DGT2m-sites-two-mandatory-cities-and-30-corridors.json" \
+            "$d/G44-seven-physical-sites-21-horizontal-circular-arc-necessary-tests.csv" \
+            "$d/G44-old-stations-reused-to-redesign-city-approaches.md" \
+            "$d/G44-original-7-DGT-station-sites-city-anchors-geometry.png" \
+            "$d/G44-seven-preexisting-original-station-study-site-points.geojson" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G44 reuses seven prior DGT2m station studies and tests 160/200/250 conditional two-chord tangency at shared city connectors" \
+            --notes "Seven true physically distinct historic G23–G27 DGT2m site coordinates, 29 historic orientation studies, observed OSRM/COS/REN-RAN source flags, complete original 27 G10 +3 G30. Candidate direct two-chord circular arc tangent length test at R=1500/2400/3700m is not railway geometry or station straight, does not model clothoids, gradients or road permit. No fabricated tunnel/cost/speed/clearance, PIC/Natura unresolved, no new original source acquisition, Fxx/Site not published."
