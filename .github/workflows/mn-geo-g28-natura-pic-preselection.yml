@@ -52,7 +52,8 @@ jobs:
           python tools/geo_rail_g28_natura_pic_constraint_gate.py \
             --g10 "$RUNNER_TEMP/G28/G10-27-research-real-source-paths.geojson" \
             --out "$RUNNER_TEMP/G28/G28-27-corridor-7-city-Natura-PIC-original-source-screen.json" \
-            --md "$RUNNER_TEMP/G28/G28-environmental-preselection-Natura-PIC.md"
+            --md "$RUNNER_TEMP/G28/G28-environmental-preselection-Natura-PIC.md" \
+            --polygons "$RUNNER_TEMP/G28/G28-original-ICNF-MITECO-natura-clipped-geometry.geojson"
           python - <<'PY'
           import json,os,pathlib
           p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G28/G28-27-corridor-7-city-Natura-PIC-original-source-screen.json"
@@ -60,6 +61,11 @@ jobs:
           assert len(q["corridor_grid_research_27"])==27 and len(q["city_research_circles_7"])==7
           assert q["PIC"].startswith("UNKNOWN") and not q["legal_or_environmental_authorization"]
           assert q["no_DGT_download"] and q["no_Fxx_or_Site"] and q["Sanabria_excluded"]
+          g=pathlib.Path(os.environ["RUNNER_TEMP"])/"G28/G28-original-ICNF-MITECO-natura-clipped-geometry.geojson"
+          ge=json.loads(g.read_text())
+          assert ge["type"]=="FeatureCollection" and len(ge["features"])==q["producer_clipped_natura_polygon_count"]
+          import hashlib
+          assert hashlib.sha256(g.read_bytes()).hexdigest()==q["producer_clipped_natura_polygon_cache_sha256"]
           print("G28 PRODUCER STATES",{k:v["status"] for k,v in q["source_receipts"].items()})
           PY
       - uses: actions/upload-artifact@v4
@@ -70,3 +76,4 @@ jobs:
           path: |
             ${{ runner.temp }}/G28/G28-27-corridor-7-city-Natura-PIC-original-source-screen.json
             ${{ runner.temp }}/G28/G28-environmental-preselection-Natura-PIC.md
+            ${{ runner.temp }}/G28/G28-original-ICNF-MITECO-natura-clipped-geometry.geojson
