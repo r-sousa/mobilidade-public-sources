@@ -248,7 +248,7 @@ def execute(g10,g39,g42,originalzip,outjson,outcsv,outmd,outfig):
     ax.set_title(f"G43 · {counts['valid']}/{NPTS} cotas originais cada 25m vs rasante matemática",loc="left",fontsize=11)
     ax.grid(alpha=.2);ax.legend(fontsize=8)
     fig.savefig(outfig,dpi=175,bbox_inches="tight");plt.close(fig)
-    outmd=[
+    md_lines=[
     "# G43 — Solo nu real cada 25m e limites de rasante com curvatura vertical (6km, Zamora)",
     "",
     f"**{counts['valid']} de {NPTS} pontos** de terreno de solo nu obtidos por leitura dos 13 GeoTIFF oficiais 1km já adquiridos no G39, sem nenhuma descarga adicional; os {counts['missing']} restantes mantêm-se sem interpolação. Maior segmento contínuo observado: **{(len(valid_idxs)-1)*STEP_M/1000:.3f}km**.",
@@ -260,8 +260,8 @@ def execute(g10,g39,g42,originalzip,outjson,outcsv,outmd,outfig):
     "|---|---|---|---:|"]
     for c in cases:
         value=c.get("minimum_possible_MAX_vertical_difference_at_ground_samples_m",c.get("minimum_possible_MAX_vertical_difference_at_sampled_ground_points_m"))
-        outmd.append(f"| {c['grade_permille']}‰ | {c.get('assumed_vertical_radius_m') or 'Sem limite'} | {'Sim' if c['both_endpoints_fixed_at_sampled_ground'] else 'Não'} | {value if value is not None else 'não viável nesta hipótese'} |")
-    outmd+=["","**Nota metodológica:** Rv=10 000m e Rv=20 000m são hipóteses matemáticas de ensaio, não garantias de conformidade de uma via a 160/200/250 km/h. O controlo limita diferenças de primeira e segunda ordem da cota de uma poligonal fixa, com origem no centro de células de 2km; não fornece curvas horizontais, clotóides, raios reais, pontos de inflexão vertical ou traçado ferroviário.",
+        md_lines.append(f"| {c['grade_permille']}‰ | {c.get('assumed_vertical_radius_m') or 'Sem limite'} | {'Sim' if c['both_endpoints_fixed_at_sampled_ground'] else 'Não'} | {value if value is not None else 'não viável nesta hipótese'} |")
+    md_lines+=["","**Nota metodológica:** Rv=10 000m e Rv=20 000m são hipóteses matemáticas de ensaio, não garantias de conformidade de uma via a 160/200/250 km/h. O controlo limita diferenças de primeira e segunda ordem da cota de uma poligonal fixa, com origem no centro de células de 2km; não fornece curvas horizontais, clotóides, raios reais, pontos de inflexão vertical ou traçado ferroviário.",
     "","**Não transformar** os afastamentos verticais do otimizado em quilómetros de túnel ou viaduto, volumes de escavação ou custos. A solução é um limite inferior na grelha de pontos do terreno, não determina processo construtivo nem interferência de aquíferos.",
     "",
     "## Fonte e reutilização",
@@ -278,7 +278,7 @@ def execute(g10,g39,g42,originalzip,outjson,outcsv,outmd,outfig):
     "5. Continuar a comparar os 30 corredores completos, sem cortar alternativas por uma única rasante matemática parcial.",
     "",
     "**G43 não modela estação, túnel, viaduto, custos, tempos ferroviários nem autorização ambiental. Sem Fxx/Site.**"]
-    outmd.write_text("\n".join(outmd)+"\n")
+    outmd.write_text("\n".join(md_lines)+"\n")
     print("G43_RESULT",json.dumps({"real_25m_samples":counts["valid"],"missing":counts["missing"],
        "continuity_km":(len(valid_idxs)-1)*STEP_M/1000,
        "slope_ground_18permille_exceed":max_grade18,
