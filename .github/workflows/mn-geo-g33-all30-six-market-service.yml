@@ -1,0 +1,144 @@
+name: MN-GEO-RAIL-001 G33 all30 six-market road-network and service proxies
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g33-service-all30-20261101
+      - main
+    paths:
+      - tools/geo_rail_g33_all30_six_market_access.py
+      - tests/test_geo_rail_g33_all30_six_market_access.py
+      - .github/workflows/mn-geo-g33-all30-six-market-service.yml
+permissions:
+  contents: read
+jobs:
+  branch-G33-six-market-network-all30:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g33-service-all30-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 21
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: GIS and source routing Python dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.12,<2' 'rasterio>=1.4,<2' 'shapely>=2,<3' 'pyproj>=3.6,<4' 'matplotlib>=3.8,<4'
+      - name: Source contract regression tests, no fictitious stations and no missing G10 comparisons
+        run: |
+          python -m py_compile tools/geo_rail_g33_all30_six_market_access.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g33_all30_six_market_access.py' -v
+      - name: Reuse archived G10+G30 original routes and complete G32 comparison
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G33"
+          gh release download mn-geo-rail-001-g10-27-geographic-visuals-41243658608 \
+            --repo "$GITHUB_REPOSITORY" --pattern "G10-27-research-real-source-paths.geojson" --dir "$RUNNER_TEMP/G33"
+          gh release download mn-geo-rail-001-g30-tunnel-aware-new-corridors-41278684148 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "G30-new-research-corridor-comparison.json" \
+            --pattern "G30-three-new-Natura-aware-study-routes.geojson" --dir "$RUNNER_TEMP/G33"
+          gh release download mn-geo-rail-001-g32-unified-30-90-41280190620 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "G32-full-30-options-90-scenarios.json" --dir "$RUNNER_TEMP/G33"
+      - name: One bounded OSRM table per city, same-run 30 research locations each, no station claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g33_all30_six_market_access.py \
+            --g10 "$RUNNER_TEMP/G33/G10-27-research-real-source-paths.geojson" \
+            --g30 "$RUNNER_TEMP/G33/G30-new-research-corridor-comparison.json" \
+            --g30geo "$RUNNER_TEMP/G33/G30-three-new-Natura-aware-study-routes.geojson" \
+            --g32 "$RUNNER_TEMP/G33/G32-full-30-options-90-scenarios.json" \
+            --json "$RUNNER_TEMP/G33/G33-all30-six-city-access-source.json" \
+            --csv "$RUNNER_TEMP/G33/G33-all30-180-city-road-access.csv" \
+            --combined "$RUNNER_TEMP/G33/G33-all30-combined-90-technical-and-six-city.json" \
+            --patterns "$RUNNER_TEMP/G33/G33-360-stopping-pattern-sensitivities.json" \
+            --markdown "$RUNNER_TEMP/G33/G33-all30-six-market-technical-review.md" \
+            --geoplot "$RUNNER_TEMP/G33/G33-all30-six-market-geographic-proximity.png" \
+            --roadplot "$RUNNER_TEMP/G33/G33-all30-six-market-OSRM-road-reference-minutes.png"
+          python - <<'PY'
+          import os,pathlib,json
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G33"
+          j=json.loads((p/"G33-all30-six-city-access-source.json").read_text())
+          combined=json.loads((p/"G33-all30-combined-90-technical-and-six-city.json").read_text())
+          patterns=json.loads((p/"G33-360-stopping-pattern-sensitivities.json").read_text())
+          assert j["G10"]==27 and j["G30"]==3 and j["six_city_combinations"]==180
+          assert len(j["six_city_all_180_records"])==180
+          assert combined["comparable_study_routes"]==30 and combined["speed_rows"]==90 and len(combined["rows"])==90
+          assert patterns["scenario_rows"]==360 and len(patterns["rows"])==360
+          assert len(j["road_network_source_receipts"])==6 and j["PIC_UNRESOLVED"]
+          assert all(rec["2021_population_with_real_network_catchment"] is None for rec in j["six_city_all_180_records"])
+          assert j["new_DGT_tiles"]==0 and j["no_Fxx_or_site"]
+          for name in ("G33-all30-six-market-geographic-proximity.png","G33-all30-six-market-OSRM-road-reference-minutes.png"):
+              assert (p/name).stat().st_size>20000
+          print("G33 180 city cases, 90 technical+service, 360 hypothetical stop cases source gated")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G33-all30-six-city-road-and-service
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G33/G33-all30-six-city-access-source.json
+            ${{ runner.temp }}/G33/G33-all30-180-city-road-access.csv
+            ${{ runner.temp }}/G33/G33-all30-combined-90-technical-and-six-city.json
+            ${{ runner.temp }}/G33/G33-360-stopping-pattern-sensitivities.json
+            ${{ runner.temp }}/G33/G33-all30-six-market-technical-review.md
+            ${{ runner.temp }}/G33/G33-all30-six-market-geographic-proximity.png
+            ${{ runner.temp }}/G33/G33-all30-six-market-OSRM-road-reference-minutes.png
+  main-publish-verified-G33-only:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Require exact branch tested producer SHA and retrieve source QA results
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g33-all30-six-market-service.yml"
+          b="mn-geo-rail-001-g33-service-all30-20261101"
+          run="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$run" && test "$run" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" --jq '.head_sha')"
+          path="tools/geo_rail_g33_all30_six_market_access.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$path?ref=$sha" --jq '.sha')" = "$(git hash-object "$path")"
+          mkdir -p "$RUNNER_TEMP/G33-public"
+          gh run download "$run" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G33-all30-six-city-road-and-service --dir "$RUNNER_TEMP/G33-public"
+          python - <<'PY'
+          import os,pathlib,json
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G33-public"
+          j=json.loads((p/"G33-all30-six-city-access-source.json").read_text())
+          assert j["G10"]==27 and j["G30"]==3 and j["six_city_combinations"]==180
+          assert j["PIC_UNRESOLVED"] and len(j["road_network_source_receipts"])==6
+          assert all(v["2021_population_with_real_network_catchment"] is None for v in j["six_city_all_180_records"])
+          PY
+      - name: Publish source-comparable 30 option six-city study on main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G33-public"
+          gh release create "mn-geo-rail-001-g33-all30-six-city-$GITHUB_RUN_ID" \
+            "$d/G33-all30-six-city-access-source.json" \
+            "$d/G33-all30-180-city-road-access.csv" \
+            "$d/G33-all30-combined-90-technical-and-six-city.json" \
+            "$d/G33-360-stopping-pattern-sensitivities.json" \
+            "$d/G33-all30-six-market-technical-review.md" \
+            "$d/G33-all30-six-market-geographic-proximity.png" \
+            "$d/G33-all30-six-market-OSRM-road-reference-minutes.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G33 27 G10 plus 3 G30 same-run six-city service and road access reference comparison" \
+            --notes "6 markets x 30 original research-grid alternatives = 180 samples plus 90 comparable technical screens and 360 illustrative stop pattern sensitivities. Bounded OSRM demo (up to 6 city queries) measures road-snapped access, NOT actual station access or approved road entrance. INE 2021 road isochrone population not extrapolated from 3 historic families; no public transport imputation, no rail timetable, demand, cost, Natura/PIC clearance, DGT acquisition or Fxx/Site."
