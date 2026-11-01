@@ -21,7 +21,7 @@ from geo_rail_g26b_next_DGT2m_study_footprint_gate import (
     native_grid_old,existing_tiles,indices,build as build_previous_site)
 from geo_rail_g26b_next_DGT2m_study_footprint_gate import G20_SHA,G21_SHA,G25_SHA
 TO_PT=Transformer.from_crs(4326,3763,always_xy=True).transform
-GISCO_URL="https://gisco-services.ec.europa.eu/distribution/v2/countries/geojson/CNTR_RG_01M_2024_4326.geojson"
+GISCO_URL="https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_01M_2024_4326_LEVL_0.geojson"
 MAX_GISCO_BOUNDARY_BYTES=15_000_000
 MARGIN=(250,500)
 def read(path):return json.loads(path.read_bytes())
@@ -31,8 +31,8 @@ def source_boundary(blob):
         raise ValueError("G37_GISCO_boundary_size_gate")
     doc=json.loads(blob)
     feats=doc.get("features",[])
-    portugal=[x for x in feats if x.get("properties",{}).get("CNTR_ID")=="PT"]
-    spain=[x for x in feats if x.get("properties",{}).get("CNTR_ID")=="ES"]
+    portugal=[x for x in feats if (x.get("properties",{}).get("CNTR_ID") or x.get("properties",{}).get("NUTS_ID") or x.get("properties",{}).get("CNTR_CODE"))=="PT"]
+    spain=[x for x in feats if (x.get("properties",{}).get("CNTR_ID") or x.get("properties",{}).get("NUTS_ID") or x.get("properties",{}).get("CNTR_CODE"))=="ES"]
     if len(portugal)!=1 or len(spain)!=1:raise ValueError("G37_official_GISCO_PT_ES_codes_missing")
     # Select the mainland polygon only, avoiding islands/autonomous regions.
     pt=geomtransform(TO_PT,shape(portugal[0]["geometry"]))
@@ -42,7 +42,7 @@ def source_boundary(blob):
     if es.geom_type=="MultiPolygon":
         es=max(es.geoms,key=lambda p:p.area)
     if not pt.is_valid or not es.is_valid:raise ValueError("G37_GISCO_2024_invalid_country_polygon")
-    return pt,es,{"source":"Eurostat GISCO countries2024 01M generalized CNTR_RG_01M_2024_4326",
+    return pt,es,{"source":"Eurostat GISCO NUTS0 2024 01M generalized NUTS_RG_01M_2024_4326_LEVL_0",
        "original_producer_url":GISCO_URL,
        "raw_full_geojson_sha256":hashlib.sha256(blob).hexdigest(),
        "regional_boundary_scale":"1:1,000,000; GENERALIZED, NOT precise jurisdiction/tile availability",
@@ -203,7 +203,7 @@ def execute(g10,g30,g36,g20file,g21file,g25file,b1,grid12,one,countryraw,outjson
       "3. **LNEG 1:50 000 cartografia geológica** e **1:200 000 hidrogeológica** em recortes finitos perto dos locais onde são previstos túneis; verificar cobertura, falhas, nascentes, recursos hídricos, áreas de recarga e habitats dependentes da água. Isto não substitui levantamento geotécnico.",
       "4. Verificar PDM e mapas legais atuais de REN/RAN, domínio hídrico e sistemas de condicionantes; **PIC mantém estatuto não definido** e nenhuma alternativa recebe classificação ambiental positiva.",
       "","## Etapa 2 — Necessidades condicionais de MDT2m",
-      "O cálculo GISCO CNTR_RG_01M_2024 aproxima a repartição Portugal/Espanha apenas na escala **1:1 000 000**. Cada conjunto abaixo é uma *faixa arbitrária sobre o centro da grelha 2km* (não eixo de ferrovia), cujo número de quadrículas não é pedido de download. As quadrículas de fronteira exigem mapa mais rigoroso. O resultado identifica ordem de grandeza e mostra que tentar obter toda a cobertura de MDT2m seria desproporcionado.",
+      "O cálculo GISCO NUTS_RG_01M_2024 aproxima a repartição Portugal/Espanha apenas na escala **1:1 000 000**. Cada conjunto abaixo é uma *faixa arbitrária sobre o centro da grelha 2km* (não eixo de ferrovia), cujo número de quadrículas não é pedido de download. As quadrículas de fronteira exigem mapa mais rigoroso. O resultado identifica ordem de grandeza e mostra que tentar obter toda a cobertura de MDT2m seria desproporcionado.",
       "","| Envelope da shortlist G36 de 13 alternativas | Quadrículas DGT 1km no PT aprox. | Intersetadas com as 84 antigas | Novas se descarregássemos todo o envelope (NÃO REQUISITAR) |",
       "|---|---:|---:|---:|"]
     for width in MARGIN:
