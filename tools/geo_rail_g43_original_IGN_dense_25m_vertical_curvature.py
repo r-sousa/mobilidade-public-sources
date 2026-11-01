@@ -39,7 +39,7 @@ def verify(g10,g39,g42):
         raise ValueError("G43_provenance_not_stable")
     if len(g10.get("features",[]))!=27:raise ValueError("G43_G10_source_27_missing")
 def load_original_tiles(archive,manifest):
-    if not archive.is_zipfile(archive):
+    if not zipfile.is_zipfile(archive):
         raise ValueError("G43_Original_zip_corrupt")
     tiles=[]
     with zipfile.ZipFile(archive,"r") as z:
