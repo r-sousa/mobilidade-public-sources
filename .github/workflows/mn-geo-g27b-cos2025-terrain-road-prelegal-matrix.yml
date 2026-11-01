@@ -1,0 +1,85 @@
+name: MN-GEO-RAIL-001 G27B actual COS2025+OSRM+DGT2m seven-sector prelegal matrix
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g27-official-restrictions-source-gates-20261101
+      - main
+    paths:
+      - tools/geo_rail_g27b_seven_COS2025_access_terrain_legal_matrix.py
+      - tests/test_geo_rail_g27b_legal_matrix.py
+      - .github/workflows/mn-geo-g27b-cos2025-terrain-road-prelegal-matrix.yml
+permissions:
+  contents: write
+jobs:
+  seven_source_study_centers_no_false_legal_permits:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify exact source contract, no inferred legal or environmental permissions
+        run: |
+          python -m py_compile tools/geo_rail_g27b_seven_COS2025_access_terrain_legal_matrix.py
+          python -m unittest discover -s tests -p test_geo_rail_g27b_legal_matrix.py -v
+      - name: Retrieve SHA pinned verified original COS2025 7 site evidence and original source G25 road+terrain site comparisons
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G27"
+          gh release download mn-geo-rail-001-g26c-COS2025-original-seven-site-landuse-41260758585 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G26C-source-original-COS2025-seven-study-sites-QA.json' --dir "$RUNNER_TEMP/G27"
+          gh release download mn-geo-rail-001-g25-original-road-shortlist-G24-41259277284 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G25-OSRM-real-road-access-to-original-ground-site-shortlist.json' --dir "$RUNNER_TEMP/G27"
+          echo "caf506f6bd114fe200f3f95d29951e97b8c1d9e18c8c654fa64c4ae3f75e81e4  $RUNNER_TEMP/G27/G26C-source-original-COS2025-seven-study-sites-QA.json" | sha256sum -c -
+          echo "be35181c882c2f6ede4d07f7e0a68b084bb6247c54a7da0d1d566a66f844dffd  $RUNNER_TEMP/G27/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" | sha256sum -c -
+      - name: Produce seven-sector exact original 2025 occupation/road/2m source profiles with REN/RAN/PDM statuses unknown
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g27b_seven_COS2025_access_terrain_legal_matrix.py \
+            --g26c "$RUNNER_TEMP/G27/G26C-source-original-COS2025-seven-study-sites-QA.json" \
+            --g25 "$RUNNER_TEMP/G27/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" \
+            --json "$RUNNER_TEMP/G27B-seven-mandatory-sector-COS2025-road-ground-prelegal-matrix.json" \
+            --csv "$RUNNER_TEMP/G27B-seven-sector-primary-COS-and-unknown-legal.csv" \
+            --markdown "$RUNNER_TEMP/G27B-seven-sector-primary-COS-road-ground-legal-gate.md"
+          python - <<'PY'
+          import os,json,pathlib
+          x=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"G27B-seven-mandatory-sector-COS2025-road-ground-prelegal-matrix.json").read_text())
+          assert len(x["seven_mandatory_city_station_research_sector_dossiers"])==7
+          assert all(all(z=="UNKNOWN_NOT_EXAMINED" for z in row["legal_or_environmental_constraint_status"].values()) for row in x["seven_mandatory_city_station_research_sector_dossiers"])
+          assert x["legal_constraint_not_verified_must_not_mark_legal_permitted"]
+          assert x["no_new_DGT_2m_terrain_source_acquisition"]
+          assert not x["Fxx_accepted"] and not x["Site_authorized"]
+          print("G27B seven COS2025 real land use, OSRM source-road and DGT2m terrain observed; zero claims of legal approval")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G27B-seven-station-research-COS-OSRM-terrain-and-legal-gates
+          path: |
+            ${{ runner.temp }}/G27B-seven-mandatory-sector-COS2025-road-ground-prelegal-matrix.json
+            ${{ runner.temp }}/G27B-seven-sector-primary-COS-and-unknown-legal.csv
+            ${{ runner.temp }}/G27B-seven-sector-primary-COS-road-ground-legal-gate.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish source-verified actual seven-area COS2025-OSRM-terrain matrix main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g27b-COS2025-road-terrain-prelegal-sites-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G27B-seven-mandatory-sector-COS2025-road-ground-prelegal-matrix.json" \
+            "$RUNNER_TEMP/G27B-seven-sector-primary-COS-and-unknown-legal.csv" \
+            "$RUNNER_TEMP/G27B-seven-sector-primary-COS-road-ground-legal-gate.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G27B 7 compulsory-market original COS2025/DGT 2m/OSRM study-site evidence; REN/RAN/PDM legal gates NOT VERIFIED" \
+            --notes "Exact original DGT COS2025 2025 clipped land use, original DGT MDT2m 400/1000m study screens and original G25 OSRM road near-reference. Seven site matrices, NO legal REN/RAN/PDM rights examined yet, no fraudulent buildability or site elimination, no invented euros. SANABRIA excluded, mandatory Vila Real/Braganca, Fxx and Site unchanged."

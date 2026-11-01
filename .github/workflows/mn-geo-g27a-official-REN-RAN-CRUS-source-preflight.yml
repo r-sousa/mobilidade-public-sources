@@ -1,0 +1,69 @@
+name: MN-GEO-RAIL-001 G27A primary official SNIT REN Norte RAN and CRUS bounded WFS probe
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g27-official-restrictions-source-gates-20261101
+      - main
+    paths:
+      - tools/geo_rail_g27a_DGT_SNIT_territorial_constraints_probe.py
+      - .github/workflows/mn-geo-g27a-official-REN-RAN-CRUS-source-preflight.yml
+permissions:
+  contents: write
+jobs:
+  bounded_official_territorial_SNIT_source_probe:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve 7 clipped original COS2025 evidence site coordinates, not national GPKG
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G27"
+          gh release download mn-geo-rail-001-g26c-COS2025-original-seven-site-landuse-41260758585 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G26C-source-original-COS2025-seven-study-sites-QA.json' \
+            --dir "$RUNNER_TEMP/G27"
+          echo "caf506f6bd114fe200f3f95d29951e97b8c1d9e18c8c654fa64c4ae3f75e81e4  $RUNNER_TEMP/G27/G26C-source-original-COS2025-seven-study-sites-QA.json" | sha256sum -c -
+      - name: Probe original DGT SNIT WFS GetCapabilities and one bounded REN Norte RAN CRUS feature each, no legal decision
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile tools/geo_rail_g27a_DGT_SNIT_territorial_constraints_probe.py
+          python tools/geo_rail_g27a_DGT_SNIT_territorial_constraints_probe.py \
+            --g26c "$RUNNER_TEMP/G27/G26C-source-original-COS2025-seven-study-sites-QA.json" \
+            --json "$RUNNER_TEMP/G27A-DGT-SNIT-RAN-REN-CRUS-original-service-QA.json"
+          python - <<'PY'
+          import json,os,pathlib
+          x=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"G27A-DGT-SNIT-RAN-REN-CRUS-original-service-QA.json").read_text())
+          assert len(x["sources"])==3
+          assert x["REN_official_legally_published_DR_georeferenced_map_overrules_vector_disagreement"]
+          assert x["if_official_vector_source_unavailable_missing_legal_constraint_status_UNKNOWN_not_absent"]
+          assert x["CRUS_territorial_statistical_harmonization_NOT_licensing"]
+          assert not x["Fxx_accepted"] and not x["Site_authorized"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G27A-original-SNIT-REN-RAN-CRUS-source-checks
+          path: ${{ runner.temp }}/G27A-DGT-SNIT-RAN-REN-CRUS-original-service-QA.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish original official REN RAN CRUS source diagnostics on main only (not legal restrictions map)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g27a-DGT-SNIT-original-REN-RAN-CRUS-source-preflight-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/G27A-DGT-SNIT-RAN-REN-CRUS-original-service-QA.json" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G27A DGT SNIT source test REN Norte, RAN, CRUS: original official service QA, NOT legal conclusions" \
+            --notes "Official DGT SNIT three WFS GetCapabilities and first one-bounded-feature only to identify source layers. Empty/HTTP failures UNKNOWN not absence of land constraints. REN official DR map prevails, RAN PDM plants and CRUS NOT permitting. Seven original COS2025 site centers from G26C. No new DGT terrain downloads, no Fxx or Site."
