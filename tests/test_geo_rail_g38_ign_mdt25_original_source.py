@@ -15,6 +15,7 @@ class G38SourcePilot(unittest.TestCase):
   ids=g.parse_wcs_capabilities(raw)
   self.assertEqual(ids,["mdt25_25830"])
   self.assertEqual(g.choose_candidate(ids),"mdt25_25830")
+  self.assertEqual(g.choose_candidate(["Elevacion25830_25","Elevacion25830_5"]),"Elevacion25830_25")
   self.assertIsNone(g.choose_candidate(["DSM_vegetation","orthophoto"]))
  def test_no_valid_raster_implicit_from_OGC_error(self):
   with self.assertRaises(ValueError):
