@@ -1,0 +1,133 @@
+name: MN-GEO-RAIL-001 G31 GLO30 terrain and rail geometry Natura underground screening
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g31-terrain-geometry-natura-20261101
+      - main
+    paths:
+      - tools/geo_rail_g31_terrain_natura_horizontal_vertical.py
+      - tests/test_geo_rail_g31_terrain_natura.py
+      - .github/workflows/mn-geo-g31-terrain-natura-screen.yml
+permissions:
+  contents: read
+jobs:
+  branch-G31-source-screen-verify:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g31-terrain-geometry-natura-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 26
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: GIS stack for 30m original Copernicus surface source
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.12,<2' 'rasterio>=1.4,<2' 'shapely>=2,<3' 'pyproj>=3.6,<4' 'matplotlib>=3.8,<4'
+      - name: Independent synthetic G31 terrain and legal-uncertainty tests
+        run: |
+          python -m py_compile tools/geo_rail_g31_terrain_natura_horizontal_vertical.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g31_terrain_natura.py' -v
+      - name: Only reuse public original source assets; verify copied primary DSM SHA256
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G31"
+          b="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 240 \
+            "$b/mn-geo-rail-001-r1-airport-zamora-dsm-preacceptance-41198485197/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" \
+            -o "$RUNNER_TEMP/G31/DSM.tif"
+          echo "a708b502b2eb86236c70f2d74322e9d8e2ea1417eb24094d0e43536845407bd9  $RUNNER_TEMP/G31/DSM.tif" | sha256sum -c -
+          gh release download mn-geo-rail-001-g10-27-geographic-visuals-41243658608 \
+            --repo "$GITHUB_REPOSITORY" --pattern "G10-27-research-real-source-paths.geojson" --dir "$RUNNER_TEMP/G31"
+          gh release download mn-geo-rail-001-g28-natura-PT-ES-PIC-source-preacceptance-41276204753 \
+            --repo "$GITHUB_REPOSITORY" --pattern "G28-original-ICNF-MITECO-natura-clipped-geometry.geojson" \
+            --pattern "G28-27-corridor-7-city-Natura-PIC-original-source-screen.json" --dir "$RUNNER_TEMP/G31"
+          gh release download mn-geo-rail-001-g30-tunnel-aware-new-corridors-41278684148 \
+            --repo "$GITHUB_REPOSITORY" --pattern "G30-new-research-corridor-comparison.json" \
+            --pattern "G30-three-new-Natura-aware-study-routes.geojson" --dir "$RUNNER_TEMP/G31"
+      - name: Compute 12 source-locked radius and DSM gradients; map profile exposure at Alvão/Marão
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g31_terrain_natura_horizontal_vertical.py \
+            --g10 "$RUNNER_TEMP/G31/G10-27-research-real-source-paths.geojson" \
+            --g28 "$RUNNER_TEMP/G31/G28-27-corridor-7-city-Natura-PIC-original-source-screen.json" \
+            --g30 "$RUNNER_TEMP/G31/G30-new-research-corridor-comparison.json" \
+            --g30geo "$RUNNER_TEMP/G31/G30-three-new-Natura-aware-study-routes.geojson" \
+            --polygons "$RUNNER_TEMP/G31/G28-original-ICNF-MITECO-natura-clipped-geometry.geojson" \
+            --dsm "$RUNNER_TEMP/G31/DSM.tif" \
+            --json "$RUNNER_TEMP/G31/G31-12-terrain-Natura-speed-screens.json" \
+            --markdown "$RUNNER_TEMP/G31/G31-technical-rail-terrain-Natura-review.md" \
+            --figure "$RUNNER_TEMP/G31/G31-proxy-terrain-and-25permille-profiles.png"
+          python - <<'PY'
+          import os,pathlib,json
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G31"
+          data=json.loads((p/"G31-12-terrain-Natura-speed-screens.json").read_text())
+          assert data["scenarios"]==12 and len(data["results"])==12
+          assert data["no_3d_railway_crest_cut_volumes_tunnel_portal_groundwater_earthworks"]
+          assert data["PIC_official_source_still_unknown"] and data["no_estimated_tunnel_viaduct_length_cost_or_travel_time"]
+          assert data["source_GLO30_DSM_sha256"]=="a708b502b2eb86236c70f2d74322e9d8e2ea1417eb24094d0e43536845407bd9"
+          assert (p/"G31-proxy-terrain-and-25permille-profiles.png").stat().st_size>28000
+          print("G31 12 rows pass contracts; not actual rail or tunnels")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G31-original-DSM-Natura-terrain-12-scenarios
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G31/G31-12-terrain-Natura-speed-screens.json
+            ${{ runner.temp }}/G31/G31-technical-rail-terrain-Natura-review.md
+            ${{ runner.temp }}/G31/G31-proxy-terrain-and-25permille-profiles.png
+  main-publish-verified-G31:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify exact G31 producer blob and retrieve verified branch artifacts only
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g31-terrain-natura-screen.yml"
+          b="mn-geo-rail-001-g31-terrain-geometry-natura-20261101"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          path="tools/geo_rail_g31_terrain_natura_horizontal_vertical.py"
+          blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/$path?ref=$sha" --jq '.sha')"
+          test "$blob" = "$(git hash-object "$path")"
+          mkdir -p "$RUNNER_TEMP/G31-publish"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G31-original-DSM-Natura-terrain-12-scenarios --dir "$RUNNER_TEMP/G31-publish"
+          python - <<'PY'
+          import os,pathlib,json
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G31-publish"
+          d=json.loads((p/"G31-12-terrain-Natura-speed-screens.json").read_text())
+          assert d["scenarios"]==12 and d["PIC_official_source_still_unknown"]
+          assert d["no_estimated_tunnel_viaduct_length_cost_or_travel_time"]
+          assert (p/"G31-proxy-terrain-and-25permille-profiles.png").stat().st_size>28000
+          PY
+      - name: Publish G31 source-only terrain evidence and Marão test
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/G31-publish"
+          gh release create "mn-geo-rail-001-g31-source-DSM-Natura-terrain-$GITHUB_RUN_ID" \
+            "$p/G31-12-terrain-Natura-speed-screens.json" \
+            "$p/G31-technical-rail-terrain-Natura-review.md" \
+            "$p/G31-proxy-terrain-and-25permille-profiles.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G31 actual Copernicus 30m DSM and Alvão/Marão Natura screening, 12 research scenarios" \
+            --notes "4 actual geographic 2km research lines (3 new G30 + G10 reference) x 160/200/250 conservative radius screens, 3/6km corridor sensitivity and mathematical 18/25permille Copernicus DSM fit. No railway construction, tunnel/viaduct quantities, physical travel time, pricing or legal permit. PIC unknown. Official ICNF and MITECO reused without new source downloads."
