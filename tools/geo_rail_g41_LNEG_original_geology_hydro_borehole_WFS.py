@@ -62,27 +62,43 @@ def pick_type(rows,label):
     return (cand[0] if cand else rows[0])
 def fetch_features(endpoint,typename,area):
     minlon,minlat,maxlon,maxlat=area
+    # Default WFS response is often GML; it is not correct to force GeoJSON
+    # on LNEG ESRI INSPIRE services. Preserve native GML if FEATURE records.
     plan=[
        {"service":"WFS","version":"2.0.0","request":"GetFeature","typeNames":typename,
-        "count":"5","srsName":"EPSG:4326","bbox":f"{minlon},{minlat},{maxlon},{maxlat},EPSG:4326",
-        "outputFormat":"application/json"},
+        "count":"5","srsName":"EPSG:4326","bbox":f"{minlon},{minlat},{maxlon},{maxlat},EPSG:4326"},
        {"service":"WFS","version":"2.0.0","request":"GetFeature","typeNames":typename,
-        "count":"5","srsName":"EPSG:4326","bbox":f"{minlat},{minlon},{maxlat},{maxlon},EPSG:4326",
+        "count":"5","srsName":"EPSG:4326","bbox":f"{minlat},{minlon},{maxlat},{maxlon},EPSG:4326"},
+       {"service":"WFS","version":"2.0.0","request":"GetFeature","typeNames":typename,
+        "count":"5","srsName":"EPSG:4326","bbox":f"{minlon},{minlat},{maxlon},{maxlat},EPSG:4326",
         "outputFormat":"application/json"}]
     results=[]
     for k,params in enumerate(plan):
         url=endpoint+"?"+urllib.parse.urlencode(params)
         try:
             b,receipt=limited(url)
-            try:
-                data=json.loads(b)
+            try:data=json.loads(b)
             except (json.JSONDecodeError,UnicodeDecodeError):
-                # Could be GML or WFS exception; do not treat as GeoJSON.
                 root=ET.fromstring(b)
                 typ=root.tag.rsplit("}",1)[-1]
-                results.append({"status":"ORIGINAL_WFS_NON_GEOJSON_NOT_CLAIMED_AS_VECTOR",
-                    "source_XML_root":typ,"query_axis_order_attempt":k,
-                    **receipt})
+                if typ.lower() in ("featurecollection","wfs_featurecollection"):
+                    members=[c for c in root.iter()
+                        if c.tag.rsplit("}",1)[-1] in ("member","featureMember")]
+                    if members:
+                        return {"status":"ORIGINAL_LNEG_WFS_NATIVE_GML_FEATURE_MEMBERS_OBSERVED_NOT_INTERSECTION_VERIFIED",
+                            "native_gml_feature_member_elements":len(members),
+                            "response_truncated_to_maximum_5":len(members)>=5,
+                            "source_XML_root":typ,"query_axis_order_attempt":k,
+                            "spatial_intersection_NOT_independently_confirmed":True,
+                            **receipt},b
+                    results.append({"status":"WFS_GML_FEATURE_COLLECTION_ZERO_MEMBERS_NOT_PROVEN_ABSENCE",
+                        "query_axis_order_attempt":k,**receipt})
+                    continue
+                errors=[(n.text or "").strip() for n in root.iter()
+                        if n.tag.rsplit("}",1)[-1] in ("ExceptionText","ServiceException") and n.text]
+                results.append({"status":"ORIGINAL_WFS_EXCEPTION_XML_NOT_DATA",
+                    "source_XML_root":typ,"exception_texts":errors[:2],
+                    "query_axis_order_attempt":k,**receipt})
                 continue
             fs=data.get("features",[]) if isinstance(data,dict) else []
             if data.get("type")!="FeatureCollection" or not isinstance(fs,list) or len(fs)>5:
@@ -90,13 +106,11 @@ def fetch_features(endpoint,typename,area):
                    "query_axis_order_attempt":k,**receipt})
                 continue
             valid=[]
-            for f in fs:
+            for feature in fs:
                 try:
-                    geom=shape(f["geometry"])
+                    geom=shape(feature["geometry"])
                     if geom.is_empty or not geom.is_valid:continue
-                    # Axis order may change; avoid asserting intersecting features
-                    # from remotely malformed crs or bbox order.
-                    if geom.intersects(box(*area)):valid.append(f)
+                    if geom.intersects(box(*area)):valid.append(feature)
                 except (KeyError,ValueError,TypeError):continue
             if valid:
                 return {"status":"ORIGINAL_LNEG_WFS_GEOJSON_FEATURES_OBSERVED",
@@ -137,12 +151,14 @@ def execute(g40,outdir,report,markdown):
                     ans,vector=fetch_features(endpoint,chosen["source_typeName"],bbox)
                     result={"area":area,"requested_WGS84_bbox":list(bbox),**ans}
                     if vector is not None:
-                        path=outdir/f"G41-LNEG-original-{label}-{area}-max5.geojson"
+                        native_gml=ans["status"].startswith("ORIGINAL_LNEG_WFS_NATIVE_GML")
+                        suffix="gml" if native_gml else "geojson"
+                        path=outdir/f"G41-LNEG-original-{label}-{area}-max5.{suffix}"
                         path.write_bytes(vector)
-                        result["verified_original_bounded_GeoJSON_name"]=path.name
-                        result["verified_original_bounded_GeoJSON_SHA256"]=hashlib.sha256(vector).hexdigest()
-                        read_features.append({"dataset":label,"area":area,
-                            "filename":path.name,"SHA256":result["verified_original_bounded_GeoJSON_SHA256"]})
+                        result["verified_original_bounded_native_file"]=path.name
+                        result["verified_original_bounded_native_SHA256"]=hashlib.sha256(vector).hexdigest()
+                        read_features.append({"dataset":label,"area":area,"format":"GML" if native_gml else "GeoJSON",
+                            "filename":path.name,"SHA256":result["verified_original_bounded_native_SHA256"]})
                     record.setdefault("original_WFS_area_probes",[]).append(result)
         except (RuntimeError,ValueError,ET.ParseError) as e:
             record.update({"capabilities_status":"NO_VALID_WFS_SOURCE_EVIDENCE",
@@ -170,7 +186,7 @@ def execute(g40,outdir,report,markdown):
        "","| Serviço | Capabilities original | N.º de tipos observados | Áreas com geometrias GeoJSON originais verificadas |",
        "|---|---|---:|---|"]
     for o in registry:
-        valid=[x["area"] for x in o.get("original_WFS_area_probes",[]) if x["status"]=="ORIGINAL_LNEG_WFS_GEOJSON_FEATURES_OBSERVED"]
+        valid=[x["area"]+" ("+("GML" if "GML" in x["status"] else "GeoJSON")+")" for x in o.get("original_WFS_area_probes",[]) if x["status"].startswith("ORIGINAL_LNEG_WFS_") and "FEATURE" in x["status"]]
         md.append(f"| {o['source_dataset']} | {o['capabilities_status']} | {o.get('total_source_FeatureTypes','N/D')} | {', '.join(valid) if valid else 'não comprovado'} |")
     md+=["","## Interpretação",
        "- Uma resposta WFS válida apenas prova **disponibilidade da interface**; um resultado vazio ou erro não prova ausência de formações, recursos hídricos, furos ou riscos.",
@@ -179,10 +195,10 @@ def execute(g40,outdir,report,markdown):
        "- SONDABASE agrega sondagens de origens e objetivos diversos: mesmo uma ocorrência próxima não equivale a sondagem adequada ao eixo e método de escavação proposto.",
        "- A carta Natura 2000 ICNF/MITECO G28 e os estudos anteriores de estações G23–G27 devem permanecer condicionantes do traçado. PIC não foi resolvido.",
        "","**Portão para engenharia:** obter recortes completos quando se souberem os eixos candidatos 3D, validar escala e cobertura geológica, registar proveniência e compatibilizar altimetria antes de atribuir quantidades de túnel ou custos.",
-       "","Dados originalmente devolvidos em GeoJSON são publicados só quando validada a geometria e a interseção real com a área de ensaio. Sem novas quadrículas DGT, Fxx/Site.",""]
+       "","Ficheiros originais GeoJSON são publicados quando validada a geometria e a interseção espacial; respostas GML são preservadas apenas como feições nativas recebidas, **sem prova independente de interseção espacial**. Sem novas quadrículas DGT, Fxx/Site.",""]
     markdown.write_text("\n".join(md))
     print("G41_RESULT",json.dumps({"service_verified":sum(q["capabilities_status"]=="VERIFIED_ORIGINAL_WFS_XML" for q in registry),
-         "real_original_lneg_bounded_geojson_outputs":len(read_features),"source_count":len(registry),
+         "real_original_lneg_bounded_native_GML_or_GeoJSON_outputs":len(read_features),"source_count":len(registry),
          "not_geotechnical_exploration":True},ensure_ascii=False),flush=True)
 def main():
     p=argparse.ArgumentParser()
