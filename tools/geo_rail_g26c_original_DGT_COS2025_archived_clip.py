@@ -48,8 +48,11 @@ def unpack(archive,folder):
 
 def get_layer(gpkg):
  layers=pyogrio.list_layers(gpkg)
- choices=[str(z[0]) for z in layers if "polygon" in str(z[1]).lower() or "multi" in str(z[1]).lower()]
- if len(choices)!=1:raise ValueError("COS2025_original_GPKG_one_polygon_layer_not_identified_"+str(layers))
+ # DGT includes 1 actual original base table and 4 derived level views.
+ # Require the real primary table, not a derived/duplicative view.
+ choices=[str(z[0]) for z in layers if str(z[0]).lower()=="cos2025v1" and
+     "polygon" in str(z[1]).lower()]
+ if len(choices)!=1:raise ValueError("COS2025_original_base_geopackage_table_not_identified_"+str(layers))
  layer=choices[0]
  info=pyogrio.read_info(gpkg,layer=layer)
  crs=str(info.get("crs"))
