@@ -1,0 +1,88 @@
+name: MN-GEO-RAIL-001 G23A original native 2m station terrain Pareto decision screen
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g23-station-ground-comparison-20261101
+      - main
+    paths:
+      - tools/geo_rail_g23a_native_ground_station_pareto.py
+      - tests/test_geo_rail_g23a_native_ground_pareto.py
+      - .github/workflows/mn-geo-g23a-native-terrain-pareto.yml
+permissions:
+  contents: write
+jobs:
+  source_G22_station_terrain_pareto:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Source-only mandatory-city Pareto, no DGT credentials or third-party inference
+        run: |
+          python -m py_compile tools/geo_rail_g23a_native_ground_station_pareto.py
+          python -m unittest discover -s tests -p test_geo_rail_g23a_native_ground_pareto.py -v
+      - name: Reuse exact G22 original DGT2m surface profiles and G20 city road/2021 demographic source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G23A"
+          gh release download mn-geo-rail-001-g22-original-DGT2m-five-mandatory-station-topographic-risk-41257367654 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G22-five-source-sites-real-native-2m-topographic-risk.json' --dir "$RUNNER_TEMP/G23A"
+          gh release download mn-geo-rail-001-g20-DGT2m-original-mandatory-study-source-manifest-41255178789 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G20-original-DGT2m-mandatory-research-source-tile-manifest.json' --dir "$RUNNER_TEMP/G23A"
+          echo "785ee7a2cf1e0f81916e6feb9d85ec6228c0a12286e118a6f17a2514802f3e7c  $RUNNER_TEMP/G23A/G22-five-source-sites-real-native-2m-topographic-risk.json" | sha256sum -c -
+          echo "614e16b25dbcfe245deda15af2640a79f968d4981939916fff9b39df1b3901ff  $RUNNER_TEMP/G23A/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" | sha256sum -c -
+      - name: Compare original native ground station relief and reference road time by three dimensional transparent Pareto
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g23a_native_ground_station_pareto.py \
+            --g22 "$RUNNER_TEMP/G23A/G22-five-source-sites-real-native-2m-topographic-risk.json" \
+            --g20 "$RUNNER_TEMP/G23A/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" \
+            --json "$RUNNER_TEMP/G23A/G23A-five-site-original-terrain-Pareto-evidence.json" \
+            --csv "$RUNNER_TEMP/G23A/G23A-13-orientations-native-ground-road-source.csv" \
+            --markdown "$RUNNER_TEMP/G23A/G23A-original-ground-no-false-EUR-road-station-ranking.md"
+          python - <<'PY'
+          import json,os,pathlib
+          f=pathlib.Path(os.environ["RUNNER_TEMP"])/"G23A/G23A-five-site-original-terrain-Pareto-evidence.json"
+          x=json.loads(f.read_text())
+          assert len(x["13_original_terrain_and_existing_city_road_reference_options"])==13
+          assert len(x["5_unique_mandatory_source_site_summaries"])==5
+          assert x["source_corridor_screens_on_pareto_count"]>0
+          assert x["mandatory_markets"]==["Vila Real","Bragança"] and x["Sanabria_excluded"]
+          assert x["earthworks_terrain_m3_are_mathematical_only_not_constructible_or_costs"]
+          assert x["g22_station_center_NOT_validated_legal_access_or_parcel"]
+          assert not x["Fxx_accepted"] and not x["Site_authorized"]
+          print("G23A VALIDATED ORIGINAL 43 DGT tile source terrain and road/2021 data relative Pareto")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G23A-source-terrain-13-cases-5-station-references
+          path: |
+            ${{ runner.temp }}/G23A/G23A-five-site-original-terrain-Pareto-evidence.json
+            ${{ runner.temp }}/G23A/G23A-13-orientations-native-ground-road-source.csv
+            ${{ runner.temp }}/G23A/G23A-original-ground-no-false-EUR-road-station-ranking.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish reproducible source comparative terrain preacceptance on main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g23a-original-DGT2m-site-terrain-Pareto-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G23A/G23A-five-site-original-terrain-Pareto-evidence.json" \
+            "$RUNNER_TEMP/G23A/G23A-13-orientations-native-ground-road-source.csv" \
+            "$RUNNER_TEMP/G23A/G23A-original-ground-no-false-EUR-road-station-ranking.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G23A mandatory Vila Real/Braganca original DGT2m native terrain vs road-reference Pareto, 5 candidate research sites × family" \
+            --notes "Real DGT original MDT2m source release G22 43 native tiles, 13 study strips, 5 unique research reference coordinates, true elevation relief and 2021 census / road snap sources. Nonmonetary 3-dimensional Pareto source-site comparison; no station engineering, legal road interchange, land plot, rail stop timetable, CAPEX EUR or claims about actual passengers. Preacceptance only; no new DGT downloads, Fxx/Site."
