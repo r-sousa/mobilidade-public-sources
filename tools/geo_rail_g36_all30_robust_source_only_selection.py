@@ -113,8 +113,8 @@ def norm(cases,name):
     lo,hi=min(values),max(values)
     if hi-lo<1e-9:
         return {r["option_id"]:0.5 if r[name] is not None else None for r in cases}
-    return {r["option_id"]:(r[name]-lo)/(hi-lo) if name in MINIMIZE else
-                   (hi-r[name])/(hi-lo) if r[name] is not None else None
+    return {r["option_id"]:(None if r[name] is None else
+             (r[name]-lo)/(hi-lo) if name in MINIMIZE else (hi-r[name])/(hi-lo))
             for r in cases}
 def dominance(cases):
     dimensions=METRIC_NAMES
