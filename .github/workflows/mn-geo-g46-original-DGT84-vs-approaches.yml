@@ -1,0 +1,132 @@
+name: MN-GEO-RAIL-001 G46 original DGT84 coverage for 630 actual research station approach combinations
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g46-original-DGT-station-2D-coverage-20261101
+      - main
+    paths:
+      - tools/geo_rail_g46_original_DGT2m_84tile_vs_station_splines.py
+      - tests/test_geo_rail_g46_dgt_tile_2d_profiles.py
+      - .github/workflows/mn-geo-g46-original-DGT84-vs-approaches.yml
+permissions:
+  contents: read
+jobs:
+  branch-all630-DGT-original-source-coverage:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g46-original-DGT-station-2D-coverage-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: GIS shapely for original 84 1km DGT producer tiles and prior G45 2D station geometry buffers
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'shapely>=2.1,<3' 'matplotlib>=3.8,<4'
+      - name: Original physical site, tile indexes, geometry clipping QA tests
+        run: |
+          python -m py_compile tools/geo_rail_g46_original_DGT2m_84tile_vs_station_splines.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g46_dgt_tile_2d_profiles.py' -v
+      - name: Reuse G37 exact 84 DGT2m 1km source tiles, G45 all630 research splines no new DGT downloads
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G46"
+          gh release download mn-geo-rail-001-g37-DGT10m-CNIG-LNEG-data-gates-41303761915 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G37-84-original-DGT-ground-source-indices-and-conditional-gates.json' \
+            --dir "$RUNNER_TEMP/G46"
+          gh release download mn-geo-rail-001-g45-movable-city-railapproach-41332951589 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G45-30-all-630-original-station-2D-spline-approach-screen.json' \
+            --dir "$RUNNER_TEMP/G46"
+      - name: Check conditional DGT 1km original tile coverage for 630 source study geometry cases; distinguish ±1p5km, ±3km, full approach
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g46_original_DGT2m_84tile_vs_station_splines.py \
+            --g45 "$RUNNER_TEMP/G46/G45-30-all-630-original-station-2D-spline-approach-screen.json" \
+            --g37 "$RUNNER_TEMP/G46/G37-84-original-DGT-ground-source-indices-and-conditional-gates.json" \
+            --json "$RUNNER_TEMP/G46/G46-630-source-alternatives-original-DGT2m-terrain-coverage.json" \
+            --csv "$RUNNER_TEMP/G46/G46-630-G45-source-station-radius-and-84-DGT-tile-gap-matrix.csv" \
+            --markdown "$RUNNER_TEMP/G46/G46-exact-original-84-DGT2m-tiles-vs-4-local-station-pilot-designs.md" \
+            --plot "$RUNNER_TEMP/G46/G46-four-station-1p5km-pilot-original-DGT-ground-source-gap.png"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G46"
+          d=json.loads((p/"G46-630-source-alternatives-original-DGT2m-terrain-coverage.json").read_text())
+          assert d["full30_options_still_studied"] and d["source_630_station_speed_cases_reused"]==630
+          assert d["old_verified_DGT_original_1km_tile_manifest"]==84
+          assert d["seven_original_study_sites_retained"]==7
+          assert len(d["pilot_four_prior_station_site_ids_for_data_coverage_ONLY_not_site_ranking"])==4
+          assert "BR4" in d["pilot_four_prior_station_site_ids_for_data_coverage_ONLY_not_site_ranking"]
+          assert d["requires_continuous_DTM2m_and_survey_for_real3D"]
+          assert d["no_new_DGT_original_downloads"] and not d["Fxx_accepted"] and not d["Site_authorized"]
+          for key,z in d["four_pilot_station_combined_G45_source_2D_terrain_footprint_gaps"].items():
+              assert z["already_preserved_original_tiles"]+z["missing_tile_count"]==z["required_1km_DGT2m_tiles"]
+          print("G46 exact original DGT source inventory accepted, pilot four site conditional footprint not automatic acquisition")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G46-all630-original-DGT84-station-terrain-gaps
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G46/G46-630-source-alternatives-original-DGT2m-terrain-coverage.json
+            ${{ runner.temp }}/G46/G46-630-G45-source-station-radius-and-84-DGT-tile-gap-matrix.csv
+            ${{ runner.temp }}/G46/G46-exact-original-84-DGT2m-tiles-vs-4-local-station-pilot-designs.md
+            ${{ runner.temp }}/G46/G46-four-station-1p5km-pilot-original-DGT-ground-source-gap.png
+  main-publish-verified-G46-only:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Confirm exact source producer Git blob tested branch and original 84 source
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g46-original-DGT84-vs-approaches.yml"
+          b="mn-geo-rail-001-g46-original-DGT-station-2D-coverage-20261101"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          file="tools/geo_rail_g46_original_DGT2m_84tile_vs_station_splines.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$sha" --jq '.sha')" = "$(git hash-object "$file")"
+          mkdir -p "$RUNNER_TEMP/G46-pub"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G46-all630-original-DGT84-station-terrain-gaps \
+            --dir "$RUNNER_TEMP/G46-pub"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G46-pub"
+          d=json.loads((p/"G46-630-source-alternatives-original-DGT2m-terrain-coverage.json").read_text())
+          assert d["full30_options_still_studied"] and d["source_630_station_speed_cases_reused"]==630
+          assert d["old_verified_DGT_original_1km_tile_manifest"]==84
+          assert d["seven_original_study_sites_retained"]==7 and d["no_new_DGT_original_downloads"]
+          assert d["no_statutory_or_tunnel_geology_natura_PIC_clearance"] and not d["Fxx_accepted"]
+          PY
+      - name: Publish first constrained station-specific DGT acquisition-gap exact tile indexes and source-based graphics
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G46-pub"
+          gh release create "mn-geo-rail-001-g46-DGT84-vs-630-station-splines-$GITHUB_RUN_ID" \
+            "$d/G46-630-source-alternatives-original-DGT2m-terrain-coverage.json" \
+            "$d/G46-630-G45-source-station-radius-and-84-DGT-tile-gap-matrix.csv" \
+            "$d/G46-exact-original-84-DGT2m-tiles-vs-4-local-station-pilot-designs.md" \
+            "$d/G46-four-station-1p5km-pilot-original-DGT-ground-source-gap.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G46 actual existing DGT 84 native terrain tile coverage against 30x7x3 new preliminary rail station alignments" \
+            --notes "Reuses exact source index of 84 prior DGT 2m original 1km tiles and 630 G45 station-corridor-speed research scenarios, check 200m lateral buffer around 1.5km, 3km and complete candidate 2D approach. Preserves full 30 options and 7 sites including BR4; identifies exact additional 1km tiles only IF a given research 2D footprint later approved, not purchase authorization. A tile existing does not prove valid bare earth pixels everywhere. No 3D railway geometry, real tunneling costs, Natura/PIC legal clearance, new DGT acquisition, Fxx or Site."
