@@ -6,7 +6,7 @@ NOT road or public transport isochrones, stations, current population, demand.
 Union 10km avoids multiple counts along a single corridor; no station constructability.
 """
 from __future__ import annotations
-import argparse,csv,hashlib,json,math,sqlite3,tempfile
+import argparse,csv,hashlib,json,math,sqlite3,tempfile,sys
 from collections import defaultdict
 from pathlib import Path
 import numpy as np
@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 from shapely.geometry import Point
 from shapely.ops import unary_union
 from pyproj import Transformer
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 from geo_rail_g14_bgri2021_station_population import F67_SHA,F67_BYTES,unpack_exact,native_qa,catchment
 TO_PT=Transformer.from_crs(4326,3763,always_xy=True)
 CITY=("Guimaraes","Amarante","Vila_Real","Mirandela","Macedo_de_Cavaleiros","Braganca")
@@ -103,7 +104,7 @@ def exercise(src,archive,jpath,csvpath,mdpath,heatpath,barpath):
     if len(unions)!=30:raise ValueError("G34_30_exact_overlap_free_unions_required")
     doc={"mission":"MN-GEO-RAIL-001",
       "stage":"G34_all30_2021_official_INE_BRGI2021_station_grid_geographic_population",
-      "source_G33_sha256":hashlib.sha256(json.dumps(src,ensure_ascii=False,sort_keys=True).encode()).hexdigest(),
+      "source_G33_canonical_normalized_JSON_sha256":hashlib.sha256(json.dumps(src,ensure_ascii=False,sort_keys=True).encode()).hexdigest(),
       "native_original_INE_2021_F67_zip_sha256":F67_SHA,
       "native_original_INE_2021_original_zip_bytes":F67_BYTES,
       "original_gpkg_qa":qa,
