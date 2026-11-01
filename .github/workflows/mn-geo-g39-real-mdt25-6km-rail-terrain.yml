@@ -1,0 +1,144 @@
+name: MN-GEO-RAIL-001 G39 genuine IGN bare-earth 6km eastern study terrain longitudinal
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g39-native-ign-6km-sampling-20261101
+      - main
+    paths:
+      - tools/geo_rail_g39_mdt25_real_6km_zamora_terrain_profile.py
+      - tests/test_geo_rail_g39_mdt25_6km_source.py
+      - .github/workflows/mn-geo-g39-real-mdt25-6km-rail-terrain.yml
+permissions:
+  contents: read
+jobs:
+  branch-original-13-small-IGN-2D-ground-raster-tests:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g39-native-ign-6km-sampling-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 23
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Native original GeoTIFF numerical QA and terrain plotting
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'rasterio>=1.4,<2' 'pyproj>=3.6,<4' 'shapely>=2.1,<3' 'matplotlib>=3.8,<4'
+      - name: Validate 13 real-grid source sample expectations and strict original raster gates
+        run: |
+          python -m py_compile tools/geo_rail_g39_mdt25_real_6km_zamora_terrain_profile.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g39_mdt25_6km_source.py' -v
+      - name: Retrieve immutable original G10 27, G36 30 and G38 proven source trial
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G39"
+          gh release download mn-geo-rail-001-g10-27-geographic-visuals-41243658608 \
+            --repo "$GITHUB_REPOSITORY" --pattern "G10-27-research-real-source-paths.geojson" --dir "$RUNNER_TEMP/G39"
+          gh release download mn-geo-rail-001-g36-robust-all30-41283618546 \
+            --repo "$GITHUB_REPOSITORY" --pattern "G36-30-all-90-technical-service-environmental-sensitivity.json" --dir "$RUNNER_TEMP/G39"
+          gh release download mn-geo-rail-001-g38-original-ground-pilot-41305835996 \
+            --repo "$GITHUB_REPOSITORY" --pattern "G38-verified-source-1km-original-MDT25-WCS-probe.json" \
+            --dir "$RUNNER_TEMP/G39"
+          echo "77d226cc842d33e2f799f2c269ddde57a17cb7d868791770c1624dda1b86136d  $RUNNER_TEMP/G39/G10-27-research-real-source-paths.geojson" | sha256sum -c -
+      - name: Request 13 original 25m IGN 1km WCS tiles, verify exact pixels, keep null failures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g39_mdt25_real_6km_zamora_terrain_profile.py \
+            --g10 "$RUNNER_TEMP/G39/G10-27-research-real-source-paths.geojson" \
+            --g36 "$RUNNER_TEMP/G39/G36-30-all-90-technical-service-environmental-sensitivity.json" \
+            --g38 "$RUNNER_TEMP/G39/G38-verified-source-1km-original-MDT25-WCS-probe.json" \
+            --outdir "$RUNNER_TEMP/G39" \
+            --json "$RUNNER_TEMP/G39/G39-6km-Zamora-13-original-ground-samples-with-source-QA.json" \
+            --csv "$RUNNER_TEMP/G39/G39-6km-Zamora-13-sampled-real-ground-profile.csv" \
+            --markdown "$RUNNER_TEMP/G39/G39-6km-Zamora-original-MDT25-terrain-review.md" \
+            --plot "$RUNNER_TEMP/G39/G39-6km-Zamora-25m-original-ground-research-grid-profile.png" \
+            --zip "$RUNNER_TEMP/G39/G39-13-original-IGN-MDT25-WCS-TIFF-tiles.zip"
+          python - <<'PY'
+          import os,pathlib,json,zipfile,hashlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G39"
+          j=json.loads((p/"G39-6km-Zamora-13-original-ground-samples-with-source-QA.json").read_text())
+          assert j["G10_27_plus_G30_3_complete_portfolio_still_preserved"]
+          assert j["requested_source_points"]==13
+          assert len(j["source_point_sampled_values"])==13
+          assert j["validated_original_WCS_MDT25_source_points"]+j["original_WCS_failed_points_not_imputed"]==13
+          assert j["3D_rail_profile_candidate_geometry_not_yet_built"] and not j["Fxx_accepted"] and not j["Site_authorized"]
+          assert j["PT_ES_vertical_reference_harmonization_NOT_PROVEN"]
+          assert (p/"G39-6km-Zamora-25m-original-ground-research-grid-profile.png").stat().st_size>20000
+          with zipfile.ZipFile(p/"G39-13-original-IGN-MDT25-WCS-TIFF-tiles.zip") as archive:
+              n=archive.namelist()
+              assert len([x for x in n if x.endswith(".tif")])==j["validated_original_WCS_MDT25_source_points"]
+              for i,row in enumerate(j["source_point_sampled_values"]):
+                  if row["source_status"]=="ORIGINAL_WCS_GROUND_SAMPLE_QA_VALID":
+                      name=f"IGN_MDT25_actual_source_UTM30_sector_point_{i:02d}.tif"
+                      assert hashlib.sha256(archive.read(name)).hexdigest()==row["source_original_tif_sha256"]
+          print("G39 native 25m source true no interpolation:",j["validated_original_WCS_MDT25_source_points"],"/13")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G39-real-6km-13-original-IGN-ground-source
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G39/G39-6km-Zamora-13-original-ground-samples-with-source-QA.json
+            ${{ runner.temp }}/G39/G39-6km-Zamora-13-sampled-real-ground-profile.csv
+            ${{ runner.temp }}/G39/G39-6km-Zamora-original-MDT25-terrain-review.md
+            ${{ runner.temp }}/G39/G39-6km-Zamora-25m-original-ground-research-grid-profile.png
+            ${{ runner.temp }}/G39/G39-13-original-IGN-MDT25-WCS-TIFF-tiles.zip
+  main-G39-verified-publish-original-13-tiles:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Match producer original source tested branch blob and all 13 SHA hashes
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g39-real-mdt25-6km-rail-terrain.yml"
+          b="mn-geo-rail-001-g39-native-ign-6km-sampling-20261101"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          source="tools/geo_rail_g39_mdt25_real_6km_zamora_terrain_profile.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$source?ref=$sha" --jq '.sha')" = "$(git hash-object "$source")"
+          mkdir -p "$RUNNER_TEMP/G39pub"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G39-real-6km-13-original-IGN-ground-source --dir "$RUNNER_TEMP/G39pub"
+          python - <<'PY'
+          import os,json,pathlib,zipfile,hashlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G39pub"
+          j=json.loads((p/"G39-6km-Zamora-13-original-ground-samples-with-source-QA.json").read_text())
+          assert j["requested_source_points"]==13 and j["G10_27_plus_G30_3_complete_portfolio_still_preserved"]
+          assert j["PT_ES_vertical_reference_harmonization_NOT_PROVEN"] and j["cost_tunnel_viaduct_train_time_NOT_CALCULATED"]
+          with zipfile.ZipFile(p/"G39-13-original-IGN-MDT25-WCS-TIFF-tiles.zip") as arc:
+              for i,row in enumerate(j["source_point_sampled_values"]):
+                  if row["source_status"]=="ORIGINAL_WCS_GROUND_SAMPLE_QA_VALID":
+                      f=f"IGN_MDT25_actual_source_UTM30_sector_point_{i:02d}.tif"
+                      assert hashlib.sha256(arc.read(f)).hexdigest()==row["source_original_tif_sha256"]
+          PY
+      - name: Release real original WCS MDT25 source data, measured 6km terrain profile, QA and no false 3D railway
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G39pub"
+          gh release create "mn-geo-rail-001-g39-real-6km-IGN-MDT25-$GITHUB_RUN_ID" \
+            "$d/G39-6km-Zamora-13-original-ground-samples-with-source-QA.json" \
+            "$d/G39-6km-Zamora-13-sampled-real-ground-profile.csv" \
+            "$d/G39-6km-Zamora-original-MDT25-terrain-review.md" \
+            "$d/G39-6km-Zamora-25m-original-ground-research-grid-profile.png" \
+            "$d/G39-13-original-IGN-MDT25-WCS-TIFF-tiles.zip" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G39 measured real 6km terrain source along G10 P2-2-1 near Zamora; 13 verified IGN MDT25 originals" \
+            --notes "First source-based terrain longitudinal series in Spanish section, NOT a train vertical alignment: 13 original IGN/CNIG WCS 25m terrain 1km² requests every 500m along end 6km of original source G10 P2-2-1 2km research grid, no coverage failures imputed, original TIFF and SHA256 per sample in ZIP, 2D ground gradient not railway gradient. 27 G10+3 G30 retained. No final rail station/speed, PT–ES vertical harmonization, tunnel/viaduct CAPEX, environmental Natura/PIC clearance, extra DGT tiles or Fxx/Site."
