@@ -1,0 +1,98 @@
+name: MN-GEO-RAIL-001 G26B when to expand source DGT2m coverage versus 2km research grid
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g26-cos2025-proximity-and-dgt-gap-gates-20261101
+      - main
+    paths:
+      - tools/geo_rail_g26b_next_DGT2m_study_footprint_gate.py
+      - tests/test_geo_rail_g26b_terrain_acquisition_gate.py
+      - .github/workflows/mn-geo-g26b-next-native-DGT-ground-acquisition-gate.yml
+permissions:
+  contents: write
+jobs:
+  G26B_original_84_1km_source_tiles_study_approach_coverage:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install geometry only no DGT access credentials and no raster downloads
+        run: python -m pip install --disable-pip-version-check 'shapely>=2.1,<3' 'pyproj>=3.6,<4'
+      - name: Verify 2m source and 2km grid separation at native original tile level
+        run: |
+          python -m py_compile tools/geo_rail_g26b_next_DGT2m_study_footprint_gate.py
+          python -m unittest discover -s tests -p test_geo_rail_g26b_terrain_acquisition_gate.py -v
+      - name: Reuse original G20 G21 and G25 releases; no new DGT original requests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G26B"
+          gh release download mn-geo-rail-001-g20-DGT2m-original-mandatory-study-source-manifest-41255178789 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G20-original-DGT2m-mandatory-research-source-tile-manifest.json' --dir "$RUNNER_TEMP/G26B"
+          gh release download mn-geo-rail-001-g21-native-DGT2m-39-mandatory-site-original-41256814847 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G21-original-DGT-2m-source-QA.json' --dir "$RUNNER_TEMP/G26B"
+          gh release download mn-geo-rail-001-g25-original-road-shortlist-G24-41259277284 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G25-OSRM-real-road-access-to-original-ground-site-shortlist.json' --dir "$RUNNER_TEMP/G26B"
+          echo "614e16b25dbcfe245deda15af2640a79f968d4981939916fff9b39df1b3901ff  $RUNNER_TEMP/G26B/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" | sha256sum -c -
+          echo "753335ae118c74df3d256cbfe853a47e34aa929a862401efcaf8721883c8f23e  $RUNNER_TEMP/G26B/G21-original-DGT-2m-source-QA.json" | sha256sum -c -
+          echo "be35181c882c2f6ede4d07f7e0a68b084bb6247c54a7da0d1d566a66f844dffd  $RUNNER_TEMP/G26B/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" | sha256sum -c -
+      - name: Count exact missing original DGT native 1km2 tiles for conditional 1.5/3/6km straight study tangent approach envelopes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g26b_next_DGT2m_study_footprint_gate.py \
+            --g25 "$RUNNER_TEMP/G26B/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" \
+            --g20 "$RUNNER_TEMP/G26B/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" \
+            --g21 "$RUNNER_TEMP/G26B/G21-original-DGT-2m-source-QA.json" \
+            --b1 reports/mn-geo-rail-001/B1-DGT-native-2m-32km2-verified-ground-sector-review.json \
+            --grid12 reports/mn-geo-rail-001/pt-dgt-native-grid12-preserved-audit.json \
+            --tile279503 reports/mn-geo-rail-001/pt-dgt-native-279503-NP159-source-qa-acceptance.json \
+            --json "$RUNNER_TEMP/G26B-verified-original-DGT2m-when-next-acquisition-required.json" \
+            --markdown "$RUNNER_TEMP/G26B-when-to-buy-or-acquire-more-DGT2m-next-steps.md"
+          python - <<'PY'
+          import json,os,pathlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          q=json.loads((root/"G26B-verified-original-DGT2m-when-next-acquisition-required.json").read_text())
+          assert q["total_distinct_original_DGT2m_1km_source_tiles_preserved"]==84
+          assert q["original_DGT_2m_source_resolution_m"]==2
+          assert q["original_DGT_2m_SOURCE_TILE_SIDE_m"]==1000
+          assert q["G10_original_SCREENING_GRID_CELL_SIDE_m"]==2000
+          assert len(q["conditional_1p5_3_6km_screen_union_gap_summary"])==3
+          assert q["seven_distinct_mandatory_city_study_coordinates"]==7
+          assert q["new_DGT2m_should_not_be_requested_before_COS_PDM_SRU_land_condition_triage"]
+          assert q["no_new_original_DGT_source_downloads"] and not q["Fxx_accepted"] and not q["Site_authorized"]
+          print("G26B verified 84 original 1km DGT native source cells, conditional 3/6km earth approach plans. NO downloader authorized.")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G26B-when-next-real-DGT2m-tiles-actually-needed
+          path: |
+            ${{ runner.temp }}/G26B-verified-original-DGT2m-when-next-acquisition-required.json
+            ${{ runner.temp }}/G26B-when-to-buy-or-acquire-more-DGT2m-next-steps.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Preserve only public conditional source coverage and missing native 1km tile budget on main
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g26b-when-next-DGT2m-native-original-tile-expansion-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G26B-verified-original-DGT2m-when-next-acquisition-required.json" \
+            "$RUNNER_TEMP/G26B-when-to-buy-or-acquire-more-DGT2m-next-steps.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G26B true existing 84km2 DGT 2m originals vs conditional new railway study envelope 1km tiles (not yet order)" \
+            --notes "Original 45+39 genuine DGT MDT2m 1×1km source QA tile grid, not confused with G10 2×2km research centres. Exact missing grid index list for conditional 1.5, 3 and 6km long hypothetical source headings around seven original G25 ground/OSRM study points. Geometry-only theoretical incomplete coverage, no route engineered, no automatic acquisition. Next DGT must follow COS2025/PDM/RAN/REN/SRUP screening, and station alignment selection, then only precise missing original 1km DGT MDT2m source file ID list. Source NoData remains unfilled, existing preserved ground reused. Mandatory Vila Real Braganca, Sanabria excluded. No Fxx/Site."
