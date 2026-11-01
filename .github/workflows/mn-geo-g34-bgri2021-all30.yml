@@ -1,0 +1,133 @@
+name: MN-GEO-RAIL-001 G34 original INE 2021 BGRI all30 six-market census comparison
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g34-bgri2021-all30-census-20261101
+      - main
+    paths:
+      - tools/geo_rail_g34_bgri2021_census_all30.py
+      - tests/test_geo_rail_g34_bgri2021_all30.py
+      - .github/workflows/mn-geo-g34-bgri2021-all30.yml
+permissions:
+  contents: read
+jobs:
+  branch-original-F67-INE-all30-demography:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g34-bgri2021-all30-census-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original INE GPKG source spatial and scientific dependencies
+        run: python -m pip install --disable-pip-version-check 'shapely>=2.1,<3' 'pyproj>=3.6,<4' 'numpy>=1.26,<3' 'matplotlib>=3.8,<4'
+      - name: Full 30x6 source-contract and native census null/uncertainty tests
+        run: |
+          python -m py_compile tools/geo_rail_g34_bgri2021_census_all30.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g34_bgri2021_all30.py' -v
+      - name: Exact immutable official INE F67 original 2021 ZIP from existing public GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G34"
+          gh release download mn-f67-bgri21-cont-original-INE-verified-20261031 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'BGRI21_CONT.zip' --dir "$RUNNER_TEMP/G34"
+          echo "3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171  $RUNNER_TEMP/G34/BGRI21_CONT.zip" | sha256sum -c -
+          gh release download mn-geo-rail-001-g33-all30-six-city-41281265827 \
+            --repo "$GITHUB_REPOSITORY" --pattern "G33-all30-six-city-access-source.json" --dir "$RUNNER_TEMP/G34"
+      - name: Source-native 2021 residents for all 180 locations x 5km/10km and 30 unduplicated corridor unions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g34_bgri2021_census_all30.py \
+            --f67 "$RUNNER_TEMP/G34/BGRI21_CONT.zip" \
+            --g33 "$RUNNER_TEMP/G34/G33-all30-six-city-access-source.json" \
+            --json "$RUNNER_TEMP/G34/G34-INE2021-all30-six-market-geographic-census.json" \
+            --csv "$RUNNER_TEMP/G34/G34-INE2021-all30-six-market-180-census-rows.csv" \
+            --markdown "$RUNNER_TEMP/G34/G34-INE2021-all30-six-market-technical-review.md" \
+            --heatmap "$RUNNER_TEMP/G34/G34-INE2021-all30-six-market-population-heatmap.png" \
+            --bars "$RUNNER_TEMP/G34/G34-INE2021-all30-six-market-union-no-double-count.png"
+          python - <<'PY'
+          import os,pathlib,json
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G34"
+          j=json.loads((p/"G34-INE2021-all30-six-market-geographic-census.json").read_text())
+          assert j["all30_same_method"] and j["G10_count"]==27 and j["G30_count"]==3
+          assert j["30_times_six_city_study_geographic_census_cases"]==180
+          assert len(j["market_cases"])==180 and len(j["corridor_six_city_radius10km_unions_no_overlap_duplication"])==30
+          assert j["native_original_INE_2021_F67_zip_sha256"]=="3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171"
+          assert j["original_gpkg_qa"]["record_count"]==203264 and j["original_gpkg_qa"]["srs"]==3763
+          assert j["5_and_10km_geographic_circles_NOT_true_road_public_transport_station_isochrones"]
+          assert j["not_station_rail_ridership_mobility_poverty_or_2026_population"]
+          assert j["PIC_UNRESOLVED"] and j["new_DGT_tiles"]==0 and j["no_Fxx_or_site"]
+          for n in ("G34-INE2021-all30-six-market-population-heatmap.png","G34-INE2021-all30-six-market-union-no-double-count.png"):
+              assert (p/n).stat().st_size>20000
+          print("G34 source-verified original INE BGRI21: 30 all markets, native GPKG, no double counting, no rail demand")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G34-original-INE2021-30-corridor-market-demography
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G34/G34-INE2021-all30-six-market-geographic-census.json
+            ${{ runner.temp }}/G34/G34-INE2021-all30-six-market-180-census-rows.csv
+            ${{ runner.temp }}/G34/G34-INE2021-all30-six-market-technical-review.md
+            ${{ runner.temp }}/G34/G34-INE2021-all30-six-market-population-heatmap.png
+            ${{ runner.temp }}/G34/G34-INE2021-all30-six-market-union-no-double-count.png
+  main-publish-G34-original-INE-source-verified:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Strict proven branch producer blob plus official 2021 native evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g34-bgri2021-all30.yml"
+          b="mn-geo-rail-001-g34-bgri2021-all30-census-20261101"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          file="tools/geo_rail_g34_bgri2021_census_all30.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$sha" --jq '.sha')" = "$(git hash-object "$file")"
+          mkdir -p "$RUNNER_TEMP/G34-publish"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G34-original-INE2021-30-corridor-market-demography \
+            --dir "$RUNNER_TEMP/G34-publish"
+          python - <<'PY'
+          import pathlib,os,json
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G34-publish"
+          j=json.loads((p/"G34-INE2021-all30-six-market-geographic-census.json").read_text())
+          assert j["G10_count"]==27 and j["G30_count"]==3
+          assert j["30_times_six_city_study_geographic_census_cases"]==180
+          assert len(j["corridor_six_city_radius10km_unions_no_overlap_duplication"])==30
+          assert j["PIC_UNRESOLVED"] and j["native_original_INE_2021_F67_zip_sha256"]=="3eb49fb9e262e9d6ccb4b493811b7e21e2bbb31b0afe1431851ddd459ad7f171"
+          PY
+      - name: Publish population 2021 source-verified 30-variant service research
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G34-publish"
+          gh release create "mn-geo-rail-001-g34-all30-original-INE2021-$GITHUB_RUN_ID" \
+            "$d/G34-INE2021-all30-six-market-geographic-census.json" \
+            "$d/G34-INE2021-all30-six-market-180-census-rows.csv" \
+            "$d/G34-INE2021-all30-six-market-technical-review.md" \
+            "$d/G34-INE2021-all30-six-market-population-heatmap.png" \
+            "$d/G34-INE2021-all30-six-market-union-no-double-count.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G34 official INE BGRI2021 for ALL G10 27 plus G30 3: 180 urban markets and 30 no-overlap unions" \
+            --notes "Reuses original exact-SHA 246MB F67 INE 2021 BGRI21_CONT GPKG from existing public GitHub release; 203264 native subsections, 30x6 market sites, 5 and 10 km geographic circle demographic sensitivities, plus per-variant 10km population union without double counting. Not real road/PT isochrones, station access, rail passenger demand, current 2026 population or legal clearance. PIC unknown. No original INE/DSM/DGT acquisition or Fxx/Site."
