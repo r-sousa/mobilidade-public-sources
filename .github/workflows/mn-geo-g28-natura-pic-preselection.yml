@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - mn-geo-rail-001-g28-natura-pic-preselection-20261101
+      - main
     paths:
       - tools/geo_rail_g28_natura_pic_constraint_gate.py
       - tests/test_geo_rail_g28_natura_pic_gate.py
@@ -11,7 +12,7 @@ permissions:
   contents: read
 jobs:
   environmental-source-scan:
-    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g28-natura-pic-preselection-20261101'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -77,3 +78,63 @@ jobs:
             ${{ runner.temp }}/G28/G28-27-corridor-7-city-Natura-PIC-original-source-screen.json
             ${{ runner.temp }}/G28/G28-environmental-preselection-Natura-PIC.md
             ${{ runner.temp }}/G28/G28-original-ICNF-MITECO-natura-clipped-geometry.geojson
+
+  independent-main-verified-source-publisher:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Recover latest successful branch primary artifacts, requiring matching exact acquisition source script blob
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_branch="mn-geo-rail-001-g28-natura-pic-preselection-20261101"
+          wf="mn-geo-g28-natura-pic-preselection.yml"
+          runid="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$wf/runs?branch=$source_branch&status=success&per_page=6" --jq '.workflow_runs[0].id')"
+          test -n "$runid" && test "$runid" != "null"
+          source_sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$runid" --jq '.head_sha')"
+          f="tools/geo_rail_g28_natura_pic_constraint_gate.py"
+          src_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/$f?ref=$source_sha" --jq '.sha')"
+          local_blob="$(git hash-object "$f")"
+          test "$src_blob" = "$local_blob" || { echo "G28 primary acquisition source script drift"; exit 21; }
+          mkdir -p "$RUNNER_TEMP/G28-main"
+          gh run download "$runid" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G28-primary-Natura2000-PIC-27-alternatives-7-areas \
+            --dir "$RUNNER_TEMP/G28-main"
+          python - <<'PY'
+          import json,hashlib,pathlib,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G28-main"
+          j=json.loads((p/"G28-27-corridor-7-city-Natura-PIC-original-source-screen.json").read_text())
+          t=p/"G28-original-ICNF-MITECO-natura-clipped-geometry.geojson"
+          c=json.loads(t.read_text())
+          assert len(j["corridor_grid_research_27"])==27 and len(j["city_research_circles_7"])==7
+          assert j["source_receipts"]["PT_ICNF"]["status"]=="VERIFIED"
+          assert j["source_receipts"]["ES_MITECO"]["status"]=="VERIFIED"
+          assert len(c["features"])==j["producer_clipped_natura_polygon_count"]>0
+          assert hashlib.sha256(t.read_bytes()).hexdigest()==j["producer_clipped_natura_polygon_cache_sha256"]
+          assert j["PIC"].startswith("UNKNOWN") and not j["legal_or_environmental_authorization"]
+          assert j["Sanabria_excluded"] and j["Vila_Real_Braganca_mandatory"]
+          print("G28 publish only authenticated producer geometries and 27/7 safety gate, no recurring producer downloads")
+          PY
+      - name: Create protected-main prerelease for later source-reuse without MITECO 118MB national re-download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G28-main"
+          tag="mn-geo-rail-001-g28-natura-PT-ES-PIC-source-preacceptance-$GITHUB_RUN_ID"
+          gh release create "$tag" \
+            "$d/G28-27-corridor-7-city-Natura-PIC-original-source-screen.json" \
+            "$d/G28-original-ICNF-MITECO-natura-clipped-geometry.geojson" \
+            "$d/G28-environmental-preselection-Natura-PIC.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G28 ICNF/MITECO original Natura2000 cross-border 27 research corridors, PIC UNKNOWN, NOT engineering/legally cleared" \
+            --notes "Two original independent primary producer sources (ICNF source response, MITECO official national shp clipped inside protected ephemeral runner), verified source SHA and source-script Git blob, 27 original G10 research-grid lines and 7 urban 400m circles. Positive overlap indicates strong environmental avoidance priority. All geographical study-lines are NOT actual railway tracks. PIC acronym/boundary unknown, legal assessments pending; no new DGT2m, Fxx or Site. Clipped nature polygons archived for reuse without repeated 118MB Spain original download."
