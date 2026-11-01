@@ -1,0 +1,160 @@
+name: MN-GEO-RAIL-001 G37 targeted source-grounded terrain acquisition feasibility
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g37-design-data-gap-20261101
+      - main
+    paths:
+      - tools/geo_rail_g37_terrain_data_acquisition_gate.py
+      - tests/test_geo_rail_g37_terrain_acquisition_gate.py
+      - .github/workflows/mn-geo-g37-terrain-data-acquisition-gate.yml
+permissions:
+  contents: read
+jobs:
+  branch-G37-exact-original-DGT84-and-30route-coverage:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g37-design-data-gap-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: GIS geometry dependencies only, no DEM raster original downloaded
+        run: python -m pip install --disable-pip-version-check 'shapely>=2.1,<3' 'pyproj>=3.6,<4'
+      - name: Test source DGT 1km tile boundaries, geographical source codes and non-approval flags
+        run: |
+          python -m py_compile tools/geo_rail_g37_terrain_data_acquisition_gate.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g37_terrain_acquisition_gate.py' -v
+      - name: Download immutable original previous G10 G20 G21 G25 G30 G36 lightweight manifests only
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G37"
+          gh release download mn-geo-rail-001-g10-27-geographic-visuals-41243658608 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G10-27-research-real-source-paths.geojson' --dir "$RUNNER_TEMP/G37"
+          gh release download mn-geo-rail-001-g30-tunnel-aware-new-corridors-41278684148 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G30-three-new-Natura-aware-study-routes.geojson' --dir "$RUNNER_TEMP/G37"
+          gh release download mn-geo-rail-001-g36-robust-all30-41283618546 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G36-30-all-90-technical-service-environmental-sensitivity.json' --dir "$RUNNER_TEMP/G37"
+          gh release download mn-geo-rail-001-g20-DGT2m-original-mandatory-study-source-manifest-41255178789 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G20-original-DGT2m-mandatory-research-source-tile-manifest.json' --dir "$RUNNER_TEMP/G37"
+          gh release download mn-geo-rail-001-g21-native-DGT2m-39-mandatory-site-original-41256814847 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G21-original-DGT-2m-source-QA.json' --dir "$RUNNER_TEMP/G37"
+          gh release download mn-geo-rail-001-g25-original-road-shortlist-G24-41259277284 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G25-OSRM-real-road-access-to-original-ground-site-shortlist.json' --dir "$RUNNER_TEMP/G37"
+          echo "77d226cc842d33e2f799f2c269ddde57a17cb7d868791770c1624dda1b86136d  $RUNNER_TEMP/G37/G10-27-research-real-source-paths.geojson" | sha256sum -c -
+          echo "614e16b25dbcfe245deda15af2640a79f968d4981939916fff9b39df1b3901ff  $RUNNER_TEMP/G37/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" | sha256sum -c -
+          echo "753335ae118c74df3d256cbfe853a47e34aa929a862401efcaf8721883c8f23e  $RUNNER_TEMP/G37/G21-original-DGT-2m-source-QA.json" | sha256sum -c -
+          echo "be35181c882c2f6ede4d07f7e0a68b084bb6247c54a7da0d1d566a66f844dffd  $RUNNER_TEMP/G37/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" | sha256sum -c -
+      - name: Retrieve small official GISCO 2024 EU NUTS0 01M country reference, not 50MB worldwide file
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_01M_2024_4326_LEVL_0.geojson"
+          curl --fail --location --silent --show-error --retry 2 --connect-timeout 12 --max-time 120 \
+            --max-filesize 49000000 "$url" -o "$RUNNER_TEMP/G37/GISCO-CNTR_RG_01M_2024_4326.geojson"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G37/GISCO-CNTR_RG_01M_2024_4326.geojson"
+          d=json.loads(p.read_bytes())
+          tags={f.get("properties",{}).get("NUTS_ID") for f in d.get("features",[])}
+          assert {"PT","ES"}.issubset(tags), (len(tags),"NUTS0_country_codes_missing")
+          print("GISCO 2024 NUTS0 01M EU only, PT ES present, bytes",p.stat().st_size)
+          PY
+      - name: Calculate approximate 13 G36 potential research band terrain budgets and existing 7 station G26B budgets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g37_terrain_data_acquisition_gate.py \
+            --g10 "$RUNNER_TEMP/G37/G10-27-research-real-source-paths.geojson" \
+            --g30 "$RUNNER_TEMP/G37/G30-three-new-Natura-aware-study-routes.geojson" \
+            --g36 "$RUNNER_TEMP/G37/G36-30-all-90-technical-service-environmental-sensitivity.json" \
+            --g20 "$RUNNER_TEMP/G37/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" \
+            --g21 "$RUNNER_TEMP/G37/G21-original-DGT-2m-source-QA.json" \
+            --g25 "$RUNNER_TEMP/G37/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" \
+            --b1 reports/mn-geo-rail-001/B1-DGT-native-2m-32km2-verified-ground-sector-review.json \
+            --grid12 reports/mn-geo-rail-001/pt-dgt-native-grid12-preserved-audit.json \
+            --tile279503 reports/mn-geo-rail-001/pt-dgt-native-279503-NP159-source-qa-acceptance.json \
+            --country "$RUNNER_TEMP/G37/GISCO-CNTR_RG_01M_2024_4326.geojson" \
+            --json "$RUNNER_TEMP/G37/G37-84existing-DGT2m-versus-30route-13priority-gaps.json" \
+            --csv "$RUNNER_TEMP/G37/G37-all30-250-500m-PT-generalized-country-source-gaps.csv" \
+            --markdown "$RUNNER_TEMP/G37/G37-targeted-DTM-geology-hydrogeology-data-acquisition-decision.md" \
+            --gaps "$RUNNER_TEMP/G37/G37-84-original-DGT-ground-source-indices-and-conditional-gates.json"
+          python - <<'PY'
+          import os,json,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G37"
+          r=json.loads((p/"G37-84existing-DGT2m-versus-30route-13priority-gaps.json").read_text())
+          assert r["source_all_G10"]==27 and r["source_all_G30"]==3
+          assert r["G36_high_priority_research_options"]==13 and len(r["prioritized_for_future_3D_railway_investigation_not_track_selection"])==13
+          assert r["source_original_DGT2m_preserved_1km_tiles"]==84
+          assert len(r["all30_perwidth_country_research_envelope_gaps"])==60
+          assert len(r["G26B_previous_seven_station_original_DGT_1p5_3_6km_contexts"])==3
+          assert r["GISCO_geometry_2024_provenance"]["PT_ES_approx_partition_only"]
+          assert r["new_DGT_2m_tiles"]==0 and not r["original_source_large_bulk_acquisition_performed"]
+          assert r["PIC_official_definition_and_boundary_UNRESOLVED"] and r["no_Fxx_or_site"]
+          print("G37 official DGT 84 previous original tiles, all30 PT/ES approximate buffers and 13 next priorities, no heavy acquisition")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G37-targeted-terrain-data-gaps-all30
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G37/G37-84existing-DGT2m-versus-30route-13priority-gaps.json
+            ${{ runner.temp }}/G37/G37-all30-250-500m-PT-generalized-country-source-gaps.csv
+            ${{ runner.temp }}/G37/G37-targeted-DTM-geology-hydrogeology-data-acquisition-decision.md
+            ${{ runner.temp }}/G37/G37-84-original-DGT-ground-source-indices-and-conditional-gates.json
+  main-publish-verified-G37-only:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify G37 source exact tested branch blob and reuse branch results only
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g37-terrain-data-acquisition-gate.yml"
+          b="mn-geo-rail-001-g37-design-data-gap-20261101"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=4" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          p="tools/geo_rail_g37_terrain_data_acquisition_gate.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$p?ref=$sha" --jq '.sha')" = "$(git hash-object "$p")"
+          mkdir -p "$RUNNER_TEMP/G37-public"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G37-targeted-terrain-data-gaps-all30 --dir "$RUNNER_TEMP/G37-public"
+          python - <<'PY'
+          import os,pathlib,json
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G37-public"
+          j=json.loads((p/"G37-84existing-DGT2m-versus-30route-13priority-gaps.json").read_text())
+          assert j["source_all_G10"]==27 and j["source_all_G30"]==3
+          assert j["G36_high_priority_research_options"]==13 and j["source_original_DGT2m_preserved_1km_tiles"]==84
+          assert j["PIC_official_definition_and_boundary_UNRESOLVED"] and j["new_DGT_2m_tiles"]==0
+          PY
+      - name: Publish G37 official DEM data-gaps not tile purchase order
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G37-public"
+          gh release create "mn-geo-rail-001-g37-DGT10m-CNIG-LNEG-data-gates-$GITHUB_RUN_ID" \
+            "$d/G37-84existing-DGT2m-versus-30route-13priority-gaps.json" \
+            "$d/G37-all30-250-500m-PT-generalized-country-source-gaps.csv" \
+            "$d/G37-targeted-DTM-geology-hydrogeology-data-acquisition-decision.md" \
+            "$d/G37-84-original-DGT-ground-source-indices-and-conditional-gates.json" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G37 source-based terrain data gaps: reuse 84 original DGT2m and plan precise DGT10m/CNIG/LNEG for 13 studies" \
+            --notes "Evidence-gated, country-partitioned approximate source-grid tiles using Eurostat GISCO 2024 generalized 1:1M country boundary and original G26B exact 84 DGT source footprint. All 27 G10 + 3 G30 retained, G36 13 research priorities. G37 grids are NOT railways and generalized PT/ES masks are NOT legal boundaries; generated 250/500m buffer tile budget NOT an order. DGT MDT10m, Spanish CNIG MDT25, LNEG geology/hydrogeo prioritized for later controlled narrow-band acquisition. No new original DGT 2m tiles, no engineering 3D proof, tunnel structures costs timelines, environmental clearance, PIC or Fxx/Site."
