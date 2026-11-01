@@ -27,7 +27,10 @@ PROFILES={
            "geographic_union_2021_residents":.26},
  "surface_Natura_research_precaution":{"research_length_km":.12,"surface_Natura2000_km":.50,
            "DSM_proxy_mean_abs_m":.15,"optional_road_to_grid_minutes_mean":.12,
-           "geographic_union_2021_residents":.11}}
+           "geographic_union_2021_residents":.11},
+ "underground_unknown_no_2D_Natura_score":{"research_length_km":.35,"surface_Natura2000_km":0.0,
+           "DSM_proxy_mean_abs_m":.28,"optional_road_to_grid_minutes_mean":.20,
+           "geographic_union_2021_residents":.17}}
 MINIMIZE=set(METRIC_NAMES)-{"geographic_union_2021_residents"}
 def validate(g32,g33,g34,g35):
     a=g32.get("rows",[])
@@ -155,14 +158,15 @@ def score_rows(rows):
                 next(r for r in cases if r["option_id"]==id)["rank_source_only_"+profile]=ix+1
         ranked[str(speed)]["valid_all_five_measured_dimensions"]=sum(
             all(r[m] is not None for m in METRIC_NAMES) for r in cases)
-    # The count is across 3 speeds × 3 illustrative profiles = 9 ranking slots.
+    # The count is across 3 speeds × 4 illustrative profiles = 12 ranking slots.
     # All 30 remain available. A shortlist is ONLY for next data collection,
     # not an evaluated railway scheme.
     present={r["option_id"] for r in rows}
     frequencies={id:counter[id] for id in sorted(present)}
     review=sorted(present,key=lambda id:(-counter[id],id))
-    ranking=[{"option_id":id,"in_top8_of_nine_sensitivity_tests":counter[id],
-       "next_engineering_work_priority_only":counter[id]>=3,
+    ranking=[{"option_id":id,"in_top8_of_twelve_sensitivity_tests":counter[id],
+       "next_engineering_work_priority_only":(counter[id]>=3 or id=="G30-potential_deep_tunnel"),
+       "G30_potential_deep_tunnel_explicitly_retained_for_uncertain_3D_hydro_environmental_test":id=="G30-potential_deep_tunnel",
        "must_still_remain_in_full30_portfolio":True} for id in review]
     return ranked,ranking
 def figures(cases,rank,scatter,heat):
@@ -219,6 +223,8 @@ def run(g32,g33,g34,g35,jsonout,csvout,mdout,scatter,heat):
       "Natura2000_overlap_is_2D_surface_research_not_an_EIA_or_hard_tunnel_exclusion":True,
       "PIC_still_UNRESOLVED_official_source":True,
       "no_actual_rail_timings_or_EUR_CAPEX_or_tunnel_quantities":True,
+      "underground_Natura_unknown_not_scored_as_hard_surface_ban":True,
+      "G30_potential_deep_tunnel_kept_as_mandatory_design_sensitivity_not_permit":True,
       "no_actual_30_corridor_station_site_3D_compatibility":True,
       "all_30_retained_before_any_legal_feasibility":True,
       "no_new_DGT_INE_OSRM_or_other_original_data_acquisition":True,
@@ -246,12 +252,13 @@ def run(g32,g33,g34,g35,jsonout,csvout,mdout,scatter,heat):
     for key,profile in PROFILES.items():
         lines.append("| "+key+" | "+" | ".join(f"{profile[k]*100:.0f}%" for k in METRIC_NAMES)+" |")
     lines+=["","## Alternativas com prioridade de recolha posterior — NÃO seleção de traçado",
-         "","A contagem é o número de presenças entre as primeiras oito posições de cada combinação **3 velocidades × 3 perfis**, total de nove ensaios. A carteira de 30 não é truncada; uma contagem elevada apenas sugere investigação proporcional, sujeito a conformidade ambiental, serviço real e custos.",
-         "","| Alternativa | Presenças no top8/9 | Próxima análise de engenharia sugerida? |",
+         "","A contagem é o número de presenças entre as primeiras oito posições de cada combinação **3 velocidades × 4 perfis**, total de doze ensaios. A carteira de 30 não é truncada; uma contagem elevada apenas sugere investigação proporcional, sujeito a conformidade ambiental, serviço real e custos.",
+         "","| Alternativa | Presenças no top8/12 | Próxima análise de engenharia sugerida? |",
          "|---|---:|---|"]
     for e in ranking:
         lines.append(f"| {e['option_id']} | {e['in_top8_of_nine_sensitivity_tests']} | {'sim, hipótese de pesquisa' if e['next_engineering_work_priority_only'] else 'não prioritária neste teste; manter'} |")
-    lines+=["","## Fronteiras não dominadas — apenas 5 variáveis investigadas",
+    lines+=["","**Salvaguarda subterrânea:** o quarto perfil não pontua a sobreposição Natura 2D, porque tal sobreposição não permite distinguir superfície de túnel; NÃO transforma a restrição Natura em zero jurídico ou autorização. A variante G30-potential_deep_tunnel permanece no grupo de estudo tridimensional e hidrogeológico, qualquer que seja a sua frequência no top8. É uma decisão de cobertura de hipóteses, não uma recomendação baseada em custos ou impacte comprovados.",
+        "","## Fronteiras não dominadas — apenas 5 variáveis investigadas",
         "","| Cenário | Linhas não dominadas do estudo (sem decisão de investimento) |",
         "|---|---|"]
     for speed in SCENARIOS:
