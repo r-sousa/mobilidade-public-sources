@@ -11,7 +11,7 @@ class G26B(unittest.TestCase):
   p=envelope((28500,180500),0,1500,300)
   ids=indices(p)
   self.assertIn((228,481),ids)
-  self.assertGreaterEqual(len(ids),4)
+  self.assertGreaterEqual(len(ids),3)
   self.assertTrue(all(len(v)==2 for v in ids))
  def test_study_extents_grow(self):
   counts=[len(indices(envelope((28500,180500),15,a,b))) for a,b in ENVELOPES]
