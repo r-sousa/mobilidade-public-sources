@@ -32,6 +32,18 @@ A verificação de `GetCapabilities` dos serviços originais da **DGT/SNIT** ide
 
 **CRUS**: é uma harmonização das classes dos instrumentos de planeamento, para uso territorial/estatístico, **não** peça de licenciamento ou substituto do PDM e regulamento aplicável.
 
+## G27C — Interseções primárias SNIT efetivamente verificadas
+
+O workflow de origem **G27C #41261770729** concluiu 21 consultas WFS da DGT (3 temas × 7 posições, 400 m), com geometria GML interpretada e 31 polígonos recortados e conservados:
+
+| Fonte oficial SNIT | Setores com geometria original observada | Restantes respostas |
+|---|---:|---|
+| REN Norte (`gmgml:REN_Norte`) | **7/7** | Deve distinguir as classes **REN** e **Exclusões**; não se pode chamar interdição sem a cartografia legal |
+| RAN nacional (`gmgml:RAN`) | **3/7** | **4/7** sem elementos no WFS para a janela pedida — **não** é ausência legal provada |
+| CRUS nacional (`gmgml:CRUS`) | **7/7** | Respostas limitadas pelo máximo de 5 elementos, logo a cobertura **não é exaustiva** e a CRUS não define licenciamento |
+
+Os 31 recortes positivos não equivalem a 31 restrições jurídicas. A REN pode incluir exclusões e elementos de várias tipologias; a RAN e os PDM exigem confirmação dos instrumentos/diplomas aplicáveis. O estado de cada um dos sete pontos permanece **pré-jurídico**, ainda sem decisão de elegibilidade.
+
 ## Alteração regulamentar particularmente relevante — Bragança (9 de junho de 2026)
 
 O **Aviso n.º 14240/2026/2, de 9 de junho**, Município de Bragança, publicado no Diário da República, aprovou a **2.ª correção material da 1.ª revisão do PDM**. A correção ao artigo 62.º, n.º 7, clarifica a repartição simétrica da largura total das faixas de proteção das vias; houve também alteração cartográfica da hierarquização de segmentos da Estrada do Turismo e da antiga EN 217 junto aos acessos à A4, passando a Sistema Secundário. É informação diretamente pertinente para interfaces periféricos orientados pela A4, que requer confirmação espacial sobre a cartografia vigente.
