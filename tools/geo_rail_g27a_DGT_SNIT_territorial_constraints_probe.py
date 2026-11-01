@@ -76,7 +76,7 @@ def main():
    probe["bounded_one_feature_at_original_Vila_Real_G26C_study_reference"]=fmeta
    probe["bounded_one_feature_response_start_tags"]=(fbody[:160].decode("utf-8","replace") if fbody else None)
   else:
-   probe["no_matching_capabilities_is_NOT_confirmation_of_no_RAN_REN_or_CRUS":True
+   probe["no_matching_capabilities_is_NOT_confirmation_of_no_RAN_REN_or_CRUS"]=True
   probes.append(probe)
  q={"mission":"MN-GEO-RAIL-001","stage":"G27A_original_DGT_SNIT_REN_RAN_CRUS_source_WFS_discovery_no_false_legal_constraint",
   "utc":datetime.now(timezone.utc).isoformat(),
