@@ -122,6 +122,7 @@ def run(archive,g25,extract,jsonout,geoout,markdown):
   "COS2025_source_archive_verified_hash_and_bytes":proof,
   "COS2025_original_geopackage_layer_schema":layerinfo,
   "original_G25_SHA256":SOURCE_SHA,
+  "COS_original_clipper_source_code_SHA256":sha(Path(__file__)),
   "DGT_data_attribution":"Direção-Geral do Território; CC BY 4.0",
   "COS_map_reference_2025_not_current_ground_inspection":True,
   "research_circle_radius_m":RADIUS,
