@@ -2,7 +2,7 @@
 import unittest,importlib.util,sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"tools"))
-READY=all(importlib.util.find_spec(x) is not None for x in ("shapely","numpy","pyproj"))
+READY=all(importlib.util.find_spec(x) is not None for x in ("shapely","numpy","pyproj","rasterio","scipy"))
 if READY:
  from geo_rail_g25_OSRM_original_G24_road_shortlist import samples,MAX_CITY_DESTINATIONS,MARKETS,OSRM_PUBLIC_REQUEST_BUDGET
 @unittest.skipUnless(READY,"G25 specialist source GIS/public OSRM tests; global lean CI skips")
