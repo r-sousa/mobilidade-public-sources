@@ -108,6 +108,44 @@ def source_scan():
             ret["ES_MITECO"]=([],{"status":"UNKNOWN_SOURCE",
                 "reason":"WFS:"+wfs_error+"; MITECO_ARCHIVE:"+type(e).__name__+":"+str(e)[:180]})
     return ret
+def source_site_label(props):
+    # Producer fields may differ by edition and producer; never invent names.
+    for k,v in props.items():
+        t=str(k).lower()
+        if ("name" in t or "nombre" in t or "nom_" in t or t=="nom") and str(v).strip():
+            return str(v)
+    for k,v in props.items():
+        t=str(k).lower()
+        if ("code" in t or "codigo" in t or "codi" in t) and str(v).strip():
+            return str(v)
+    return "official_name_unknown_in_source_fields"
+
+def polygon_cache(sources):
+    # Reuse the initial producer acquisition for downstream environmental route search.
+    # Clip official geoms to study region; never redistribute the national SHP archive.
+    from shapely.geometry import box,mapping
+    to4326=Transformer.from_crs(3035,4326,always_xy=True).transform
+    envelope=transform(TO3035,box(-8.70,41.04,-5.52,42.15))
+    feats=[]
+    for producer,(polys,receipt) in sources.items():
+        if receipt["status"]!="VERIFIED":continue
+        for geom,p in polys:
+            clipped=geom.intersection(envelope)
+            if clipped.is_empty:continue
+            valid=clipped if clipped.is_valid else clipped.buffer(0)
+            if not valid.is_valid or valid.is_empty:raise ValueError("clipped nature source invalid")
+            props={"source":producer,"site_label":source_site_label(p),
+                   "original_producer_sha256":receipt["sha256"],
+                   "original_attributes":p,
+                   "geometry_is_exact_intersection_with_study_bbox_not_full_original":True}
+            feats.append({"type":"Feature","geometry":mapping(transform(to4326,valid)),"properties":props})
+    return {"type":"FeatureCollection","name":"G28 clipped producer Natura2000 evidence 2026",
+            "metadata":{"study_area_WGS84_bbox":[-8.70,41.04,-5.52,42.15],
+                        "geometries_original_producer_clipped_to_study_bbox":True,
+                        "source_status":{k:v[1]["status"] for k,v in sources.items()},
+                        "not_a_legal_boundary_verification":True},
+            "features":feats}
+
 def hit(geometry,source,buffer_m=250):
     geoms,receipt=source
     if receipt["status"]!="VERIFIED":return {"status":"UNKNOWN_SOURCE","line_overlap_km":None,"proximity_m":None}
@@ -120,8 +158,7 @@ def hit(geometry,source,buffer_m=250):
     else:overlap=0 if geometry.geom_type=="LineString" else None
     return {"status":"AVOIDANCE_PRIORITY" if near else "NO_GEOMETRIC_HIT_NOT_LEGAL_CLEARANCE",
             "line_overlap_km":overlap,"proximity_m":round(min(geometry.distance(g) for g in poly),1),
-            "near_sites":[str(p.get("site_name") or p.get("site_code") or p.get("SITENAME")
-                or p.get("SITECODE") or p.get("nombre") or "official_id_unread") for g,p in near][:30]}
+            "near_sites":sorted(set(source_site_label(p) for g,p in near))[:30]}
 def run(g10,sources):
     assert g10["type"]=="FeatureCollection" and len(g10["features"])==27
     rows=[]
@@ -142,7 +179,7 @@ def run(g10,sources):
     return rows,site_rows
 def main():
     a=argparse.ArgumentParser()
-    for k in ("g10","out","md"):a.add_argument("--"+k,type=Path,required=True)
+    for k in ("g10","out","md","polygons"):a.add_argument("--"+k,type=Path,required=True)
     v=a.parse_args();b=v.g10.read_bytes();s=source_scan();rows,sites=run(json.loads(b),s)
     doc={"mission":"MN-GEO-RAIL-001","stage":"G28 environmental first-pass STRONG restriction",
          "UTC":datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -156,13 +193,35 @@ def main():
          "Vila_Real_Braganca_mandatory":True,"Sanabria_excluded":True}
     v.out.parent.mkdir(parents=True,exist_ok=True)
     v.out.write_text(json.dumps(doc,indent=2,ensure_ascii=False)+"\n")
+    polygons=polygon_cache(s)
+    if len(polygons["features"])>1500:raise ValueError("excess primary area polygons")
+    polygon_text=json.dumps(polygons,ensure_ascii=False)
+    if len(polygon_text.encode("utf-8"))>40000000:raise ValueError("overlarge native clipped polygon cache")
+    v.polygons.write_text(polygon_text+"\n")
+    doc["producer_clipped_natura_polygon_count"]=len(polygons["features"])
+    doc["producer_clipped_natura_polygon_cache_sha256"]=hashlib.sha256(v.polygons.read_bytes()).hexdigest()
+    v.out.write_text(json.dumps(doc,indent=2,ensure_ascii=False)+"\n")
+
     lines=["# G28 — Natura 2000 PT/ES e PIC, triagem ambiental inicial","",
        "As 27 linhas G10 são cadeias de quadrículas de investigação, não traçados ferroviários. Interseções e proximidades são indícios para priorizar evitamento, não AIA/licenças.",
        "","| Fonte | Resposta primária | Geometrias |","|---|---|---:|"]
     for k,q in s.items():lines.append(f"| {k} | {q[1]['status']} | {q[1].get('count','indeterminado')} |")
     lines+=["","**PIC continua por definir e localizar.** A ausência de geometria nunca prova a inexistência de restrições. Não aprovar shortlist ambiental ou novas aquisições de MDT com base apenas nesta fase.","",
             "| Opção G10 | ICNF | MITECO | PIC |","|---|---|---|---|"]
-    for z in rows:lines.append(f"| {z['id']} | {z['PT']['status']} | {z['ES']['status']} | pendente |")
+    for z in rows:
+        lines.append(f"| {z['id']} | {z['PT']['status']} ({z['PT']['line_overlap_km']} km) | {z['ES']['status']} ({z['ES']['line_overlap_km']} km) | pendente |")
+    lines+=["","## Três famílias em discussão (comprimentos apenas das linhas de investigação)","",
+             "| Família | PT km | ES km | PT+ES km |","|---|---:|---:|---:|"]
+    for key in ("P1-2-1","P2-2-1","P2-2-3"):
+        z=next(r for r in rows if r["id"]==key)
+        a,b=z["PT"]["line_overlap_km"],z["ES"]["line_overlap_km"]
+        lines.append(f"| {key} | {a} | {b} | {round(a+b,3) if a is not None and b is not None else 'N/D'} |")
+    lines+=["","## Sete áreas exploratórias (círculos de 400 m, não limites de estação)","",
+            "| Cidade | EPSG:3763 x/y | Interseção ICNF | Distância a Natura (m) |",
+            "|---|---|---|---:|"]
+    for z in sites:
+        lines.append(f"| {z['city']} | {z['EPSG3763']} | {z['PT']['status']} | {z['PT']['proximity_m']} |")
+
     lines+=["","Confrontar polígonos com áreas contínuas de projeto, valores de conservação e efeitos indirectos/cumulativos. Sem Fxx/Site, custos de obra, tempos de comboio ou declaração de viabilidade."]
     v.md.write_text("\n".join(lines)+"\n")
     print(json.dumps({"G10":len(rows),"areas_cidades":len(sites),"source_status":doc["source_receipts"],"PIC":doc["PIC"]},ensure_ascii=False))
