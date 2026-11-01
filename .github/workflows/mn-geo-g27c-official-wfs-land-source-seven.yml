@@ -12,7 +12,7 @@ permissions:
   contents: write
 jobs:
   G27C_7_site_original_DGT_SNIT_3_topics_source_limited:
-    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g27-official-restrictions-source-gates-20261101'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -70,18 +70,61 @@ jobs:
             ${{ runner.temp }}/G27C-seven-source-legal-pending-matrix.md
           retention-days: 30
           if-no-files-found: error
-      - name: Publish observed official source WFS intersection evidence on main only with legal-map caveat
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  independent_main_publisher_reuses_verified_branch_wfs_artifact:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Fetch exact last successful original DGT WFS source-scan artifact; NEVER repeat 21 requests on main
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          tag="mn-geo-rail-001-g27c-DGT-SNIT-original-source-REN-RAN-CRUS-seven-${GITHUB_RUN_ID}"
+          branch="mn-geo-rail-001-g27-official-restrictions-source-gates-20261101"
+          workflow="mn-geo-g27c-official-wfs-land-source-seven.yml"
+          runid="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?branch=$branch&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$runid" && test "$runid" != "null"
+          branchsha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$runid" --jq '.head_sha')"
+          scriptpath="tools/geo_rail_g27c_original_SNIT_REN_RAN_CRUS_seven_WFS_intersections.py"
+          source_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/$scriptpath?ref=$branchsha" --jq '.sha')"
+          local_blob="$(git hash-object "$scriptpath")"
+          test "$source_blob" = "$local_blob" || { echo "Source acquisition script drift: original branch and main must use same verified code"; exit 15; }
+          mkdir -p "$RUNNER_TEMP/G27C-publication"
+          gh run download "$runid" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G27C-original-SNIT-source-seven-areas-prelegal \
+            --dir "$RUNNER_TEMP/G27C-publication"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G27C-publication"
+          q=json.loads((p/"G27C-seven-SNIT-REN-RAN-CRUS-original-source-area-assessment.json").read_text())
+          g=json.loads((p/"G27C-seven-SNIT-REN-RAN-CRUS-clipped-observed-geometries.geojson").read_text())
+          assert q["source_research_sites"]==7
+          assert q["source_service_bounded_request_count"]==21
+          assert len(q["seven_research_site_by_service_source_status"])==7
+          assert len(g["features"])==q["primary_original_source_clipped_vector_geometry_count"]
+          assert q["all_PDM_REN_official_DR_legal_map_validation_pending"]
+          assert q["REN_source_Exclusoes_must_not_be_counted_as_legal_REN"]
+          assert not q["Fxx_accepted"] and not q["Site_authorized"]
+          print("G27C original WFS site evidence independently QA verified, no repeat producer 21-call acquisition")
+          PY
+      - name: Publish observed official source WFS clipped evidence with mandatory legal caveat on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g27c-DGT-SNIT-original-REN-RAN-CRUS-seven-$(echo "$GITHUB_RUN_ID")"
+          d="$RUNNER_TEMP/G27C-publication"
           gh release create "$tag" \
-            "$RUNNER_TEMP/G27C-seven-SNIT-REN-RAN-CRUS-original-source-area-assessment.json" \
-            "$RUNNER_TEMP/G27C-seven-SNIT-REN-RAN-CRUS-clipped-observed-geometries.geojson" \
-            "$RUNNER_TEMP/G27C-seven-source-legal-pending-matrix.md" \
+            "$d/G27C-seven-SNIT-REN-RAN-CRUS-original-source-area-assessment.json" \
+            "$d/G27C-seven-SNIT-REN-RAN-CRUS-clipped-observed-geometries.geojson" \
+            "$d/G27C-seven-source-legal-pending-matrix.md" \
             --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
-            --title "G27C DGT official SNIT original REN Norte/RAN/CRUS source seven sites: bounded WFS intersections not legal conclusions" \
-            --notes "Seven original G26C COS2025 station study area points, 21 bounded primary DGT SNIT WFS GML sources. Only correctly parsed clipped positive feature geometries and source SHA receipts retained, no national source dataset, no private credentials, no 2m acquisition. Absence/error/cap = UNKNOWN not no legal REN/RAN; REN original Exclusions not automatically REN restrictions. Published DR REN maps and actual municipality PDM authoritative, CRUS statistics not licensing. No stations selected or eliminated, no Fxx/Site."
+            --title "G27C official original DGT SNIT 7-site bounded REN RAN CRUS WFS observed source polygons, NOT legally cleared" \
+            --notes "Reuse only audited 21 bounded SNIT WFS branch source queries, with original source Git blob identity verified; no repeat queries. Unavailable, capped, unparseable or no features UNKNOWN legally; REN EXCLUSOES not necessarily REN encumbrance, official DR map/PDM legally prevail. Seven original COS2025 research areas, no station selection, new DGT elevation or Fxx/Site."
