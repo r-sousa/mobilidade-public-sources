@@ -51,20 +51,40 @@ jobs:
           echo "614e16b25dbcfe245deda15af2640a79f968d4981939916fff9b39df1b3901ff  $RUNNER_TEMP/G37/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" | sha256sum -c -
           echo "753335ae118c74df3d256cbfe853a47e34aa929a862401efcaf8721883c8f23e  $RUNNER_TEMP/G37/G21-original-DGT-2m-source-QA.json" | sha256sum -c -
           echo "be35181c882c2f6ede4d07f7e0a68b084bb6247c54a7da0d1d566a66f844dffd  $RUNNER_TEMP/G37/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" | sha256sum -c -
-      - name: Small official Eurostat GISCO 2024 1M country boundary metadata for approximate PT ES partition
+      - name: Retrieve TWO small PT ES per-country GISCO 2024 01M polygons, not huge global country collection
         shell: bash
         run: |
           set -euo pipefail
-          url="https://gisco-services.ec.europa.eu/distribution/v2/countries/geojson/CNTR_RG_01M_2024_4326.geojson"
-          curl --fail --location --silent --show-error --retry 2 --connect-timeout 12 --max-time 120 \
-            --max-filesize 50000000 "$url" -o "$RUNNER_TEMP/G37/GISCO-CNTR_RG_01M_2024_4326.geojson"
+          d="$RUNNER_TEMP/G37"
+          for id in PT ES; do
+            url="https://gisco-services.ec.europa.eu/distribution/v2/countries/geojson/${id}-region-01m-4326-2024.geojson"
+            curl --fail --location --silent --show-error --retry 3 --connect-timeout 10 --max-time 95 \
+              --max-filesize 12000000 "$url" -o "$d/GISCO-${id}-2024-01m-original.geojson"
+          done
           python - <<'PY'
-          import json,os,pathlib
-          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G37/GISCO-CNTR_RG_01M_2024_4326.geojson"
-          j=json.loads(p.read_bytes())
-          tags={x.get("properties",{}).get("CNTR_ID") for x in j["features"]}
-          assert {"PT","ES"}.issubset(tags),(len(tags),"PT_ES_missing")
-          print("Official small GISCO 2024 01M PT/ES available, approximate administrative cut only",p.stat().st_size)
+          import json,os,pathlib,hashlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G37"
+          features=[]
+          for id in ("PT","ES"):
+              original=p/f"GISCO-{id}-2024-01m-original.geojson"
+              data=json.loads(original.read_bytes())
+              if data.get("type")=="Feature":
+                  ft=data
+              elif data.get("type")=="FeatureCollection" and len(data.get("features",[]))==1:
+                  ft=data["features"][0]
+              else:
+                  raise ValueError("G37_not_just_one_official_country_geometry_"+id)
+              assert ft.get("geometry",{}).get("type") in ("Polygon","MultiPolygon")
+              if ft.get("properties",{}).get("CNTR_ID") not in (None,id):
+                  raise ValueError("G37_official_country_id_drift")
+              features.append({"type":"Feature","properties":{"CNTR_ID":id,
+                  "GISCO_original_per_country_SHA256":hashlib.sha256(original.read_bytes()).hexdigest()},
+                  "geometry":ft["geometry"]})
+          dest=p/"GISCO-CNTR_RG_01M_2024_4326.geojson"
+          dest.write_text(json.dumps({"type":"FeatureCollection","features":features},
+                                    ensure_ascii=False,separators=(",",":"))+"\n")
+          print("G37 official 2024 GISCO PT ES country clip composite, not legal jurisdiction map",
+                [(ft["properties"]["CNTR_ID"],ft["geometry"]["type"]) for ft in features])
           PY
       - name: Calculate approximate 13 G36 potential research band terrain budgets and existing 7 station G26B budgets
         shell: bash
