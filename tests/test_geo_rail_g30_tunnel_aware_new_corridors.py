@@ -1,10 +1,17 @@
 """G30 independent small synthetic tests: legal gate remains irrespective of tunnel hypothesis."""
 import importlib.util, pathlib,unittest
-from shapely.geometry import box
-from shapely.prepared import prep
-ROOT=pathlib.Path(__file__).resolve().parents[1]
-SPEC=importlib.util.spec_from_file_location("g30",ROOT/"tools/geo_rail_g30_tunnel_aware_new_research_corridors.py")
-g=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(g)
+try:
+    from shapely.geometry import box
+    from shapely.prepared import prep
+    import matplotlib,pyproj
+    GIS=True
+except ImportError:
+    GIS=False
+if GIS:
+    ROOT=pathlib.Path(__file__).resolve().parents[1]
+    SPEC=importlib.util.spec_from_file_location("g30",ROOT/"tools/geo_rail_g30_tunnel_aware_new_research_corridors.py")
+    g=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(g)
+@unittest.skipUnless(GIS,"G30 optional GIS stack installed in dedicated workflow only")
 class G30TunnelAware(unittest.TestCase):
     def test_elevation_never_makes_legal_gate_green(self):
         self.assertEqual(len(g.ROUTING),3)
