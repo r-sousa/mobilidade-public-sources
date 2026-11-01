@@ -1,0 +1,135 @@
+name: MN-GEO-RAIL-001 G22 verified DGT2m mandatory-station ground strips (source-only)
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g22-native-ground-site-strips-20261101
+      - main
+    paths:
+      - tools/geo_rail_g22_native_dgt2m_station_strips.py
+      - tests/test_geo_rail_g22_native_station_strips.py
+      - .github/workflows/mn-geo-g22-native-station-ground-screens.yml
+permissions:
+  contents: write
+jobs:
+  G22_independent_original_DGT_2m_site_ground_reference_screens:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install original raster geometry reader; no DGT source credentials
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=1.24,<3' 'pyproj>=3.6,<4'
+      - name: Original native 2m 400m platform-screen source guards
+        run: |
+          python -m py_compile tools/geo_rail_g22_native_dgt2m_station_strips.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g22_native_station_strips.py' -v
+      - name: Retrieve exact reviewed G19 G20 G21 official source releases, no new DGT raster downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G22-original" "$RUNNER_TEMP/G22-original/tiles"
+          gh release download mn-geo-rail-001-g19-native-ground-site-feasibility-audit-41254929309 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G19-54-native-DGT-2m-research-site-coverage-and-priority.json' --dir "$RUNNER_TEMP/G22-original"
+          gh release download mn-geo-rail-001-g20-DGT2m-original-mandatory-study-source-manifest-41255178789 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G20-original-DGT2m-mandatory-research-source-tile-manifest.json' --dir "$RUNNER_TEMP/G22-original"
+          gh release download mn-geo-rail-001-g21-native-DGT2m-39-mandatory-site-original-41256814847 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G21-original-DGT-2m-source-QA.json' --dir "$RUNNER_TEMP/G22-original"
+          gh release download mn-geo-rail-001-g21-native-DGT2m-39-mandatory-site-original-41256814847 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'MDT-2m-*.tif' --dir "$RUNNER_TEMP/G22-original/tiles"
+          echo "9f4d290f3fb2718c1a49a921c10d17b7f8c4dd97ccd28e3e6854486a8917dbe2  $RUNNER_TEMP/G22-original/G19-54-native-DGT-2m-research-site-coverage-and-priority.json" | sha256sum -c -
+          echo "614e16b25dbcfe245deda15af2640a79f968d4981939916fff9b39df1b3901ff  $RUNNER_TEMP/G22-original/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" | sha256sum -c -
+          echo "753335ae118c74df3d256cbfe853a47e34aa929a862401efcaf8721883c8f23e  $RUNNER_TEMP/G22-original/G21-original-DGT-2m-source-QA.json" | sha256sum -c -
+          test "$(find "$RUNNER_TEMP/G22-original/tiles" -maxdepth 1 -name 'MDT-2m-*.tif' | wc -l)" -eq 39
+      - name: Identify exactly four already preserved original 2m DGT source tiles from verified B1 catalogue
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools python - <<'PY'
+          import json,os,pathlib,re
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])/"G22-original"
+          g20=json.loads((root/"G20-original-DGT2m-mandatory-research-source-tile-manifest.json").read_text())
+          b1=json.loads(pathlib.Path("configs/MN-GEO-RAIL-001-B1-DGT32-source-IDs.json").read_text())
+          required={tuple(z) for s in g20["selected_reference_points_NOT_real_stations"] for z in s["source_grid_3x3km_1km_cells"]}
+          old={id for grp in b1["groups"] for id in grp["tile_ids"]}
+          reused=[]
+          for id in sorted(old):
+            m=re.fullmatch(r"MDT-2m-(\d{3})(\d{3})-(\d{2})-2024",id)
+            if not m:raise ValueError("bad_old_B1_original_source_tile")
+            if (int(m.group(1)),int(m.group(2))) in required:
+              tag=("mn-geo-rail-001-b1-DGT2m-vila_real-native-source-preacceptance-41209791341"
+                   if m.group(3)=="07" else "mn-geo-rail-001-b1-DGT2m-braganca-native-source-preacceptance-41209791341")
+              reused.append((tag,id))
+          assert len(reused)==4
+          (root/"G22-four-previously-preserved-original-tile-list.tsv").write_text(
+             "".join(tag+"|"+id+"\n" for tag,id in reused))
+          print("G22 B1 previously QA verified original source tile reuse count",len(reused))
+          PY
+      - name: Reuse four B1 original GeoTIFFs by exact name, not B1 proxy mosaics
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS='|' read -r tag sourceid; do
+            gh release download "$tag" --repo "$GITHUB_REPOSITORY" \
+              --pattern "$sourceid.tif" --dir "$RUNNER_TEMP/G22-original/tiles"
+          done < "$RUNNER_TEMP/G22-original/G22-four-previously-preserved-original-tile-list.tsv"
+          test "$(find "$RUNNER_TEMP/G22-original/tiles" -maxdepth 1 -name 'MDT-2m-*.tif' | wc -l)" -eq 43
+      - name: Re-read all exact original SHA-ground and evaluate source tangent hypothetical 400m and 1000m earthwork risk
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g22_native_dgt2m_station_strips.py \
+            --g19 "$RUNNER_TEMP/G22-original/G19-54-native-DGT-2m-research-site-coverage-and-priority.json" \
+            --g20 "$RUNNER_TEMP/G22-original/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" \
+            --g21 "$RUNNER_TEMP/G22-original/G21-original-DGT-2m-source-QA.json" \
+            --b1 configs/MN-GEO-RAIL-001-B1-DGT32-source-IDs.json \
+            --tiles "$RUNNER_TEMP/G22-original/tiles" \
+            --json "$RUNNER_TEMP/G22-five-source-sites-real-native-2m-topographic-risk.json" \
+            --markdown "$RUNNER_TEMP/G22-native-station-ground-strip-screen-and-cost-gates.md"
+          python - <<'PY'
+          import os,json,pathlib
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])
+          j=json.loads((d/"G22-five-source-sites-real-native-2m-topographic-risk.json").read_text())
+          assert len(j["source_tiles_native_original_observation_inventory"])==43
+          assert j["all_43_required_source_terrain_tiles_checked_original_pixel_masks"]
+          assert j["total_new_G21_original_2m_valid_ground_pixels"]==9687239
+          assert j["new_G21_original_NoData_pixels_preserved"]==62761
+          assert j["source_RasterNoData_never_filled_or_called_real_elevation"]
+          assert j["all_five_research_seeds_are_NOT_legally_approved_real_station_sites"]
+          assert not j["Fxx_accepted"] and not j["Site_authorized"]
+          print("G22 43 original source DGT2m GeoTIFFs, independently validated and five reference local platform/approach screens; NO real railway station or EUR CAPEX")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G22-original-43-DGT-native-station-site-physical-terrain-screens
+          path: |
+            ${{ runner.temp }}/G22-five-source-sites-real-native-2m-topographic-risk.json
+            ${{ runner.temp }}/G22-native-station-ground-strip-screen-and-cost-gates.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish G22 original DGT measured ground source terrain, no monetary estimates
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g22-original-DGT2m-five-mandatory-station-topographic-risk-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G22-five-source-sites-real-native-2m-topographic-risk.json" \
+            "$RUNNER_TEMP/G22-native-station-ground-strip-screen-and-cost-gates.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G22 original DGT 2m five mandatory-city station research ground strips; no actual station CAPEX" \
+            --notes "39 new exact producer DGT MDT2m original source TIFF SHA-verified and four previously preserved B1 original DGT TIFFs, 43 source 1km tiles; test source-line tangent and assumed hypothetical 400m x 50m near-level landform and 1000m x 60m route approach for relief and terrain plane screening at 18/25‰. No engineered railway curve, station, lawful road or earthwork construction volume is verified; no EUR numbers. Original NoData preserved and never interpolated, no repeat DGT source acquisition, Fxx/Site."
