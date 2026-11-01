@@ -139,7 +139,7 @@ def execute(g10,g30,g36,g20file,g21file,g25file,b1,grid12,one,countryraw,outjson
     original,priority=test_qa(g10,g30,g36,g20file,g21file,g25file)
     g20=read(g20file);g21=read(g21file);g25=read(g25file)
     pt,es,meta=source_boundary(countryraw)
-    old=native_grid_old(b1,grid12,one)
+    old=native_grid_old(read(b1),read(grid12),read(one))
     covered=existing_tiles(old,g20,g21)
     if len(covered)!=84:raise ValueError("G37_original_84_not_preserved")
     # Reuse actual older station approach conditional acquisition gate exactly.
