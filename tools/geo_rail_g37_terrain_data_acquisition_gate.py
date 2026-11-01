@@ -163,6 +163,7 @@ def execute(g10,g30,g36,g20file,g21file,g25file,b1,grid12,one,countryraw,outjson
       "GISCO_geometry_2024_provenance":meta,
       "GISCO_country_polygon_generalized_do_not_issue_exact_border_tiles":True,
       "conditional_source_halfwidths_m":list(MARGIN),
+      "250m_500m_tile_footprints_nearly_same_due_1km_grid_quantization_not_precision":True,
       "all30_perwidth_country_research_envelope_gaps":route_rows,
       "approx_country_partitioned_13_prioritized_study_envelope_union":union,
       "G26B_previous_seven_station_original_DGT_1p5_3_6km_contexts":stage_approach,
@@ -209,7 +210,8 @@ def execute(g10,g30,g36,g20file,g21file,g25file,b1,grid12,one,countryraw,outjson
     for width in MARGIN:
         u=union[str(width)]
         md.append(f"| ±{width} m ao eixo de malha 2km | {u['distinct_approx_PT_1km_source_tile_ids_intersecting_union']} | {u['already_covered_1km_DGT2m_tile_ids_in_union']} | {u['additional_1km_tile_ids_if_entire_unapproved_grid_buffer_were_acquired']} |")
-    md+=["","## Etapa 2A — Sete sítios históricos de estação: expansão condicional (G26B)",
+    md+=["","**Cautela:** resultados quase idênticos para ±250m e ±500m não significam que a largura seja irrelevante: a linha original usa centros de grelha com discretização de 2 km e a contagem discretiza quadrículas de 1 km. Esta coincidência é um artefacto de escala. Não utilizar para escolher a largura verdadeira da plataforma ferroviária.",
+     "","## Etapa 2A — Sete sítios históricos de estação: expansão condicional (G26B)",
      "","| Meia extensão de aproximação hipotética | Meia largura | Quadrículas 1km requeridas (todas orientações) | Já arquivadas na envolvente | Falta potencial |",
      "|---|---:|---:|---:|---:|"]
     for q in stage_approach:
