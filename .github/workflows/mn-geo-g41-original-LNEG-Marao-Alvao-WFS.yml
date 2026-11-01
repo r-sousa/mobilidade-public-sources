@@ -1,0 +1,130 @@
+name: MN-GEO-RAIL-001 G41 original official LNEG Marão Alvão geology hydrogeo borehole source probe
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g41-original-LNEG-marao-alvao-source-20261101
+      - main
+    paths:
+      - tools/geo_rail_g41_LNEG_original_geology_hydro_borehole_WFS.py
+      - tests/test_geo_rail_g41_LNEG_source.py
+      - .github/workflows/mn-geo-g41-original-LNEG-Marao-Alvao-WFS.yml
+permissions:
+  contents: read
+jobs:
+  branch-four-official-LNEG-bounded-original-WFS:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g41-original-LNEG-marao-alvao-source-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Spatial geometry package only for validating actual LNEG feature intersection
+        run: python -m pip install --disable-pip-version-check 'shapely>=2.1,<3'
+      - name: Five official WFS source parser tests, no missing as absence
+        run: |
+          python -m py_compile tools/geo_rail_g41_LNEG_original_geology_hydro_borehole_WFS.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g41_LNEG_source.py' -v
+      - name: Immutable previous G40 actual 27 unique TIFF source locations and all30 portfolio
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G41"
+          gh release download mn-geo-rail-001-g40-four-actual-IGN25-terrain-41316860509 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G40-four-original-IGN-terrain-research-profiles.json' \
+            --dir "$RUNNER_TEMP/G41"
+      - name: LNEG WFS original-source GetCapabilities plus two bounded GetFeature probes per layer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g41_LNEG_original_geology_hydro_borehole_WFS.py \
+            --g40 "$RUNNER_TEMP/G41/G40-four-original-IGN-terrain-research-profiles.json" \
+            --outdir "$RUNNER_TEMP/G41" \
+            --json "$RUNNER_TEMP/G41/G41-original-LNEG-geology-hydrogeo-SONDABASE-Marao-Alvao-status.json" \
+            --markdown "$RUNNER_TEMP/G41/G41-LNEG-Marao-Alvao-source-geology-acquisition-gates.md"
+          python - <<'PY'
+          import json,os,pathlib,hashlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G41"
+          j=json.loads((p/"G41-original-LNEG-geology-hydrogeo-SONDABASE-Marao-Alvao-status.json").read_text())
+          assert j["source_G40_30_routes_preserved"] and j["all30_G10_G30"]==30
+          assert j["official_source_count"]==4
+          assert len(j["official_LNEG_WFS_source_registry"])==4
+          assert j["WFS_count5_is_intentionally_non_exhaustive"]
+          assert j["not_complete_geological_coverage_of_Marao_Alvao"]
+          assert j["Natura2000_Art6_and_PIC_unresolved"]
+          assert j["new_DGT_2m_tiles"]==0 and not j["Fxx_accepted"] and not j["Site_authorized"]
+          for x in j["original_bounded_GeoJSON_feature_observations"]:
+              pth=p/x["filename"]
+              assert hashlib.sha256(pth.read_bytes()).hexdigest()==x["SHA256"]
+              d=json.loads(pth.read_text())
+              assert d["type"]=="FeatureCollection" and 1<=len(d["features"])<=5
+          print("G41 audited official source",sum(z["capabilities_status"]=="VERIFIED_ORIGINAL_WFS_XML" for z in j["official_LNEG_WFS_source_registry"]),"of four, original geojson areas",len(j["original_bounded_GeoJSON_feature_observations"]))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G41-official-LNEG-bounded-verified-sources
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G41/G41-original-LNEG-geology-hydrogeo-SONDABASE-Marao-Alvao-status.json
+            ${{ runner.temp }}/G41/G41-LNEG-Marao-Alvao-source-geology-acquisition-gates.md
+            ${{ runner.temp }}/G41/G41-LNEG-original-*.geojson
+  main-publish-G41-only-verified-producer:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify exact original source producing tested blob and source-file hashes
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g41-original-LNEG-Marao-Alvao-WFS.yml"
+          b="mn-geo-rail-001-g41-original-LNEG-marao-alvao-source-20261101"
+          run="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$run" && test "$run" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" --jq '.head_sha')"
+          f="tools/geo_rail_g41_LNEG_original_geology_hydro_borehole_WFS.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$f?ref=$sha" --jq '.sha')" = "$(git hash-object "$f")"
+          mkdir -p "$RUNNER_TEMP/G41-pub"
+          gh run download "$run" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G41-official-LNEG-bounded-verified-sources \
+            --dir "$RUNNER_TEMP/G41-pub"
+          python - <<'PY'
+          import os,pathlib,json,hashlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G41-pub"
+          j=json.loads((p/"G41-original-LNEG-geology-hydrogeo-SONDABASE-Marao-Alvao-status.json").read_text())
+          assert j["all30_G10_G30"]==30 and j["official_source_count"]==4
+          assert j["Natura2000_Art6_and_PIC_unresolved"]
+          assert not j["Fxx_accepted"] and not j["Site_authorized"]
+          for q in j["original_bounded_GeoJSON_feature_observations"]:
+              assert hashlib.sha256((p/q["filename"]).read_bytes()).hexdigest()==q["SHA256"]
+          PY
+      - name: Release precise geology source receipts and only physically returned original vectors
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G41-pub"
+          shopt -s nullglob
+          assets=("$d/G41-original-LNEG-geology-hydrogeo-SONDABASE-Marao-Alvao-status.json"
+                  "$d/G41-LNEG-Marao-Alvao-source-geology-acquisition-gates.md")
+          matches=("$d"/G41-LNEG-original-*.geojson)
+          if (( ${#matches[@]} )); then assets+=("${matches[@]}"); fi
+          gh release create "mn-geo-rail-001-g41-LNEG-Marao-Alvao-source-$GITHUB_RUN_ID" \
+            "${assets[@]}" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G41 actual official LNEG geological 50k/200k hydrogeology 200k and SONDABASE data-source verification" \
+            --notes "LNEG WFS exact source GetCapabilities plus bounded GetFeature max5 for two small Marão and Alvão regional windows, with original source GeoJSON only where truly returned and spatially verified. No absence of geological hazard inference from WFS nulls/errors; no geological site 3D rail engineering, geotechnical investigation, groundwater impact or Natura PIC clearance. 30 G10/G30 original corridors retained and G40 true source terrain reused. No DGT original 2m acquisitions, Fxx or Site."
