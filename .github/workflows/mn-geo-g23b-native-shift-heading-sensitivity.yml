@@ -1,0 +1,149 @@
+name: MN-GEO-RAIL-001 G23B actual DGT2m shifted station-strip tangent sensitivity (351 source cases)
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g23-station-ground-comparison-20261101
+      - main
+    paths:
+      - tools/geo_rail_g23b_native_shift_heading_sensitivity.py
+      - tests/test_geo_rail_g23b_native_shift_sensitivity.py
+      - .github/workflows/mn-geo-g23b-native-shift-heading-sensitivity.yml
+permissions:
+  contents: write
+jobs:
+  native_DGT_43_original_tiles_shift_station_reference_sensitivity:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install native original raster and original source coordinate libraries, never DGT source secrets
+        run: python -m pip install --disable-pip-version-check 'rasterio>=1.4,<2' 'numpy>=1.24,<3' 'pyproj>=3.6,<4'
+      - name: Validate source 27 position/heading lattice and original ground absent fail-closed geometry regression
+        run: |
+          python -m py_compile tools/geo_rail_g23b_native_shift_heading_sensitivity.py
+          python -m unittest discover -s tests -p test_geo_rail_g23b_native_shift_sensitivity.py -v
+      - name: Reuse exact G19 G20 G21 G22 official source releases and 39 original native TIFFs; zero new DGT producer downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G23B-source/tiles"
+          gh release download mn-geo-rail-001-g19-native-ground-site-feasibility-audit-41254929309 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G19-54-native-DGT-2m-research-site-coverage-and-priority.json' \
+            --dir "$RUNNER_TEMP/G23B-source"
+          gh release download mn-geo-rail-001-g20-DGT2m-original-mandatory-study-source-manifest-41255178789 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G20-original-DGT2m-mandatory-research-source-tile-manifest.json' \
+            --dir "$RUNNER_TEMP/G23B-source"
+          gh release download mn-geo-rail-001-g21-native-DGT2m-39-mandatory-site-original-41256814847 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G21-original-DGT-2m-source-QA.json' \
+            --dir "$RUNNER_TEMP/G23B-source"
+          gh release download mn-geo-rail-001-g22-original-DGT2m-five-mandatory-station-topographic-risk-41257367654 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G22-five-source-sites-real-native-2m-topographic-risk.json' \
+            --dir "$RUNNER_TEMP/G23B-source"
+          gh release download mn-geo-rail-001-g21-native-DGT2m-39-mandatory-site-original-41256814847 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'MDT-2m-*.tif' \
+            --dir "$RUNNER_TEMP/G23B-source/tiles"
+          echo "9f4d290f3fb2718c1a49a921c10d17b7f8c4dd97ccd28e3e6854486a8917dbe2  $RUNNER_TEMP/G23B-source/G19-54-native-DGT-2m-research-site-coverage-and-priority.json" | sha256sum -c -
+          echo "614e16b25dbcfe245deda15af2640a79f968d4981939916fff9b39df1b3901ff  $RUNNER_TEMP/G23B-source/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" | sha256sum -c -
+          echo "753335ae118c74df3d256cbfe853a47e34aa929a862401efcaf8721883c8f23e  $RUNNER_TEMP/G23B-source/G21-original-DGT-2m-source-QA.json" | sha256sum -c -
+          echo "785ee7a2cf1e0f81916e6feb9d85ec6228c0a12286e118a6f17a2514802f3e7c  $RUNNER_TEMP/G23B-source/G22-five-source-sites-real-native-2m-topographic-risk.json" | sha256sum -c -
+          test "$(find "$RUNNER_TEMP/G23B-source/tiles" -maxdepth 1 -name 'MDT-2m-*.tif' | wc -l)" -eq 39
+      - name: Resolve exactly four previously preserved B1 original 1km native DGT source rasters
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools python - <<'PY'
+          import json,os,pathlib,re
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])/"G23B-source"
+          g20=json.loads((root/"G20-original-DGT2m-mandatory-research-source-tile-manifest.json").read_text())
+          b1=json.loads(pathlib.Path("configs/MN-GEO-RAIL-001-B1-DGT32-source-IDs.json").read_text())
+          required={tuple(z) for s in g20["selected_reference_points_NOT_real_stations"] for z in s["source_grid_3x3km_1km_cells"]}
+          old={id for grp in b1["groups"] for id in grp["tile_ids"]}
+          reuse=[]
+          for id in sorted(old):
+            m=re.fullmatch(r"MDT-2m-(\d{3})(\d{3})-(\d{2})-2024",id)
+            if not m:raise ValueError("G23B_B1_previous_source_item_name_invalid")
+            if (int(m.group(1)),int(m.group(2))) in required:
+              tag=("mn-geo-rail-001-b1-DGT2m-vila_real-native-source-preacceptance-41209791341"
+                   if m.group(3)=="07" else "mn-geo-rail-001-b1-DGT2m-braganca-native-source-preacceptance-41209791341")
+              reuse.append((tag,id))
+          assert len(reuse)==4
+          (root/"G23B-four-reused-old-original-1km-tiles.tsv").write_text(
+             "".join(tag+"|"+id+"\n" for tag,id in reuse))
+          print("G23B reusing four already-published original B1 tiles")
+          PY
+      - name: Download ONLY four older already preserved public original source tiles
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS='|' read -r tag id; do
+            gh release download "$tag" --repo "$GITHUB_REPOSITORY" \
+              --pattern "$id.tif" --dir "$RUNNER_TEMP/G23B-source/tiles"
+          done < "$RUNNER_TEMP/G23B-source/G23B-four-reused-old-original-1km-tiles.tsv"
+          test "$(find "$RUNNER_TEMP/G23B-source/tiles" -maxdepth 1 -name 'MDT-2m-*.tif' | wc -l)" -eq 43
+      - name: Recheck every original native 2m source, reproduce baseline G22, evaluate 351 study shift-heading physical relief cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g23b_native_shift_heading_sensitivity.py \
+            --g19 "$RUNNER_TEMP/G23B-source/G19-54-native-DGT-2m-research-site-coverage-and-priority.json" \
+            --g20 "$RUNNER_TEMP/G23B-source/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" \
+            --g21 "$RUNNER_TEMP/G23B-source/G21-original-DGT-2m-source-QA.json" \
+            --g22 "$RUNNER_TEMP/G23B-source/G22-five-source-sites-real-native-2m-topographic-risk.json" \
+            --b1 configs/MN-GEO-RAIL-001-B1-DGT32-source-IDs.json \
+            --tiles "$RUNNER_TEMP/G23B-source/tiles" \
+            --json "$RUNNER_TEMP/G23B-351-native-source-local-shift-and-heading-scenarios.json" \
+            --markdown "$RUNNER_TEMP/G23B-five-sites-physical-relief-shift-comparison.md" \
+            --geojson "$RUNNER_TEMP/G23B-actual-DGT-2m-research-Pareto-shift-points-WGS84.geojson"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])
+          q=json.loads((p/"G23B-351-native-source-local-shift-and-heading-scenarios.json").read_text())
+          geo=json.loads((p/"G23B-actual-DGT-2m-research-Pareto-shift-points-WGS84.geojson").read_text())
+          assert q["original_DGT_tile_count"]==43
+          assert q["source_families_study_cases"]==13 and q["distinct_original_source_study_seeds"]==5
+          assert len(q["351_original_source_shift_angle_terrain_cases"])==351
+          assert sum(v["valid_original_DGT_2m_400m_and_1000m_screen_count"] for v in q["13_family_source_ground_sensitivity_summaries"])>0
+          assert q["no_new_candidate_legal_highway_roadtime_measured"]
+          assert q["no_new_DGT_data_acquisition"] and not q["Fxx_accepted"] and not q["Site_authorized"]
+          assert all(x["geometry"]["type"]=="Point" and len(x["geometry"]["coordinates"])==2 for x in geo["features"])
+          print("G23B PASS: SHA-grounded original DGT 2m 43 tiles, 351 terrain-shift sensitivity cases, zero rail station or road-access invention")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G23B-351-native-DGT-research-station-local-sensitivity
+          path: |
+            ${{ runner.temp }}/G23B-351-native-source-local-shift-and-heading-scenarios.json
+            ${{ runner.temp }}/G23B-five-sites-physical-relief-shift-comparison.md
+            ${{ runner.temp }}/G23B-actual-DGT-2m-research-Pareto-shift-points-WGS84.geojson
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish source original G23B high resolution local research station shift evidence on main only
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g23b-original-2m-site-shift-sensitivity-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G23B-351-native-source-local-shift-and-heading-scenarios.json" \
+            "$RUNNER_TEMP/G23B-five-sites-physical-relief-shift-comparison.md" \
+            "$RUNNER_TEMP/G23B-actual-DGT-2m-research-Pareto-shift-points-WGS84.geojson" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G23B 351 original DGT 2m terrain source-grid position and heading sensitivity at mandatory Vila Real and Braganca study sites" \
+            --notes "Five source research points, 13 family orientations, original G21 39+B1 four DGT native 2m exact TIFFs revalidated, 351 local 400m straight platform/1000m straight approach relief sensitivity cases with original NoData, 27 combos each, no added OSM or DGT calls. Original G22 baseline strictly reproduced. Pareto source-ground findings do NOT establish civil costs in euros, actual rail station terrain, legal road access, land parcel, rail alignment continuity, train journey time, geotechnics or feasibility. WGS84 GeoJSON research points are not proposed station sites; unmeasured shifted road access remains unknown. No Fxx/Site."
