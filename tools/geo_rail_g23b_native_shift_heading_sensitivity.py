@@ -19,6 +19,7 @@ from geo_rail_g22_native_dgt2m_station_strips import (
  source_originals,reference_heading,strip,SITE,APPROACH
 )
 from geo_rail_g23a_native_ground_station_pareto import G22_SHA,G20_SHA,STATION,APP18
+from pyproj import Transformer
 G19_SHA="9f4d290f3fb2718c1a49a921c10d17b7f8c4dd97ccd28e3e6854486a8917dbe2"
 G21_SHA="753335ae118c74df3d256cbfe853a47e34aa929a862401efcaf8721883c8f23e"
 OFFSETS_ALONG=(-300.,0.,300.)
@@ -53,6 +54,7 @@ def scenario(study,original_dir,src_g19,src_g20,src_g21,src_g22,b1,outpath,mdpat
  baseline={(s["G20_source_reference_id"],s["research_family"]):s for s in g22["five_site_by_family_original_terrain_study_screens"]}
  if len(baseline)!=13:raise ValueError("G23B_baseline_13_original_sites_missing")
  cases=[];summary=[];points=[]
+ to_ll=Transformer.from_crs(3763,4326,always_xy=True)
  for seed in g20["selected_reference_points_NOT_real_stations"]:
   center=seed["original_EPSG3763_XY_study_reference_m"]
   market=seed["mandatory_urban_market"]
@@ -133,8 +135,9 @@ def scenario(study,original_dir,src_g19,src_g20,src_g21,src_g22,b1,outpath,mdpat
      "new_road_distance_from_city_legal_access_land_ownership_unknown":True,
      "G22_baseline_mathematical_reproduced_from_same_original_native_ground":True})
    for x in nondom:
-    points.append({"type":"Feature","geometry":{"type":"Point","coordinates":x["candidate_EPSG3763_XY"]},
-      "properties":{k:v for k,v in x.items() if k not in ("candidate_EPSG3763_XY","source_origin_EPSG3763_XY")}})
+    lon,lat=to_ll.transform(*x["candidate_EPSG3763_XY"])
+    points.append({"type":"Feature","geometry":{"type":"Point","coordinates":[lon,lat]},
+      "properties":{k:v for k,v in x.items() if k not in ("source_origin_EPSG3763_XY",)}})
    cases.extend(options)
  if len(cases)!=13*27 or len(summary)!=13:raise ValueError("G23B_351_source_sensitivity_cases_not_complete")
  if not all(x["G22_baseline_mathematical_reproduced_from_same_original_native_ground"] for x in summary):
@@ -161,11 +164,10 @@ def scenario(study,original_dir,src_g19,src_g20,src_g21,src_g22,b1,outpath,mdpat
   "351_original_source_shift_angle_terrain_cases":cases,
   "Fxx_accepted":False,"Site_authorized":False}
  outpath.parent.mkdir(parents=True,exist_ok=True);outpath.write_text(json.dumps(doc,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
- # EPSG:3763 projected coordinate feature collection; MUST declare CRS.
+ # GeoJSON WGS84 geometry for interoperable mapping; original EPSG3763 study XY in properties.
  geopath.parent.mkdir(parents=True,exist_ok=True)
  geopath.write_text(json.dumps({"type":"FeatureCollection",
-  "name":"G23B EPSG3763 source research terrain Pareto not stations",
-  "crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:EPSG::3763"}},
+  "name":"G23B WGS84 original source terrain Pareto points not stations",
   "features":points},ensure_ascii=False)+"\n")
  md=["# G23B — Sensibilidade local às posições e direções de estudo (MDT original DGT2m)",
   "","Cinco referências obrigatórias × famílias de corredor: **13 combinações**, cada uma avaliada em 27 configurações de deslocamento (±300m longitudinal; ±250m transversal) e rotação da direção original (±20°). As posições permanecem **hipóteses não aprovadas de estudo**, sem acessos rodoviários verificados.",
