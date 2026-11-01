@@ -1,0 +1,133 @@
+name: MN-GEO-RAIL-001 G38 official bare-earth 1km IGN CNIG ground pilot
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g38-ground-pilot-source-probes-20261101
+      - main
+    paths:
+      - tools/geo_rail_g38_1km_original_IGN_ground_source_probe.py
+      - tests/test_geo_rail_g38_ign_mdt25_original_source.py
+      - .github/workflows/mn-geo-g38-official-ground-pilot.yml
+permissions:
+  contents: read
+jobs:
+  branch-g38-genuine-original-source-1km-bound:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g38-ground-pilot-source-probes-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Open source original official WCS raster source QA dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'rasterio>=1.4,<2' 'pyproj>=3.6,<4'
+      - name: Five fail-closed tests for source provenance and native raster pixels
+        run: |
+          python -m py_compile tools/geo_rail_g38_1km_original_IGN_ground_source_probe.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g38_ign_mdt25_original_source.py' -v
+      - name: Reuse official 84 original DGT terrain source and G37 full30 acquisition gate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G38"
+          gh release download mn-geo-rail-001-g37-DGT10m-CNIG-LNEG-data-gates-41303761915 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G37-84existing-DGT2m-versus-30route-13priority-gaps.json' \
+            --dir "$RUNNER_TEMP/G38"
+      - name: Bounded official IGN/CNIG WCS 1km pilot and LNEG service catalog source receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g38_1km_original_IGN_ground_source_probe.py \
+            --g37 "$RUNNER_TEMP/G38/G37-84existing-DGT2m-versus-30route-13priority-gaps.json" \
+            --outdir "$RUNNER_TEMP/G38" \
+            --json "$RUNNER_TEMP/G38/G38-verified-source-1km-original-MDT25-WCS-probe.json" \
+            --markdown "$RUNNER_TEMP/G38/G38-actual-ground-sample-and-terrain-readiness.md"
+          python - <<'PY'
+          import os,json,pathlib,hashlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G38"
+          j=json.loads((p/"G38-verified-source-1km-original-MDT25-WCS-probe.json").read_text())
+          assert j["G37_prior_source_verified_30_study_corridors"]==30
+          assert j["G36_priority_research_corridors_for_future_real_3D"]==13
+          assert j["G37_existing_verified_original_DGT2m_tiles"]==84
+          assert j["PIC_definition_official_data_unavailable"]
+          assert j["no_train_time_CAPEX_tunnel_length_or_rail_grade"]
+          assert j["no_new_DGT_tiles"] and not j["Fxx_accepted"] and not j["Site_authorized"]
+          result=j["Spain_CNIG_IGN_WCS_MDT25_small_source"]
+          if result["real_original_IGN_MDT25_GeoTIFF_acquired_and_QA"]:
+            f=p/result["original_source_pilot_raster_filename"]
+            assert f.exists() and hashlib.sha256(f.read_bytes()).hexdigest()==result["original_source_pilot_raster_SHA256"]
+            assert result["verified_raster_QA"]["verified_actual_original_raster"]
+          else:
+            assert not list(p.glob("G38-IGN-CNIG-WCS-actual-MDT25-*.tif"))
+          print("G38 strict truthful WCS pilot status:",j["status"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G38-official-IGN-original-ground-source-pilot
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G38/G38-verified-source-1km-original-MDT25-WCS-probe.json
+            ${{ runner.temp }}/G38/G38-actual-ground-sample-and-terrain-readiness.md
+            ${{ runner.temp }}/G38/G38-IGN-CNIG-WCS-actual-MDT25-1km-Zamora-pilot.tif
+  main-publish-G38-original-source-verified:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exact G38 tested producer blob source lock and optional genuine raster QA
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g38-official-ground-pilot.yml"
+          b="mn-geo-rail-001-g38-ground-pilot-source-probes-20261101"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          head="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          f="tools/geo_rail_g38_1km_original_IGN_ground_source_probe.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$f?ref=$head" --jq '.sha')" = "$(git hash-object "$f")"
+          mkdir -p "$RUNNER_TEMP/G38-release"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G38-official-IGN-original-ground-source-pilot \
+            --dir "$RUNNER_TEMP/G38-release"
+          python - <<'PY'
+          import os,json,pathlib,hashlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G38-release"
+          j=json.loads((p/"G38-verified-source-1km-original-MDT25-WCS-probe.json").read_text())
+          assert j["G37_existing_verified_original_DGT2m_tiles"]==84 and j["G37_prior_source_verified_30_study_corridors"]==30
+          assert j["no_new_DGT_tiles"] and j["PIC_definition_official_data_unavailable"]
+          if j["Spain_CNIG_IGN_WCS_MDT25_small_source"]["real_original_IGN_MDT25_GeoTIFF_acquired_and_QA"]:
+            q=j["Spain_CNIG_IGN_WCS_MDT25_small_source"]
+            assert hashlib.sha256((p/q["original_source_pilot_raster_filename"]).read_bytes()).hexdigest()==q["original_source_pilot_raster_SHA256"]
+          PY
+      - name: Public original source evidence and optional actual verified raster (never invented)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G38-release"
+          shopt -s nullglob
+          assets=("$d/G38-verified-source-1km-original-MDT25-WCS-probe.json"
+                  "$d/G38-actual-ground-sample-and-terrain-readiness.md")
+          matches=("$d"/G38-IGN-CNIG-WCS-actual-MDT25-1km-Zamora-pilot.tif
+          )
+          if (( ${#matches[@]} )); then assets+=("${matches[@]}"); fi
+          gh release create "mn-geo-rail-001-g38-original-ground-pilot-$GITHUB_RUN_ID" \
+            "${assets[@]}" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G38 original terrain pilot: bounded official IGN MDT25 WCS and LNEG metadata; no false rail 3D" \
+            --notes "Source-verified small WCS GetCapabilities, DescribeCoverage and optional 1 km² original IGN 25m sample, only preserved if actual raster passes native georeferencing and numerical pixel checks. Otherwise release explicitly records blocked source without claiming terrain acquired. LNEG catalog metadata and DGT MDT10m open download NOT VERIFIED, 84 already verified DGT 2m tiles preserved. G10 27 + G30 3, G36 13 research options retained; unknown PIC/Natura tunnel hydrogeology. No actual rail engineering, grade, CAPEX, tunnelling, harmonized PT/ES elevations or bulk new DGT/INE assets."
