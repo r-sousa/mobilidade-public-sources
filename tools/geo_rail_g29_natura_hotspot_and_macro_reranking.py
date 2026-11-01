@@ -92,7 +92,6 @@ def draw(inputs,report,geo,geo_path,map_path,hot_path,md_path,json_path):
     ax.set_ylabel('ETRS89-LAEA EPSG:3035 · Norte (km)')
     ax.set_title('Rede Natura 2000 PT/ES e 27 alternativas geográficas de investigação',loc='left',fontsize=15)
     ax.legend(loc='upper left',fontsize=9)
-    fig.text(.07,.01,'Linhas de centros de quadrículas ≠ traçados ferroviários. Polígonos oficiais recortados; PIC por identificar. Não há decisão ambiental.',fontsize=9)
     map_path.parent.mkdir(parents=True,exist_ok=True)
     fig.savefig(map_path,dpi=170,bbox_inches='tight');plt.close(fig)
     fig,ax=plt.subplots(figsize=(12.8,8.4),layout='constrained')
@@ -109,7 +108,6 @@ def draw(inputs,report,geo,geo_path,map_path,hot_path,md_path,json_path):
     ax.set_title('Zonas de conflito Natura observadas nas alternativas G10 · índice por célula 2 km',loc='left',fontsize=14)
     ax.set_xlabel('ETRS89-LAEA EPSG:3035 · Este (km)')
     ax.set_ylabel('ETRS89-LAEA EPSG:3035 · Norte (km)')
-    fig.text(.07,.01,'Célula indexada pelo ponto médio de segmento em conflito. Não delimita áreas de impacto ou proibições legais; PIC pendente.',fontsize=9)
     fig.savefig(hot_path,dpi=170,bbox_inches='tight');plt.close(fig)
     out={'mission':'MN-GEO-RAIL-001','stage':'G29_G28_reuse_Natura2km_conflict_visual_first_prediversification',
          'G28_original_polygon_sha256':hashlib.sha256(geo_path.read_bytes()).hexdigest(),
