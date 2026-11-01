@@ -66,6 +66,22 @@ def test_qa(g10,g30,g36,g20,g21,g25):
     if digest(g20)!=G20_SHA or digest(g21)!=G21_SHA or digest(g25)!=G25_SHA:
         raise ValueError("G37_original_DGT_G25_G20_G21_hash_drift")
     return originals+new,priority
+def tile_references_for_buffer(lines,region,halfwidth):
+    """Per-segment grid enumeration; avoids brute-force 300km x 100km bbox."""
+    multi=(list(lines.geoms) if lines.geom_type=="MultiLineString" else [lines])
+    candidates=set()
+    for geom in multi:
+        coords=list(geom.coords)
+        for aa,bb in zip(coords[:-1],coords[1:]):
+            xmin=math.floor((min(aa[0],bb[0])-halfwidth-2)/1000)
+            xmax=math.ceil((max(aa[0],bb[0])+halfwidth+2)/1000)
+            ymin=math.floor((min(aa[1],bb[1])-halfwidth-2)/1000)
+            ymax=math.ceil((max(aa[1],bb[1])+halfwidth+2)/1000)
+            if (xmax-xmin)*(ymax-ymin)>140:
+                raise ValueError("G37_source_segment_not_local_2km_grid")
+            candidates.update((col+200,row+301) for col in range(xmin,xmax) for row in range(ymin,ymax))
+    return {p for p in candidates if region.intersects(box((p[0]-200)*1000,(p[1]-301)*1000,
+                                          (p[0]-199)*1000,(p[1]-300)*1000))}
 def tile_rows(routes,priority,covered,pt,es,meta):
     rows=[];tilecache={};ptbands={250:[],500:[]}
     for feature in routes:
@@ -82,7 +98,7 @@ def tile_rows(routes,priority,covered,pt,es,meta):
             domain=ptline.buffer(halfwidth,cap_style=2,join_style=2).intersection(pt)
             if not domain.is_valid or domain.is_empty:raise ValueError("G37_no_PT_corridor_domain")
             # project generalized GISCO border; use native DGT index formula.
-            ids=indices(domain)
+            ids=tile_references_for_buffer(ptline,domain,halfwidth)
             existing=ids&covered
             missing=ids-covered
             # tiles adjacent to generalized border require precise later validation.
@@ -103,16 +119,15 @@ def tile_rows(routes,priority,covered,pt,es,meta):
               "not_tender_quantity_or_acquisition_order":True,
               "only_G10_G30_2km_grid_centerlines_not_engineered_axis":True,
               "Spain_CNIG_terrain_needed_separately":True,
-              "GINCO_1M_country_border_not_a_precise_legal_boundary":True,
+              "GISCO_1M_country_border_not_a_precise_legal_boundary":True,
               "source_pixels_NoData_not_included_in_tile_count_coverage":True}
             rows.append(row)
             tilecache[(id,halfwidth)]=ids
-            if id in priority:ptbands[halfwidth].append(domain)
+            if id in priority:ptbands[halfwidth].append(ids)
     if len(rows)!=60:raise ValueError("G37_30x2_coverage_required")
     union={}
     for width,bands in ptbands.items():
-        geom=unary_union(bands)
-        ids=indices(geom)
+        ids=set().union(*bands)
         union[str(width)]={"study_line_source_buffer_halfwidth_m":width,
           "priority_research_lines":len(bands),
           "distinct_approx_PT_1km_source_tile_ids_intersecting_union":len(ids),
