@@ -1,8 +1,13 @@
 import unittest,sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"tools"))
-from shapely.geometry import LineString,Polygon
-from geo_rail_g28_natura_pic_constraint_gate import hit,SITES
+try:
+ from shapely.geometry import LineString,Polygon
+ from geo_rail_g28_natura_pic_constraint_gate import hit,SITES
+ HAVE_GIS=True
+except ImportError:
+ HAVE_GIS=False
+@unittest.skipUnless(HAVE_GIS,'G28 tested separately in specialized GIS job; no GIS dependency in generic CI')
 class TestG28(unittest.TestCase):
  def test_unknown_never_free(self):
   self.assertEqual(hit(LineString([(0,0),(10,0)]),([],
