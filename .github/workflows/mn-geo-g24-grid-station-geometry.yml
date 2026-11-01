@@ -1,0 +1,95 @@
+name: MN-GEO-RAIL-001 G24 original G10 2km corridor vs G23B DGT2m city station geometry context
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g24-city-geometry-screen-20261101
+      - main
+    paths:
+      - tools/geo_rail_g24_grid_station_connection_geometry.py
+      - tests/test_geo_rail_g24_grid_station_geometry.py
+      - .github/workflows/mn-geo-g24-grid-station-geometry.yml
+permissions:
+  contents: write
+jobs:
+  G24_source_reproducible_route_grid_station_geometry:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install source WGS84/PT-TM06 original geometries
+        run: python -m pip install --disable-pip-version-check 'shapely>=2.1,<3' 'pyproj>=3.6,<4'
+      - name: Test source-line bearing, curvature context and geographic screening instead of fictitious railway feasibility
+        run: |
+          python -m py_compile tools/geo_rail_g24_grid_station_connection_geometry.py
+          python -m unittest discover -s tests -p test_geo_rail_g24_grid_station_geometry.py -v
+      - name: Reuse published G10 27 source-grid geographies and G23B 351 measured true-DGT station-strip cases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G24-input"
+          gh release download mn-geo-rail-001-g10-27-geographic-visuals-41243658608 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G10-27-research-real-source-paths.geojson' \
+            --dir "$RUNNER_TEMP/G24-input"
+          gh release download mn-geo-rail-001-g23b-original-2m-site-shift-sensitivity-41257991916 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G23B-351-native-source-local-shift-and-heading-scenarios.json' \
+            --dir "$RUNNER_TEMP/G24-input"
+          echo "77d226cc842d33e2f799f2c269ddde57a17cb7d868791770c1624dda1b86136d  $RUNNER_TEMP/G24-input/G10-27-research-real-source-paths.geojson" | sha256sum -c -
+          echo "7a623066e2cc8e512db652f14bc70b50ebe12e0d80d1ae4c9ccabb1c3d290dce  $RUNNER_TEMP/G24-input/G23B-351-native-source-local-shift-and-heading-scenarios.json" | sha256sum -c -
+      - name: Calculate observed original G10 corridor geometry distance and heading context for 351 G23B actual-ground reference trials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g24_grid_station_connection_geometry.py \
+            --g10 "$RUNNER_TEMP/G24-input/G10-27-research-real-source-paths.geojson" \
+            --g23b "$RUNNER_TEMP/G24-input/G23B-351-native-source-local-shift-and-heading-scenarios.json" \
+            --json "$RUNNER_TEMP/G24-source-corridor-vs-351-city-ground-geometry-screens.json" \
+            --geojson "$RUNNER_TEMP/G24-three-research-corridors-and-station-ground-context-WGS84.geojson" \
+            --markdown "$RUNNER_TEMP/G24-mandatory-city-corridor-station-necessary-geometry-gates.md"
+          python - <<'PY'
+          import json,os,pathlib
+          d=pathlib.Path(os.environ["RUNNER_TEMP"])
+          x=json.loads((d/"G24-source-corridor-vs-351-city-ground-geometry-screens.json").read_text())
+          g=json.loads((d/"G24-three-research-corridors-and-station-ground-context-WGS84.geojson").read_text())
+          assert x["original_G10_2km_lattice_research_line_count"]==27
+          assert x["original_G10_selected_three_research_families"]==["P1-2-1","P2-2-1","P2-2-3"]
+          assert len(x["351_original_source_geometry_station_tangent_screening_cases"])==351
+          assert len(x["13_mandatory_market_by_family_source_geometry_summary"])==6
+          assert len(x["13_groups_2to3_source_ground_vs_grid_geometry_reference_shortlist"])>=13
+          assert len(g["features"])==len(x["13_groups_2to3_source_ground_vs_grid_geometry_reference_shortlist"])+3
+          assert x["unmeasured_moved_location_city_to_station_road_time_is_NULL_not_imputed"]
+          assert x["does_not_model_actual_3D_curve_continuity_gradient_or_runoff"]
+          assert x["no_new_DGT_GLO30_OSM_GTFS_INE_downloads"] and not x["Fxx_accepted"] and not x["Site_authorized"]
+          print("G24 original source 3 research route grids +351 DGT2m station study cases, local chord orientation and R-angle sensitivity; NO actual railway route asserted")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G24-351-source-station-geometry-and-three-grid-corridors
+          path: |
+            ${{ runner.temp }}/G24-source-corridor-vs-351-city-ground-geometry-screens.json
+            ${{ runner.temp }}/G24-three-research-corridors-and-station-ground-context-WGS84.geojson
+            ${{ runner.temp }}/G24-mandatory-city-corridor-station-necessary-geometry-gates.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish G24 grounded pre-engineering source geometry after main QA
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g24-grid-vs-native-city-geometry-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G24-source-corridor-vs-351-city-ground-geometry-screens.json" \
+            "$RUNNER_TEMP/G24-three-research-corridors-and-station-ground-context-WGS84.geojson" \
+            "$RUNNER_TEMP/G24-mandatory-city-corridor-station-necessary-geometry-gates.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G24 original source 2km G10 corridors vs 351 DGT2m station study coordinates: source angle/distance and Rθ context" \
+            --notes "Actual source coordinate geometry of SHA-pinned G10 27 GRID-CENTRE research routes and G23B 351 original DGT2m local reference study strips. For three families, compare grid proximity, 3/6km chord bearing uncertainty and 160/200/250kmh G7 illustrative R×turn angle pure-arc lower bounds. NOT railway alignments or minimum constructible station connections. Does not test real transition curves, cant, vertical continuity, legal road access to moved points, geology, environment, structures, CAPEX or train time. Three original source routes and limited research points WGS84 GeoJSON, no fabricated connecting polylines; no DGT/INE/OSM source reacquisition and no Fxx/Site. Vila Real and Braganca obligatory, Sanabria excluded."
