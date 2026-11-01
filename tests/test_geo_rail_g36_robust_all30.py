@@ -12,7 +12,7 @@ if GIS:
 class G36All30(unittest.TestCase):
  def test_3_speeds_3_explicit_profile_weights(self):
   self.assertEqual(g.SCENARIOS,(160,200,250))
-  self.assertEqual(len(g.PROFILES),3)
+  self.assertEqual(len(g.PROFILES),4)
   self.assertTrue(all(abs(sum(w.values())-1)<1e-9 for w in g.PROFILES.values()))
  def test_missing_not_imputed_as_zero(self):
   cases=[{"option_id":"A","research_length_km":100.},
