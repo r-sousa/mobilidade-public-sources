@@ -249,6 +249,7 @@ def run(g37,outdir,jsonout,mdout):
        "4. Adquirir recortes delimitados da cartografia geológica/hidrogeológica LNEG e terreno de maior resolução em pontos críticos; então quantificar estruturas por cenários e incerteza, sem custos determinísticos prematuros.",
        "","**Nenhuma licença ambiental, análise custo-benefício, avaliação geotécnica ou proposta de obra é produzida pelo piloto.**"]
     mdout.write_text("\n".join(md)+"\n")
+    print("G38_SOURCE_DIAGNOSTICS",json.dumps([{"endpoint":r.get("source_endpoint"),"step":r.get("stage"),"status":r.get("status"),"error":r.get("error")} for r in wcs["source_query_receipts"]],ensure_ascii=False),flush=True)
     print("G38_RESULT",json.dumps({"actual_IGN_CNIG_GeoTIFF_sample":wcs["real_original_IGN_MDT25_GeoTIFF_acquired_and_QA"],
          "WCS_requests":len(wcs["source_query_receipts"]),"LNEG_catalog_probe":lneg.get("catalog_HTTP_status",None),
          "no_new_DGT":True,"all30_retained":True},ensure_ascii=False),flush=True)
