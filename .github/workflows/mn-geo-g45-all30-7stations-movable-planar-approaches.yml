@@ -1,0 +1,151 @@
+name: MN-GEO-RAIL-001 G45 shifted rail station approach research 30x7x3 continuous-planar spline
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g45-mobile-station-approaches-20261101
+      - main
+    paths:
+      - tools/geo_rail_g45_shifted_30station_quintic_horizontal.py
+      - tests/test_geo_rail_g45_station_quintic.py
+      - .github/workflows/mn-geo-g45-all30-7stations-movable-planar-approaches.yml
+permissions:
+  contents: read
+jobs:
+  branch-G45-all30-seven-original-stations-30x7x3:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g45-mobile-station-approaches-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install source-only GIS and numerical Python libraries
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.12,<2' 'shapely>=2.1,<3' 'pyproj>=3.6,<4' 'matplotlib>=3.8,<4'
+      - name: Verify original station planimetric spline math before applying source data
+        run: |
+          python -m py_compile tools/geo_rail_g45_shifted_30station_quintic_horizontal.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g45_station_quintic.py' -v
+      - name: Download immutable all30 G10 and G30 original route; 29 genuine G25 station orientations; 7 G44 sites; G42 five modules
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G45"
+          gh release download mn-geo-rail-001-g10-27-geographic-visuals-41243658608 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G10-27-research-real-source-paths.geojson' --dir "$RUNNER_TEMP/G45"
+          gh release download mn-geo-rail-001-g30-tunnel-aware-new-corridors-41278684148 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G30-three-new-Natura-aware-study-routes.geojson' --dir "$RUNNER_TEMP/G45"
+          gh release download mn-geo-rail-001-g25-original-road-shortlist-G24-41259277284 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G25-OSRM-real-road-access-to-original-ground-site-shortlist.json' --dir "$RUNNER_TEMP/G45"
+          gh release download mn-geo-rail-001-g44-seven-old-DGT-stations-railchord-41321437002 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G44-seven-original-DGT2m-sites-two-mandatory-cities-and-30-corridors.json' --dir "$RUNNER_TEMP/G45"
+          gh release download mn-geo-rail-001-g42-real-railgrade-limits-all30-41320331517 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G42-source-30-five-sectors-and-real-MDT25-vertical-LP.json' --dir "$RUNNER_TEMP/G45"
+          echo "77d226cc842d33e2f799f2c269ddde57a17cb7d868791770c1624dda1b86136d  $RUNNER_TEMP/G45/G10-27-research-real-source-paths.geojson" | sha256sum -c -
+          echo "be35181c882c2f6ede4d07f7e0a68b084bb6247c54a7da0d1d566a66f844dffd  $RUNNER_TEMP/G45/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" | sha256sum -c -
+      - name: Flexible 0 3 6 9km shifted city contacts with real 7 locations/29 orientations, explicit 800m straight and sampled 160 200 250 radius cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g45_shifted_30station_quintic_horizontal.py \
+            --g10 "$RUNNER_TEMP/G45/G10-27-research-real-source-paths.geojson" \
+            --g30 "$RUNNER_TEMP/G45/G30-three-new-Natura-aware-study-routes.geojson" \
+            --g25 "$RUNNER_TEMP/G45/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" \
+            --g44 "$RUNNER_TEMP/G45/G44-seven-original-DGT2m-sites-two-mandatory-cities-and-30-corridors.json" \
+            --g42 "$RUNNER_TEMP/G45/G42-source-30-five-sectors-and-real-MDT25-vertical-LP.json" \
+            --json "$RUNNER_TEMP/G45/G45-30-all-630-original-station-2D-spline-approach-screen.json" \
+            --csv "$RUNNER_TEMP/G45/G45-30-all-630-rail-approach-curvature-condition-matrix.csv" \
+            --markdown "$RUNNER_TEMP/G45/G45-movable-city-station-approach-geometry-for-160-200-250.md" \
+            --map "$RUNNER_TEMP/G45/G45-seven-existing-stations-new-city-contact-geometries-200.png" \
+            --geojson "$RUNNER_TEMP/G45/G45-selected-research-rail-2D-centerlines-NOT-construction.geojson"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G45"
+          j=json.loads((p/"G45-30-all-630-original-station-2D-spline-approach-screen.json").read_text())
+          assert j["all_G10_27_and_G30_3_retained"] and j["source_30_options"]==30
+          assert j["seven_original_DGT2m_study_sites"]==7
+          assert j["original_G25_platform_orientation_contexts"]==29
+          assert len(j["all_630_route_site_speed_horizontal_screen_cases"])==630
+          assert j["station_straight_assumed_m"]==800 and j["exit_entry_shift_set_m"]==[0,3000,6000,9000]
+          assert j["no_station_centerline_vertical_grade_or_underlying_ground_full_route"]
+          assert j["no_constructed_tunnel_viaduct_lengths_costs_times"]
+          assert j["no_Natura2000_PIC_legal_freight_passenger_approval"]
+          assert j["no_new_DGT_geology_or_original_raster_acquisition"]
+          assert not j["Fxx_accepted"] and not j["Site_authorized"]
+          assert (p/"G45-seven-existing-stations-new-city-contact-geometries-200.png").stat().st_size>20000
+          print("G45 checked 30×7×3 source-grounded station reference geometry scenarios and strict caveats")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G45-30x7x3-source-station-planar-curvature-screen
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G45/G45-30-all-630-original-station-2D-spline-approach-screen.json
+            ${{ runner.temp }}/G45/G45-30-all-630-rail-approach-curvature-condition-matrix.csv
+            ${{ runner.temp }}/G45/G45-movable-city-station-approach-geometry-for-160-200-250.md
+            ${{ runner.temp }}/G45/G45-seven-existing-stations-new-city-contact-geometries-200.png
+            ${{ runner.temp }}/G45/G45-selected-research-rail-2D-centerlines-NOT-construction.geojson
+  main-G45-verified-publication:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check tested script SHA and source-only 30-route seven-study-site governance
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g45-all30-7stations-movable-planar-approaches.yml"
+          b="mn-geo-rail-001-g45-mobile-station-approaches-20261101"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          f="tools/geo_rail_g45_shifted_30station_quintic_horizontal.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$f?ref=$sha" --jq '.sha')" = "$(git hash-object "$f")"
+          mkdir -p "$RUNNER_TEMP/G45-pub"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G45-30x7x3-source-station-planar-curvature-screen \
+            --dir "$RUNNER_TEMP/G45-pub"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G45-pub"
+          d=json.loads((p/"G45-30-all-630-original-station-2D-spline-approach-screen.json").read_text())
+          assert d["all_G10_27_and_G30_3_retained"] and d["source_30_options"]==30
+          assert len(d["all_630_route_site_speed_horizontal_screen_cases"])==630
+          assert d["seven_original_DGT2m_study_sites"]==7
+          assert d["no_constructed_tunnel_viaduct_lengths_costs_times"] and d["no_station_centerline_vertical_grade_or_underlying_ground_full_route"]
+          assert d["no_Natura2000_PIC_legal_freight_passenger_approval"]
+          assert not d["Fxx_accepted"] and not d["Site_authorized"]
+          PY
+      - name: Release honest continuous 2D connector candidates to prior seven station sites, 30x7x3
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G45-pub"
+          gh release create "mn-geo-rail-001-g45-movable-city-railapproach-$GITHUB_RUN_ID" \
+            "$d/G45-30-all-630-original-station-2D-spline-approach-screen.json" \
+            "$d/G45-30-all-630-rail-approach-curvature-condition-matrix.csv" \
+            "$d/G45-movable-city-station-approach-geometry-for-160-200-250.md" \
+            "$d/G45-seven-existing-stations-new-city-contact-geometries-200.png" \
+            "$d/G45-selected-research-rail-2D-centerlines-NOT-construction.geojson" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G45 shift common city-grid control points to build C2 station-straight horizontal research connectors 30x7x3" \
+            --notes "Retains 27 G10 +3 G30 original 2km research grid routes and 7 actual previous DGT2m station sites, 29 historically observed platform orientations and previous road access. Shifts contact points beyond 2 fixed city anchor positions 0/3/6/9km and explores 800m station straight and C2 quintic approach 160/200/250 curvature checks. No standard rail alignment/clothoids, cannot claim station constructibility, costs, timetable, 3D terrain connection, Natura/PIC/legal clearance or EIA. G45 is a comparative research geometry screening only, no acquisition new DGT source/Fxx/Site."
