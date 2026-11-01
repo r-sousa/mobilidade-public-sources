@@ -61,8 +61,16 @@ jobs:
           for x in j["original_bounded_GeoJSON_feature_observations"]:
               pth=p/x["filename"]
               assert hashlib.sha256(pth.read_bytes()).hexdigest()==x["SHA256"]
-              d=json.loads(pth.read_text())
-              assert d["type"]=="FeatureCollection" and 1<=len(d["features"])<=5
+              if pth.suffix==".geojson":
+                  d=json.loads(pth.read_text())
+                  assert d["type"]=="FeatureCollection" and 1<=len(d["features"])<=5
+              elif pth.suffix==".gml":
+                  import xml.etree.ElementTree as ET
+                  root=ET.parse(pth).getroot()
+                  assert root.tag.rsplit("}",1)[-1].lower().endswith("featurecollection")
+                  members=[k for k in root.iter() if k.tag.rsplit("}",1)[-1] in ("member","featureMember")]
+                  assert 1<=len(members)<=5
+              else:raise ValueError("G41_unknown_native_vector_format")
           print("G41 audited official source",sum(z["capabilities_status"]=="VERIFIED_ORIGINAL_WFS_XML" for z in j["official_LNEG_WFS_source_registry"]),"of four, original geojson areas",len(j["original_bounded_GeoJSON_feature_observations"]))
           PY
       - uses: actions/upload-artifact@v4
@@ -73,7 +81,7 @@ jobs:
           path: |
             ${{ runner.temp }}/G41/G41-original-LNEG-geology-hydrogeo-SONDABASE-Marao-Alvao-status.json
             ${{ runner.temp }}/G41/G41-LNEG-Marao-Alvao-source-geology-acquisition-gates.md
-            ${{ runner.temp }}/G41/G41-LNEG-original-*.geojson
+            ${{ runner.temp }}/G41/G41-LNEG-original-*
   main-publish-G41-only-verified-producer:
     if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -121,7 +129,7 @@ jobs:
           shopt -s nullglob
           assets=("$d/G41-original-LNEG-geology-hydrogeo-SONDABASE-Marao-Alvao-status.json"
                   "$d/G41-LNEG-Marao-Alvao-source-geology-acquisition-gates.md")
-          matches=("$d"/G41-LNEG-original-*.geojson)
+          matches=("$d"/G41-LNEG-original-*)
           if (( ${#matches[@]} )); then assets+=("${matches[@]}"); fi
           gh release create "mn-geo-rail-001-g41-LNEG-Marao-Alvao-source-$GITHUB_RUN_ID" \
             "${assets[@]}" \
