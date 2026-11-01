@@ -1,0 +1,133 @@
+name: MN-GEO-RAIL-001 G21 original DGT 39-target native raster PROTECTED MAIN ONLY
+# Never runs on push, PR or issue comments. Separate credentialed read worker
+# and public no-secrets publisher. Explicit user workflow_dispatch only.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-geo-rail-001-g21-protected-native-source-intake
+  cancel-in-progress: false
+jobs:
+  verify-main-protection-before-any-DGT-environment:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Reject unprotected GitHub branch without touching the private DGT account
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          protected="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/r-sousa/mobilidade-public-sources/branches/main" | jq -r '.protected')"
+          test "$protected" = true || { echo "G21 refuses DGT account if main is not protected"; exit 13; }
+  authenticated-protected-native-39:
+    needs: verify-main-protection-before-any-DGT-environment
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: dgt-cdd
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install DGT original-source secure routing and raster verification modules
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3' 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
+      - name: Download public source-reviewed G20 exact 39 original raster IDs; SHA-verify manifest before touching secrets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G21-reviewed"
+          gh release download mn-geo-rail-001-g20-DGT2m-original-mandatory-study-source-manifest-41255178789 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G20-original-DGT2m-mandatory-research-source-tile-manifest.json' --dir "$RUNNER_TEMP/G21-reviewed"
+          echo "614e16b25dbcfe245deda15af2640a79f968d4981939916fff9b39df1b3901ff  $RUNNER_TEMP/G21-reviewed/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" | sha256sum -c -
+          python - <<'PY'
+          import pathlib,json,os
+          f=pathlib.Path(os.environ["RUNNER_TEMP"])/"G21-reviewed/G20-original-DGT2m-mandatory-research-source-tile-manifest.json"
+          j=json.loads(f.read_text())
+          assert j["new_original_DGT_1km_tiles_targeted"]==39
+          assert j["existing_original_DGT_1km_tiles_reused_within_neighbourhoods"]==4
+          assert j["study_reference_points_selected_for_two_mandatory_urban_markets"]==5
+          assert j["DGT_credentialed_original_source_requires_manual_dispatch_on_protected_main_and_environment"]=="dgt-cdd"
+          assert len({z["producer_ID"] for z in j["DGT_new_target_manifest_exact_verified_public_source_metadata"]})==39
+          print("G21 exact source manifest 39 new 1km originals; reuse existing 4, no re-download")
+          PY
+      - name: Bounded direct official DGT CDD source 39 GeoTIFF acquisition and internal native pixel QA
+        env:
+          DGT_CDD_USERNAME: ${{ secrets.DGT_CDD_USERNAME }}
+          DGT_CDD_PASSWORD: ${{ secrets.DGT_CDD_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python tools/geo_rail_g21_protected_original_DGT_native_acquisition.py \
+            --manifest "$RUNNER_TEMP/G21-reviewed/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" \
+            --stage "$RUNNER_TEMP/G21-original-secure-native" --acquire
+          python tools/geo_rail_g21_protected_original_DGT_native_acquisition.py \
+            --manifest "$RUNNER_TEMP/G21-reviewed/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" \
+            --stage "$RUNNER_TEMP/G21-original-secure-native" --verify
+      - name: Stage only original GeoTIFF source bytes and sanitized QA receipt, not credentials
+        uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G21-exact-original-native-DGT-39-${{ github.run_id }}
+          path: ${{ runner.temp }}/G21-original-secure-native/
+          compression-level: 0
+          retention-days: 5
+          if-no-files-found: error
+  independent-no-DGT-credential-publisher:
+    needs: authenticated-protected-native-39
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install independent original GeoTIFF verifier only (NO protected secret)
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3' 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
+      - name: Retrieve only sanitized original rasters and proofs from credentialed runner
+        uses: actions/download-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G21-exact-original-native-DGT-39-${{ github.run_id }}
+          path: ${{ runner.temp }}/G21-native-verify
+      - name: Independently SHA-verify manifest and re-read every original DGT2m pixel in separate job
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G21-reviewed"
+          gh release download mn-geo-rail-001-g20-DGT2m-original-mandatory-study-source-manifest-41255178789 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G20-original-DGT2m-mandatory-research-source-tile-manifest.json' --dir "$RUNNER_TEMP/G21-reviewed"
+          echo "614e16b25dbcfe245deda15af2640a79f968d4981939916fff9b39df1b3901ff  $RUNNER_TEMP/G21-reviewed/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" | sha256sum -c -
+          python tools/geo_rail_g21_protected_original_DGT_native_acquisition.py \
+            --manifest "$RUNNER_TEMP/G21-reviewed/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" \
+            --stage "$RUNNER_TEMP/G21-native-verify" --verify
+          test "$(find "$RUNNER_TEMP/G21-native-verify" -maxdepth 1 -name 'MDT-2m-*.tif' | wc -l)" -eq 39
+      - name: Publish original 39 DGT GeoTIFF files and source-validated sanitized QA with CC BY 4.0 attribution
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g21-native-DGT2m-39-mandatory-site-original-${GITHUB_RUN_ID}"
+          d="$RUNNER_TEMP/G21-native-verify"
+          gh release create "$tag" "$d"/MDT-2m-*.tif "$d/G21-original-DGT-2m-source-QA.json" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G21 verified original DGT 2m 39 new 1km source tiles; 5 mandatory city RESEARCH points not stations" \
+            --notes "Instituto produtor: Direção-Geral do Território (DGT), Centro de Dados, CC BY 4.0, citar DGT. Source-only original terrain GeoTIFFs exactly matching 39 official public DGT source identifiers with original raster native SHA, valid 2m pixel and independent no-credential QA. Target selection from G20 5 unique source-grid research references near Vila Real/Bragança; reuse 4 original existing source tiles and do not download existing 45km2 again. Disconnected original terrain not continuous Porto-Zamora railway design, no station site legally/technically approved, no cost, independent crossborder vertical datums or Fxx/Site. No credentials, signed links or auth strings persisted in release."
