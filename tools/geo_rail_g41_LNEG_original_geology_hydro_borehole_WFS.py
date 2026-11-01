@@ -150,7 +150,8 @@ def execute(g40,outdir,report,markdown):
         registry.append(record)
         print("G41_SOURCE",json.dumps({"dataset":label,"WFS":record["capabilities_status"],
           "featureTypes":record.get("total_source_FeatureTypes"),
-          "validated_geojson_areas":[a["area"] for a in record.get("original_WFS_area_probes",[]) if a["status"]=="ORIGINAL_LNEG_WFS_GEOJSON_FEATURES_OBSERVED"]},ensure_ascii=False),flush=True)
+          "selected_type":record.get("candidate_original_source_typeName"),
+          "areas":[{"name":a["area"],"status":a["status"],"kind":a.get("source_XML_root"),"attempts":a.get("attempts")} for a in record.get("original_WFS_area_probes",[])]},ensure_ascii=False),flush=True)
     out={"mission":"MN-GEO-RAIL-001","stage":"G41_official_LNEG_geology_hydrogeo_borehole_OGC_source_Marao_Alvao",
        "source_G40_30_routes_preserved":True,"all30_G10_G30":30,
        "official_source_count":len(DATA),"bounded_target_areas":AREAS,
