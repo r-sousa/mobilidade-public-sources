@@ -47,7 +47,7 @@ def hit(geometry,source,buffer_m=250):
     if receipt["status"]!="VERIFIED":return {"status":"UNKNOWN_SOURCE","line_overlap_km":None,"proximity_m":None}
     poly=[g for g,_ in geoms]
     if not poly:return {"status":"EMPTY_OBSERVED_NOT_LEGAL_CLEARANCE","line_overlap_km":0,"proximity_m":None}
-    near=[(g,p) for g,p in geoms if g.intersects(geometry.buffer(buffer_m))]
+    near=[(g,p) for g,p in geoms if g.intersects(geometry.buffer(buffer_m) if buffer_m>0 else geometry)]
     if near:
         u=unary_union([g for g,_ in near])
         overlap=round(geometry.intersection(u).length/1000,3) if geometry.geom_type=="LineString" else None
