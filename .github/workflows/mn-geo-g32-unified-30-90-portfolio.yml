@@ -1,0 +1,147 @@
+name: MN-GEO-RAIL-001 G32 unified 27 G10 plus 3 G30 90 comparable source screens
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g32-all30-comparable-portfolio-20261101
+      - main
+    paths:
+      - tools/geo_rail_g32_unified_30_90_comparison.py
+      - tests/test_geo_rail_g32_unified_30_portfolio.py
+      - .github/workflows/mn-geo-g32-unified-30-90-portfolio.yml
+permissions:
+  contents: read
+jobs:
+  branch-g32-build-30-plus-90-source-evidence:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g32-all30-comparable-portfolio-20261101'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Geospatial stack for original Copernicus terrain and ICNF/MITECO Natura polygons
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.12,<2' 'rasterio>=1.4,<2' 'shapely>=2,<3' 'pyproj>=3.6,<4' 'matplotlib>=3.8,<4'
+      - name: Full G10 preservation and no false tunnel/Natura exemption tests
+        run: |
+          python -m py_compile tools/geo_rail_g32_unified_30_90_comparison.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g32_unified_30_portfolio.py' -v
+      - name: Recover immutable public evidence only, verify original DSM SHA256
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G32"
+          b="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 240 \
+            "$b/mn-geo-rail-001-r1-airport-zamora-dsm-preacceptance-41198485197/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" \
+            -o "$RUNNER_TEMP/G32/DSM.tif"
+          echo "a708b502b2eb86236c70f2d74322e9d8e2ea1417eb24094d0e43536845407bd9  $RUNNER_TEMP/G32/DSM.tif" | sha256sum -c -
+          gh release download mn-geo-rail-001-g10-27-geographic-visuals-41243658608 \
+            --repo "$GITHUB_REPOSITORY" --pattern "G10-27-research-real-source-paths.geojson" --dir "$RUNNER_TEMP/G32"
+          gh release download mn-geo-rail-001-g28-natura-PT-ES-PIC-source-preacceptance-41276204753 \
+            --repo "$GITHUB_REPOSITORY" --pattern "G28-original-ICNF-MITECO-natura-clipped-geometry.geojson" \
+            --pattern "G28-27-corridor-7-city-Natura-PIC-original-source-screen.json" --dir "$RUNNER_TEMP/G32"
+          gh release download mn-geo-rail-001-g30-tunnel-aware-new-corridors-41278684148 \
+            --repo "$GITHUB_REPOSITORY" --pattern "G30-new-research-corridor-comparison.json" \
+            --pattern "G30-three-new-Natura-aware-study-routes.geojson" --dir "$RUNNER_TEMP/G32"
+      - name: Calculate all 90 same-method comparative scenarios and both figures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g32_unified_30_90_comparison.py \
+            --g10 "$RUNNER_TEMP/G32/G10-27-research-real-source-paths.geojson" \
+            --g28 "$RUNNER_TEMP/G32/G28-27-corridor-7-city-Natura-PIC-original-source-screen.json" \
+            --g30 "$RUNNER_TEMP/G32/G30-new-research-corridor-comparison.json" \
+            --g30geo "$RUNNER_TEMP/G32/G30-three-new-Natura-aware-study-routes.geojson" \
+            --polygons "$RUNNER_TEMP/G32/G28-original-ICNF-MITECO-natura-clipped-geometry.geojson" \
+            --dsm "$RUNNER_TEMP/G32/DSM.tif" \
+            --json "$RUNNER_TEMP/G32/G32-full-30-options-90-scenarios.json" \
+            --csv "$RUNNER_TEMP/G32/G32-full-30-options-90-scenarios.csv" \
+            --markdown "$RUNNER_TEMP/G32/G32-all-30-side-by-side-technical-comparison.md" \
+            --scatter "$RUNNER_TEMP/G32/G32-all-30-side-by-side-3-speeds-scatter.png" \
+            --map "$RUNNER_TEMP/G32/G32-all-30-same-map-PT-ES-Natura.png"
+          python - <<'PY'
+          import json,pathlib,os,collections
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G32"
+          data=json.loads((p/"G32-full-30-options-90-scenarios.json").read_text())
+          assert data["G10_count"]==27 and data["G30_count"]==3 and data["total_study_routes"]==30
+          assert data["total_rows"]==90 and len(data["rows"])==90
+          assert data["canonical_portfolio_next_stages_all_27_G10_plus_3_G30"]
+          for speed in (160,200,250):
+              rows=[x for x in data["rows"] if x["scenario_speed_kmh"]==speed]
+              c=collections.Counter(x["source_family"] for x in rows)
+              assert c=={"G10":27,"G30":3}, (speed,c)
+          assert data["PIC_status"]=="UNRESOLVED_MUST_NOT_RANK_AS_LEGALLY_CLEARED"
+          assert data["no_stations_service_quality_road_access_cost_CBA_or_running_time_estimates"]
+          assert data["new_DGT_tiles"]==0 and not data["Fxx_accepted"] and not data["Site_authorized"]
+          for name in ("G32-all-30-side-by-side-3-speeds-scatter.png","G32-all-30-same-map-PT-ES-Natura.png"):
+              assert (p/name).stat().st_size>26000
+          print("G32 QA PASS: every G10 and every G30 present at all three speeds; no fictional tunnel/cost/permission")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G32-30-original-and-90-same-method-comparisons
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G32/G32-full-30-options-90-scenarios.json
+            ${{ runner.temp }}/G32/G32-full-30-options-90-scenarios.csv
+            ${{ runner.temp }}/G32/G32-all-30-side-by-side-technical-comparison.md
+            ${{ runner.temp }}/G32/G32-all-30-side-by-side-3-speeds-scatter.png
+            ${{ runner.temp }}/G32/G32-all-30-same-map-PT-ES-Natura.png
+  main-publish-source-verified-G32-comparison:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Require identical G32 tested source blob and recover branch product without redoing acquisitions
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g32-unified-30-90-portfolio.yml"
+          b="mn-geo-rail-001-g32-all30-comparable-portfolio-20261101"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=4" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          head="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          file="tools/geo_rail_g32_unified_30_90_comparison.py"
+          got="$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$head" --jq '.sha')"
+          test "$got" = "$(git hash-object "$file")"
+          mkdir -p "$RUNNER_TEMP/G32-public"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G32-30-original-and-90-same-method-comparisons \
+            --dir "$RUNNER_TEMP/G32-public"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G32-public"
+          x=json.loads((p/"G32-full-30-options-90-scenarios.json").read_text())
+          assert x["G10_count"]==27 and x["G30_count"]==3 and x["total_rows"]==90
+          assert x["canonical_portfolio_next_stages_all_27_G10_plus_3_G30"]
+          assert x["PIC_status"]=="UNRESOLVED_MUST_NOT_RANK_AS_LEGALLY_CLEARED"
+          PY
+      - name: Release full 30/90 mandatory side-by-side comparison
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G32-public"
+          gh release create "mn-geo-rail-001-g32-unified-30-90-$GITHUB_RUN_ID" \
+            "$d/G32-full-30-options-90-scenarios.json" \
+            "$d/G32-full-30-options-90-scenarios.csv" \
+            "$d/G32-all-30-side-by-side-technical-comparison.md" \
+            "$d/G32-all-30-side-by-side-3-speeds-scatter.png" \
+            "$d/G32-all-30-same-map-PT-ES-Natura.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G32 ALL 27 G10 plus 3 G30: 90 source-grounded side-by-side Natura/terrain comparisons" \
+            --notes "Unified all 30 original study corridors; equal source and methods for 160/200/250 km/h. Each speed has all 27 prior G10 AND all 3 new G30. Official ICNF+MITECO Natura original polygon overlap and original Copernicus GLO30 DSM; 3/6km conservative radius and 18/25permille mathematical surface proxies. Unmeasured road/service/cost/tunnel/operation/permit are explicitly UNKNOWN. PIC unknown, no new DGT and no Fxx/Site."
