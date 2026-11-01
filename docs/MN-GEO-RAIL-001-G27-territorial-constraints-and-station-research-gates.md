@@ -32,6 +32,12 @@ A verificação de `GetCapabilities` dos serviços originais da **DGT/SNIT** ide
 
 **CRUS**: é uma harmonização das classes dos instrumentos de planeamento, para uso territorial/estatístico, **não** peça de licenciamento ou substituto do PDM e regulamento aplicável.
 
+## Alteração regulamentar particularmente relevante — Bragança (9 de junho de 2026)
+
+O **Aviso n.º 14240/2026/2, de 9 de junho**, Município de Bragança, publicado no Diário da República, aprovou a **2.ª correção material da 1.ª revisão do PDM**. A correção ao artigo 62.º, n.º 7, clarifica a repartição simétrica da largura total das faixas de proteção das vias; houve também alteração cartográfica da hierarquização de segmentos da Estrada do Turismo e da antiga EN 217 junto aos acessos à A4, passando a Sistema Secundário. É informação diretamente pertinente para interfaces periféricos orientados pela A4, que requer confirmação espacial sobre a cartografia vigente.
+
+Fonte primária: [Diário da República — Aviso n.º 14240/2026/2](https://diariodarepublica.pt/dr/detalhe/aviso/14240-2026-1130568389). **Não atribuir automaticamente a correção a um dos quatro setores sem sobreposição cartográfica da planta oficial.** Não confundir **Vila Real** com Vila Real de Santo António ao pesquisar PDM.
+
 ## Portões que ainda dependem de confirmação
 
 1. Confrontar o mosaico das interseções WFS com as **cartas e diplomas REN/RAN publicados** e identificar expressamente exclusões, alterações e datas por município.
