@@ -162,10 +162,6 @@ def evaluate(g10,g30,g25,g44,g42):
                         for orientation in entry["angles"]:
                             for scale in DERIV_SCALES:
                                 total+=1
-                                key=(city,tuple(round(q,1) for q in route.interpolate(max(1500,west-ew)).coords[0]),
-                                  tuple(round(q,1) for q in route.interpolate(min(route.length-1500,east+ee)).coords[0]),
-                                  tuple(round(q,1) for q in site),orientation,scale,
-                                  tuple(round(q,4) for q in (west,east)))
                                 # Omit global caching due source-grid endpoint tangent
                                 # uncertainty; verify all 30 on their own approach.
                                 q=station_case_geometry(route,site,west,east,ew,ee,orientation,scale)
