@@ -62,7 +62,11 @@ def make_nodes(a,b,old,buffer_km):
                        int(math.ceil((y1+buffer_km*1000)/CELL))*CELL+CELL,CELL):
             node=(x,y)
             if direct.distance(Point(centre(node)))<=buffer_km*1000:
-                nodes.add(node)
+                lon,lat=TO_WGS(*centre(node))
+                # Conservative interior of G28 official polygon clip bounds;
+                # never obtain artificially low Natura exposure by escaping a cached source.
+                if -8.70<=lon<=-5.52 and 41.07<=lat<=42.10:
+                    nodes.add(node)
     nodes.update(old)
     if a not in nodes or b not in nodes:raise ValueError("missing_start_end")
     # Exclude a generous no-service investigation neighbourhood of Puebla de Sanabria.
