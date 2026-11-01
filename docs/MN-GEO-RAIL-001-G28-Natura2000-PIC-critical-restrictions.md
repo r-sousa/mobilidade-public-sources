@@ -18,3 +18,23 @@ Fontes primárias:
 - CE: https://environment.ec.europa.eu/topics/nature-and-biodiversity/natura-2000/permitting-procedure_en
 
 Produto G28: cruzamento exploratório source-only das 27 linhas originais G10, com os sete círculos de estudo G27 (3 Vila Real, 4 Bragança), registos de fonte, SHA e respostas UNKNOWN onde o produtor não foi verificável. Proibir Fxx/Site até QA legal/ambiental.
+
+## Primeiros resultados cruzados, fontes reais G28 (01/11/2026)
+
+**Proveniência primária:** ICNF `rn2000_merge`, resposta GeoJSON oficial verificada, **23 geometrias** no perímetro solicitado, SHA256 `661525285a69885101c079de231e0e6d794ea66a12c833d3b5602fde022a3443`. Espanha: WFS oficial devolveu HTTP 403; usado com sucesso o **arquivo nacional SHP oficial do MITECO (118 038 973 bytes; SHA256 `ab463a477184eeadb1ef077d06766063627d1fdbd9e4629055ec3bfa7556d54e`)**, com **31 geometrias** recortadas ao perímetro em processamento efémero. O ficheiro nacional não é redistribuído. A edição de ficheiros espanhola tem `202412` no nome; a página apresenta dados de atualização 2025, o que **não autoriza assumir geometrias atualizadas em 2026**; a recência legal depende de confirmação autonómica/municipal por sítio.
+
+**Resultado:** **27/27** cadeias G10 de centros de quadrículas exploratórias intersetam polígonos de Natura 2000 em Portugal e **27/27** também do lado espanhol. O primeiro cruzamento português apresenta 30,498 a 52,554 km de interseção nas linhas exploratórias. Estes valores **não são** comprimentos de ferrovias viáveis e **não** representam as áreas exatas de impacte; impõem procurar geometrias alternativas e investigar os objetivos de conservação.
+
+| Família em discussão | Interseção PT (km de linha de investigação) | Interseção ES (km de linha de investigação) | Soma PT + ES (km) |
+|---|---:|---:|---:|
+| P1-2-1 (Amarante) | 35,421 | 0,309 | 35,730 |
+| P2-2-1 (Guimarães) | 32,432 | 0,309 | 32,741 |
+| P2-2-3 (variante fronteiriça) | 49,565 | 21,188 | 70,753 |
+
+A comparação permite identificar **conflito particularmente pronunciado na P2-2-3**, mas não classificar a P2-2-1 como ambientalmente adequada: o valor ecológico dos habitats e a possibilidade de evitamento não são proporcionais aos quilómetros de interseção. Verificados no ICNF, entre outros, `Alvão/Marão`, `Montesinho/Nogueira`, `Rios Sabor e Maçãs`, `Morais` e `Douro Internacional`, variando com a alternativa.
+
+Os sete círculos exploratórios de 400 m (três Vila Real e quatro Bragança) não intersetaram os polígonos oficiais portugueses consultados. Um setor de Bragança está a **6,6 m** da geometria Natura 2000 e um setor de Vila Real a **207,8 m**. São distâncias do limite do círculo de investigação, não de futuras obras, e não eliminam afetações indiretas nem outras servidões. As áreas de estudo continuam por verificar no terreno e perante planos e direitos fundiários.
+
+**Implicação para a decisão macro:** a carteira G10 está excessivamente concentrada em geometrias com conflito observado e deve ser *reaberta* para novas famílias territoriais que procurem reduzir a afetação Natura **antes** de limitar a shortlist a três alternativas, cruzando as distâncias e a funcionalidade dos nós e sem supor desníveis de ferrovia ou custos inventados. O bloqueio PIC mantém-se em todas.
+
+**Ficheiro reutilizável:** GeoJSON com polígonos oficiais recortados ao perímetro, identificadores/nome tal como disponíveis no produtor e hashes de origem, publicado sob o G28 (após ensaios e fusão). Permite nova triagem ambiental sem descarregar novamente os 118 MB do ficheiro nacional do MITECO. Permanecem obrigatórias as validações de restrições/autorização legal e geometrias ferroviárias reais.
