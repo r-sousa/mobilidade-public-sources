@@ -1,0 +1,53 @@
+name: MN-GEO-RAIL-001 G21 public source-only safe preflight of protected DGT downloader
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g21-protected-target-native-intake-20261031
+    paths:
+      - tools/geo_rail_g21_protected_original_DGT_native_acquisition.py
+      - tests/test_geo_rail_g21_secure_DGT_acquisition.py
+      - .github/workflows/mn-geo-g21-public-safe-preflight.yml
+      - .github/workflows/mn-geo-g21-protected-DGT-original-39.yml
+permissions:
+  contents: read
+jobs:
+  G21_exact_native_source_no_credentials_preflight:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Source review and bounded native QA dependencies, no DGT secrets in this workflow
+        run: python -m pip install --disable-pip-version-check 'requests>=2.32,<3' 'rasterio>=1.4,<2' 'numpy>=1.24,<3'
+      - name: Static compilation and source-only G21 authorization + original raster naming tests
+        run: |
+          python -m py_compile tools/geo_rail_g21_protected_original_DGT_native_acquisition.py
+          python -m unittest discover -s tests -p test_geo_rail_g21_secure_DGT_acquisition.py -v
+      - name: Fetch source G20 exact 39 selected DGT producer tile catalogue IDs and validate no producer network
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/g21"
+          gh release download mn-geo-rail-001-g20-DGT2m-original-mandatory-study-source-manifest-41255178789 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G20-original-DGT2m-mandatory-research-source-tile-manifest.json' \
+            --dir "$RUNNER_TEMP/g21"
+          echo "614e16b25dbcfe245deda15af2640a79f968d4981939916fff9b39df1b3901ff  $RUNNER_TEMP/g21/G20-original-DGT2m-mandatory-research-source-tile-manifest.json" | sha256sum -c -
+          PYTHONPATH=tools python - <<'PY'
+          import os,pathlib
+          from geo_rail_g21_protected_original_DGT_native_acquisition import review
+          path=pathlib.Path(os.environ["RUNNER_TEMP"])/"g21/G20-original-DGT2m-mandatory-research-source-tile-manifest.json"
+          root,items=review(path)
+          assert len(items)==39
+          assert root["study_reference_points_selected_for_two_mandatory_urban_markets"]==5
+          assert root["existing_original_DGT_1km_tiles_reused_within_neighbourhoods"]==4
+          assert all(x["actual_original_GeoTIFF_bytes_present"] is False for x in items.values())
+          print("G21 original 39 exact source identifiers successfully preflighted; no user credentials, protected DGT or new terrain bytes used")
+          PY
