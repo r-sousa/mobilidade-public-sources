@@ -116,6 +116,10 @@ def new_portfolio(g10,g28,polys,bytes_blob,report,geopath,mappath,markdown):
     union=unary_union(polygons)
     if not union.is_valid:raise ValueError("G28_polygon_union_invalid")
     prepared=prep(union)
+    # Fast screening only: simplification of 120m changes routing utility near
+    # boundaries; final reported km use UNSIMPLIFIED original producer polygons.
+    search_union=union.simplify(120,preserve_topology=True)
+    search_prepared=prep(search_union)
     # Modules use identical compulsory city connector RESEARCH cells; no station claim.
     modes={}
     for mode in ROUTING:
@@ -124,7 +128,7 @@ def new_portfolio(g10,g28,polys,bytes_blob,report,geopath,mappath,markdown):
             nodes=make_nodes(p[0],p[-1],p,26.0 if mode!="potential_deep_tunnel" else 20.0)
             # Spatially repel the existing reference route in diversity mode.
             near=frozenset(v for original in oldpaths.values() for v in original)
-            res=route(nodes,p[0],p[-1],union,prepared,mode,near)
+            res=route(nodes,p[0],p[-1],search_union,search_prepared,mode,near)
             if res is None:raise ValueError("G30_source_search_failed_module_"+str(j))
             built.append(res)
             module_stats.append({"module":("AFSC_to_Vila_Real_W","Vila_Real_E_to_Braganca_W","Braganca_E_to_Zamora")[j],
@@ -164,6 +168,8 @@ def new_portfolio(g10,g28,polys,bytes_blob,report,geopath,mappath,markdown):
          "research_route_modes":present,"mandatory_grid_connectors_preserved":True,
          "Vila_Real_Braganca_service_not_physically_verified":True,
          "Sanabria_station_excluded":True,"surface_Natura_overlap_not_impacts":True,
+         "routing_simplified_polygon_boundary_m_only_for_heuristic_search":120,
+         "all_reported_Natura_overlap_measured_on_unsimplified_official_polygons":True,
          "deep_tunnel_is_only_hypothesis_no_verified_3D_alignment":True,
          "legally_appropriate_assessment_required_if_significant_effects":True,
          "no_tunnel_depth_portals_hydrogeology_geotech_rail_radius_station_cost_or_timetable":True,
