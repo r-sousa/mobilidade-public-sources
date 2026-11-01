@@ -119,30 +119,46 @@ def work(g10,g30,g36,g39,countryraw,outdir,outjson,outcsv,outmd,outpng,outmap,ou
     tofetch=[r for r in rows if r["generalized_GISCO_2024_ES_interior_1p5km"]]
     if len(tofetch)>MAX_RAW_REQUESTS:raise ValueError("G40_too_many_source_calls")
     outdir.mkdir(parents=True,exist_ok=True)
-    file_bytes={};receipt={}
+    file_bytes={};cache={}
     for i,r in enumerate(tofetch):
-        xy=r["original_study_grid_sample_UTM30"]
-        tile_key=tuple(round(q/50)*50 for q in xy)
-        if tile_key in receipt:
-            # A raster is only reusable if requested point lies within actual bounds;
-            # rerun query if sample is outside.
-            r0=receipt[tile_key]
-            box0=r0["source_verified_UTM30_bounds"]
-            if box0[0]<=xy[0]<box0[2] and box0[1]<xy[1]<=box0[3]:
-                r.update({k:v for k,v in r0.items() if k.startswith("source_") or k=="original_IGN_25m_elevation_m"})
-                # Reusing another point sample is NOT allowed (different pixel!).
-                # So no short-circuit; sampling separate reference from raw raster.
-                r["source_status"]="QUERY_PENDING_UNIQUE_REAL_PIXEL"
+        xy=tuple(r["original_study_grid_sample_UTM30"])
+        # Deduplicate only physically identical actual source sample coordinates.
+        # 2D G30 avoid_surface and potential_deep_tunnel can share the same
+        # eastern leg; no repeated WCS transfer, yet retain both scenarios.
+        key=tuple(round(float(v),1) for v in xy)
+        prior=cache.get(key)
         try:
-            b=get_tile(r)
-            name=f"IGN_original_G40_{i:02d}_{r['option_id']}.tif"
-            file_bytes[name]=b
+            if prior is not None and math.dist(xy,prior["xy"])<=0.08:
+                r.update({field:prior["record"][field] for field in
+                    ("original_IGN_25m_elevation_m","source_status",
+                     "source_original_SHA256","source_raw_bytes",
+                     "source_raster_dimensions","source_verified_UTM30_bounds",
+                     "source_IGN_COVERAGE")})
+                # Prior original sample point identical within centimetres;
+                # validate that the actual original TIFF still covers the point
+                # and SAMPLE the pixel anew (not copying another elevation).
+                b=prior["original_tif"]
+                with MemoryFile(b) as mem:
+                    with mem.open() as ds:
+                        z=next(ds.sample([xy],masked=True))[0]
+                        if np.ma.is_masked(z) or not np.isfinite(z):
+                            raise ValueError("G40_identical_location_reused_TIFF_NoData")
+                        r["original_IGN_25m_elevation_m"]=round(float(z),2)
+                r["source_original_WCS_query_reused_same_ground_position"]=True
+                r["source_reused_from_option_id"]=prior["record"]["option_id"]
+            else:
+                b=get_tile(r)
+                name=f"IGN_original_G40_{i:02d}_{r['option_id']}.tif"
+                file_bytes[name]=b
+                cache[key]={"xy":xy,"record":dict(r),"original_tif":b}
+                r["source_original_WCS_query_reused_same_ground_position"]=False
         except (RuntimeError,ValueError,OSError) as exc:
             r.update({"source_status":"SOURCE_FAILED_UNAVAILABLE_NOT_INTERPOLATED",
                 "source_error_type":type(exc).__name__,"source_error":str(exc)[:180],
                 "original_IGN_25m_elevation_m":None})
-        if i<len(tofetch)-1:time.sleep(.18)
-        print(f"G40_ORIGINAL_DEM {i+1}/{len(tofetch)} {r['option_id']} {r['study_grid_distance_from_Zamora_end_km']}km {r['source_status']}",flush=True)
+        if i<len(tofetch)-1 and not r.get("source_original_WCS_query_reused_same_ground_position"):
+            time.sleep(.18)
+        print(f"G40_ORIGINAL_DEM {i+1}/{len(tofetch)} {r['option_id']} {r['study_grid_distance_from_Zamora_end_km']}km {r['source_status']} {'reused' if r.get('source_original_WCS_query_reused_same_ground_position') else 'WCS'}",flush=True)
     with zipfile.ZipFile(outzip,"w",zipfile.ZIP_STORED) as z:
         for name,b in file_bytes.items():z.writestr(name,b)
         z.writestr("G40-real-IGN-source-attribution.txt",
@@ -173,6 +189,9 @@ def work(g10,g30,g36,g39,countryraw,outdir,outjson,outcsv,outmd,outpng,outmap,ou
        "study_distances_from_Zamora_end_km":list(DISTANCES_KM),
        "original_geo_points":len(rows),"official_ES_1p5km_border_interior_eligible":len(tofetch),
        "actual_IGN_source_original_TIFF_verified_count":len(file_bytes),
+       "original_source_terrain_locations_measured_even_if_reused":sum(r["source_status"]=="ACTUAL_OFFICIAL_WCS_GEOtiff_QA_PASS" for r in rows),
+       "source_WCS_duplicate_queries_avoided":sum(r.get("source_original_WCS_query_reused_same_ground_position",False) for r in rows),
+       "G30_avoid_vs_tunnel_eastern_2D_same_ground_not_two_independent_east_solutions":all(x["pairwise_original_study_grid_sep_km"]["G30-avoid_surface_overlap|G30-potential_deep_tunnel"]<.001 for x in spread),
        "origin_geography_and_research_route_diversity":spread,
        "original_Eurostat_2024_GISCO_PT_ES_metadata":bmeta,
        "sources_primary":"IGN-CNIG WCS Elevacion25830_25 actual original GeoTIFF EPSG25830 25m",
@@ -221,7 +240,8 @@ def work(g10,g30,g36,g39,countryraw,outdir,outjson,outcsv,outmd,outpng,outmap,ou
        "","## Quantidades reais",
        f"- Amostras geográficas de investigação: **{len(rows)}** (4 × {len(DISTANCES_KM)}).",
        f"- Pontos interiores de Espanha com pelo menos 1,5 km de margem da fronteira GISCO generalizada: **{len(tofetch)}**.",
-       f"- GeoTIFF originais WCS efetivamente validados: **{len(file_bytes)}**.",
+       f"- GeoTIFF originais WCS únicos adquiridos e validados: **{len(file_bytes)}**; posições medidas (incluindo reutilizações exatas): **{sum(r['source_status']=='ACTUAL_OFFICIAL_WCS_GEOtiff_QA_PASS' for r in rows)}**.",
+       f"- Consultas repetidas evitadas devido à coincidência espacial de geometrias: **{sum(r.get('source_original_WCS_query_reused_same_ground_position',False) for r in rows)}**.",
        f"- Fonte: {EP}, cobertura **{COVERAGE}**, sistema EPSG:25830, píxeis 25m.",
        "","## Diferença espacial entre variantes (quatro linhas de grelha, não projeto)",
        "","| km antes de Zamora | Separação mínima entre duas linhas (km) | Separação máxima (km) |",
@@ -242,6 +262,7 @@ def work(g10,g30,g36,g39,countryraw,outdir,outjson,outcsv,outmd,outpng,outmap,ou
        "","**Sem novas quadrículas DGT, Fxx ou Site.**"]
     outmd.write_text("\n".join(md)+"\n")
     print("G40_RESULT",json.dumps({"sample_rows":len(rows),"eligible":len(tofetch),"actual_original_GeoTIFF":len(file_bytes),
+        "reused_source_same_exact_grid_point":sum(r.get("source_original_WCS_query_reused_same_ground_position",False) for r in rows),
         "profile_comparison":sample_terrain,
         "spread_at_15_55km":spread,
         "no_real_railway_3D":True},ensure_ascii=False),flush=True)
