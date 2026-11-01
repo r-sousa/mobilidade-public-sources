@@ -29,6 +29,64 @@ def fetch(url,parameters,limit):
             raise ValueError("invalid official geometry")
         p.append((transform(TO3035,g),f.get("properties") or {}))
     return p,{"status":"VERIFIED","count":len(p),"sha256":hashlib.sha256(r.content).hexdigest(),"url":r.url}
+
+def archived_miteco():
+    """Official MITECO dated downloadable national SHP fallback if geoserver WFS 403.
+    Read only features in mainland study envelope, never redistribute national ZIP.
+    """
+    import tempfile,zipfile
+    import geopandas as gpd
+    from shapely.geometry import box
+    url=("https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/"
+         "servicios/banco-datos-naturaleza/3-rn2000/rn2000-shp.zip")
+    max_zip=175_000_000
+    with tempfile.TemporaryDirectory(prefix="G28-MITECO-") as td:
+        dst=Path(td)/"RN2000-source.zip"
+        h=hashlib.sha256()
+        size=0
+        with requests.get(url,stream=True,timeout=(20,120),headers={"User-Agent":"Mobilidade-Norte-open-data-research/1.0"}) as r:
+            r.raise_for_status()
+            if int(r.headers.get("Content-Length") or 0)>max_zip:raise ValueError("MITECO national ZIP over bounded cap")
+            with dst.open("wb") as f:
+                for chunk in r.iter_content(1024*1024):
+                    if not chunk:continue
+                    size+=len(chunk)
+                    if size>max_zip:raise ValueError("MITECO national ZIP exceeded cap")
+                    h.update(chunk);f.write(chunk)
+        if not zipfile.is_zipfile(dst):raise ValueError("not MITECO original ZIP")
+        folder=Path(td)/"shapefiles";folder.mkdir()
+        with zipfile.ZipFile(dst) as z:
+            items=z.infolist()
+            if not items or sum(x.file_size for x in items)>2_000_000_000:
+                raise ValueError("unbounded decompressed national shapes")
+            for x in items:
+                p=Path(x.filename)
+                if p.is_absolute() or ".." in p.parts:raise ValueError("MITECO ZIP invalid archive path")
+            shps=[x.filename for x in items if x.filename.lower().endswith(".shp")]
+            if not shps:raise ValueError("no MITECO shp in original archive")
+            z.extractall(folder)
+        clip=gpd.GeoSeries([box(-6.95,41,-5.52,42.12)],crs="EPSG:4326")
+        observed=[]
+        count=0
+        for shp in shps:
+            df=gpd.read_file(folder/shp,bbox=clip,engine="pyogrio")
+            if df.crs is None:raise ValueError("MITECO original shp lacks declared CRS")
+            df=df.to_crs(3035)
+            for _,record in df.iterrows():
+                geo=record.geometry
+                if geo is None or geo.is_empty:continue
+                if not geo.is_valid:geo=geo.buffer(0)
+                if not geo.is_valid or geo.geom_type not in ("Polygon","MultiPolygon"):
+                    raise ValueError("MITECO original shapefile geometry invalid")
+                props={str(k):str(v) for k,v in record.items() if k!="geometry" and v is not None}
+                observed.append((geo,props))
+                count+=1
+        if not count:raise ValueError("source produced zero Spanish polygons in known RN2000 corridor bbox")
+        return observed,{"status":"VERIFIED","count":count,"sha256":h.hexdigest(),
+                         "url":url,"original_zip_bytes":size,"original_shapefiles":shps,
+                         "source_format":"official full national SHP clipped in runner, source ZIP not published",
+                         "source_date_reference":"MITECO catalogue dated 2025-12-31; verify site-specific updates"}
+
 def source_scan():
     ret={}
     tasks={"PT_ICNF":(PT,{"f":"geojson","where":"1=1","outFields":"*",
@@ -41,6 +99,14 @@ def source_scan():
     for key,(url,params,max_n) in tasks.items():
         try:ret[key]=fetch(url,params,max_n)
         except Exception as e:ret[key]=([],{"status":"UNKNOWN_SOURCE","reason":f"{type(e).__name__}:{str(e)[:170]}"})
+    if ret["ES_MITECO"][1]["status"]!="VERIFIED":
+        wfs_error=ret["ES_MITECO"][1]["reason"]
+        try:
+            ret["ES_MITECO"]=archived_miteco()
+            ret["ES_MITECO"][1]["previous_official_WFS_failure"]=wfs_error
+        except Exception as e:
+            ret["ES_MITECO"]=([],{"status":"UNKNOWN_SOURCE",
+                "reason":"WFS:"+wfs_error+"; MITECO_ARCHIVE:"+type(e).__name__+":"+str(e)[:180]})
     return ret
 def hit(geometry,source,buffer_m=250):
     geoms,receipt=source
