@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install bounded spatial analysis dependencies
-        run: python -m pip install --disable-pip-version-check 'shapely>=2,<3' 'pyproj>=3.6,<4' 'requests>=2.31,<3'
+        run: python -m pip install --disable-pip-version-check 'shapely>=2,<3' 'pyproj>=3.6,<4' 'requests>=2.31,<3' 'geopandas>=1.0,<2' 'pyogrio>=0.10,<1'
       - name: Test strict UNKNOWN and environmental conflict gates
         run: |
           python -m py_compile tools/geo_rail_g28_natura_pic_constraint_gate.py
