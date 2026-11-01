@@ -126,6 +126,7 @@ def strip(site,direction,matrices,length,width,step_long,step_cross,max_grade):
   return {**summary,"source_profile_fit_status":"insufficient_original_ground_pixels",
    "modelled_terrain_cut_volume_m3_NOT_ENGINEERING_QUANTITY":None,
    "modelled_terrain_fill_volume_m3_NOT_ENGINEERING_QUANTITY":None,
+   "modelled_total_terrain_cut_plus_fill_m3_NOT_ENGINEERING_QUANTITY":None,
    "source_vertical_deviation_p90_m":None,
    "source_linear_grade_required_before_clamp_per_mille":None}
  t=np.array([v[0] for v in ok],dtype="float64")
