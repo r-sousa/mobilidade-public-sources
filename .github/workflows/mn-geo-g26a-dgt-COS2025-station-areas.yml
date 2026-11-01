@@ -1,0 +1,83 @@
+name: MN-GEO-RAIL-001 G26A targeted original DGT COS2025 landuse seven station research sectors
+# Fallback OGC item service, currently HTTP500 on all bounded feature queries.
+# NEVER auto-run on main and break public source CI while producer is down.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  original_COS2025_7_study_sites_bounded_DGT_OGC:
+    if: github.repository == 'r-sousa/mobilidade-public-sources'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Original DGT COS2025 vector coordinate libraries only, no credential access
+        run: python -m pip install --disable-pip-version-check 'shapely>=2.1,<3' 'pyproj>=3.6,<4'
+      - name: Validate source bounded 400m data acquisition safeguards
+        run: |
+          python -m py_compile tools/geo_rail_g26a_cos2025_original_local_landuse.py
+          python -m unittest discover -s tests -p test_geo_rail_g26a_cos2025.py -v
+      - name: Retrieve exact last G25 published seven unique real road-ground site study positions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G26A"
+          gh release download mn-geo-rail-001-g25-original-road-shortlist-G24-41259277284 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G25-OSRM-real-road-access-to-original-ground-site-shortlist.json' \
+            --dir "$RUNNER_TEMP/G26A"
+          echo "be35181c882c2f6ede4d07f7e0a68b084bb6247c54a7da0d1d566a66f844dffd  $RUNNER_TEMP/G26A/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" | sha256sum -c -
+      - name: Seven independent DGT 2025 COS original OGC API 400m source geometry and land classes with complete paging; NO original raster download
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/geo_rail_g26a_cos2025_original_local_landuse.py \
+            --g25 "$RUNNER_TEMP/G26A/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" \
+            --json "$RUNNER_TEMP/G26A-seven-mandatory-city-original-DGT-COS2025-local-landuse.json" \
+            --geojson "$RUNNER_TEMP/G26A-seven-site-DGT-COS2025-original-clipped-400m-WGS84.geojson" \
+            --markdown "$RUNNER_TEMP/G26A-COS2025-seven-research-station-territorial-context.md"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])
+          j=json.loads((p/"G26A-seven-mandatory-city-original-DGT-COS2025-local-landuse.json").read_text())
+          f=json.loads((p/"G26A-seven-site-DGT-COS2025-original-clipped-400m-WGS84.geojson").read_text())
+          assert j["local_original_2025_land_use_reference_circles"]==7 if "local_original_2025_land_use_reference_circles" in j else j["study_sites"]==7
+          assert len(j["original_2025_COS_landuse_by_site"])==7
+          assert len(f["features"])==j["original_COS2025_polygon_feature_count"]>0
+          assert all(.92<=v["original_COS2025_covered_circle_fraction"]<=1.08 for v in j["original_2025_COS_landuse_by_site"])
+          assert j["not_an_official_PDM_REN_RAN_SRUP_cadastre_or_legal_buildability_check"] and j["no_new_DGT_2m_elevation_acquisitions"]
+          assert not j["Fxx_accepted"] and not j["Site_authorized"]
+          print("G26A 7 COS2025 original full-reproducible source pages and clipped vector landuse 400m research circles")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G26A-seven-COS2025-original-local-station-landuse
+          path: |
+            ${{ runner.temp }}/G26A-seven-mandatory-city-original-DGT-COS2025-local-landuse.json
+            ${{ runner.temp }}/G26A-seven-site-DGT-COS2025-original-clipped-400m-WGS84.geojson
+            ${{ runner.temp }}/G26A-COS2025-seven-research-station-territorial-context.md
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish only after QA on main, with DGT CC-BY 4.0 source attribution, not legal parcel claim
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="mn-geo-rail-001-g26a-original-COS2025-seven-landuse-sectors-${GITHUB_RUN_ID}"
+          gh release create "$tag" \
+            "$RUNNER_TEMP/G26A-seven-mandatory-city-original-DGT-COS2025-local-landuse.json" \
+            "$RUNNER_TEMP/G26A-seven-site-DGT-COS2025-original-clipped-400m-WGS84.geojson" \
+            "$RUNNER_TEMP/G26A-COS2025-seven-research-station-territorial-context.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G26A DGT original COS2025v1 land use, 7 research station areas in Vila Real and Braganca, CC BY 4.0" \
+            --notes "Original DGT OGC API COS2025 Série 2 2025 vector with N1/N4 classes and original IDs, bounded seven 400m research circles, polygon intersection areas and original SHA source paging receipts. Not cadastral title, REN, RAN, PDM, legal buildability, environmentally compliant line or station. Original seven G25 physically distinct road research points, user compulsory Vila Real and Bragança, Sanabria excluded. No new original DGT MDT2m acquisition, no Fxx/Site."

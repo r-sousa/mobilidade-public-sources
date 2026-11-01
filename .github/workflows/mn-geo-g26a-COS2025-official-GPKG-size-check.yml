@@ -1,0 +1,26 @@
+name: MN-GEO-RAIL-001 G26A official COS2025 GeoPackage ZIP source size and availability preflight
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g26-cos2025-proximity-and-dgt-gap-gates-20261101
+    paths:
+      - .github/workflows/mn-geo-g26a-COS2025-official-GPKG-size-check.yml
+permissions:
+  contents: read
+jobs:
+  original_DGT_COS2025_bulk_zip_HEAD_only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check only official DGT COS2025 full-country GeoPackage ZIP HTTP status and bytes, not acquire
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://geo2.dgterritorio.gov.pt/cos/S2/COS2025/COS2025v1-S2-gpkg.zip"
+          echo "DGT original full-country COS2025v1-S2 GeoPackage archive HEAD evidence"
+          curl --max-time 55 --retry 2 --retry-delay 2 --location --silent --show-error --head "$url" \
+            | grep -Ei '^(HTTP/|content-length:|content-type:|accept-ranges:|last-modified:|etag:|location:)' || true
+          echo "No original national vector COS archive downloaded or cached."
