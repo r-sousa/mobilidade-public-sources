@@ -15,6 +15,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from shapely.geometry import Point,LineString,mapping
 from pyproj import Transformer
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 from geo_rail_g42_original_terrain_LP_all30_module_evidence import ANCHORS,SEGMENTS
 CITY_BOUNDS={
  "Vila_Real":{"west":ANCHORS[0],"east":ANCHORS[1],"local_sector":"Vila_Real_local_W_to_E"},
