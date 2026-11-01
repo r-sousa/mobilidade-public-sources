@@ -72,6 +72,9 @@ jobs:
           assert d["all_30_portfolio_retained"] and d["all_G10_count"]==27 and d["all_G30_count"]==3
           assert d["original_geo_points"]==36 and len(d["selected_four_research_lattice_lines_not_rail_design"])==4
           assert d["official_ES_1p5km_border_interior_eligible"]<=36
+          assert d["G30_avoid_vs_tunnel_eastern_2D_same_ground_not_two_independent_east_solutions"]
+          assert d["source_WCS_duplicate_queries_avoided"]>=8
+          assert d["original_source_terrain_locations_measured_even_if_reused"]==36
           assert len(d["origin_geography_and_research_route_diversity"])==9
           assert d["no_non_sourced_samples_interpolated"] and d["no_new_DGT_tiles"]
           assert d["PIC_official_source_UNRESOLVED"] and not d["Fxx_accepted"] and not d["Site_authorized"]
@@ -131,6 +134,8 @@ jobs:
           p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G40-public"
           d=json.loads((p/"G40-four-original-IGN-terrain-research-profiles.json").read_text())
           assert d["all_30_portfolio_retained"] and d["original_geo_points"]==36
+          assert d["G30_avoid_vs_tunnel_eastern_2D_same_ground_not_two_independent_east_solutions"]
+          assert d["source_WCS_duplicate_queries_avoided"]>=8
           assert d["PIC_official_source_UNRESOLVED"] and not d["Fxx_accepted"]
           with zipfile.ZipFile(p/"G40-actual-original-IGN-MDT25-WCS-source-tiles.zip") as z:
               sources=[s for s in z.namelist() if s.endswith(".tif")]
