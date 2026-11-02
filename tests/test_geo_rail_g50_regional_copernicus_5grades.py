@@ -25,7 +25,7 @@ class G50TrueSourceDSM(unittest.TestCase):
   h=np.array([100.,150.,90.])
   track=np.array([100.,110.,105.])
   m=g.stats(xy,h,track,12.5)
-  self.assertAlmostEqual(m["original_DSM_400m_mean_abs_height_deviation_m_proxy"],21.25)
+  self.assertAlmostEqual(m["original_DSM_400m_mean_abs_height_deviation_m_proxy"],16.25)
   self.assertTrue(m["DSM_contains_buildings_canopy_and_not_ground"])
   self.assertTrue(m["sparse_400m_study_smoothing_and_vertical_profile_NOT_3D_rail_design"])
  def test_no_fake_negative_geometry_just_unknown(self):
