@@ -1,0 +1,128 @@
+name: MN-GEO-RAIL-001 G49 mixed freight traction and measured station function decision evidence
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g49-mixed-freight-station-decision-gates-20261102
+      - main
+    paths:
+      - tools/geo_rail_g49_mixed_freight_station_source_comparison.py
+      - tests/test_geo_rail_g49_source_traction_station.py
+      - .github/workflows/mn-geo-g49-mixed-freight-station-source-gates.yml
+permissions:
+  contents: read
+jobs:
+  branch-freight-station-source-comparison:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g49-mixed-freight-station-decision-gates-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Freight grade-only physical formula regression
+        run: |
+          python -m py_compile tools/geo_rail_g49_mixed_freight_station_source_comparison.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g49_source_traction_station.py' -v
+      - name: Reuse exact prior published source observations G48 G45 G46 G44
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G49"
+          gh release download mn-geo-rail-001-g48-mixed-grade-recalibration-41424858000 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G48-5-gradients-original-IGN-DGT-150-mathematical-screens.json' --dir "$RUNNER_TEMP/G49"
+          gh release download mn-geo-rail-001-g45-movable-city-railapproach-41332951589 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G45-30-all-630-original-station-2D-spline-approach-screen.json' --dir "$RUNNER_TEMP/G49"
+          gh release download mn-geo-rail-001-g46-DGT84-vs-630-station-splines-41333603439 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G46-630-source-alternatives-original-DGT2m-terrain-coverage.json' --dir "$RUNNER_TEMP/G49"
+          gh release download mn-geo-rail-001-g44-seven-old-DGT-stations-railchord-41321437002 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G44-seven-original-DGT2m-sites-two-mandatory-cities-and-30-corridors.json' --dir "$RUNNER_TEMP/G49"
+      - name: Calculate 4 actual ground site station grade road 2D comparisons and 36 freight-gravity-only physical floors
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g49_mixed_freight_station_source_comparison.py \
+            --g48 "$RUNNER_TEMP/G49/G48-5-gradients-original-IGN-DGT-150-mathematical-screens.json" \
+            --g45 "$RUNNER_TEMP/G49/G45-30-all-630-original-station-2D-spline-approach-screen.json" \
+            --g46 "$RUNNER_TEMP/G49/G46-630-source-alternatives-original-DGT2m-terrain-coverage.json" \
+            --g44 "$RUNNER_TEMP/G49/G44-seven-original-DGT2m-sites-two-mandatory-cities-and-30-corridors.json" \
+            --json "$RUNNER_TEMP/G49/G49-mixed-grade-four-real-station-traction-gravity-source-gates.json" \
+            --csv "$RUNNER_TEMP/G49/G49-four-stations-mixed-12p5-15-access-geometry-source-comparison.csv" \
+            --markdown "$RUNNER_TEMP/G49/G49-mixed-freight-operational-limits-station-decision-evidence.md"
+          python - <<'PY'
+          import json,pathlib,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G49"
+          d=json.loads((p/"G49-mixed-grade-four-real-station-traction-gravity-source-gates.json").read_text())
+          assert d["source_all30_G10_27_G30_3_retained"] and d["source_241_real_IGN25_and_484_real_DGT2m_ground_retained"]
+          assert len(d["source_four_original_G47_DGT2m_3km_station_pilots"])==4
+          assert len(d["freight_gravity_only_force_and_ideal_power_lower_bounds"])==36
+          assert d["freight_25permille_NOT_accepted_in_mixed_line_scenarios"]
+          assert d["no_740m_train_mass_to_length_conversion"] and d["no_traction_adhesion_rolling_aero_resistance_curve_cant_braking_certificate"]
+          assert d["no_additional_original_DGT_OR_IGN_data_acquired"]
+          assert d["Natura_PIC_and_administrative_approvals_NOT_cleared"]
+          assert not d["Fxx_accepted"] and not d["Site_authorized"]
+          print("G49 validated source-station G48 12.5/15‰ operational differences and 36 freight gravity-only effort/power physical scenarios")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G49-mixed-station-original-ground-freight-gravity
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G49/G49-mixed-grade-four-real-station-traction-gravity-source-gates.json
+            ${{ runner.temp }}/G49/G49-four-stations-mixed-12p5-15-access-geometry-source-comparison.csv
+            ${{ runner.temp }}/G49/G49-mixed-freight-operational-limits-station-decision-evidence.md
+  main-G49-verified-publish:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exact tested G49 producer blob and earlier original terrain source evidence QA
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          workflow="mn-geo-g49-mixed-freight-station-source-gates.yml"
+          branch="mn-geo-rail-001-g49-mixed-freight-station-decision-gates-20261102"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?branch=$branch&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test "$id" != "null" && test -n "$id"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          file="tools/geo_rail_g49_mixed_freight_station_source_comparison.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$sha" --jq '.sha')" = "$(git hash-object "$file")"
+          mkdir -p "$RUNNER_TEMP/G49-pub"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G49-mixed-station-original-ground-freight-gravity \
+            --dir "$RUNNER_TEMP/G49-pub"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G49-pub"
+          d=json.loads((p/"G49-mixed-grade-four-real-station-traction-gravity-source-gates.json").read_text())
+          assert d["source_all30_G10_27_G30_3_retained"]
+          assert d["freight_25permille_NOT_accepted_in_mixed_line_scenarios"]
+          assert len(d["freight_gravity_only_force_and_ideal_power_lower_bounds"])==36
+          assert not d["Fxx_accepted"] and not d["Site_authorized"]
+          PY
+      - name: Release true original station ground mixed scenario tradeoffs and freight gravity-only floor
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G49-pub"
+          gh release create "mn-geo-rail-001-g49-real-station-mixed-freight-gates-$GITHUB_RUN_ID" \
+            "$d/G49-mixed-grade-four-real-station-traction-gravity-source-gates.json" \
+            "$d/G49-four-stations-mixed-12p5-15-access-geometry-source-comparison.csv" \
+            "$d/G49-mixed-freight-operational-limits-station-decision-evidence.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G49 mixed 12.5 and 15‰ original DGT2m station grade and freight gravitational effort floor, all30 maintained" \
+            --notes "Actual original ground G48 G43/G47 retained. Cross original 7 historic station study sources (four pilot measured 3km), prior G45 shiftable 200km/h planar geometry, G44 actual OSRM and conditional 12.5/15‰ plus station function 10 and 2.5‰; gravity-only mass 1000/1500/2000t and speed 40/60/80km/h force/power lower bounds for mixed 12.5/15 and exceptional 18/20, not freight at 25‰. No locomotive capability/traction resistance, no validated braking or train length-to-mass, no 3D engineered line, tunnel/viaduct quantities, costs, travel times, Natura PIC or new DGT. No Fxx/Site."
