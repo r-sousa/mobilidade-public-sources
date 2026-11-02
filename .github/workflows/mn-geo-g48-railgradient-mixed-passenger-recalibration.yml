@@ -1,0 +1,146 @@
+name: MN-GEO-RAIL-001 G48 gradient regimes mixed freight exceptional and passenger true terrain
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g48-regulatory-gradient-recalibration-20261102
+      - main
+    paths:
+      - tools/geo_rail_gradient_policy_G48.py
+      - tools/geo_rail_g48_real_source_5grade_traffic_station_recalibration.py
+      - tests/test_geo_rail_g48_real_5grade_station_regimes.py
+      - .github/workflows/mn-geo-g48-railgradient-mixed-passenger-recalibration.yml
+permissions:
+  contents: read
+jobs:
+  branch-real-source-5gradient-station-analysis:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g48-regulatory-gradient-recalibration-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install sparse grade LP and source terrain output numerical dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.12,<2' 'matplotlib>=3.8,<4'
+      - name: Test real source regimes and no missing-as-flat or 25‰ mixed freight assumptions
+        run: |
+          python -m py_compile tools/geo_rail_gradient_policy_G48.py tools/geo_rail_g48_real_source_5grade_traffic_station_recalibration.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g48_real_5grade_station_regimes.py' -v
+      - name: Reuse immutable actual G43 241 real IGN25 and G47 484 original DGT2m source readings, no DGT credential
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G48"
+          gh release download mn-geo-rail-001-g43-dense-25m-railgrade-curve-41320882428 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G43-6km-G39-reused-originals-241-25m-source-grade-curve.json' \
+            --dir "$RUNNER_TEMP/G48"
+          gh release download mn-geo-rail-001-g47-4-DGT-native2m-original-profiles-41334165282 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G47-native-original-DGT2m-four-station-study-3km-ground-and-grade.json' \
+            --dir "$RUNNER_TEMP/G48"
+      - name: 150 constrained vertical rail grade research cases using actual source pixels; preserve all 30
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g48_real_source_5grade_traffic_station_recalibration.py \
+            --g43 "$RUNNER_TEMP/G48/G43-6km-G39-reused-originals-241-25m-source-grade-curve.json" \
+            --g47 "$RUNNER_TEMP/G48/G47-native-original-DGT2m-four-station-study-3km-ground-and-grade.json" \
+            --json "$RUNNER_TEMP/G48/G48-5-gradients-original-IGN-DGT-150-mathematical-screens.json" \
+            --csv "$RUNNER_TEMP/G48/G48-150-5gradients-four-stations-zamora-comparison.csv" \
+            --markdown "$RUNNER_TEMP/G48/G48-gradient-normative-scope-recalculated-terrain-and-station-gates.md" \
+            --figure "$RUNNER_TEMP/G48/G48-mixed-vs-passenger-4-original-DGT2m-station-profile-comparison.png" \
+            --figure2 "$RUNNER_TEMP/G48/G48-Zamora-original-IGN25-five-gradients-curvature-sensitivity.png"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G48"
+          d=json.loads((p/"G48-5-gradients-original-IGN-DGT-150-mathematical-screens.json").read_text())
+          assert d["policy_version"]=="G48-2026-11-02"
+          assert d["primary_mixed_line_screens_permille"]==[12.5,15]
+          assert d["exceptional_freight_screens_permille"]==[18,20]
+          assert d["passenger_majority_not_freight_baseline_permille"]==[25]
+          assert len(d["all_150_mathematical_regime_sensitivity_cases"])==150
+          assert len(d["10_exact_G43_G47_legacy_18_25_sensitivity_reproductions"])==10
+          assert d["all30_G10_27_G30_3_still_preserved"] and d["G43_original_IGN25_241_source_points_verified"]
+          assert d["G47_original_DGT2m_4x121_source_points_verified"] and d["no_original_raster_reacquisition"]
+          assert d["unconstrained_study_station_vs_10_PAT_reference_vs_2p5_if_operations_relevant"]
+          assert d["spanish_IFI_rules_are_not_blanket_portuguese_railway_permissions"]
+          assert d["no_freight_traffic_fitted_at_25permille"] and not d["Fxx_accepted"] and not d["Site_authorized"]
+          assert d["PIC_Natura_hydrogeology_status"]=="UNKNOWN_NOT_LEGALLY_CLEARED"
+          for f in ("G48-mixed-vs-passenger-4-original-DGT2m-station-profile-comparison.png",
+              "G48-Zamora-original-IGN25-five-gradients-curvature-sensitivity.png"):
+              assert (p/f).stat().st_size>15000
+          print("G48 verified 150 LP; 10 exact original G43/G47 18/25‰ regression; new primary 12.5/15‰, exceptions conditional")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G48-recalibrated-grade-true-ground-five-profiles
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G48/G48-5-gradients-original-IGN-DGT-150-mathematical-screens.json
+            ${{ runner.temp }}/G48/G48-150-5gradients-four-stations-zamora-comparison.csv
+            ${{ runner.temp }}/G48/G48-gradient-normative-scope-recalculated-terrain-and-station-gates.md
+            ${{ runner.temp }}/G48/G48-mixed-vs-passenger-4-original-DGT2m-station-profile-comparison.png
+            ${{ runner.temp }}/G48/G48-Zamora-original-IGN25-five-gradients-curvature-sensitivity.png
+  main-publish-G48-test-locked-original-sources:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Require original tested G48 branch producer and grade-policy blobs match main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g48-railgradient-mixed-passenger-recalibration.yml"
+          b="mn-geo-rail-001-g48-regulatory-gradient-recalibration-20261102"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          for file in tools/geo_rail_gradient_policy_G48.py tools/geo_rail_g48_real_source_5grade_traffic_station_recalibration.py; do
+            test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$sha" --jq '.sha')" = "$(git hash-object "$file")"
+          done
+          mkdir -p "$RUNNER_TEMP/G48-public"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G48-recalibrated-grade-true-ground-five-profiles \
+            --dir "$RUNNER_TEMP/G48-public"
+          python - <<'PY'
+          import json,pathlib,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G48-public"
+          d=json.loads((p/"G48-5-gradients-original-IGN-DGT-150-mathematical-screens.json").read_text())
+          assert d["primary_mixed_line_screens_permille"]==[12.5,15] and d["exceptional_freight_screens_permille"]==[18,20]
+          assert d["passenger_majority_not_freight_baseline_permille"]==[25]
+          assert len(d["all_150_mathematical_regime_sensitivity_cases"])==150
+          assert len(d["10_exact_G43_G47_legacy_18_25_sensitivity_reproductions"])==10
+          assert d["all30_G10_27_G30_3_still_preserved"] and d["no_original_raster_reacquisition"]
+          assert d["spanish_IFI_rules_are_not_blanket_portuguese_railway_permissions"]
+          assert d["no_freight_traffic_fitted_at_25permille"] and not d["Fxx_accepted"]
+          PY
+      - name: Release actual G43 and G47 source based 12.5 15 18 20 25 gradient matrix, sources scope and plots
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G48-public"
+          gh release create "mn-geo-rail-001-g48-mixed-grade-recalibration-$GITHUB_RUN_ID" \
+            "$d/G48-5-gradients-original-IGN-DGT-150-mathematical-screens.json" \
+            "$d/G48-150-5gradients-four-stations-zamora-comparison.csv" \
+            "$d/G48-gradient-normative-scope-recalculated-terrain-and-station-gates.md" \
+            "$d/G48-mixed-vs-passenger-4-original-DGT2m-station-profile-comparison.png" \
+            "$d/G48-Zamora-original-IGN25-five-gradients-curvature-sensitivity.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G48 rail mixed-freight 12.5/15‰ primary vs 18/20‰ exceptional and 25‰ passenger-only real terrain recalibration" \
+            --notes "Source-verified 241 IGN25 ground readings G43 and 484 DGT2m original readings G47, not re-downloaded. Five grade regimes including mixed main 12.5/15‰, conditionally exceptional 18‰ F1 /20‰ F2-F3 as defined in Spanish IFI, passenger-majority 25‰ NOT freight. 150 math LP runs, 10 exact G43/G47 historical legacy 18/25 reproductions. Station operational sensitivities: no extra restriction, Spanish PAT passenger stop 10‰ reference, EU TSI 2.5‰ only under applicable coupling/stabling conditions, not blanket passenger station. Spanish rules not automatic PT approval. No 3D railway route, operating train traction/timetable, tunnel or viaduct quantities, CAPEX, Natura2000/PIC legal clearance or added DGT, Fxx/Site. Full 30 comparison retained."
