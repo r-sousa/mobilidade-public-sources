@@ -1,0 +1,141 @@
+name: MN-GEO-RAIL-001 G50 original DSM all30 corrected mixed 12p5 and 15per mille screens
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g50-all30-regrade-DSM-20261102
+      - main
+    paths:
+      - tools/geo_rail_g50_full30_actual_Copernicus_DSM_mixed_12p5_15.py
+      - tests/test_geo_rail_g50_regional_copernicus_5grades.py
+      - .github/workflows/mn-geo-g50-all30-GLO30-mixed-gradients.yml
+permissions:
+  contents: read
+jobs:
+  branch-regrade-original-30-90-scenarios-source-DSM:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g50-all30-regrade-DSM-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 42
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Copernicus original geospatial source stack
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.12,<2' 'rasterio>=1.4,<2' 'shapely>=2.1,<3' 'pyproj>=3.6,<4' 'matplotlib>=3.8,<4'
+      - name: Unit test corrected source-grade policy and original G31 screen vertical gradients
+        run: |
+          python -m py_compile tools/geo_rail_g50_full30_actual_Copernicus_DSM_mixed_12p5_15.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g50_regional_copernicus_5grades.py' -v
+      - name: Download only immutable original Copernicus GLO30 DSM and old G10 G30 and G32 original 90 result
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G50"
+          b="https://github.com/r-sousa/mobilidade-public-sources/releases/download"
+          curl --fail --location --silent --show-error --retry 3 --max-time 240 \
+            "$b/mn-geo-rail-001-r1-airport-zamora-dsm-preacceptance-41198485197/MN-GEO-RAIL-001-AFSC-Zamora-GLO30-DSM-1arcsec.tif" \
+            -o "$RUNNER_TEMP/G50/DSM.tif"
+          echo "a708b502b2eb86236c70f2d74322e9d8e2ea1417eb24094d0e43536845407bd9  $RUNNER_TEMP/G50/DSM.tif" | sha256sum -c -
+          gh release download mn-geo-rail-001-g10-27-geographic-visuals-41243658608 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G10-27-research-real-source-paths.geojson' --dir "$RUNNER_TEMP/G50"
+          gh release download mn-geo-rail-001-g30-tunnel-aware-new-corridors-41278684148 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G30-three-new-Natura-aware-study-routes.geojson' --dir "$RUNNER_TEMP/G50"
+          gh release download mn-geo-rail-001-g32-unified-30-90-41280190620 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G32-full-30-options-90-scenarios.json' --dir "$RUNNER_TEMP/G50"
+          echo "77d226cc842d33e2f799f2c269ddde57a17cb7d868791770c1624dda1b86136d  $RUNNER_TEMP/G50/G10-27-research-real-source-paths.geojson" | sha256sum -c -
+      - name: Recompute same 90 earlier G32 research geometries for five true source DSM grade regimes and compare 18/25 regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g50_full30_actual_Copernicus_DSM_mixed_12p5_15.py \
+            --g10 "$RUNNER_TEMP/G50/G10-27-research-real-source-paths.geojson" \
+            --g30 "$RUNNER_TEMP/G50/G30-three-new-Natura-aware-study-routes.geojson" \
+            --g32 "$RUNNER_TEMP/G50/G32-full-30-options-90-scenarios.json" \
+            --dsm "$RUNNER_TEMP/G50/DSM.tif" \
+            --json "$RUNNER_TEMP/G50/G50-all30-90-450-original-GLO30-five-grade-route-screens.json" \
+            --csv "$RUNNER_TEMP/G50/G50-450-12p5-15-18-20-25permille-all30-160-200-250.csv" \
+            --markdown "$RUNNER_TEMP/G50/G50-revised-full30-mixed-passenger-regional-terrain-screen.md" \
+            --plot "$RUNNER_TEMP/G50/G50-full30-Copernicus-DSM-mixed-vs-passenger-200kmh.png"
+          python - <<'PY'
+          import json,pathlib,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G50"
+          d=json.loads((p/"G50-all30-90-450-original-GLO30-five-grade-route-screens.json").read_text())
+          assert d["original_G10_27_G30_3_retained"] and d["original_30_routes"]==30
+          assert d["same_source_90_horizontal_speed_routes"]==[160,200,250]
+          assert d["count_equal_source_route_speed_grade_cases"]==450
+          assert d["regime_mixed_freight_main_permille"]==[12.5,15]
+          assert d["regime_exceptional_conditional_freight_permille"]==[18,20]
+          assert d["regime_passenger_not_mixed_permille"]==[25]
+          assert d["DSM_is_surface_vegetation_and_buildings_NOT_terrain"]
+          assert d["no_DSM_25m_vertical_distances_are_actual_tunnel_or_viaduct"]
+          assert d["new_DGT_raster_tiles_acquired"]==0
+          assert d["Natura_PIC_geology_and_cultivated_land_legal_NOT_CLEARED"]
+          assert not d["Fxx_accepted"] and not d["Site_authorized"]
+          assert (p/"G50-full30-Copernicus-DSM-mixed-vs-passenger-200kmh.png").stat().st_size>30000
+          print("G50 verified all30 450 new original DSM grade and source G32 18/25 historical regression")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G50-all30-corrected-five-grade-source-DSM
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G50/G50-all30-90-450-original-GLO30-five-grade-route-screens.json
+            ${{ runner.temp }}/G50/G50-450-12p5-15-18-20-25permille-all30-160-200-250.csv
+            ${{ runner.temp }}/G50/G50-revised-full30-mixed-passenger-regional-terrain-screen.md
+            ${{ runner.temp }}/G50/G50-full30-Copernicus-DSM-mixed-vs-passenger-200kmh.png
+  main-publish-G50-verified-original-DSM-source:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify exact tested same-source G50 producer and all30 450 corrected outputs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g50-all30-GLO30-mixed-gradients.yml"
+          b="mn-geo-rail-001-g50-all30-regrade-DSM-20261102"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          file="tools/geo_rail_g50_full30_actual_Copernicus_DSM_mixed_12p5_15.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$sha" --jq '.sha')" = "$(git hash-object "$file")"
+          mkdir -p "$RUNNER_TEMP/G50-pub"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G50-all30-corrected-five-grade-source-DSM \
+            --dir "$RUNNER_TEMP/G50-pub"
+          python - <<'PY'
+          import json,pathlib,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G50-pub"
+          d=json.loads((p/"G50-all30-90-450-original-GLO30-five-grade-route-screens.json").read_text())
+          assert d["original_G10_27_G30_3_retained"] and d["count_equal_source_route_speed_grade_cases"]==450
+          assert d["DSM_is_surface_vegetation_and_buildings_NOT_terrain"] and not d["Site_authorized"]
+          assert d["regime_mixed_freight_main_permille"]==[12.5,15]
+          assert d["regime_passenger_not_mixed_permille"]==[25] and d["new_DGT_raster_tiles_acquired"]==0
+          PY
+      - name: Publish source-only full30 grade-corrected regional terrain and method evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G50-pub"
+          gh release create "mn-geo-rail-001-g50-regional-all30-12p5-15-regrade-$GITHUB_RUN_ID" \
+            "$d/G50-all30-90-450-original-GLO30-five-grade-route-screens.json" \
+            "$d/G50-450-12p5-15-18-20-25permille-all30-160-200-250.csv" \
+            "$d/G50-revised-full30-mixed-passenger-regional-terrain-screen.md" \
+            "$d/G50-full30-Copernicus-DSM-mixed-vs-passenger-200kmh.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G50 30 rail corridor research × 3 speeds × mixed 12.5/15 exceptional 18/20 passenger25 grade screens on original Copernicus GLO30 DSM" \
+            --notes "Actual Copernicus GLO30 DSM original SHA-locked previously downloaded source, 27 original G10 +3 original G30 research routes, original G32 selected smoothings and 18/25 source metrics reproduced. Five gradient conditional screens for 160/200/250 speeds: 450 comparable 30-route speed-grade cases. DSM SURFACE has trees/buildings and is NOT native bare-earth terrain, grades are illustrative source grid proxies, DSM below-ground distances NOT tunnels and above-ground NOT viaducts; G48 actual DGT2m/IGN25 local source findings remain higher authority. No real full 3D railway, freight tonnage/timetables, CAPEX, Natura/PIC clearance or new DGT. No Fxx/Site."
