@@ -1,0 +1,147 @@
+name: MN-GEO-RAIL-001 G53 first actual original DGT2m local XYZ railway research with vertical curves
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g53-3D-native-DGT-station-20261102
+      - main
+    paths:
+      - tools/geo_rail_g53_original_DGT2m_four_stations_3D_vertical.py
+      - tests/test_geo_rail_g53_source_DGT_3D_local_profile.py
+      - .github/workflows/mn-geo-g53-first-original-DGT2m-XYZ-stations.yml
+permissions:
+  contents: read
+jobs:
+  branch-G53-real-original-DGT-XYZ-mixed-curvature:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g53-3D-native-DGT-station-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact original DGT2m XY vs G45 and numerical rail research LP stack
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.12,<2' 'shapely>=2.1,<3' 'matplotlib>=3.8,<4'
+      - name: G53 64 local original-source math XYZ and center-vertical tie tests
+        run: |
+          python -m py_compile tools/geo_rail_g53_original_DGT2m_four_stations_3D_vertical.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g53_source_DGT_3D_local_profile.py' -v
+      - name: Strict reuse only original verified DGT G47 terrain, horizontal G45 630, gap G46 84, policy G48 and families G52
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G53"
+          gh release download mn-geo-rail-001-g47-4-DGT-native2m-original-profiles-41334165282 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G47-native-original-DGT2m-four-station-study-3km-ground-and-grade.json' --dir "$RUNNER_TEMP/G53"
+          gh release download mn-geo-rail-001-g45-movable-city-railapproach-41332951589 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G45-30-all-630-original-station-2D-spline-approach-screen.json' --dir "$RUNNER_TEMP/G53"
+          gh release download mn-geo-rail-001-g46-DGT84-vs-630-station-splines-41333603439 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G46-630-source-alternatives-original-DGT2m-terrain-coverage.json' --dir "$RUNNER_TEMP/G53"
+          gh release download mn-geo-rail-001-g48-mixed-grade-recalibration-41424858000 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G48-5-gradients-original-IGN-DGT-150-mathematical-screens.json' --dir "$RUNNER_TEMP/G53"
+          gh release download mn-geo-rail-001-g52-six-geographic-design-study-families-41466484789 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G52-all30-source-module-family-and-four-station-planar-options.json' --dir "$RUNNER_TEMP/G53"
+      - name: Fit genuine 25m-spaced EPSG3763 original XY and original native DGT ground 4 sites times 16 grade radius station center assumptions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g53_original_DGT2m_four_stations_3D_vertical.py \
+            --g47 "$RUNNER_TEMP/G53/G47-native-original-DGT2m-four-station-study-3km-ground-and-grade.json" \
+            --g45 "$RUNNER_TEMP/G53/G45-30-all-630-original-station-2D-spline-approach-screen.json" \
+            --g46 "$RUNNER_TEMP/G53/G46-630-source-alternatives-original-DGT2m-terrain-coverage.json" \
+            --g48 "$RUNNER_TEMP/G53/G48-5-gradients-original-IGN-DGT-150-mathematical-screens.json" \
+            --g52 "$RUNNER_TEMP/G53/G52-all30-source-module-family-and-four-station-planar-options.json" \
+            --json "$RUNNER_TEMP/G53/G53-four-true-original-DGT-3km-station-mixed-64-models-and-XYZ.json" \
+            --csv "$RUNNER_TEMP/G53/G53-64-real-DGT-ground-3D-gradients-12p5-15-curvature-station.csv" \
+            --wkt "$RUNNER_TEMP/G53/G53-eight-inspectable-3D-native-PT-TM06-source-height-station-linestring-Z.wkt" \
+            --figure "$RUNNER_TEMP/G53/G53-four-original-DGT-ground-vs-mixed-3D-station-gradients-12p5-15.png" \
+            --markdown "$RUNNER_TEMP/G53/G53-first-actual-ground-measured-local-3D-station-approach-findings.md"
+          python - <<'PY'
+          import json,pathlib,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G53"
+          d=json.loads((p/"G53-four-true-original-DGT-3km-station-mixed-64-models-and-XYZ.json").read_text())
+          assert d["G52_original_all30_research_routes_preserved"]
+          assert len(d["G52_six_representative_geographical_route_families_preserved"])==6
+          assert d["G53_actual_original_DGT2m_4x121_ground_pixels_at_25m_source_G47"]==484
+          assert d["G53_source_original_18_DGT2m_tiles_reused_no_reacquisition"]
+          assert len(d["G53_64_station_and_mainline_grade_vertical_radius_anchor_scenarios"])==64
+          assert len(d["G53_8_inspectable_121point_native_ground_plus_3D_grade_samples"])==8
+          assert all(len(q["sample_121_source_original_DGT2m_XYZ_ground_track"])==121 for q in d["G53_8_inspectable_121point_native_ground_plus_3D_grade_samples"])
+          assert len(d["G53_native_EPSG3763_projected_XYZ_WKT_lines_height_DATUM_NOT_HARMONIZED"])==8
+          assert len(d["G52_six_geographical_representatives_x_4_station_source_DGT84_data_coverage_screen"])==24
+          assert d["cannot_extrapolate_P221_old_station_XY_ground_to_six_selected_G52_families"]
+          assert d["no_full_railway_3D_corridor_geotechnical_alignment_or_horizontal_rail_clothoids"]
+          assert d["no_new_DGT_or_IGN_original_downloads"] and not d["Fxx_accepted"] and not d["Site_authorized"]
+          assert d["no_geology_hydro_Natura2000_PIC_legal_clearance"]
+          assert (p/"G53-four-original-DGT-ground-vs-mixed-3D-station-gradients-12p5-15.png").stat().st_size>25000
+          print("G53 QA: 64 physically source-anchored 3D 121-point local mathematical axes, 8 native WKT line Z and 6family*4 DGT source availability checks")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G53-true-original-2m-PT-3D-station-mixed
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G53/G53-four-true-original-DGT-3km-station-mixed-64-models-and-XYZ.json
+            ${{ runner.temp }}/G53/G53-64-real-DGT-ground-3D-gradients-12p5-15-curvature-station.csv
+            ${{ runner.temp }}/G53/G53-eight-inspectable-3D-native-PT-TM06-source-height-station-linestring-Z.wkt
+            ${{ runner.temp }}/G53/G53-four-original-DGT-ground-vs-mixed-3D-station-gradients-12p5-15.png
+            ${{ runner.temp }}/G53/G53-first-actual-ground-measured-local-3D-station-approach-findings.md
+  main-source-hash-verified-G53-3D-publish:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents:
+        write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Require identical tested 3D source producer and no fictitious full corridor 3D claims
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g53-first-original-DGT2m-XYZ-stations.yml"
+          b="mn-geo-rail-001-g53-3D-native-DGT-station-20261102"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          f="tools/geo_rail_g53_original_DGT2m_four_stations_3D_vertical.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$f?ref=$sha" --jq '.sha')" = "$(git hash-object "$f")"
+          mkdir -p "$RUNNER_TEMP/G53pub"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G53-true-original-2m-PT-3D-station-mixed \
+            --dir "$RUNNER_TEMP/G53pub"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G53pub"
+          d=json.loads((p/"G53-four-true-original-DGT-3km-station-mixed-64-models-and-XYZ.json").read_text())
+          assert d["G52_original_all30_research_routes_preserved"]
+          assert len(d["G53_64_station_and_mainline_grade_vertical_radius_anchor_scenarios"])==64
+          assert len(d["G53_8_inspectable_121point_native_ground_plus_3D_grade_samples"])==8
+          assert d["cannot_extrapolate_P221_old_station_XY_ground_to_six_selected_G52_families"]
+          assert d["no_new_DGT_or_IGN_original_downloads"] and not d["Fxx_accepted"] and not d["Site_authorized"]
+          PY
+      - name: Publish verified original DGT source 4 station 3D mathematical local ground profiles with native vertical uncertainty
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G53pub"
+          gh release create "mn-geo-rail-001-g53-4-station-original-DGT2m-3D-$GITHUB_RUN_ID" \
+            "$d/G53-four-true-original-DGT-3km-station-mixed-64-models-and-XYZ.json" \
+            "$d/G53-64-real-DGT-ground-3D-gradients-12p5-15-curvature-station.csv" \
+            "$d/G53-eight-inspectable-3D-native-PT-TM06-source-height-station-linestring-Z.wkt" \
+            "$d/G53-four-original-DGT-ground-vs-mixed-3D-station-gradients-12p5-15.png" \
+            "$d/G53-first-actual-ground-measured-local-3D-station-approach-findings.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G53 first four local original DGT2m 3D sampled station approach research centerlines at 12.5/15‰, 10/2.5‰ station grades and Rv10/20km" \
+            --notes "Original 484 source DGT 2m ground pixels G47 (from 18 previously acquired original public TIFFs), original G45 planar P2-2-1 XY and G48 confirmed mixed 12.5/15 policy. 64 optimistic 3D mathematical grade profiles over exact original source 25m XY samples in 4 local 3km station approaches, fixed-at-true-ground vs free station-center 10/2.5‰ operational station test, hypothetical vertical radius R10/20km. Includes 8 WKT native PT-TM06 projected XY plus native DGT vertical Z, WITHOUT false WGS84 ellipsoidal altitudes or datum assignment. Includes six G52 geographical families x 4 station conditional original 84 DGT tile coverage, critically original four measured P2-2-1 station profiles are NOT portable to selected six intercity route geometries. NO validated full railway Porto-Zamora 3D, track clothoids/cant, tunnel/viaduct, CAPEX, running times, engineering or Natura/PIC clearance, no new DGT/IGN raw raster acquisition, no Fxx/Site."
