@@ -30,11 +30,16 @@ class SourceNormsRecalibration(unittest.TestCase):
   self.assertGreaterEqual(b,c)
  def test_fixed_both_ends_cannot_improve_optimistic_distance(self):
   x=[0,25,50,75,100]
-  y=[100,150,100,120,80]
+  y=[100,150,100,120,100]
   a=g.minimax_grade_envelope(x,y,15,fixed_endpoints=False)
   b=g.minimax_grade_envelope(x,y,15,fixed_endpoints=True)
   self.assertLessEqual(a["minimum_maximum_vertical_ground_separation_m"],
                       b["minimum_maximum_vertical_ground_separation_m"])
+ def test_impossible_source_ground_tied_endpoints_are_not_rail_corridor_rejection(self):
+  r=g.minimax_grade_envelope([0,25,50,75,100],[100,150,100,120,80],12.5,fixed_endpoints=True)
+  self.assertEqual(r["status"],"INFEASIBLE_ONLY_FOR_BOTH_GROUND_TIED_ENDS_AND_THIS_GRADE")
+  self.assertIsNone(r["minimum_maximum_vertical_ground_separation_m"])
+  self.assertTrue(r["not_a_proof_of_corridor_or_railway_infeasibility"])
  def test_station_freight_engagement_2p5_is_not_every_passenger_platform_rule(self):
   import numpy as np
   x=np.arange(121,dtype=float)*25-1500
