@@ -121,6 +121,18 @@ def minimax_grade_envelope(x,y,max_grade_permille,station_max_permille=None,
         bounds[n-1]=(float(y[-1]),float(y[-1]))
     result=linprog(c,A_ub=A,b_ub=np.asarray(rhs),bounds=bounds,method="highs")
     if not result.success:
+        # If endpoints are fixed at both originally sampled ground elevations,
+        # source terrain may differ by more than a grade-limited rail vertical
+        # line can overcome. This is INFEASIBILITY OF THE PARTICULAR
+        # artificial endpoint hypothesis, NOT railway route impossibility.
+        if result.status==2 and fixed_endpoints:
+            return {"status":"INFEASIBLE_ONLY_FOR_BOTH_GROUND_TIED_ENDS_AND_THIS_GRADE",
+                "minimum_maximum_vertical_ground_separation_m":None,
+                "mathematical_rail_height_AT_SOURCE_SAMPLES_NOT_CONSTRUCTED":None,
+                "actual_maximum_fitted_gradient_permille":None,
+                "samples_measured":n,
+                "not_a_proof_of_corridor_or_railway_infeasibility":True,
+                "theoretical_lower_bound_only_not_tunnel_bridge_or_CAPEX":True}
         raise RuntimeError("G48_optimization_failed_without_feasibility_evidence_"+
                            str(result.message)[:140])
     z=np.asarray(result.x[:-1],float)
@@ -133,7 +145,8 @@ def minimax_grade_envelope(x,y,max_grade_permille,station_max_permille=None,
     if vertical_radius_m:
         if np.max(np.abs(np.diff(z,n=2)))*vertical_radius_m/(dx[0]**2)>1.0001:
             raise ValueError("G48_vertical_curve_second_derivative_audit_fail")
-    return {"minimum_maximum_vertical_ground_separation_m":round(float(result.x[-1]),3),
+    return {"status":"OPTIMISTIC_LP_MATHEMATICAL_GRADE_ENVELOPE_NOT_PROJECT",
+        "minimum_maximum_vertical_ground_separation_m":round(float(result.x[-1]),3),
         "mathematical_rail_height_AT_SOURCE_SAMPLES_NOT_CONSTRUCTED":[round(float(v),3) for v in z],
         "actual_maximum_fitted_gradient_permille":round(float(max(fitted_grade)),4),
         "samples_measured":n,
