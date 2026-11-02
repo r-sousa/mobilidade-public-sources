@@ -1,0 +1,133 @@
+name: MN-GEO-RAIL-001 G51 compare corrected mixed grades all30 city access Natura original source shortlist
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g51-mixed-grade-source-shortlist-20261102
+      - main
+    paths:
+      - tools/geo_rail_g51_all30_mixed_grade_technical_priority_reassessment.py
+      - tests/test_geo_rail_g51_mixed_source_30_mca.py
+      - .github/workflows/mn-geo-g51-corrected-grade-all30-source-shortlist.yml
+permissions:
+  contents: read
+jobs:
+  branch-G51-all30-five-grades-original-multi-criterion:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g51-mixed-grade-source-shortlist-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Only original G36/G50 weighted source selection numerical stack
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'matplotlib>=3.8,<4'
+      - name: Verify only original non-cost source weight profiles and grade classes
+        run: |
+          python -m py_compile tools/geo_rail_g51_all30_mixed_grade_technical_priority_reassessment.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g51_mixed_source_30_mca.py' -v
+      - name: Reuse immutable G36 original road grid/INE2021/official Natura population and G50 450 corrected gradient terrain source
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G51"
+          gh release download mn-geo-rail-001-g36-robust-all30-41283618546 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G36-30-all-90-technical-service-environmental-sensitivity.json' --dir "$RUNNER_TEMP/G51"
+          gh release download mn-geo-rail-001-g50-regional-all30-12p5-15-regrade-41432092260 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern 'G50-all30-90-450-original-GLO30-five-grade-route-screens.json' --dir "$RUNNER_TEMP/G51"
+      - name: Refit full30 source non-cost comparison for five grade regimes and reproduce old 25‰ G36 ranking
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g51_all30_mixed_grade_technical_priority_reassessment.py \
+            --g36 "$RUNNER_TEMP/G51/G36-30-all-90-technical-service-environmental-sensitivity.json" \
+            --g50 "$RUNNER_TEMP/G51/G50-all30-90-450-original-GLO30-five-grade-route-screens.json" \
+            --json "$RUNNER_TEMP/G51/G51-full30-60-source-only-mixed-gradient-rerank-priority.json" \
+            --csv "$RUNNER_TEMP/G51/G51-30-corridors-mixed12p5-15-vs-passenger25-source-only.csv" \
+            --markdown "$RUNNER_TEMP/G51/G51-source-technical-acquisition-priority-not-viability-rail-scheme.md" \
+            --figure "$RUNNER_TEMP/G51/G51-30-all-road-pop-natura-terrain-12p5-15-vs-25-research-priority.png"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G51"
+          d=json.loads((p/"G51-full30-60-source-only-mixed-gradient-rerank-priority.json").read_text())
+          assert d["original_30_G10_27_G30_3_untouched"] and d["source_G36_30x3_original_G33_G34_G35_policy_weights_reused"]
+          assert d["research_sensitivity_tests_5grades_x_3speeds_x_4weight_profiles"]==60
+          assert d["G36_historical_25_gradient_top8_frequencies_exactly_reproduced"]
+          assert len(d["full30_source_only_mixed_vs_passenger_selection_sensitivity"])==30
+          assert len(d["research_only_next_terrain_alignment_acquisition_priority"]["mixed_grade_source_only_8_for_priority_original_DTM_engineering"])==8
+          assert d["original_OSRM_4optional_city_access_is_to_source_grid_not_station"]
+          assert d["original_2021_population_is_Euclidean_market_not_transport_demand"]
+          assert d["same_original_G32_Copernicus_DSM_surface_not_bareearth"]
+          assert d["Natura_overlap_is_2D_not_legal_EIA_or_hard_tunnel_exclusion"]
+          assert d["no_original_DGT_or_INE_road_data_reacquired"] and not d["Fxx_accepted"] and not d["Site_authorized"]
+          assert (p/"G51-30-all-road-pop-natura-terrain-12p5-15-vs-25-research-priority.png").stat().st_size>20000
+          print("G51 all30 complete technical terrain-source priority selection; 25‰ historical reproducible; no buildability ranks")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G51-30x5-new-gradient-source-only-investigation-priorities
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G51/G51-full30-60-source-only-mixed-gradient-rerank-priority.json
+            ${{ runner.temp }}/G51/G51-30-corridors-mixed12p5-15-vs-passenger25-source-only.csv
+            ${{ runner.temp }}/G51/G51-source-technical-acquisition-priority-not-viability-rail-scheme.md
+            ${{ runner.temp }}/G51/G51-30-all-road-pop-natura-terrain-12p5-15-vs-25-research-priority.png
+  main-G51-verified-publish:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Require exact tested G51 source producer and original 30 grade policy, verified no site publish
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g51-corrected-grade-all30-source-shortlist.yml"
+          b="mn-geo-rail-001-g51-mixed-grade-source-shortlist-20261102"
+          run="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$run" && test "$run" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" --jq '.head_sha')"
+          file="tools/geo_rail_g51_all30_mixed_grade_technical_priority_reassessment.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$sha" --jq '.sha')" = "$(git hash-object "$file")"
+          mkdir -p "$RUNNER_TEMP/G51-pub"
+          gh run download "$run" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G51-30x5-new-gradient-source-only-investigation-priorities \
+            --dir "$RUNNER_TEMP/G51-pub"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G51-pub"
+          d=json.loads((p/"G51-full30-60-source-only-mixed-gradient-rerank-priority.json").read_text())
+          assert d["original_30_G10_27_G30_3_untouched"]
+          assert d["G36_historical_25_gradient_top8_frequencies_exactly_reproduced"]
+          assert d["research_sensitivity_tests_5grades_x_3speeds_x_4weight_profiles"]==60
+          assert d["no_full_railway_3D_times_tunnels_viaducts_CAPEX"]
+          assert not d["Fxx_accepted"] and not d["Site_authorized"]
+          PY
+      - name: Publish new mixed 12p5/15 source-based engineering data acquisition priority only, all30 preserved
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G51-pub"
+          gh release create "mn-geo-rail-001-g51-mixed-grade-all30-technical-priority-$GITHUB_RUN_ID" \
+            "$d/G51-full30-60-source-only-mixed-gradient-rerank-priority.json" \
+            "$d/G51-30-corridors-mixed12p5-15-vs-passenger25-source-only.csv" \
+            "$d/G51-source-technical-acquisition-priority-not-viability-rail-scheme.md" \
+            "$d/G51-30-all-road-pop-natura-terrain-12p5-15-vs-25-research-priority.png" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G51 30 source rail corridor data-acquisition priorities under mixed 12.5/15‰ and passenger25 without inventing costs or times" \
+            --notes "Reuses ONLY existing G36 original G33 OSRM road to grid, original G34 2021 10km Euclidean population union, original official Natura overlap and G50 original 450 Copernicus DSM terrain correction. Four weighting research profiles ×3 speeds ×5 grades =60 sensitivity tests. Exactly reproduces G36 original 25‰ top8 frequency, creates 12.5 and15‰ mixed primary follow-up DTM engineering priority, expressly preserves all 30 and G30 deep-tunnel sensitivity (not approved) even if outside 8. No actual 3D rail service/timetable, project CAPEX or tunnel/viaduct lengths; Copernicus DSM is NOT ground, road to grid is NOT station, 2021 residents not demand, Natura/PIC status not cleared, no DGT original acquisition or Fxx/Site."
