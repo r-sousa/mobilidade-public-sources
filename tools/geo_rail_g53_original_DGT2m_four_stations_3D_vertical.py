@@ -82,7 +82,7 @@ def original_sources(g47,g45,g46,g48,g52):
         stations.append({"site":site,"city":oldsites[site]["mandatory_city"],
             "x":x,"xy":xy,"ground":g,"old_road_minutes":oldsites[site]["G25_original_OSRM_city_to_road_reference_minutes"]})
     return stations
-def solve_center_tied(x,ground,grade,station_permille,vertical_R):
+def solve_center_tied(x,ground,grade,station_permille,vertical_R,anchor_center=True):
     """Separate strict LP only for station center fixed at measured ground;
     endpoints are free. Shared G48 LP produces the FREE station case.
     """
@@ -108,13 +108,13 @@ def solve_center_tied(x,ground,grade,station_permille,vertical_R):
             add(((i-1,sign),(i,-2*sign),(i+1,sign)),dx*dx/vertical_R)
     A=coo_matrix((vv,(nr,nc)),shape=(len(rhs),n+1)).tocsr()
     bounds=[(None,None)]*n+[(0,None)]
-    bounds[i0]=(float(ground[i0]),float(ground[i0]))
+    if anchor_center:bounds[i0]=(float(ground[i0]),float(ground[i0]))
     c=np.zeros(n+1);c[-1]=1
     sol=linprog(c,A_ub=A,b_ub=np.asarray(rhs),bounds=bounds,method="highs")
     if not sol.success:
         raise ValueError("G53_linerail_station_center_tied_calculation_failed_"+str(sol.message)[:100])
     z=sol.x[:-1]
-    if max(abs(np.diff(z)/dx)*1000)>grade+.0001 or abs(z[i0]-ground[i0])>.001:
+    if max(abs(np.diff(z)/dx)*1000)>grade+.0001 or (anchor_center and abs(z[i0]-ground[i0])>.001):
         raise ValueError("G53_station_center_or_grade_constraints_mismatch")
     if max(abs(np.diff(z,n=2)))*vertical_R/(dx*dx)>1.0001:
         raise ValueError("G53_vertical_curve_bound_error")
@@ -132,10 +132,12 @@ def cases(g47,g45,g46,g48,g52):
                     if ref["status"]!="OPTIMISTIC_LP_MATHEMATICAL_GRADE_ENVELOPE_NOT_PROJECT":
                         raise ValueError("G53_source_G48_free_vertical_profile_unexpected_status")
                     for tied in (False,True):
-                        if tied:z,hi=solve_center_tied(xx,ground,grade,cap,radius)
-                        else:
-                            z=np.array(ref["mathematical_rail_height_AT_SOURCE_SAMPLES_NOT_CONSTRUCTED"],float)
-                            hi=ref["minimum_maximum_vertical_ground_separation_m"]
+                        # Fit directly at full numerical precision: the public
+                        # G48 profiles round Z to millimetres, which can
+                        # generate false exact 2nd-difference curvature breaches.
+                        z,hi=solve_center_tied(xx,ground,grade,cap,radius,anchor_center=tied)
+                        if not tied and abs(hi-ref["minimum_maximum_vertical_ground_separation_m"])>.02:
+                            raise ValueError("G53_free_case_changed_from_verified_G48_LP")
                         if hi is None:raise ValueError("G53_null_altimetry_imputation_prohibited")
                         gs=np.abs(np.diff(z)/25)*1000
                         caploc=np.array([min(grade,cap) if abs((xx[i]+xx[i+1])/2)<=400 else grade for i in range(120)])
@@ -197,7 +199,9 @@ def cases(g47,g45,g46,g48,g52):
     match={}
     for r in g46["all30_station_study_radius_source_cases_and_buffer_gaps"]:
         if (r.get("option_id") in short and r.get("site_id") in SITE_ORDER and
-           r.get("speed_label_kmh")==200 and r.get("candidate_local_domain")=="local_1p5km"):
+           r.get("speed_label_kmh")==200 and
+           (r.get("candidate_local_domain")=="local_1p5km" or
+            r.get("source_G45_geometric_candidate_exists") is False)):
             key=(r["option_id"],r["site_id"])
             if key in match:raise ValueError("G53_duplicate_source_24_tile_study")
             match[key]=r
