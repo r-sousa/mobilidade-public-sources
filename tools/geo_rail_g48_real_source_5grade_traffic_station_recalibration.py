@@ -184,7 +184,7 @@ def compute(g43,g47):
     regression=[]
     for grade in (18.0,25.0):
         old=next(c for c in g43["optimistic_grade_vertical_curvature_LP_sensitivity"]
-           if c["grade_permille"]==grade and c["assumed_vertical_radius_m"] is None
+           if c["grade_permille"]==grade and c.get("assumed_vertical_radius_m") is None
               and not c["both_endpoints_fixed_at_sampled_ground"])
         new=next(q for q in rows if q["profile_id"]=="ZAMORA_G43_6KM"
             and q["gradient_permille"]==grade and q["hypothetical_vertical_radius_m"] is None
