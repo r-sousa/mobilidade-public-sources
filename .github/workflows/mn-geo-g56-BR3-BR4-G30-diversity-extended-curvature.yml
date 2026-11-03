@@ -1,0 +1,139 @@
+name: MN-GEO-RAIL-001 G56 recover Braganca G30 geographic diversity 200kmh horizontal approaches
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g56-BR3-BR4-diversity-shifted-geometry-20261103
+      - main
+    paths:
+      - tools/geo_rail_g56_BR3_BR4_G30_diversity_extended_curvature.py
+      - tests/test_geo_rail_g56_BR3_BR4_original_extended_geometry.py
+      - .github/workflows/mn-geo-g56-BR3-BR4-G30-diversity-extended-curvature.yml
+permissions:
+  contents: read
+jobs:
+  branch-original-BR3-BR4-G30-geographic-diversity-control:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g56-BR3-BR4-diversity-shifted-geometry-20261103'
+    runs-on: ubuntu-latest
+    timeout-minutes: 23
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: GIS original G45 quintic and source route/test libraries
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'shapely>=2.1,<3' 'pyproj>=3.6,<4' 'matplotlib>=3.8,<4' 'scipy>=1.12,<2'
+      - name: G56 test conditional station heading change and source curvature math
+        run: |
+          python -m py_compile tools/geo_rail_g56_BR3_BR4_G30_diversity_extended_curvature.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g56_BR3_BR4_original_extended_geometry.py' -v
+      - name: Retrieve only original G30 geographical source, G25 actual OSRM heading, G44 genuine old DGT station sites, G45 source 630 comparison
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G56"
+          gh release download mn-geo-rail-001-g30-tunnel-aware-new-corridors-41278684148 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G30-three-new-Natura-aware-study-routes.geojson' --dir "$RUNNER_TEMP/G56"
+          gh release download mn-geo-rail-001-g25-original-road-shortlist-G24-41259277284 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G25-OSRM-real-road-access-to-original-ground-site-shortlist.json' --dir "$RUNNER_TEMP/G56"
+          gh release download mn-geo-rail-001-g44-seven-old-DGT-stations-railchord-41321437002 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G44-seven-original-DGT2m-sites-two-mandatory-cities-and-30-corridors.json' --dir "$RUNNER_TEMP/G56"
+          gh release download mn-geo-rail-001-g45-movable-city-railapproach-41332951589 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G45-30-all-630-original-station-2D-spline-approach-screen.json' --dir "$RUNNER_TEMP/G56"
+          echo "be35181c882c2f6ede4d07f7e0a68b084bb6247c54a7da0d1d566a66f844dffd  $RUNNER_TEMP/G56/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" | sha256sum -c -
+      - name: Extend 2 original Braganca site contacts to 12/15km and label ±10/20deg headings non-station-approved
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g56_BR3_BR4_G30_diversity_extended_curvature.py \
+            --g30 "$RUNNER_TEMP/G56/G30-three-new-Natura-aware-study-routes.geojson" \
+            --g25 "$RUNNER_TEMP/G56/G25-OSRM-real-road-access-to-original-ground-site-shortlist.json" \
+            --g44 "$RUNNER_TEMP/G56/G44-seven-original-DGT2m-sites-two-mandatory-cities-and-30-corridors.json" \
+            --g45 "$RUNNER_TEMP/G56/G45-30-all-630-original-station-2D-spline-approach-screen.json" \
+            --json "$RUNNER_TEMP/G56/G56-original-BR3-BR4-G30-diversity-extended-15km-angle-curvature.json" \
+            --csv "$RUNNER_TEMP/G56/G56-BR3-BR4-G30-160-200-250-geometry-horizontal-candidates.csv" \
+            --geojson "$RUNNER_TEMP/G56/G56-new-BR3-BR4-G30-diversity-2D-uncertified-study-lines.geojson" \
+            --figure "$RUNNER_TEMP/G56/G56-G30-diversity-BR3-BR4-new-planar-speed-radius-solutions.png" \
+            --markdown "$RUNNER_TEMP/G56/G56-Braganca-diversity-2D-rail-station-geometry-recovery.md"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G56"
+          d=json.loads((p/"G56-original-BR3-BR4-G30-diversity-extended-15km-angle-curvature.json").read_text())
+          assert d["original_full30_research_study_alternatives_preserved"]
+          assert d["original_source_G45_all630_curvature_scenarios_untouched"]
+          assert d["original_city_br3_br4_physical_sites_unchanged"]
+          assert d["original_search_0_3_6_9km_and_new_12_15km_contacts_explored"]
+          assert len(d["two_sites_three_speeds_source_2D_curvature_screen"])==2
+          assert d["old_G45_original_BR3_BR4_200_no_sampled_radius_solution"]
+          assert d["no_new_original_DGT2m_source_ground_samples_for_changed_XY"]
+          assert d["no_horizontal_clothoid_cant_transition_rail_standards_approval"]
+          assert d["no_new_DGT_acquisition"] and not d["Fxx_accepted"] and not d["Site_authorized"]
+          assert (p/"G56-G30-diversity-BR3-BR4-new-planar-speed-radius-solutions.png").stat().st_size>15000
+          print("G56 verified 2 original BR station physical sites, 3 speeds, extended horizontal search and honest ground gaps")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G56-two-Braganca-G30-diversity-extended-horizontal
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G56/G56-original-BR3-BR4-G30-diversity-extended-15km-angle-curvature.json
+            ${{ runner.temp }}/G56/G56-BR3-BR4-G30-160-200-250-geometry-horizontal-candidates.csv
+            ${{ runner.temp }}/G56/G56-new-BR3-BR4-G30-diversity-2D-uncertified-study-lines.geojson
+            ${{ runner.temp }}/G56/G56-G30-diversity-BR3-BR4-new-planar-speed-radius-solutions.png
+            ${{ runner.temp }}/G56/G56-Braganca-diversity-2D-rail-station-geometry-recovery.md
+  main-G56-tested-blob-publication:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check tested exact original G56 geometry producer source SHA
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          w="mn-geo-g56-BR3-BR4-G30-diversity-extended-curvature.yml"
+          b="mn-geo-rail-001-g56-BR3-BR4-diversity-shifted-geometry-20261103"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          f="tools/geo_rail_g56_BR3_BR4_G30_diversity_extended_curvature.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$f?ref=$sha" --jq '.sha')" = "$(git hash-object "$f")"
+          mkdir -p "$RUNNER_TEMP/G56pub"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G56-two-Braganca-G30-diversity-extended-horizontal \
+            --dir "$RUNNER_TEMP/G56pub"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G56pub"
+          d=json.loads((p/"G56-original-BR3-BR4-G30-diversity-extended-15km-angle-curvature.json").read_text())
+          assert d["original_full30_research_study_alternatives_preserved"]
+          assert d["old_G45_original_BR3_BR4_200_no_sampled_radius_solution"]
+          assert d["no_3D_real_track_on_new_G56_geometry_yet"]
+          assert d["no_new_DGT_acquisition"] and not d["Fxx_accepted"] and not d["Site_authorized"]
+          PY
+      - name: Release bounded independent BR3 BR4 station same physical coordinates G30 extended curve screen, no source ground claims
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G56pub"
+          gh release create "mn-geo-rail-001-g56-BR3-BR4-diversity-extended-curves-$GITHUB_RUN_ID" \
+            "$d/G56-original-BR3-BR4-G30-diversity-extended-15km-angle-curvature.json" \
+            "$d/G56-BR3-BR4-G30-160-200-250-geometry-horizontal-candidates.csv" \
+            "$d/G56-new-BR3-BR4-G30-diversity-2D-uncertified-study-lines.geojson" \
+            "$d/G56-G30-diversity-BR3-BR4-new-planar-speed-radius-solutions.png" \
+            "$d/G56-Braganca-diversity-2D-rail-station-geometry-recovery.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G56 Braganca BR3 BR4 G30 geography diversity 200km/h horizontal curvature recovery using shifted source grid contacts and station axis research" \
+            --notes "Exact original G30 research geographic route, original G25 29 station headings and G44 genuine prior DGT stations, old G45 630 original-source preserved. Research extends entry/exit contact 0/3/6/9km to 12/15km and samples ±10/20deg station heading rotation, source C2 quintic horizontal R thresholds 160/200/250. This does NOT approve changed station orientation, road access, Natura/PIC, EN clothoid/cant/curve transition, 3D terrain, cost or service time; new geometries MUST sample original DGT2m at new XY before grade conclusions. No new DGT, full30 unchanged, no Fxx/Site."
