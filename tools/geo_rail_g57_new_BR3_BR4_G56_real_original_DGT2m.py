@@ -29,8 +29,8 @@ from geo_rail_g48_real_source_5grade_traffic_station_recalibration import minima
 REPO="r-sousa/mobilidade-public-sources"
 SITES=("BR3","BR4")
 def prepare(g56,g37):
-    if not g56["original_full30_research_study_alternatives_preserved"] or
-       not g56["old_G45_original_BR3_BR4_200_no_sampled_radius_solution"]:
+    if (not g56["original_full30_research_study_alternatives_preserved"] or
+        not g56["old_G45_original_BR3_BR4_200_no_sampled_radius_solution"]):
         raise ValueError("G57_original_G56_full30_old200_fail_source_required")
     if g56["no_new_original_DGT2m_source_ground_samples_for_changed_XY"] is not True:
         raise ValueError("G57_G56_source_ground_not_yet_acquired_required")
