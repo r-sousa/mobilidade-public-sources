@@ -1,0 +1,142 @@
+name: MN-GEO-RAIL-001 G55 actual LNEG OGC 50k 200k geology boreholes groundwater west Vila Real
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g55-LNEG-west-VR-geology-source-20261103
+      - main
+    paths:
+      - tools/geo_rail_g55_original_LNEG_Marao_west_VR_OGC_geology.py
+      - tests/test_geo_rail_g55_LNEG_official_API_source.py
+      - .github/workflows/mn-geo-g55-official-LNEG-west-VR-geology.yml
+permissions:
+  contents: read
+jobs:
+  branch-G55-real-LNEG-geo-sources-bounded:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g55-LNEG-west-VR-geology-source-20261103'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: GIS and HTTP official open-data acquisition without any DGT private secrets
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.12,<2' 'requests>=2.31,<3' 'shapely>=2.1,<3' 'pyproj>=3.6,<4' 'matplotlib>=3.8,<4'
+      - name: Bounded OGC official collection and cross-domain pagination strict regression
+        run: |
+          python -m py_compile tools/geo_rail_g55_original_LNEG_Marao_west_VR_OGC_geology.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g55_LNEG_official_API_source.py' -v
+      - name: Original actual six G52 routes source and 84 DGT2m tiles for west Vila Real research window
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G55"
+          gh release download mn-geo-rail-001-g10-27-geographic-visuals-41243658608 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G10-27-research-real-source-paths.geojson' --dir "$RUNNER_TEMP/G55"
+          gh release download mn-geo-rail-001-g30-tunnel-aware-new-corridors-41278684148 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G30-three-new-Natura-aware-study-routes.geojson' --dir "$RUNNER_TEMP/G55"
+          gh release download mn-geo-rail-001-g52-six-geographic-design-study-families-41466484789 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G52-all30-source-module-family-and-four-station-planar-options.json' --dir "$RUNNER_TEMP/G55"
+          gh release download mn-geo-rail-001-g37-DGT10m-CNIG-LNEG-data-gates-41303761915 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G37-84-original-DGT-ground-source-indices-and-conditional-gates.json' --dir "$RUNNER_TEMP/G55"
+          echo "77d226cc842d33e2f799f2c269ddde57a17cb7d868791770c1624dda1b86136d  $RUNNER_TEMP/G55/G10-27-research-real-source-paths.geojson" | sha256sum -c -
+      - name: Read official 5 LNEG OGC API Features collections limited to six family's last25km west VR and 1p25km research buffer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g55_original_LNEG_Marao_west_VR_OGC_geology.py \
+            --g10 "$RUNNER_TEMP/G55/G10-27-research-real-source-paths.geojson" \
+            --g30 "$RUNNER_TEMP/G55/G30-three-new-Natura-aware-study-routes.geojson" \
+            --g52 "$RUNNER_TEMP/G55/G52-all30-source-module-family-and-four-station-planar-options.json" \
+            --g37 "$RUNNER_TEMP/G55/G37-84-original-DGT-ground-source-indices-and-conditional-gates.json" \
+            --json "$RUNNER_TEMP/G55/G55-LNEG-OGC-5collections-west25km-VR-source-audit.json" \
+            --geojson "$RUNNER_TEMP/G55/G55-real-LNEG-official-features-CLIPPED-and-6-west-study-paths.geojson" \
+            --csv "$RUNNER_TEMP/G55/G55-six-west-25km-study-LNEG-source-intersections.csv" \
+            --plot "$RUNNER_TEMP/G55/G55-official-LNEG-geology-hydro-and-six-west-VR-research-lines-map.png" \
+            --markdown "$RUNNER_TEMP/G55/G55-official-LNEG-geology-hydrogeology-Marao-VR-data-and-gaps.md"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G55"
+          d=json.loads((p/"G55-LNEG-OGC-5collections-west25km-VR-source-audit.json").read_text())
+          assert d["source_original_all30_preserved"] and d["original_DGT84_previous_tiles_not_reacquired"]
+          assert len(d["six_research_family_original_source_tracks_25km"])==6
+          assert len(d["LNEG_actual_official_geojson_collections_metadata"])==5
+          assert len(d["LNEG_actual_source_spatial_intersection_count_by_research_family"])==6
+          assert any(s["status"]=="BOUNDED_OFFICIAL_GEOJSON_RETRIEVED" for s in d["LNEG_actual_official_geojson_collections_metadata"].values())
+          assert d["study_ROI_not_official_Marao_Alvao_boundary"]
+          assert d["one_to_one_million_faults_not_precise_local_fault_traces"]
+          assert d["borehole_location_does_not_mean_exposed_log_or_depth"]
+          assert d["no_rail_3D_line_minimum_cover_portals_costs_or_times"]
+          assert d["no_original_DGT_OR_IGN_reacquisition"] and not d["Fxx_accepted"] and not d["Site_authorized"]
+          assert (p/"G55-official-LNEG-geology-hydro-and-six-west-VR-research-lines-map.png").stat().st_size>18000
+          print("G55 source official LNEG extracted, bounded and spatially QAed, no false tunnel risk claims")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G55-first-original-LNEG-geology-hydro-source
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G55/G55-LNEG-OGC-5collections-west25km-VR-source-audit.json
+            ${{ runner.temp }}/G55/G55-real-LNEG-official-features-CLIPPED-and-6-west-study-paths.geojson
+            ${{ runner.temp }}/G55/G55-six-west-25km-study-LNEG-source-intersections.csv
+            ${{ runner.temp }}/G55/G55-official-LNEG-geology-hydro-and-six-west-VR-research-lines-map.png
+            ${{ runner.temp }}/G55/G55-official-LNEG-geology-hydrogeology-Marao-VR-data-and-gaps.md
+  main-G55-verified-official-data-publish:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 11
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify exact tested LNEG producer, records and no invented legal clearances
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          workflow="mn-geo-g55-official-LNEG-west-VR-geology.yml"
+          branch="mn-geo-rail-001-g55-LNEG-west-VR-geology-source-20261103"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?branch=$branch&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          file="tools/geo_rail_g55_original_LNEG_Marao_west_VR_OGC_geology.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$sha" --jq '.sha')" = "$(git hash-object "$file")"
+          mkdir -p "$RUNNER_TEMP/G55pub"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G55-first-original-LNEG-geology-hydro-source \
+            --dir "$RUNNER_TEMP/G55pub"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G55pub"
+          d=json.loads((p/"G55-LNEG-OGC-5collections-west25km-VR-source-audit.json").read_text())
+          assert d["source_original_all30_preserved"]
+          assert len(d["LNEG_actual_official_geojson_collections_metadata"])==5
+          assert any(x["status"]=="BOUNDED_OFFICIAL_GEOJSON_RETRIEVED" for x in d["LNEG_actual_official_geojson_collections_metadata"].values())
+          assert d["source_clipped_LNEG_features_are_NOT_geotechnical_TUNNEL_parameters"]
+          assert d["no_Natura2000_PIC_aquifer_LNEG_tunnel_environmental_clearance"]
+          assert d["no_original_DGT_OR_IGN_reacquisition"] and not d["Fxx_accepted"] and not d["Site_authorized"]
+          PY
+      - name: Release source-confirmed official geological and groundwater spatial original features clipped to bounded West VR research ROI
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G55pub"
+          gh release create "mn-geo-rail-001-g55-actual-LNEG-west-VR-geo-$GITHUB_RUN_ID" \
+            "$d/G55-LNEG-OGC-5collections-west25km-VR-source-audit.json" \
+            "$d/G55-real-LNEG-official-features-CLIPPED-and-6-west-study-paths.geojson" \
+            "$d/G55-six-west-25km-study-LNEG-source-intersections.csv" \
+            "$d/G55-official-LNEG-geology-hydro-and-six-west-VR-research-lines-map.png" \
+            "$d/G55-official-LNEG-geology-hydrogeology-Marao-VR-data-and-gaps.md" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G55 actual official LNEG geology/hydrogeology OGCApi geodata clipped to six western 25km Vila Real research family corridors" \
+            --notes "Source licensed CC-BY 4.0 LNEG https://ogcapi.lneg.pt; queried ONLY bounded source study polygon union of last 25km of first G42 west Vila Real 2km research modules, each buffered 1250m, NOT exact Marão/Alvão territory or engineered railway right of way. Original-source collections for harmonized 1:50k and 1:200k lithologies, COARSE 1:1M fault traces, original SONDABASE points and groundwater points, each limited to 12x100 pages, with per-collection source status, completeness and SHA source response. GeoJSON feature geometries clipped to study footprint, not originals duplicated. Coarse faults and point locations not design-geotechnical rock condition, borehole logs, subsurface/hydroflow model, tunnel risk EIA, Natura/PIC authorization, tunnel lengths/costs/travel times. All30 preserved, six selected as sampling, original DGT84 reuse no new raw credentials, no Fxx/Site."
