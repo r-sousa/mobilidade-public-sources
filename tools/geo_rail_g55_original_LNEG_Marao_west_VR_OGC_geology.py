@@ -13,7 +13,7 @@ Official original source https://ogcapi.lneg.pt, collections:
 - SONDABASE public borehole POINT locations (not logs)
 - public water POINT locations (not groundwater flow model).
 
-Bound 3x100 pages per collection; mark TRUNCATED if not complete. Official
+Bound 12x100 pages per collection; mark TRUNCATED if not complete. Official
 licence CC-BY 4.0. No source claims outside extracted footprint.
 Output clipped original-derived GeoJSON with source IDs not edited in place,
 projection checks, selected 25km source approach research centerlines,
@@ -42,7 +42,7 @@ BASE="https://ogcapi.lneg.pt"
 LEG_KM=25
 BUFFER_M=1250
 PAGE_LIMIT=100
-PAGE_CAP=3
+PAGE_CAP=12
 COLLECTIONS={
  "cgp50k-prt-lneg-en-50k-lithology":{"type":"geology_50k_polygon","scale":"1:50 000"},
  "cgp200k-prt-lneg-en-200k-lithology":{"type":"geology_200k_polygon","scale":"1:200 000"},
