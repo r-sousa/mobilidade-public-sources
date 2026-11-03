@@ -112,13 +112,21 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          w="mn-geo-g57-recovered-BR3-BR4-original-DGT2m.yml"
-          b="mn-geo-rail-001-g57-BR3-BR4-recovered-2m-ground-20261103"
-          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$w/runs?branch=$b&status=success&per_page=5" --jq '.workflow_runs[0].id')"
-          test "$id" != "null" && test -n "$id"
-          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          # Exact successful original producer run was independently inspected
+          # and its 2-case QA artifact is confirmed present and unexpired.
+          # Avoid workflow-file identifier lookup ambiguity after squash merge.
+          id="41639114775"
+          sha="5a3b7a35c8840f4172d47081b6f17f2018a2f33b"
+          actual_sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          conclusion="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.conclusion')"
+          echo "G57 verified tested source run=$id conclusion=$conclusion"
+          test "$conclusion" = "success"
+          test "$actual_sha" = "$sha"
           file="tools/geo_rail_g57_new_BR3_BR4_G56_real_original_DGT2m.py"
-          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$sha" --jq '.sha')" = "$(git hash-object "$file")"
+          source_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$sha" --jq '.sha')"
+          merged_blob="$(git hash-object "$file")"
+          echo "G57 validated source blob: GH=$source_blob main=$merged_blob"
+          test "$source_blob" = "$merged_blob"
           mkdir -p "$RUNNER_TEMP/G57pub"
           gh run download "$id" --repo "$GITHUB_REPOSITORY" \
             --name MN-GEO-RAIL-001-G57-original-DGT2m-recovered-BR3-BR4 \
