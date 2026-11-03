@@ -20,7 +20,7 @@ class G55OfficialGeology(unittest.TestCase):
  def test_bounded_west_VR_not_fake_Marao_boundary(self):
   self.assertEqual(g.LEG_KM,25)
   self.assertEqual(g.BUFFER_M,1250)
-  self.assertEqual(g.PAGE_CAP,3)
+  self.assertEqual(g.PAGE_CAP,12)
   self.assertEqual(g.PAGE_LIMIT,100)
  def test_geoportal_does_not_allow_cross_site_next_pagination(self):
   class Mock:
