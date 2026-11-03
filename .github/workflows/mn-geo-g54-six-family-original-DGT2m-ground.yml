@@ -1,0 +1,153 @@
+name: MN-GEO-RAIL-001 G54 SIX intercity family original DGT 2m ground pixels on G45 24 station approaches
+on:
+  push:
+    branches:
+      - mn-geo-rail-001-g54-six-families-real-DGT-ground-20261103
+      - main
+    paths:
+      - tools/geo_rail_g54_six_source_families_native_DGT2m_pixels.py
+      - tests/test_geo_rail_g54_original_DGT2m_six_family.py
+      - .github/workflows/mn-geo-g54-six-family-original-DGT2m-ground.yml
+permissions:
+  contents: read
+jobs:
+  branch-24-original-XY-real-DGT-pixels:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/mn-geo-rail-001-g54-six-families-real-DGT-ground-20261103'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Source-native 2m raster and LP stack
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.12,<2' 'rasterio>=1.4,<2' 'shapely>=2.1,<3' 'pyproj>=3.6,<4' 'matplotlib>=3.8,<4'
+      - name: Prove six by four case and source NoData fail closed
+        run: |
+          python -m py_compile tools/geo_rail_g54_six_source_families_native_DGT2m_pixels.py
+          python -m unittest discover -s tests -p 'test_geo_rail_g54_original_DGT2m_six_family.py' -v
+      - name: Download only original G52 G45 G37 metadata and public GitHub source releases index
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/G54/originals"
+          gh release download mn-geo-rail-001-g52-six-geographic-design-study-families-41466484789 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G52-all30-source-module-family-and-four-station-planar-options.json' --dir "$RUNNER_TEMP/G54"
+          gh release download mn-geo-rail-001-g45-movable-city-railapproach-41332951589 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G45-30-all-630-original-station-2D-spline-approach-screen.json' --dir "$RUNNER_TEMP/G54"
+          gh release download mn-geo-rail-001-g37-DGT10m-CNIG-LNEG-data-gates-41303761915 \
+            --repo "$GITHUB_REPOSITORY" --pattern 'G37-84-original-DGT-ground-source-indices-and-conditional-gates.json' --dir "$RUNNER_TEMP/G54"
+          gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/G54/public-release-index.json"
+      - name: Retrieve only original DGT 2m tiles actually intersecting new 6 family × 4 prior stations samples
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g54_six_source_families_native_DGT2m_pixels.py --mode retrieve \
+            --g52 "$RUNNER_TEMP/G54/G52-all30-source-module-family-and-four-station-planar-options.json" \
+            --g45 "$RUNNER_TEMP/G54/G45-30-all-630-original-station-2D-spline-approach-screen.json" \
+            --g37 "$RUNNER_TEMP/G54/G37-84-original-DGT-ground-source-indices-and-conditional-gates.json" \
+            --releases "$RUNNER_TEMP/G54/public-release-index.json" \
+            --rawdir "$RUNNER_TEMP/G54/originals" \
+            --receipts "$RUNNER_TEMP/G54/G54-original-DGT2m-GitHub-source-raster-SHA-receipts.json"
+      - name: True source ground 25m sample each new G52-family-specific 2D X/Y, no P2-2-1 copy and only complete terrain may produce 3D
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -u tools/geo_rail_g54_six_source_families_native_DGT2m_pixels.py --mode analyze \
+            --g52 "$RUNNER_TEMP/G54/G52-all30-source-module-family-and-four-station-planar-options.json" \
+            --g45 "$RUNNER_TEMP/G54/G45-30-all-630-original-station-2D-spline-approach-screen.json" \
+            --g37 "$RUNNER_TEMP/G54/G37-84-original-DGT-ground-source-indices-and-conditional-gates.json" \
+            --rawdir "$RUNNER_TEMP/G54/originals" \
+            --receipts "$RUNNER_TEMP/G54/G54-original-DGT2m-GitHub-source-raster-SHA-receipts.json" \
+            --json "$RUNNER_TEMP/G54/G54-six-family-24-station-actual-DGT2m-ground-coverage.json" \
+            --csv "$RUNNER_TEMP/G54/G54-24-family-station-actual-source-ground-pixel-QA.csv" \
+            --plot "$RUNNER_TEMP/G54/G54-six-families-4stations-actual-DGT2m-pixel-availability.png" \
+            --markdown "$RUNNER_TEMP/G54/G54-actual-ground-not-transplanted-from-P221-six-families-findings.md"
+          python - <<'PY'
+          import pathlib,json,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G54"
+          d=json.loads((p/"G54-six-family-24-station-actual-DGT2m-ground-coverage.json").read_text())
+          assert d["full_30_G10_G30_research_routes_preserved"]
+          assert len(d["six_original_G52_spatially_distinct_families"])==6
+          assert len(d["all_24_six_family_times_four_station_true_source_checks"])==24
+          assert d["four_prior_DGT2m_study_sites"]==["VR2","VR1","BR4","BR3"]
+          assert d["no_imputation_for_missing_2m_raster_source"]
+          assert d["no_original_DGT_archive_reacquired_or_duplicate_raw_download"]
+          assert all(q.get("12p5_15_mathematical_profiles") is None for q in
+              d["all_24_six_family_times_four_station_true_source_checks"] if
+              not q["full_3km_original_bareearth_ground_available"])
+          assert d["real_G45_family_3km_ground_fully_verified_case_count"]*2==len(d["real_family_specific_optimistic_XYZ_WKT_if_source_complete"])
+          assert not d["Fxx_accepted"] and not d["Site_authorized"]
+          assert (p/"G54-six-families-4stations-actual-DGT2m-pixel-availability.png").stat().st_size>17000
+          print("G54 VERIFY all24 cases 84 prior original source manifest no fabricated ground or new DGT original")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MN-GEO-RAIL-001-G54-six-family-24-original-DGT2m-native-ground
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/G54/G54-six-family-24-station-actual-DGT2m-ground-coverage.json
+            ${{ runner.temp }}/G54/G54-24-family-station-actual-source-ground-pixel-QA.csv
+            ${{ runner.temp }}/G54/G54-six-families-4stations-actual-DGT2m-pixel-availability.png
+            ${{ runner.temp }}/G54/G54-actual-ground-not-transplanted-from-P221-six-families-findings.md
+            ${{ runner.temp }}/G54/G54-original-DGT2m-GitHub-source-raster-SHA-receipts.json
+  main-G54-tested-blob-publication:
+    if: github.repository == 'r-sousa/mobilidade-public-sources' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 11
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Require tested unchanged true-source producer and all24 real raster cases
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          workflow="mn-geo-g54-six-family-original-DGT2m-ground.yml"
+          branch="mn-geo-rail-001-g54-six-families-real-DGT-ground-20261103"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?branch=$branch&status=success&per_page=5" --jq '.workflow_runs[0].id')"
+          test -n "$id" && test "$id" != "null"
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.head_sha')"
+          file="tools/geo_rail_g54_six_source_families_native_DGT2m_pixels.py"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/contents/$file?ref=$sha" --jq '.sha')" = "$(git hash-object "$file")"
+          mkdir -p "$RUNNER_TEMP/G54-pub"
+          gh run download "$id" --repo "$GITHUB_REPOSITORY" \
+            --name MN-GEO-RAIL-001-G54-six-family-24-original-DGT2m-native-ground \
+            --dir "$RUNNER_TEMP/G54-pub"
+          python - <<'PY'
+          import json,pathlib,os
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"G54-pub"
+          d=json.loads((p/"G54-six-family-24-station-actual-DGT2m-ground-coverage.json").read_text())
+          assert d["full_30_G10_G30_research_routes_preserved"]
+          assert len(d["all_24_six_family_times_four_station_true_source_checks"])==24
+          assert d["no_imputation_for_missing_2m_raster_source"]
+          assert d["no_tunnel_bridge_groundwater_natura_PIC_CAPEX_or_actual_train_time"]
+          assert not d["Fxx_accepted"] and not d["Site_authorized"]
+          PY
+      - name: Publish six real-original DGT ground empirical accessibility and source-fail-closed 3km profile data
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/G54-pub"
+          gh release create "mn-geo-rail-001-g54-6families-real-DGT2m-24-stations-$GITHUB_RUN_ID" \
+            "$d/G54-six-family-24-station-actual-DGT2m-ground-coverage.json" \
+            "$d/G54-24-family-station-actual-source-ground-pixel-QA.csv" \
+            "$d/G54-six-families-4stations-actual-DGT2m-pixel-availability.png" \
+            "$d/G54-actual-ground-not-transplanted-from-P221-six-families-findings.md" \
+            "$d/G54-original-DGT2m-GitHub-source-raster-SHA-receipts.json" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "G54 six G52 source families on 4 physical stations: actual original native DGT2m source pixels, 24 cases, missing kept null" \
+            --notes "Samples original DGT 2m original bare-earth pixels on six family-specific original G45 2D XY (200kmh radius screen) with four VR2 VR1 BR4 BR3 station physical points and 121 source-ground readings/3km per valid horizontal geometry, using ONLY previously published original public DGT source 84 tiles. G47 P2-2-1 source profiles are never transplanted. New mixed 12.5/15 permille original-source grade profiles ONLY for cases with complete 121 valid source-ground points, grade PAT 10permille Rv20km mathematical not rail certification. Original missing/NoData always null, PNG 6×4 coverage, JSON pixel-by-pixel SHA provenance, no new DGT acquisitions or duplicated raw GeoTIFF in release. No 3D intercity Porto-Zamora, actual railway station, tunnel/viaduct quantification, Natura/PIC/geology/CAPEX, times, Fxx/Site."
