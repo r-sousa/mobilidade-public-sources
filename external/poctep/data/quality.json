@@ -1,0 +1,151 @@
+{
+  "as_of_utc": "2026-11-12T00:59:56.407341+00:00",
+  "source_latest_page_date": "2026-04-16",
+  "official_project_total_2026_11": 259,
+  "expected_by_call": {
+    "calls_1_5": 144,
+    "call_6": 94,
+    "call_7": 6,
+    "call_8": 15
+  },
+  "unique_codes_detected_regex": 262,
+  "regex_counts_by_call": {
+    "calls_1_5": 147,
+    "call_6": 94,
+    "call_7": 6,
+    "call_8": 15
+  },
+  "sheet_manifest": [
+    {
+      "call": "calls_1_5",
+      "sheet": "Descarga",
+      "rows": 1039,
+      "max_cols": 19,
+      "header_idx_0based": 0,
+      "header": [
+        "\nPOCTEP 21-27\n  Convocatoria \n CALL ",
+        "Estatégico / >5M€\nStategic /over 5M€",
+        "Código operación / operação Operation Code",
+        "Título proyecto / projeto\nProject title",
+        "Resumen del proyecto\nResumo do projeto\nProject description",
+        "Área cooperación / cooperação\nCooperation area",
+        "Fecha inicio\nData início\nStart date",
+        "Fecha fin \nData fim\nEnd date",
+        "País\nCountry ",
+        "Entidad beneficiaria \nEntidade beneficiária\nPartner",
+        "Rol entidad / Função / \nPartner role",
+        "Objetivo político\nPO",
+        "Prioridad  \nPrioridade\nPriority ",
+        "Objetivo específico \nSpecific objective",
+        "Ámbito\nIntervención / intervenção\nScope of intervention",
+        "Gasto Elegible\nCusto elegível\nTotal Cost",
+        "% Cofinanciado\nCo-financing Rate",
+        "FEDER / ERDF "
+      ],
+      "unique_codes_regex": 147,
+      "sha256_source": "866dc8673d840d8cafd6b25960673af89b212c880de9c0ba659bd5c7df2fd90b",
+      "download_url": "https://www.poctep.eu/wp-content/uploads/2025/03/Lista_operaciones_POCTEP_web_180325-OEI.xlsx",
+      "raw_csv": "calls_1_5_sheet1.csv"
+    },
+    {
+      "call": "calls_1_5",
+      "sheet": "Cat. intervencion",
+      "rows": 1037,
+      "max_cols": 1,
+      "header_idx_0based": -1,
+      "header": [],
+      "unique_codes_regex": 0,
+      "sha256_source": "866dc8673d840d8cafd6b25960673af89b212c880de9c0ba659bd5c7df2fd90b",
+      "download_url": "https://www.poctep.eu/wp-content/uploads/2025/03/Lista_operaciones_POCTEP_web_180325-OEI.xlsx",
+      "raw_csv": "calls_1_5_sheet2.csv"
+    },
+    {
+      "call": "calls_1_5",
+      "sheet": "Tits_resumenes",
+      "rows": 1035,
+      "max_cols": 5,
+      "header_idx_0based": 0,
+      "header": [
+        "Convocatoria  Convocatória",
+        "Código operación \nCódigo operação",
+        "Título del proyecto \nTítulo do projeto",
+        "Resumen \nResumo",
+        "Área cooperación \nÁrea cooperação"
+      ],
+      "unique_codes_regex": 146,
+      "sha256_source": "866dc8673d840d8cafd6b25960673af89b212c880de9c0ba659bd5c7df2fd90b",
+      "download_url": "https://www.poctep.eu/wp-content/uploads/2025/03/Lista_operaciones_POCTEP_web_180325-OEI.xlsx",
+      "raw_csv": "calls_1_5_sheet3.csv"
+    },
+    {
+      "call": "call_6",
+      "sheet": "FEDER_Benef_6ª_conv",
+      "rows": 770,
+      "max_cols": 9,
+      "header_idx_0based": 0,
+      "header": [
+        "ACRÓNIMO",
+        "TÍTULO",
+        "AC",
+        "PR",
+        "OE",
+        "OP",
+        "rol",
+        "BENEFICIARIO",
+        "FEDER APROBADO"
+      ],
+      "unique_codes_regex": 94,
+      "sha256_source": "064e4278b44bc12ffade6ca00d9ed153e37a9d86ee77af6d0492e87923a843a5",
+      "download_url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_6a_conv_TOTAL_25_02_26.xlsx",
+      "raw_csv": "call_6_sheet1.csv"
+    },
+    {
+      "call": "call_7",
+      "sheet": "FEDER_Benef_7ª_conv",
+      "rows": 84,
+      "max_cols": 9,
+      "header_idx_0based": 0,
+      "header": [
+        "ACRÓNIMO",
+        "TÍTULO",
+        "AC",
+        "PR",
+        "OE",
+        "OP",
+        "ROL",
+        "BENEFICIARIO",
+        "FEDER APROBADO"
+      ],
+      "unique_codes_regex": 6,
+      "sha256_source": "270bb3f849d05884dd8e38627d8ffd659b0a9b4d49cb4b6b063a74e97ce7fb0e",
+      "download_url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_7a_conv_TOTAL_25_02_26.xlsx",
+      "raw_csv": "call_7_sheet1.csv"
+    },
+    {
+      "call": "call_8",
+      "sheet": "Hoja1",
+      "rows": 120,
+      "max_cols": 10,
+      "header_idx_0based": 0,
+      "header": [
+        "ACRÓNIMO",
+        "TÍTULO",
+        "AC",
+        "PRIORIDAD",
+        "OE",
+        "OP",
+        "ROL",
+        "BENEFICIARIO",
+        "NATURALEZA",
+        "FEDER APROBADO"
+      ],
+      "unique_codes_regex": 15,
+      "sha256_source": "251f3fe131677874c31ae92f4dce973c4c3cc9053a439e4754bb6e3774e8466c",
+      "download_url": "https://www.poctep.eu/wp-content/uploads/2026/07/Proyectos_aprobados_CG_8a_conv_TOTAL.xlsx",
+      "raw_csv": "call_8_sheet1.csv"
+    }
+  ],
+  "project_register_status": "candidate_only_not_verified",
+  "note": "Regex-based extraction is preliminary; source workbook may use different project IDs. Financial figures are unparsed strings and must not be aggregated or treated as approved totals.",
+  "expected_total_match": false
+}

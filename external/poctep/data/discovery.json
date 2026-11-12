@@ -1,0 +1,114 @@
+{
+  "source_page": "https://www.poctep.eu/en/operations-partners-list/",
+  "retrieved_utc": "2026-11-12T00:59:52.213644+00:00",
+  "pages_attempted": [
+    {
+      "page": "https://www.poctep.eu/en/operations-partners-list/",
+      "http_content_type": "text/html; charset=UTF-8",
+      "bytes": 202663,
+      "candidate_links": [
+        {
+          "label": "DOWNLOAD: 1ª a 5ª convocatorias: lista de 144 operaciones y entidades de proyectos aprobados",
+          "url": "https://www.poctep.eu/wp-content/uploads/2025/03/Lista_operaciones_POCTEP_web_180325-OEI.xlsx",
+          "call": "calls_1_5"
+        },
+        {
+          "label": "DOWNLOAD: 6ª convocatorias: lista de 94 operaciones y entidades de proyectos aprobados",
+          "url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_6a_conv_TOTAL_25_02_26.xlsx",
+          "call": "call_6"
+        },
+        {
+          "label": "DOWNLOAD: 7ª convocatoria: lista de 6 operaciones y entidades de proyectos aprobados",
+          "url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_7a_conv_TOTAL_25_02_26.xlsx",
+          "call": "call_6"
+        },
+        {
+          "label": "DOWNLOAD: 8th Call for Proposals – List of Approved Entities and Operations",
+          "url": "https://www.poctep.eu/wp-content/uploads/2026/07/Proyectos_aprobados_CG_8a_conv_TOTAL.xlsx",
+          "call": "call_8"
+        }
+      ]
+    },
+    {
+      "page": "https://www.poctep.eu/proyectos-aprobados-poctep2127/",
+      "http_content_type": "text/html; charset=UTF-8",
+      "bytes": 208873,
+      "candidate_links": [
+        {
+          "label": "DOWNLOAD: 1ª a 5ª convocatorias: lista de entidades y 144 operaciones aprobadas",
+          "url": "https://www.poctep.eu/wp-content/uploads/2025/03/Lista_operaciones_POCTEP_web_180325-OEI.xlsx",
+          "call": "calls_1_5",
+          "download_url": "https://www.poctep.eu/wp-content/uploads/2025/03/Lista_operaciones_POCTEP_web_180325-OEI.xlsx",
+          "sha256": "866dc8673d840d8cafd6b25960673af89b212c880de9c0ba659bd5c7df2fd90b",
+          "bytes": 784530,
+          "sheet_count": 3
+        },
+        {
+          "label": "DOWNLOAD: 6ª convocatoria: lista de entidades y 94 operaciones aprobadas",
+          "url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_6a_conv_TOTAL_25_02_26.xlsx",
+          "call": "call_6",
+          "download_url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_6a_conv_TOTAL_25_02_26.xlsx",
+          "sha256": "064e4278b44bc12ffade6ca00d9ed153e37a9d86ee77af6d0492e87923a843a5",
+          "bytes": 70532,
+          "sheet_count": 1
+        },
+        {
+          "label": "DOWNLOAD: 7ª convocatoria: lista de entidades y proyectos aprobados",
+          "url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_7a_conv_TOTAL_25_02_26.xlsx",
+          "call": "call_7",
+          "download_url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_7a_conv_TOTAL_25_02_26.xlsx",
+          "sha256": "270bb3f849d05884dd8e38627d8ffd659b0a9b4d49cb4b6b063a74e97ce7fb0e",
+          "bytes": 16486,
+          "sheet_count": 1
+        },
+        {
+          "label": "DOWNLOAD: 8ª convocatoria: lista de entidades y operaciones aprobadas",
+          "url": "https://www.poctep.eu/wp-content/uploads/2026/07/Proyectos_aprobados_CG_8a_conv_TOTAL.xlsx",
+          "call": "call_8",
+          "download_url": "https://www.poctep.eu/wp-content/uploads/2026/07/Proyectos_aprobados_CG_8a_conv_TOTAL.xlsx",
+          "sha256": "251f3fe131677874c31ae92f4dce973c4c3cc9053a439e4754bb6e3774e8466c",
+          "bytes": 20830,
+          "sheet_count": 1
+        }
+      ]
+    }
+  ],
+  "selected": {
+    "calls_1_5": {
+      "label": "DOWNLOAD: 1ª a 5ª convocatorias: lista de entidades y 144 operaciones aprobadas",
+      "url": "https://www.poctep.eu/wp-content/uploads/2025/03/Lista_operaciones_POCTEP_web_180325-OEI.xlsx",
+      "call": "calls_1_5",
+      "download_url": "https://www.poctep.eu/wp-content/uploads/2025/03/Lista_operaciones_POCTEP_web_180325-OEI.xlsx",
+      "sha256": "866dc8673d840d8cafd6b25960673af89b212c880de9c0ba659bd5c7df2fd90b",
+      "bytes": 784530,
+      "sheet_count": 3
+    },
+    "call_6": {
+      "label": "DOWNLOAD: 6ª convocatoria: lista de entidades y 94 operaciones aprobadas",
+      "url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_6a_conv_TOTAL_25_02_26.xlsx",
+      "call": "call_6",
+      "download_url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_6a_conv_TOTAL_25_02_26.xlsx",
+      "sha256": "064e4278b44bc12ffade6ca00d9ed153e37a9d86ee77af6d0492e87923a843a5",
+      "bytes": 70532,
+      "sheet_count": 1
+    },
+    "call_7": {
+      "label": "DOWNLOAD: 7ª convocatoria: lista de entidades y proyectos aprobados",
+      "url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_7a_conv_TOTAL_25_02_26.xlsx",
+      "call": "call_7",
+      "download_url": "https://www.poctep.eu/wp-content/uploads/2026/04/Proyectos_aprobados_CG_7a_conv_TOTAL_25_02_26.xlsx",
+      "sha256": "270bb3f849d05884dd8e38627d8ffd659b0a9b4d49cb4b6b063a74e97ce7fb0e",
+      "bytes": 16486,
+      "sheet_count": 1
+    },
+    "call_8": {
+      "label": "DOWNLOAD: 8ª convocatoria: lista de entidades y operaciones aprobadas",
+      "url": "https://www.poctep.eu/wp-content/uploads/2026/07/Proyectos_aprobados_CG_8a_conv_TOTAL.xlsx",
+      "call": "call_8",
+      "download_url": "https://www.poctep.eu/wp-content/uploads/2026/07/Proyectos_aprobados_CG_8a_conv_TOTAL.xlsx",
+      "sha256": "251f3fe131677874c31ae92f4dce973c4c3cc9053a439e4754bb6e3774e8466c",
+      "bytes": 20830,
+      "sheet_count": 1
+    }
+  }
+}
