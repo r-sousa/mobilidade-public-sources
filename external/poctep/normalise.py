@@ -93,7 +93,7 @@ def main():
             if not code: code=last_code
             ben=get(row,s,"beneficiary")
             role=get(row,s,"role").upper()
-            if not code or not CODE.fullmatch(code) or not ben or role not in ("BP","BE","SO"):
+            if not code or not CODE.fullmatch(code) or not ben or (source != "calls_1_5" and role not in ("BP","BE","SO")):
                 if val and not CODE.fullmatch(val) and not val.lower().startswith("total "):
                     rejected.append((i,val[:100],role,ben[:60]))
                 continue
@@ -134,7 +134,7 @@ def main():
                              get(row,s,"country"), get(row,s,"nature"),
                              string_amount(erdf),string_amount(cost),get(row,s,"rate"),
                              p["area_code"],p["priority"],i])
-        diagnostics.append({"source":source,"strict_projects":len(local),"expected":EXPECT[source],
+        diagnostics.append({"source":source,"role_examples":sorted({get(r,s,"role") for r in rows[1:100] if get(r,s,"role")})[:15], "strict_projects":len(local),"expected":EXPECT[source],
                             "strict_partner_rows":sum(x[1]==source for x in partners),
                             "rejected_nonempty_code_examples":rejected[:8]})
     ph=["project_code","call_group","call_number","project_title","area_code","cooperation_area",
