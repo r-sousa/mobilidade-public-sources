@@ -1,4 +1,1042 @@
 ﻿project_code,call_group,partner_name,partner_role,country_source,partner_nature,partner_approved_erdf_eur,partner_eligible_cost_eur,cofinancing_rate_source,area_code,priority,source_row
+0002_OP5_CENCYL_3_P,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Centro (CCDR Centro) /  /,BENEFICIARIA PRINCIPAL,PT,,26250.00,35000.00,0.75,3,P7,2
+0002_OP5_CENCYL_3_P,calls_1_5,Consejería de la Presidencia / Junta de Castilla y León / Junta de Castilla y León,SOCIA,ES,,26250.00,35000.00,0.75,3,P7,3
+0004_ESPACIO_NORCYL_2_E,calls_1_5,Consejería de la Presidencia / Junta de Castilla y León / Junta de Castilla y León,BENEFICIARIA PRINCIPAL,ES,,26250.00,35000.00,0.75,2,P7,4
+0004_ESPACIO_NORCYL_2_E,calls_1_5,Comissão Coordenação Desenvolvimento Regional Norte (CCDR Norte) /  /,SOCIA,PT,,26250.00,35000.00,0.75,2,P7,5
+0006_EUROACE_NEB_4_P,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Centro (CCDR Centro) /  /,BENEFICIARIA PRINCIPAL,PT,,26250.00,35000.00,0.75,4,P7,6
+0006_EUROACE_NEB_4_P,calls_1_5,Dirección General de Acción Exterior / Presidencia de la Junta de Extremadura / Junta de Extremadura,SOCIA,ES,,26250.00,35000.00,0.75,4,P7,7
+0006_EUROACE_NEB_4_P,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Alentejo (CCDR Alentejo) /  /,SOCIA,PT,,26250.00,35000.00,0.75,4,P7,8
+0007_MURTIGAS_MAS_5_E,calls_1_5,Diputación Provincial de Huelva / Entidades Locales / Diputación Provincial de Huelva,BENEFICIARIA PRINCIPAL,ES,,26250.00,35000.00,0.75,5,P7,9
+0007_MURTIGAS_MAS_5_E,calls_1_5,Câmara Municipal de Barrancos / - / -,SOCIA,PT,,26250.00,35000.00,0.75,5,P7,10
+0008_OP5_BAJO_GUADIANA_AC5_5_E,calls_1_5,"Secretaría General de Acción Exterior, Unión Europea y Cooperación / Viceconsejería (Presidencia, Interior, Diálogo Social y Simplificación Administrativa) / Junta de Andalucía",BENEFICIARIA PRINCIPAL,ES,,26250.00,35000.00,0.75,5,P7,11
+0008_OP5_BAJO_GUADIANA_AC5_5_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Alentejo (CCDR Alentejo) /  /,SOCIA,PT,,26250.00,35000.00,0.75,5,P7,12
+0008_OP5_BAJO_GUADIANA_AC5_5_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Algarve (CCDR Algarve) / - / -,SOCIA,PT,,26250.00,35000.00,0.75,5,P7,13
+0011_RIO_MINHO_2030_1_P,calls_1_5,Agrupamento Europeu de Cooperação Territorial do Rio Minho (AECT Rio Minho) / - / -,BENEFICIARIA PRINCIPAL,PT,,26250.00,35000.00,0.75,1,P7,14
+0014_GOBERNANZA_GNP_1_E,calls_1_5,Comissão Coordenação Desenvolvimento Regional Norte (CCDR Norte) /  /,BENEFICIARIA,PT,,51560.36,68747.15,0.75,1,P7,15
+0014_GOBERNANZA_GNP_1_E,calls_1_5,"Agencia Gallega de Innovación (GAIN) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,56589.04,75452.05,0.75,1,P7,16
+0014_GOBERNANZA_GNP_1_E,calls_1_5,Agrupación Europea de Cooperación Territorial Galicia-Norte de Portugal (GNP-AECT) /  /,BENEFICIARIA PRINCIPAL,ES,,248432.13,331242.84,0.75,1,P7,17
+0015_C_D_CCG_MAIS_3_P,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA,ES,,89726.36,119635.15,0.75,3,P7,18
+0015_C_D_CCG_MAIS_3_P,calls_1_5,MUNICIPIO DE GUARDA /  /,BENEFICIARIA,PT,,33541.46,44721.95,0.75,3,P7,19
+0015_C_D_CCG_MAIS_3_P,calls_1_5,Instituto Politécnico da Guarda /  /,BENEFICIARIA,PT,,8625.00,11500.00,0.75,3,P7,20
+0015_C_D_CCG_MAIS_3_P,calls_1_5,Universidade de Coimbra /  /,BENEFICIARIA,PT,,13125.00,17500.00,0.75,3,P7,21
+0015_C_D_CCG_MAIS_3_P,calls_1_5,Centro de Estudos Ibéricos (CEI) /  /,BENEFICIARIA PRINCIPAL,PT,,108262.50,144350.00,0.75,3,P7,22
+0016_GOBERNANZA_NORCYL_2_E,calls_1_5,Comissão Coordenação Desenvolvimento Regional Norte (CCDR Norte) /  /,BENEFICIARIA,PT,,101746.14,135661.52,0.75,2,P7,23
+0016_GOBERNANZA_NORCYL_2_E,calls_1_5,Consejería de la Presidencia / Junta de Castilla y León / Junta de Castilla y León,BENEFICIARIA PRINCIPAL,ES,,229040.62,305387.50,0.75,2,P7,24
+0017_CENCYL_GOBERNANZA_3_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Centro (CCDR Centro) /  /,BENEFICIARIA,PT,,71691.52,95588.69,0.75,3,P7,25
+0017_CENCYL_GOBERNANZA_3_E,calls_1_5,Consejería de la Presidencia / Junta de Castilla y León / Junta de Castilla y León,BENEFICIARIA PRINCIPAL,ES,,226115.62,301487.50,0.75,3,P7,26
+0018_GITEUROACE_CON_VIDA_4_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Centro (CCDR Centro) /  /,BENEFICIARIA,PT,,77183.15,102910.87,0.75,4,P7,27
+0018_GITEUROACE_CON_VIDA_4_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Alentejo (CCDR Alentejo) /  /,BENEFICIARIA,PT,,75258.00,100344.00,0.75,4,P7,28
+0018_GITEUROACE_CON_VIDA_4_E,calls_1_5,Dirección General de Acción Exterior / Presidencia de la Junta de Extremadura / Junta de Extremadura,BENEFICIARIA PRINCIPAL,ES,,709886.14,946514.85,0.75,4,P7,29
+0019_RAIA_SECA_GERES_XURES_1_P,calls_1_5,Comunidade Intermunicipal do Alto Tâmega e Barroso (CIMAT) /  /,BENEFICIARIA,PT,,20000.00,26666.67,0.75,1,P7,30
+0019_RAIA_SECA_GERES_XURES_1_P,calls_1_5,INORDE - INSTITUTO OURENSANO DE DESARROLLO ECONÓMICO. /  /,BENEFICIARIA,ES,,66855.21,89140.28,0.75,1,P7,31
+0019_RAIA_SECA_GERES_XURES_1_P,calls_1_5,Comunidade Intermunicipal do Cávado (CIM CÁVADO) /  /,BENEFICIARIA,PT,,23000.00,30666.67,0.75,1,P7,32
+0019_RAIA_SECA_GERES_XURES_1_P,calls_1_5,Diputación Provincial de Ourense / Entidades Locales / Diputación Provincial de Ourense,BENEFICIARIA,ES,,90937.50,121250.00,0.75,1,P7,33
+0019_RAIA_SECA_GERES_XURES_1_P,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA PRINCIPAL,PT,,60000.00,80000.00,0.75,1,P7,34
+0020_C2_AGENDA_2030_LOCAL_6_E,calls_1_5,Diputación Provincial de Huelva / Entidades Locales / Diputación Provincial de Huelva,BENEFICIARIA,ES,,62885.17,83846.89,0.75,6,P7,35
+0020_C2_AGENDA_2030_LOCAL_6_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA,ES,,107578.67,143438.22,0.75,6,P7,36
+0020_C2_AGENDA_2030_LOCAL_6_E,calls_1_5,Diputación Provincial de Cáceres / Entidades Locales / Diputación Provincial de Cáceres,BENEFICIARIA,ES,,63600.00,84800.00,0.75,6,P7,37
+0020_C2_AGENDA_2030_LOCAL_6_E,calls_1_5,Comunidade Intermunicipal da Beira Baixa (CIMBB) /  /,BENEFICIARIA,PT,,26885.86,35847.81,0.75,6,P7,38
+0020_C2_AGENDA_2030_LOCAL_6_E,calls_1_5,Comunidade Intermunicipal do Baixo Alentejo (CIMBAL) /  /,BENEFICIARIA,PT,,31193.81,41591.75,0.75,6,P7,39
+0020_C2_AGENDA_2030_LOCAL_6_E,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA,PT,,65359.67,87146.23,0.75,6,P7,40
+0020_C2_AGENDA_2030_LOCAL_6_E,calls_1_5,Cooperación con los Municipios / Diputación de Pontevedra / Diputación Provincial de Pontevedra,BENEFICIARIA PRINCIPAL,ES,,237025.70,316034.27,0.75,6,P7,41
+0021_REDE_GOV_MINHO_1_P,calls_1_5,"Ayuntamiento de Rosal, O / Entidades Locales / Ayuntamiento de Rosal, O",BENEFICIARIA,ES,,30060.00,40080.00,0.75,1,P7,42
+0021_REDE_GOV_MINHO_1_P,calls_1_5,CAMARA MUNCIPAL DE MONÇAO /  /,BENEFICIARIA,PT,,30225.00,40300.00,0.75,1,P7,43
+0021_REDE_GOV_MINHO_1_P,calls_1_5,Município de Caminha /  /,BENEFICIARIA,PT,,15315.00,20420.00,0.75,1,P7,44
+0021_REDE_GOV_MINHO_1_P,calls_1_5,"Ayuntamiento de Guarda, A / Entidades Locales / Ayuntamiento de Guarda, A",BENEFICIARIA,ES,,30210.00,40280.00,0.75,1,P7,45
+0021_REDE_GOV_MINHO_1_P,calls_1_5,Ayuntamiento de Tomiño / Entidades Locales / Ayuntamiento de Tomiño,BENEFICIARIA,ES,,89369.96,119159.95,0.75,1,P7,46
+0021_REDE_GOV_MINHO_1_P,calls_1_5,Município de Valença /  /,BENEFICIARIA,PT,,22500.00,30000.00,0.75,1,P7,47
+0021_REDE_GOV_MINHO_1_P,calls_1_5,MUNICIPIO DE VILA NOVA DE CERVEIRA /  /,BENEFICIARIA,PT,,63508.79,84678.39,0.75,1,P7,48
+0021_REDE_GOV_MINHO_1_P,calls_1_5,Ayuntamiento de Tui / Entidades Locales / Ayuntamiento de Tui,BENEFICIARIA,ES,,37500.00,50000.00,0.75,1,P7,49
+0021_REDE_GOV_MINHO_1_P,calls_1_5,MUNICIPIO DE MELGAÇO /  /,BENEFICIARIA,PT,,45478.59,60638.12,0.75,1,P7,50
+0021_REDE_GOV_MINHO_1_P,calls_1_5,Ayuntamiento de Salvaterra de Miño / Entidades Locales / Ayuntamiento de Salvaterra de Miño,BENEFICIARIA,ES,,31875.00,42500.00,0.75,1,P7,51
+0021_REDE_GOV_MINHO_1_P,calls_1_5,Agrupamento Europeu de Cooperação Territorial do Rio Minho (AECT Rio Minho) / - / -,BENEFICIARIA PRINCIPAL,PT,,202110.28,269480.37,0.75,1,P7,52
+0022_GIT_EURO_AAA_21_27_5_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Alentejo (CCDR Alentejo) /  /,BENEFICIARIA,PT,,67359.60,89812.80,0.75,5,P7,53
+0022_GIT_EURO_AAA_21_27_5_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Algarve (CCDR Algarve) / - / -,BENEFICIARIA,PT,,70146.75,93529.00,0.75,5,P7,54
+0022_GIT_EURO_AAA_21_27_5_E,calls_1_5,"Secretaría General de Acción Exterior, Unión Europea y Cooperación / Viceconsejería (Presidencia, Interior, Diálogo Social y Simplificación Administrativa) / Junta de Andalucía",BENEFICIARIA PRINCIPAL,ES,,144834.00,193112.00,0.75,5,P7,55
+0023_EUROCIDADE2030_1_E,calls_1_5,Federação Nacional de Associações Juvenis (FNAJ) /  /,BENEFICIARIA,PT,,56440.67,75254.23,0.75,1,P7,56
+0023_EUROCIDADE2030_1_E,calls_1_5,Direção Regional do Norte do IPDJ / Instituto Português do Desporto e Juventude (IPDJ) / -,BENEFICIARIA,PT,,65373.00,87164.00,0.75,1,P7,57
+0023_EUROCIDADE2030_1_E,calls_1_5,Fundación Galicia Europa / Dirección General de Relaciones Exteriores y con la Unión Europea / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,53011.00,70681.33,0.75,1,P7,58
+0023_EUROCIDADE2030_1_E,calls_1_5,"Dirección General de Juventud, Participación y Voluntariado / Consellería de Política Social y Juventud / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,104520.00,139360.00,0.75,1,P7,59
+0023_EUROCIDADE2030_1_E,calls_1_5,Agrupación Europea de Cooperación Territorial Eurocidade Chaves-Verín (AECT Chaves-Verín) /  /,BENEFICIARIA PRINCIPAL,ES,,281048.52,374731.36,0.75,1,P7,60
+0023_EUROCIDADE2030_1_E,calls_1_5,Município de Chaves / - / -,SOCIA,PT,,0.00,0.00,0,1,P7,61
+0023_EUROCIDADE2030_1_E,calls_1_5,Ayuntamiento de Verín / Entidades Locales / Ayuntamiento de Verín,SOCIA,ES,,0.00,0.00,0,1,P7,62
+0024_CESCOT_6_E,calls_1_5,Agrupación Europea de Cooperación Territorial Duero-Douro / Otros Organismos / Otros Organismos,BENEFICIARIA PRINCIPAL,ES,,300251.07,400334.76,0.75,6,P7,63
+0026_RAIA_5_E,calls_1_5,Diputación Provincial de Huelva / Entidades Locales / Diputación Provincial de Huelva,BENEFICIARIA,ES,,112500.00,150000.00,0.75,5,P7,64
+0026_RAIA_5_E,calls_1_5,Associação In Loco / - / -,BENEFICIARIA,PT,,87965.52,117287.36,0.75,5,P7,65
+0026_RAIA_5_E,calls_1_5,Câmara Municipal de Mértola / - / -,BENEFICIARIA,PT,,35757.97,47677.29,0.75,5,P7,66
+0026_RAIA_5_E,calls_1_5,Associação para o Desenvolvimento do Concelho de Moura (ADCMoura) /  /,BENEFICIARIA,PT,,42774.46,57032.61,0.75,5,P7,67
+0026_RAIA_5_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Algarve (CCDR Algarve) / - / -,BENEFICIARIA,PT,,46348.45,61797.93,0.75,5,P7,68
+0026_RAIA_5_E,calls_1_5,Ayuntamiento de Puebla de Guzmán / Entidades Locales / Ayuntamiento de Puebla de Guzmán,BENEFICIARIA,ES,,81292.50,108390.00,0.75,5,P7,69
+0026_RAIA_5_E,calls_1_5,Acp Cercania Consultores SL /  /,BENEFICIARIA,ES,,104829.07,139772.09,0.75,5,P7,70
+0026_RAIA_5_E,calls_1_5,Comunidade Intermunicipal do Baixo Alentejo (CIMBAL) /  /,BENEFICIARIA,PT,,32147.35,42863.13,0.75,5,P7,71
+0026_RAIA_5_E,calls_1_5,Associação de Defesa do Património de Mértola (ADPM) / - / -,BENEFICIARIA,PT,,33904.28,45205.71,0.75,5,P7,72
+0026_RAIA_5_E,calls_1_5,"Agencia de Gestión Agraria y Pesquera de Andalucía / Viceconsejería (Agricultura, Pesca, Agua y Desarrollo Rural) / Junta de Andalucía",BENEFICIARIA PRINCIPAL,ES,,179138.80,238851.73,0.75,5,P7,73
+0027_ADAPT_CLIMA_CENCYL_3_E,calls_1_5,Ayuntamiento de Ciudad Rodrigo / Entidades Locales / Ayuntamiento de Ciudad Rodrigo,BENEFICIARIA,ES,,82580.25,110107.00,0.75,3,P3,74
+0027_ADAPT_CLIMA_CENCYL_3_E,calls_1_5,MUNICIPIO DE COIMBRA /  /,BENEFICIARIA,PT,,60882.75,81177.00,0.75,3,P3,75
+0027_ADAPT_CLIMA_CENCYL_3_E,calls_1_5,MUNICIPIO DE VISEU /  /,BENEFICIARIA,PT,,60882.75,81177.00,0.75,3,P3,76
+0027_ADAPT_CLIMA_CENCYL_3_E,calls_1_5,MUNICIPIO DE ALMEIDA /  /,BENEFICIARIA,PT,,60882.75,81177.00,0.75,3,P3,77
+0027_ADAPT_CLIMA_CENCYL_3_E,calls_1_5,MUNICIPIO DE AVEIRO / - / -,BENEFICIARIA,PT,,60882.75,81177.00,0.75,3,P3,78
+0027_ADAPT_CLIMA_CENCYL_3_E,calls_1_5,MUNICIPIO DE GUARDA /  /,BENEFICIARIA,PT,,60882.75,81177.00,0.75,3,P3,79
+0027_ADAPT_CLIMA_CENCYL_3_E,calls_1_5,Ayuntamiento de Valladolid / Entidades Locales / Ayuntamiento de Valladolid,BENEFICIARIA,ES,,105084.75,140113.00,0.75,3,P3,80
+0027_ADAPT_CLIMA_CENCYL_3_E,calls_1_5,"Fundación Patrimonio Natural de Castilla y León / Consejería de Medio Ambiente, Vivienda y Ordenación del Territorio / Junta de Castilla y León",BENEFICIARIA,ES,,144243.00,192324.00,0.75,3,P3,81
+0027_ADAPT_CLIMA_CENCYL_3_E,calls_1_5,Ayuntamiento de Salamanca / Entidades Locales / Ayuntamiento de Salamanca,BENEFICIARIA PRINCIPAL,ES,,180432.00,240576.00,0.75,3,P3,82
+0029_GREEN_GAP_1_E,calls_1_5,Diputación Provincial de Ourense / Entidades Locales / Diputación Provincial de Ourense,BENEFICIARIA,ES,,127756.50,170342.00,0.75,1,P4,83
+0029_GREEN_GAP_1_E,calls_1_5,Municipio de Paredes de Coura /  /,BENEFICIARIA,PT,,262794.16,350392.21,0.75,1,P4,84
+0029_GREEN_GAP_1_E,calls_1_5,Laboratório da Paisagem de Guimarães. Associação Para a Promoção do Desenvolvimento Sustentável /  /,BENEFICIARIA,PT,,107320.05,143093.40,0.75,1,P4,85
+0029_GREEN_GAP_1_E,calls_1_5,Ayuntamiento de Pontevedra / Entidades Locales / Ayuntamiento de Pontevedra,BENEFICIARIA,ES,,177429.86,236573.15,0.75,1,P4,86
+0029_GREEN_GAP_1_E,calls_1_5,Universidade Da Coruña / Universidades / Universidade Da Coruña,BENEFICIARIA,ES,,247675.78,330234.38,0.75,1,P4,87
+0029_GREEN_GAP_1_E,calls_1_5,Universidade do Minho /  /,BENEFICIARIA,PT,,124313.37,165751.16,0.75,1,P4,88
+0029_GREEN_GAP_1_E,calls_1_5,Municipio de Guimarães /  /,BENEFICIARIA,PT,,127511.07,170014.76,0.75,1,P4,89
+0029_GREEN_GAP_1_E,calls_1_5,Fundación Centro de Estudios Eurorrexionais Galicia-Norte de Portugal (CEER) /  /,BENEFICIARIA,ES,,136698.00,182264.00,0.75,1,P4,90
+0029_GREEN_GAP_1_E,calls_1_5,"Instituto de Estudios del Territorio / Consellería de Medio Ambiente, Territorio y Vivienda / Comunidad Autónoma de Galicia",BENEFICIARIA PRINCIPAL,ES,,322641.07,430188.09,0.75,1,P4,91
+0029_GREEN_GAP_1_E,calls_1_5,"Agência Portuguesa do Ambiente, I.P. (APA I.P.) /  /",SOCIA,PT,,0.00,0.00,0,1,P4,92
+0029_GREEN_GAP_1_E,calls_1_5,Direção Regional da Conservação da Natureza e Florestas do Norte / Instituto da Conservação da Natureza e das Florestas /,SOCIA,PT,,0.00,0.00,0,1,P4,93
+0030_RED_IACOBUS_1_E,calls_1_5,Fundación Centro de Estudios Eurorrexionais Galicia-Norte de Portugal (CEER) /  /,BENEFICIARIA,ES,,163687.63,218250.17,0.75,1,P1,94
+0030_RED_IACOBUS_1_E,calls_1_5,Agrupación Europea de Cooperación Territorial Galicia-Norte de Portugal (GNP-AECT) /  /,BENEFICIARIA PRINCIPAL,ES,,1108061.25,1477415.00,0.75,1,P1,95
+0031_RISC_PLUS_6_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA,ES,,165240.00,220320.00,0.75,6,P3,96
+0031_RISC_PLUS_6_E,calls_1_5,"Agência Portuguesa do Ambiente, I.P. (APA I.P.) /  /",BENEFICIARIA,PT,,111439.67,148586.23,0.75,6,P3,97
+0031_RISC_PLUS_6_E,calls_1_5,Faculdade de Engenharia (FEUP) / Universidade do Porto /,BENEFICIARIA,PT,,179843.94,239791.92,0.75,6,P3,98
+0031_RISC_PLUS_6_E,calls_1_5,Oficina de Planificacion Hidrologica / Confederacion Hidrografica del Miño-Sil / Ministerio para la Transición Ecológica y el Reto Demográfico,BENEFICIARIA PRINCIPAL,ES,,751012.50,1001350.00,0.75,6,P3,99
+0033_NET4FOOD_1_P,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA,ES,,197431.69,263242.25,0.75,1,P1,100
+0033_NET4FOOD_1_P,calls_1_5,Laboratório Ibérico Internacional de Nanotecnologia (INL) /  /,BENEFICIARIA,PT,,58925.88,78567.84,0.75,1,P1,101
+0033_NET4FOOD_1_P,calls_1_5,Asociación Clúster Alimentario de Galicia /  /,BENEFICIARIA,ES,,79117.45,105489.93,0.75,1,P1,102
+0033_NET4FOOD_1_P,calls_1_5,Associação Integralar. Intervenção de Excelência no Setor Agro-Alimentar (PORTUGALFOODS) /  /,BENEFICIARIA,PT,,20910.08,27880.11,0.75,1,P1,103
+0033_NET4FOOD_1_P,calls_1_5,Instituto Politécnico de Bragança /  /,BENEFICIARIA PRINCIPAL,PT,,159813.59,213084.79,0.75,1,P1,104
+0033_NET4FOOD_1_P,calls_1_5,Laboratório Colaborativo Montanhas de Investigação – Associação (MORE) /  /,SOCIA,PT,,0.00,0.00,0,1,P1,105
+0033_NET4FOOD_1_P,calls_1_5,Centro de Valorização e Transferência de Tecnologia da Água (AquaValor) /  /,SOCIA,PT,,0.00,0.00,0,1,P1,106
+0035_CIRCULAR_ECOSYSTEMS_6_E,calls_1_5,INORDE - INSTITUTO OURENSANO DE DESARROLLO ECONÓMICO. /  /,BENEFICIARIA,ES,,138810.92,185081.22,0.75,6,P4,107
+0035_CIRCULAR_ECOSYSTEMS_6_E,calls_1_5,Município de Matosinhos /  /,BENEFICIARIA,PT,,114593.18,152790.91,0.75,6,P4,108
+0035_CIRCULAR_ECOSYSTEMS_6_E,calls_1_5,Municipio de Guimarães /  /,BENEFICIARIA,PT,,118948.92,158598.56,0.75,6,P4,109
+0035_CIRCULAR_ECOSYSTEMS_6_E,calls_1_5,Ayuntamiento de Valladolid / Entidades Locales / Ayuntamiento de Valladolid,BENEFICIARIA,ES,,147164.07,196218.76,0.75,6,P4,110
+0035_CIRCULAR_ECOSYSTEMS_6_E,calls_1_5,Diputación Provincial de Ávila / Entidades Locales / Diputación Provincial de Ávila,BENEFICIARIA,ES,,138914.08,185218.78,0.75,6,P4,111
+0035_CIRCULAR_ECOSYSTEMS_6_E,calls_1_5,"Fundación Patrimonio Natural de Castilla y León / Consejería de Medio Ambiente, Vivienda y Ordenación del Territorio / Junta de Castilla y León",BENEFICIARIA PRINCIPAL,ES,,217304.40,289739.20,0.75,6,P4,112
+0038_FENIX_6_E,calls_1_5,Asociación Ibérica de Municipios Ribereños del Duero (AIMRD) / Institucionales / Asociación Ibérica de Municipios Ribereños del Duero (AIMRD),BENEFICIARIA,ES,,206419.29,275225.72,0.75,6,P3,113
+0038_FENIX_6_E,calls_1_5,Eixo Atlântico do Noroeste Peninsular /  /,BENEFICIARIA,PT,,435130.45,580173.94,0.75,6,P3,114
+0038_FENIX_6_E,calls_1_5,Asociación Eixo Atlántico Do Noroeste Peninsular / Institucionales / Asociación Eixo Atlántico Do Noroeste Peninsular,BENEFICIARIA PRINCIPAL,ES,,1554367.34,2072489.79,0.75,6,P3,115
+0039_MINORSENS_2_E,calls_1_5,Instituto Politécnico de Bragança /  /,BENEFICIARIA,PT,,68248.98,90998.64,0.75,2,P1,116
+0039_MINORSENS_2_E,calls_1_5,Comissão Vitivinícola Regional De Trás os Montes (CVRTM) /  /,BENEFICIARIA,PT,,30644.87,40859.83,0.75,2,P1,117
+0039_MINORSENS_2_E,calls_1_5,Universidad de Valladolid / Universidades / Universidad de Valladolid,BENEFICIARIA,ES,,141302.86,188403.82,0.75,2,P1,118
+0039_MINORSENS_2_E,calls_1_5,"INSTITUTO TECNOLÓGICO AGRARIO DE CASTILLA Y LEÓN (ITACyL) / CONSEJERÍA DE AGRICULTURA , GANADERÍA Y DESARROLLO RURAL / JUNTA DE CASTILLA Y LEÓN",BENEFICIARIA PRINCIPAL,ES,,339794.18,453058.91,0.75,2,P1,119
+0039_MINORSENS_2_E,calls_1_5,Associação dos Produtores em Protecção Integrada de Trás-os-Montes e Alto Douro (APPITAD) /  /,SOCIA,PT,,0.00,0.00,0,2,P1,120
+0039_MINORSENS_2_E,calls_1_5,Denominación de Origen  Protegida Arribes (DOP Arribes) /  /,SOCIA,ES,,0.00,0.00,0,2,P1,121
+0041_IBERO_BIO_6_E,calls_1_5,"Fundacion Fundecyt - Parque Científico y Tecnológico de Extremadura / Consejería de Economía, Ciencia y Agenda Digital / Junta de Extremadura",BENEFICIARIA,ES,,156232.50,208310.00,0.75,6,P1,122
+0041_IBERO_BIO_6_E,calls_1_5,Laboratório Colaborativo para o Desenvolvimento de Tecnologias e Produtos Verdes do Oceano (GreenColab) / Associação Oceano Verde / -,BENEFICIARIA,PT,,79110.00,105480.00,0.75,6,P1,123
+0041_IBERO_BIO_6_E,calls_1_5,"PROMOCION ECONOMICA DE SALAMANCA / - / SOCIEDAD MUNICIPAL DE TURISMO COMERCIO Y PROMOCION ECONOMICA, SAU",BENEFICIARIA,ES,,150007.50,200010.00,0.75,6,P1,124
+0041_IBERO_BIO_6_E,calls_1_5,Laboratório Colaborativo para a Inovação da Indústria Agroalimentar (Colab4Food) /  /,BENEFICIARIA,PT,,29269.94,39026.59,0.75,6,P1,125
+0041_IBERO_BIO_6_E,calls_1_5,"Sociedad para la Promoción de Iniciativas Empresariales Innovadoras M.P., S.L. / Ayuntamiento de Santiago de Compostela / Ayuntamiento de Santiago de Compostela",BENEFICIARIA,ES,,75825.00,101100.00,0.75,6,P1,126
+0041_IBERO_BIO_6_E,calls_1_5,Consorcio de la Zona Franca de Cádiz / Subsecretaría de Hacienda y Función Pública / Ministerio de Hacienda y Función Pública,BENEFICIARIA,ES,,151030.50,201374.00,0.75,6,P1,127
+0041_IBERO_BIO_6_E,calls_1_5,Consorcio de la Zona Franca de Vigo / Subsecretaría de Hacienda y Función Pública / Ministerio de Hacienda y Función Pública,BENEFICIARIA,ES,,131760.00,175680.00,0.75,6,P1,128
+0041_IBERO_BIO_6_E,calls_1_5,"Instituto Gallego de Promoción Económica (IGAPE) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,67608.75,90145.00,0.75,6,P1,129
+0041_IBERO_BIO_6_E,calls_1_5,"Área de Valorización, Transferencia y Emprendimiento / Universidad de Santiago de Compostela / Universidad de Santiago de Compostela",BENEFICIARIA,ES,,254977.50,339970.00,0.75,6,P1,130
+0041_IBERO_BIO_6_E,calls_1_5,Universidade do Minho /  /,BENEFICIARIA,PT,,60730.09,80973.45,0.75,6,P1,131
+0041_IBERO_BIO_6_E,calls_1_5,Laboratório Ibérico Internacional de Nanotecnologia (INL) /  /,BENEFICIARIA,PT,,60000.00,80000.00,0.75,6,P1,132
+0041_IBERO_BIO_6_E,calls_1_5,Cluster Tecnolóxico Empresarial das Ciencias da Vida (BIOGA) / - /,BENEFICIARIA PRINCIPAL,ES,,263077.50,350770.00,0.75,6,P1,133
+0041_IBERO_BIO_6_E,calls_1_5,Associação Portuguesa de Bioindústria (APBIO) /  /,SOCIA,PT,,0.00,0.00,0,6,P1,134
+0043_NET4SLEEP_2_E,calls_1_5,Centro Hospitalar Universitário de São João (CHUSJ) /  /,BENEFICIARIA,PT,,50130.12,66840.16,0.75,2,P1,135
+0043_NET4SLEEP_2_E,calls_1_5,Universidade do Porto. Faculdade de Medicina (U.Porto/FMUP) /  /,BENEFICIARIA,PT,,114967.26,153289.68,0.75,2,P1,136
+0043_NET4SLEEP_2_E,calls_1_5,ICSCYL / Fundación ICSCYL / Fundación Instituto de Ciencias de la Salud de Castilla y León,BENEFICIARIA,ES,,200498.98,267331.97,0.75,2,P1,137
+0043_NET4SLEEP_2_E,calls_1_5,Universidad de Valladolid / Universidades / Universidad de Valladolid,BENEFICIARIA PRINCIPAL,ES,,154312.55,205750.07,0.75,2,P1,138
+0046_CIRCULAR_CHALLENGE_6_E,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA,ES,,139976.15,186634.87,0.75,6,P2,139
+0046_CIRCULAR_CHALLENGE_6_E,calls_1_5,CIRCULAR ECONOMY PORTUGAL - CEP Associação /  /,BENEFICIARIA,PT,,40000.00,53333.33,0.75,6,P2,140
+0046_CIRCULAR_CHALLENGE_6_E,calls_1_5,Conselho Empresarial do Centro/Cãmara de Comércio e Indústria do Centro (CEC/CCIC) / - / CEC/CCIC,BENEFICIARIA,PT,,48057.76,64077.01,0.75,6,P2,141
+0046_CIRCULAR_CHALLENGE_6_E,calls_1_5,FUNDACIÓN PAIDEIA GALIZA /  /,BENEFICIARIA,ES,,89612.29,119483.06,0.75,6,P2,142
+0046_CIRCULAR_CHALLENGE_6_E,calls_1_5,Associação CECOLAB - Collaborative Laboratory Towards Circular Economy /  / Associação CECOLAB - Collaborative Laboratory Towards Circular Economy,BENEFICIARIA,PT,,56732.15,75642.87,0.75,6,P2,143
+0046_CIRCULAR_CHALLENGE_6_E,calls_1_5,"Fundación Patrimonio Natural de Castilla y León / Consejería de Medio Ambiente, Vivienda y Ordenación del Territorio / Junta de Castilla y León",BENEFICIARIA,ES,,96810.48,129080.64,0.75,6,P2,144
+0046_CIRCULAR_CHALLENGE_6_E,calls_1_5,FEDERACION LEONESA DE EMPRESARIOS / - / -,BENEFICIARIA,ES,,107915.66,143887.55,0.75,6,P2,145
+0046_CIRCULAR_CHALLENGE_6_E,calls_1_5,Confederación Vallisoletana de Empresarios (CEOE) /  /,BENEFICIARIA,ES,,116744.22,155658.96,0.75,6,P2,146
+0046_CIRCULAR_CHALLENGE_6_E,calls_1_5,"Fundación Eoi, F.S.P. / Secretaría General de Industria y de la Pequeña y Mediana Empresa / Ministerio de Industria, Comercio y Turismo",BENEFICIARIA PRINCIPAL,ES,,186429.94,248573.25,0.75,6,P2,147
+0048_BLUE_WWATER_1_E,calls_1_5,MUNICIPIO DE VILA NOVA DE CERVEIRA /  /,BENEFICIARIA,PT,,26221.66,34962.21,0.75,1,P4,148
+0048_BLUE_WWATER_1_E,calls_1_5,Instituto de Investigación en Análisis Químicos y Biológicos (IAQBUS) / Universidad de Santiago de Compostela / Universidad de Santiago de Compostela,BENEFICIARIA,ES,,133542.12,178056.16,0.75,1,P4,149
+0048_BLUE_WWATER_1_E,calls_1_5,Fundación Centro Gallego de Investigaciones del Agua (CETAQUA GALICIA) /  /,BENEFICIARIA,ES,,40445.97,53927.96,0.75,1,P4,150
+0048_BLUE_WWATER_1_E,calls_1_5,"CMPEAE- Empresa de Águas e Energia do Município do Porto, EM /  /",BENEFICIARIA,PT,,105660.07,140880.09,0.75,1,P4,151
+0048_BLUE_WWATER_1_E,calls_1_5,Centro Oceanografico de Vigo (PONTEVEDRA) / Instituto Español de Oceanografia / Ministerio de Ciencia e Innovación,BENEFICIARIA,ES,,141334.23,188445.64,0.75,1,P4,152
+0048_BLUE_WWATER_1_E,calls_1_5,Câmara Municipal de Viana do Castelo /  /,BENEFICIARIA,PT,,42320.01,56426.68,0.75,1,P4,153
+0048_BLUE_WWATER_1_E,calls_1_5,Centro Interdisciplinar de Investigação Marinha e Ambiental (CIIMAR) / - / -,BENEFICIARIA,PT,,41462.77,55283.69,0.75,1,P4,154
+0048_BLUE_WWATER_1_E,calls_1_5,INSTITUTO TECNOLÓGICO PARA EL CONTROL DEL MEDIO MARINO DE GALICIA (INTECMAR) / INSTITUTO TECNOLÓGICO PARA EL CONTROL DEL MEDIO MARINO DE GALICIA (INTECMAR) / INSTITUTO TECNOLÓGICO PARA EL CONTROL DEL MEDIO MARINO DE GALICIA (INTECMAR),BENEFICIARIA,ES,,96938.45,129251.27,0.75,1,P4,155
+0048_BLUE_WWATER_1_E,calls_1_5,Faculdade de Ciências da Universidade do Porto (FCUP) /  /,BENEFICIARIA,PT,,88818.82,118425.09,0.75,1,P4,156
+0048_BLUE_WWATER_1_E,calls_1_5,Faculdade de Engenharia (FEUP) / Universidade do Porto /,BENEFICIARIA,PT,,104763.22,139684.30,0.75,1,P4,157
+0048_BLUE_WWATER_1_E,calls_1_5,Fundación Centro Tecnológico del Mar / Consellería del Mar / Comunidad Autónoma de Galicia,BENEFICIARIA PRINCIPAL,ES,,196282.86,261710.48,0.75,1,P4,158
+0049_NATUR_FAB_2_E,calls_1_5,Instituto Politécnico de Bragança /  /,BENEFICIARIA,PT,,105089.27,140119.03,0.75,2,P2,159
+0049_NATUR_FAB_2_E,calls_1_5,Fundación Universidades y Enseñanzas Superiores de Castilla y León / Consejería de Educación / Junta de Castilla y León,BENEFICIARIA,ES,,86558.97,115411.96,0.75,2,P2,160
+0049_NATUR_FAB_2_E,calls_1_5,Universidad de León / Universidades / Universidad de León,BENEFICIARIA,ES,,151479.90,201973.20,0.75,2,P2,161
+0049_NATUR_FAB_2_E,calls_1_5,NERBA. Associação Empresarial do Distrito de Bragança /  /,BENEFICIARIA,PT,,44445.54,59260.72,0.75,2,P2,162
+0049_NATUR_FAB_2_E,calls_1_5,"Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora",BENEFICIARIA,ES,,105514.01,140685.35,0.75,2,P2,163
+0049_NATUR_FAB_2_E,calls_1_5,Associação para o Desenvolvimento do Brigantia Ecopark /  /,BENEFICIARIA,PT,,38688.29,51584.39,0.75,2,P2,164
+0049_NATUR_FAB_2_E,calls_1_5,Diputación Provincial de Ávila / Entidades Locales / Diputación Provincial de Ávila,BENEFICIARIA,ES,,101518.05,135357.40,0.75,2,P2,165
+0049_NATUR_FAB_2_E,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA PRINCIPAL,ES,,174564.87,232753.16,0.75,2,P2,166
+0049_NATUR_FAB_2_E,calls_1_5,Município de Bragança /  /,SOCIA,PT,,0.00,0.00,0,2,P2,167
+0049_NATUR_FAB_2_E,calls_1_5,Diputación Provincial de Zamora / - / -,SOCIA,ES,,0.00,0.00,0,2,P2,168
+0049_NATUR_FAB_2_E,calls_1_5,COLEGIO OFICIAL DE PERITOS E INGENIEROS TÉCNICOS INDUSTRIALES DE ZAMORA / - / COLEGIO OFICIAL DE PERITOS E INGENIEROS TÉCNICOS INDUSTRIALES DE ZAMORA,SOCIA,ES,,0.00,0.00,0,2,P2,169
+0049_NATUR_FAB_2_E,calls_1_5,Fundación Cerezales Antonino y Cinia /  /,SOCIA,ES,,0.00,0.00,0,2,P2,170
+0049_NATUR_FAB_2_E,calls_1_5,NAGAMI DESIGN S.L / - / -,SOCIA,ES,,0.00,0.00,0,2,P2,171
+0052_COMENERG_1_E,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA,PT,,276942.30,369256.40,0.75,1,P3,172
+0052_COMENERG_1_E,calls_1_5,"Instituto Energético de Galicia (INEGA) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,100500.00,134000.00,0.75,1,P3,173
+0052_COMENERG_1_E,calls_1_5,Agência Regional de Energia e Ambiente do Alto Minho (AREA Alto Minho) /  /,BENEFICIARIA,PT,,64585.07,86113.43,0.75,1,P3,174
+0052_COMENERG_1_E,calls_1_5,Instituto Politécnico de Viana do Castelo /  /,BENEFICIARIA,PT,,150155.65,200207.53,0.75,1,P3,175
+0052_COMENERG_1_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA,ES,,153351.34,204468.45,0.75,1,P3,176
+0052_COMENERG_1_E,calls_1_5,Diputación Provincial de Ourense / Entidades Locales / Diputación Provincial de Ourense,BENEFICIARIA PRINCIPAL,ES,,755977.50,1007970.00,0.75,1,P3,177
+0053_ALDEALIX_1_E,calls_1_5,Comunidade Intermunicipal do Alto Tâmega e Barroso (CIMAT) /  /,BENEFICIARIA,PT,,171677.86,228903.81,0.75,1,P3,178
+0053_ALDEALIX_1_E,calls_1_5,CÂMARA MUNICIPAL DE VILA POUCA DE AGUIAR / CMVPA / CÂMARA MUNICIPAL DE VILA POUCA DE AGUIAR,BENEFICIARIA,PT,,316404.54,421872.72,0.75,1,P3,179
+0053_ALDEALIX_1_E,calls_1_5,Agencia Gallega de la Industria Forestal / Consellería del Medio Rural / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,178767.50,238356.66,0.75,1,P3,180
+0053_ALDEALIX_1_E,calls_1_5,Ayuntamiento de Cerdedo-Cotobade / Entidades Locales / Ayuntamiento de Cerdedo-Cotobade,BENEFICIARIA,ES,,22412.24,29882.99,0.75,1,P3,181
+0053_ALDEALIX_1_E,calls_1_5,Municipio de Arcos de Valdevez /  / Municipio de Arcos de Valdevez,BENEFICIARIA,PT,,297883.04,397177.39,0.75,1,P3,182
+0053_ALDEALIX_1_E,calls_1_5,Ayuntamiento de Monterrei / Entidades Locales / Ayuntamiento de Monterrei,BENEFICIARIA,ES,,23339.68,31119.57,0.75,1,P3,183
+0053_ALDEALIX_1_E,calls_1_5,Fundación Centro Tecnológico de Eficiencia y Sostenibilidad Energética / EnergyLab / EnergyLab,BENEFICIARIA,ES,,220211.34,293615.12,0.75,1,P3,184
+0053_ALDEALIX_1_E,calls_1_5,Agencia Gallega de Desarrollo Rural (AGADER) / Consellería del Medio Rural / Comunidad Autónoma de Galicia,BENEFICIARIA PRINCIPAL,ES,,738050.62,984067.49,0.75,1,P3,185
+0054_AEROGANP_1_E,calls_1_5,Agrupación Europea de Cooperación Territorial Galicia-Norte de Portugal (GNP-AECT) /  /,BENEFICIARIA,ES,,40569.75,54093.00,0.75,1,P1,186
+0054_AEROGANP_1_E,calls_1_5,Vicerrectorado de Política Científica / Universidad de Santiago de Compostela / Universidad de Santiago de Compostela,BENEFICIARIA,ES,,111588.14,148784.19,0.75,1,P1,187
+0054_AEROGANP_1_E,calls_1_5,Asociación Consorcio Aeronáutico Gallego (CAG) /  /,BENEFICIARIA,ES,,46988.18,62650.91,0.75,1,P1,188
+0054_AEROGANP_1_E,calls_1_5,"INESC TEC - Instituto de Engenharia de Sistemas e Computadores, Tecnologia e Ciência /  /",BENEFICIARIA,PT,,85316.20,113754.93,0.75,1,P1,189
+0054_AEROGANP_1_E,calls_1_5,Fundación Centro Tecnolóxico de Telecomunicacións de Galicia (Gradiant) /  /,BENEFICIARIA,ES,,82577.47,110103.29,0.75,1,P1,190
+0054_AEROGANP_1_E,calls_1_5,Centro de Engenharia e Desenvolvimento de Produto (CEIIA) /  /,BENEFICIARIA,PT,,94031.69,125375.59,0.75,1,P1,191
+0054_AEROGANP_1_E,calls_1_5,FUNDACION INSTITUTO TECNOLÓGICO DE GALICIA (ITG) /  /,BENEFICIARIA,ES,,78152.03,104202.71,0.75,1,P1,192
+0054_AEROGANP_1_E,calls_1_5,Faculdade de Engenharia (FEUP) / Universidade do Porto /,BENEFICIARIA,PT,,89157.15,118876.20,0.75,1,P1,193
+0054_AEROGANP_1_E,calls_1_5,Universidade do Minho /  /,BENEFICIARIA,PT,,219229.74,292306.32,0.75,1,P1,194
+0054_AEROGANP_1_E,calls_1_5,Universidade Da Coruña / Universidades / Universidade Da Coruña,BENEFICIARIA,ES,,108925.20,145233.60,0.75,1,P1,195
+0054_AEROGANP_1_E,calls_1_5,"Agencia Gallega de Innovación (GAIN) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,324281.79,432375.72,0.75,1,P1,196
+0054_AEROGANP_1_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA PRINCIPAL,ES,,218944.06,291925.41,0.75,1,P1,197
+0060_IBERUS_SMARTCTD_3_E,calls_1_5,Diputación Provincial de Valladolid / Entidades Locales / Diputación Provincial de Valladolid,BENEFICIARIA,ES,,525000.00,700000.00,0.75,3,P1,198
+0060_IBERUS_SMARTCTD_3_E,calls_1_5,Ayuntamiento de Ponferrada / Entidades Locales / Ayuntamiento de Ponferrada,BENEFICIARIA,ES,,525000.00,700000.00,0.75,3,P1,199
+0060_IBERUS_SMARTCTD_3_E,calls_1_5,Cámara Municipal de Figueira de Castelo Rodrigo / Cámara Municipal de Figueira de Castelo Rodrigo / Cámara Municipal de Figueira de Castelo Rodrigo,BENEFICIARIA,PT,,117375.00,156500.00,0.75,3,P1,200
+0060_IBERUS_SMARTCTD_3_E,calls_1_5,MUNICIPIO DE ALMEIDA /  /,BENEFICIARIA,PT,,130500.00,174000.00,0.75,3,P1,201
+0060_IBERUS_SMARTCTD_3_E,calls_1_5,Organismo Autónomo de Recaudación y Gestión Tributaria de la Diputación de Salamanca / Diputación Provincial de Salamanca / Diputación Provincial de Salamanca,BENEFICIARIA,ES,,525000.00,700000.00,0.75,3,P1,202
+0060_IBERUS_SMARTCTD_3_E,calls_1_5,Cámara Municipal de Sabugal /  /,BENEFICIARIA,PT,,117600.00,156800.00,0.75,3,P1,203
+0060_IBERUS_SMARTCTD_3_E,calls_1_5,Cámara Municipal de Penamacor /  /,BENEFICIARIA,PT,,145500.00,194000.00,0.75,3,P1,204
+0060_IBERUS_SMARTCTD_3_E,calls_1_5,Dirección General de Telecomunicaciones y Administración Digital / Viceconsejería de Transformación Digital / Junta de Castilla y León,BENEFICIARIA PRINCIPAL,ES,,900000.00,1200000.00,0.75,3,P1,205
+0062_CAPTA_1_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA,ES,,134979.26,179972.34,0.75,1,P3,206
+0062_CAPTA_1_E,calls_1_5,Centro Oceanografico de a Coruña (SEDE- A CORUÑA) / Instituto Español de Oceanografia / Ministerio de Ciencia e Innovación,BENEFICIARIA,ES,,112476.75,149969.00,0.75,1,P3,207
+0062_CAPTA_1_E,calls_1_5,"Dirección General de Calidad Ambiental, Sostenibilidad y Cambio Climático / Consellería de Medio Ambiente, Territorio y Vivienda / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,197033.25,262711.00,0.75,1,P3,208
+0062_CAPTA_1_E,calls_1_5,INSTITUTO TECNOLÓGICO PARA EL CONTROL DEL MEDIO MARINO DE GALICIA (INTECMAR) / INSTITUTO TECNOLÓGICO PARA EL CONTROL DEL MEDIO MARINO DE GALICIA (INTECMAR) / INSTITUTO TECNOLÓGICO PARA EL CONTROL DEL MEDIO MARINO DE GALICIA (INTECMAR),BENEFICIARIA,ES,,97799.87,130399.82,0.75,1,P3,209
+0062_CAPTA_1_E,calls_1_5,Instituto de Investigaciones Marinas / Agencia Estatal Consejo Superior de Investigaciones Científicas / Ministerio de Ciencia e Innovación,BENEFICIARIA,ES,,178204.49,237605.99,0.75,1,P3,210
+0062_CAPTA_1_E,calls_1_5,Faculdade de Ciências da Universidade do Porto (FCUP) /  /,BENEFICIARIA,PT,,140289.32,187052.43,0.75,1,P3,211
+0062_CAPTA_1_E,calls_1_5,Universidade de Aveiro / - / -,BENEFICIARIA,PT,,45009.64,60012.85,0.75,1,P3,212
+0062_CAPTA_1_E,calls_1_5,Universidade Da Coruña / Universidades / Universidade Da Coruña,BENEFICIARIA,ES,,66606.42,88808.56,0.75,1,P3,213
+0062_CAPTA_1_E,calls_1_5,"INESC TEC - Instituto de Engenharia de Sistemas e Computadores, Tecnologia e Ciência /  /",BENEFICIARIA,PT,,77254.04,103005.39,0.75,1,P3,214
+0062_CAPTA_1_E,calls_1_5,Fundación Centro Tecnológico del Mar / Consellería del Mar / Comunidad Autónoma de Galicia,BENEFICIARIA PRINCIPAL,ES,,208668.65,278224.87,0.75,1,P3,215
+0062_CAPTA_1_E,calls_1_5,Centro Interdisciplinar de Investigação Marinha e Ambiental (CIIMAR) / - / -,SOCIA,PT,,0.00,0.00,0,1,P3,216
+0064_GRESINT_1_E,calls_1_5,Universidade da Beira Interior (UBI) / - /,BENEFICIARIA,PT,,32000.00,42666.67,0.75,1,P1,217
+0064_GRESINT_1_E,calls_1_5,LIPOR – Associação de Municípios para a Gestão Sustentável de Resíduos do Grande Porto /  /,BENEFICIARIA,PT,,141118.27,188157.69,0.75,1,P1,218
+0064_GRESINT_1_E,calls_1_5,Universidade Da Coruña / Universidades / Universidade Da Coruña,BENEFICIARIA,ES,,116402.97,155203.96,0.75,1,P1,219
+0064_GRESINT_1_E,calls_1_5,"Sociedad Gallega de Medio Ambiente S.A. (SOGAMA) / Consellería de Medio Ambiente, Territorio y Vivienda / Comunidad Autónoma de Galicia",BENEFICIARIA PRINCIPAL,ES,,301137.26,401516.35,0.75,1,P1,220
+0066_BGREENER_4_E,calls_1_5,Instituto Politécnico de Portalegre /  /,BENEFICIARIA,PT,,100000.00,133333.33,0.75,4,P4,221
+0066_BGREENER_4_E,calls_1_5,"Itecons - Instituto de Investigação e Desenvolvimento Tecnológico para a Construção, Energia, Ambiente e Sustentabilidade /  /",BENEFICIARIA,PT,,126937.50,169250.00,0.75,4,P4,222
+0066_BGREENER_4_E,calls_1_5,INTROMAC /  / Consorcio Instituto Tecnológico de Rocas Ornamentales y Materiales de Construcción,BENEFICIARIA,ES,,279372.76,372497.01,0.75,4,P4,223
+0066_BGREENER_4_E,calls_1_5,"Centro de Investigaciones Científicas y Tecnológicas de Extremadura  (CICYTEX) / Secretaría General de Ciencia, Tecnología, Innovación y Universidad / Junta de Extremadura",BENEFICIARIA,ES,,232216.25,309621.67,0.75,4,P4,224
+0066_BGREENER_4_E,calls_1_5,Asociación  Empresarial  de  Investigación  Centro Tecnológico Nacional Agroalimentario Extremadura (CTAEX) /  /,BENEFICIARIA,ES,,220002.69,293336.92,0.75,4,P4,225
+0066_BGREENER_4_E,calls_1_5,"Dirección General de Política Agraria Comunitaria / Consejería de Agricultura, Desarrollo Rural, Población y Territorio / Junta de Extremadura",BENEFICIARIA PRINCIPAL,ES,,85005.62,113340.83,0.75,4,P4,226
+0067_OLIVAR_IA_5_E,calls_1_5,"INSTITUTO NACIONAL DE INVESTIGAÇÃO AGRÁRIA E VETERINÁRIA, I.P. (INIAV) /  /",BENEFICIARIA,PT,,120000.00,160000.00,0.75,5,P1,227
+0067_OLIVAR_IA_5_E,calls_1_5,Nuestra Señora de la Oliva S.C.A. / - / -,BENEFICIARIA,ES,,61357.69,81810.26,0.75,5,P1,228
+0067_OLIVAR_IA_5_E,calls_1_5,"Bolschare Agriculture, LDA / - / -",BENEFICIARIA,PT,,30000.00,40000.00,0.75,5,P1,229
+0067_OLIVAR_IA_5_E,calls_1_5,"INSTITUTO NACIONAL DE TÉCNICA AEROESPACIAL ""ESTEBAN TERRADAS"" (INTA) / - / CENTRO DE EXPERIMENTACIÓN DE EL ARENOSILLO (CEDEA)",BENEFICIARIA,ES,,106157.20,141542.93,0.75,5,P1,230
+0067_OLIVAR_IA_5_E,calls_1_5,Universidad de Huelva / Universidades / Universidad de Huelva,BENEFICIARIA PRINCIPAL,ES,,239847.64,319796.85,0.75,5,P1,231
+0068_DIH_SE_2_E,calls_1_5,Município de Bragança /  /,BENEFICIARIA,PT,,162389.07,216518.76,0.75,2,P1,232
+0068_DIH_SE_2_E,calls_1_5,Caja Rural de Zamora /  /,BENEFICIARIA,ES,,144477.60,192636.80,0.75,2,P1,233
+0068_DIH_SE_2_E,calls_1_5,Fundación General de la Universidad de Burgos / Fundación General de la Universidad de Burgos / Fundación General de la Universidad de Burgos,BENEFICIARIA,ES,,193291.80,257722.40,0.75,2,P1,234
+0068_DIH_SE_2_E,calls_1_5,Associação para o Desenvolvimento do Brigantia Ecopark /  /,BENEFICIARIA,PT,,136231.51,181642.01,0.75,2,P1,235
+0068_DIH_SE_2_E,calls_1_5,Diputación Provincial de Zamora / - / -,BENEFICIARIA PRINCIPAL,ES,,591227.70,788303.60,0.75,2,P1,236
+0068_DIH_SE_2_E,calls_1_5,Comunidade Intermunicipal das Terras de Trás-os-Montes (CIM-TTM) /  /,SOCIA,PT,,0.00,0.00,0,2,P1,237
+0070_TWIN_NAV_AUX_1_E,calls_1_5,Universidade Da Coruña / Universidades / Universidade Da Coruña,BENEFICIARIA,ES,,118946.08,158594.77,0.75,1,P1,238
+0070_TWIN_NAV_AUX_1_E,calls_1_5,"ELECTRORAYMA,S.L. /  /",BENEFICIARIA,ES,,78507.70,104676.93,0.75,1,P1,239
+0070_TWIN_NAV_AUX_1_E,calls_1_5,Universidade Portucalense Infante Dom Henrique /  /,BENEFICIARIA,PT,,84217.40,112289.87,0.75,1,P1,240
+0070_TWIN_NAV_AUX_1_E,calls_1_5,IBERCISA DECK MACHINERY S.A. /  /,BENEFICIARIA,ES,,81017.53,108023.37,0.75,1,P1,241
+0070_TWIN_NAV_AUX_1_E,calls_1_5,ASOCIACIÓN CLÚSTER DEL NAVAL GALLEGO /  /,BENEFICIARIA,ES,,93907.55,125210.07,0.75,1,P1,242
+0070_TWIN_NAV_AUX_1_E,calls_1_5,"INDUSTRIAS FERRI, S.A. /  /",BENEFICIARIA,ES,,79517.73,106023.64,0.75,1,P1,243
+0070_TWIN_NAV_AUX_1_E,calls_1_5,CATIM - Centro de Apoio Tecnológico à Indústria Metalomecânica /  /,BENEFICIARIA,PT,,82846.79,110462.38,0.75,1,P1,244
+0070_TWIN_NAV_AUX_1_E,calls_1_5,"Agencia Gallega de Innovación (GAIN) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",BENEFICIARIA PRINCIPAL,ES,,421039.01,561385.35,0.75,1,P1,245
+0072_IBEROS_MAIS_1_E,calls_1_5,Universidad de Santiago de Compostela / Universidades / Universidad de Santiago de Compostela,BENEFICIARIA,ES,,198831.91,265109.21,0.75,1,P1,246
+0072_IBEROS_MAIS_1_E,calls_1_5,Universidade Católica Portuguesa - Centro Regional do Porto. Escola Superior de Biotecnologia /  /,BENEFICIARIA,PT,,100309.53,133746.04,0.75,1,P1,247
+0072_IBEROS_MAIS_1_E,calls_1_5,IBONELAB SL / - / -,BENEFICIARIA,ES,,133001.13,177334.84,0.75,1,P1,248
+0072_IBEROS_MAIS_1_E,calls_1_5,i3S - Instituto de Investigação e Inovação em Saúde da Universidade do Porto / - / -,BENEFICIARIA,PT,,69430.57,92574.09,0.75,1,P1,249
+0072_IBEROS_MAIS_1_E,calls_1_5,Fundación Biomédica Galicia Sur /  /,BENEFICIARIA,ES,,174940.05,233253.40,0.75,1,P1,250
+0072_IBEROS_MAIS_1_E,calls_1_5,"LOF - INTELLIGENT LAB ON FIBER, UNIPESSOAL, LDA /  /",BENEFICIARIA,PT,,98211.84,130949.12,0.75,1,P1,251
+0072_IBEROS_MAIS_1_E,calls_1_5,Instituto Superior de Engenharia do Porto (ISEP) /  /,BENEFICIARIA,PT,,105168.57,140224.76,0.75,1,P1,252
+0072_IBEROS_MAIS_1_E,calls_1_5,BFlow S.L. /  /,BENEFICIARIA,ES,,21996.17,29328.23,0.75,1,P1,253
+0072_IBEROS_MAIS_1_E,calls_1_5,BETA Implants / - / Grupo tecnológico ARBINOVA S.L.,BENEFICIARIA,ES,,171200.55,228267.40,0.75,1,P1,254
+0072_IBEROS_MAIS_1_E,calls_1_5,Servicio Gallego de Salud (SERGAS) / Consellería de Sanidad / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,20258.10,27010.80,0.75,1,P1,255
+0072_IBEROS_MAIS_1_E,calls_1_5,Instituto de Investigaciones Marinas / Agencia Estatal Consejo Superior de Investigaciones Científicas / Ministerio de Ciencia e Innovación,BENEFICIARIA,ES,,195114.14,260152.19,0.75,1,P1,256
+0072_IBEROS_MAIS_1_E,calls_1_5,Laboratório Ibérico Internacional de Nanotecnologia (INL) /  /,BENEFICIARIA,PT,,60000.00,80000.00,0.75,1,P1,257
+0072_IBEROS_MAIS_1_E,calls_1_5,Universidade do Minho /  /,BENEFICIARIA,PT,,78661.50,104882.00,0.75,1,P1,258
+0072_IBEROS_MAIS_1_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA PRINCIPAL,ES,,203935.98,271914.64,0.75,1,P1,259
+0073_AOWINDE_1_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA,ES,,162198.47,216264.63,0.75,1,P3,260
+0073_AOWINDE_1_E,calls_1_5,AIMMAP - Associação dos Industriais Metalúrgicos e Metalomecânicos e Afins de Portugal /  /,BENEFICIARIA,PT,,86929.80,115906.40,0.75,1,P3,261
+0073_AOWINDE_1_E,calls_1_5,CATIM - Centro de Apoio Tecnológico à Indústria Metalomecânica /  /,BENEFICIARIA,PT,,84878.23,113170.97,0.75,1,P3,262
+0073_AOWINDE_1_E,calls_1_5,Câmara Municipal de Viana do Castelo /  /,BENEFICIARIA,PT,,72766.97,97022.63,0.75,1,P3,263
+0073_AOWINDE_1_E,calls_1_5,"Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Xunta de Galicia / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,163596.00,218128.00,0.75,1,P3,264
+0073_AOWINDE_1_E,calls_1_5,"INESC TEC - Instituto de Engenharia de Sistemas e Computadores, Tecnologia e Ciência /  /",BENEFICIARIA,PT,,75822.73,101096.97,0.75,1,P3,265
+0073_AOWINDE_1_E,calls_1_5,Universidade Da Coruña / Universidades / Universidade Da Coruña,BENEFICIARIA,ES,,163152.65,217536.87,0.75,1,P3,266
+0073_AOWINDE_1_E,calls_1_5,Instituto Politécnico de Viana do Castelo /  /,BENEFICIARIA,PT,,73801.97,98402.63,0.75,1,P3,267
+0073_AOWINDE_1_E,calls_1_5,Asociación de Industrias del Metal y Tecnologías Asociadas de Galicia /  /,BENEFICIARIA PRINCIPAL,ES,,177413.57,236551.43,0.75,1,P3,268
+0073_AOWINDE_1_E,calls_1_5,"Instituto Energético de Galicia (INEGA) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",SOCIA,ES,,0.00,0.00,0,1,P3,269
+0079_ATEMPO_6_E,calls_1_5,Comissão Coordenação Desenvolvimento Regional Norte (CCDR Norte) /  /,BENEFICIARIA,PT,,25649.76,34199.68,0.75,6,P3,270
+0079_ATEMPO_6_E,calls_1_5,"INSTITUTO NACIONAL DE EMÊRGENCIA MEDICA, IP (INEM) /  /",BENEFICIARIA,PT,,149985.65,199980.87,0.75,6,P3,271
+0079_ATEMPO_6_E,calls_1_5,"Dir. Gral. Patrimonio Natural y Política Forestal Castilla y León / Consejería de Medio Ambiente, Vivienda y Ordenación del Territorio / Junta de Castilla y León",BENEFICIARIA,ES,,1166589.64,1555452.86,0.75,6,P3,272
+0079_ATEMPO_6_E,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA,PT,,404075.38,538767.17,0.75,6,P3,273
+0079_ATEMPO_6_E,calls_1_5,Universidade Da Coruña / Universidades / Universidade Da Coruña,BENEFICIARIA,ES,,187994.80,250659.73,0.75,6,P3,274
+0079_ATEMPO_6_E,calls_1_5,Guarda Nacional Republicana (GNR) /  /,BENEFICIARIA,PT,,149994.71,199992.94,0.75,6,P3,275
+0079_ATEMPO_6_E,calls_1_5,"Agencia Gallega de Emergencias (AXEGA) / Vicepresidencia Segunda y Consellería de Presidencia, Justicia y Deportes / Comunidad Autónoma de Galicia",BENEFICIARIA PRINCIPAL,ES,,1570136.49,2093515.32,0.75,6,P3,276
+0080_DEGREN_MAS_4_E,calls_1_5,"Fundacion Fundecyt - Parque Científico y Tecnológico de Extremadura / Consejería de Economía, Ciencia y Agenda Digital / Junta de Extremadura",BENEFICIARIA,ES,,191851.16,255801.54,0.75,4,P1,277
+0080_DEGREN_MAS_4_E,calls_1_5,"CENTIMFE- Centro Tecnológico da Industria de Moldes, Ferramentas especiais e Plásticos /  /",BENEFICIARIA,PT,,56912.50,75883.33,0.75,4,P1,278
+0080_DEGREN_MAS_4_E,calls_1_5,Colegio Oficial de Ingenieros Industriales de Extremadura / - / COIIEX,BENEFICIARIA,ES,,126206.04,168274.72,0.75,4,P1,279
+0080_DEGREN_MAS_4_E,calls_1_5,Centro Tecnológico da Cerâmica e do Vidro (CTCV) /  /,BENEFICIARIA,PT,,66587.17,88782.89,0.75,4,P1,280
+0080_DEGREN_MAS_4_E,calls_1_5,Associação Plataforma para a Construção Sustentável /  /,BENEFICIARIA,PT,,44448.95,59265.27,0.75,4,P1,281
+0080_DEGREN_MAS_4_E,calls_1_5,Instituto Politécnico de Leiria /  /,BENEFICIARIA,PT,,29475.00,39300.00,0.75,4,P1,282
+0080_DEGREN_MAS_4_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,75000.00,100000.00,0.75,4,P1,283
+0080_DEGREN_MAS_4_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,253052.33,337403.11,0.75,4,P1,284
+0080_DEGREN_MAS_4_E,calls_1_5,INTROMAC /  / Consorcio Instituto Tecnológico de Rocas Ornamentales y Materiales de Construcción,BENEFICIARIA PRINCIPAL,ES,,279836.12,373114.83,0.75,4,P1,285
+0081_CEL_RURAL_6_E,calls_1_5,Comunidade Intermunicipal do Cávado (CIM CÁVADO) /  /,BENEFICIARIA,PT,,86700.18,115600.24,0.75,6,P3,286
+0081_CEL_RURAL_6_E,calls_1_5,"INSTITUTO NACIONAL DE TÉCNICA AEROESPACIAL ""ESTEBAN TERRADAS"" (INTA) / - / CENTRO DE EXPERIMENTACIÓN DE EL ARENOSILLO (CEDEA)",BENEFICIARIA,ES,,79475.03,105966.71,0.75,6,P3,287
+0081_CEL_RURAL_6_E,calls_1_5,FEDERACIÓN GALLEGA DE MUNICIPIOS Y PROVINCIAS (FEGAMP) /  /,BENEFICIARIA,ES,,149914.67,199886.23,0.75,6,P3,288
+0081_CEL_RURAL_6_E,calls_1_5,AREAL - Agência Regional de Energia e Ambiente do Algarve /  /,BENEFICIARIA,PT,,56844.44,75792.59,0.75,6,P3,289
+0081_CEL_RURAL_6_E,calls_1_5,Vicerrectorado de Investigación / Rectorado (RECTOR) / Universidad de Sevilla,BENEFICIARIA,ES,,97685.36,130247.15,0.75,6,P3,290
+0081_CEL_RURAL_6_E,calls_1_5,Diputación Provincial de Ávila / Entidades Locales / Diputación Provincial de Ávila,BENEFICIARIA,ES,,185077.50,246770.00,0.75,6,P3,291
+0081_CEL_RURAL_6_E,calls_1_5,Universidade do Algarve /  /,BENEFICIARIA,PT,,195000.02,260000.03,0.75,6,P3,292
+0081_CEL_RURAL_6_E,calls_1_5,FUNDACION INSTITUTO TECNOLÓGICO DE GALICIA (ITG) /  /,BENEFICIARIA PRINCIPAL,ES,,299452.34,399269.78,0.75,6,P3,293
+0082_RED_PAE_TRANSFRONTERIZA_4_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Alentejo (CCDR Alentejo) /  /,BENEFICIARIA,PT,,25228.81,33638.41,0.75,4,P1,294
+0082_RED_PAE_TRANSFRONTERIZA_4_E,calls_1_5,"Dirección General de Empresa / Consejería de Economía, Ciencia y Agenda Digital / Junta de Extremadura",BENEFICIARIA,ES,,652270.39,869693.85,0.75,4,P1,295
+0082_RED_PAE_TRANSFRONTERIZA_4_E,calls_1_5,"Extremadura Avante S.L.U. / Consejería de Economía, Ciencia y Agenda Digital / Junta de Extremadura",BENEFICIARIA PRINCIPAL,ES,,536656.67,715542.22,0.75,4,P1,296
+0083_FEENERT_4_E,calls_1_5,Diputación Provincial de Cáceres / Entidades Locales / Diputación Provincial de Cáceres,BENEFICIARIA,ES,,269951.31,359935.08,0.75,4,P3,297
+0083_FEENERT_4_E,calls_1_5,COADE / - / COLEGIO OFICIAL DE ARQUITECTOS DE EXTREMADURA,BENEFICIARIA,ES,,154396.82,205862.43,0.75,4,P3,298
+0083_FEENERT_4_E,calls_1_5,Agência Regional de Energia e Ambiente do Norte Alentejano e Tejo (AREANATejo) /  /,BENEFICIARIA,PT,,72506.36,96675.15,0.75,4,P3,299
+0083_FEENERT_4_E,calls_1_5,Laboratório Nacional de Energia e Geologia IP /  /,BENEFICIARIA,PT,,90502.28,120669.71,0.75,4,P3,300
+0083_FEENERT_4_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,81758.77,109011.69,0.75,4,P3,301
+0083_FEENERT_4_E,calls_1_5,Agencia Extremeña de la Energía (AGENEX) / Consejería para la Transición Ecológica y Sostenibilidad / Junta de Extremadura,BENEFICIARIA,ES,,167340.56,223120.75,0.75,4,P3,302
+0083_FEENERT_4_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,176397.28,235196.38,0.75,4,P3,303
+0083_FEENERT_4_E,calls_1_5,Câmara Municipal de Elvas /  /,BENEFICIARIA,PT,,84348.91,112465.21,0.75,4,P3,304
+0083_FEENERT_4_E,calls_1_5,"Dirección General de Arquitectura y Calidad de la Edificación / Consejería de Movilidad, Transporte y Vivienda / Junta de Extremadura",BENEFICIARIA,ES,,156936.96,209249.28,0.75,4,P3,305
+0083_FEENERT_4_E,calls_1_5,INTROMAC /  / Consorcio Instituto Tecnológico de Rocas Ornamentales y Materiales de Construcción,BENEFICIARIA PRINCIPAL,ES,,258018.61,344024.81,0.75,4,P3,306
+0084_DRIVEN_4_E,calls_1_5,"Cámara Oficial de Comercio, Industria y Servicios de Cáceres /  /",BENEFICIARIA,ES,,184529.33,246039.11,0.75,4,P2,307
+0084_DRIVEN_4_E,calls_1_5,TAGUSVALLEY - Associação para a Promoção e Desenvolvimento do Tecnopolo do Vale do Tejo /  /,BENEFICIARIA,PT,,49687.50,66250.00,0.75,4,P2,308
+0084_DRIVEN_4_E,calls_1_5,IPN Incubadora - Associação para o Desenvolvimento de Atividades de Incubação de Ideias e Empresas /  /,BENEFICIARIA,PT,,49650.00,66200.00,0.75,4,P2,309
+0084_DRIVEN_4_E,calls_1_5,ADRAL - Agência de Desenvolvimento Regional do Alentejo /  /,BENEFICIARIA,PT,,75000.00,100000.00,0.75,4,P2,310
+0084_DRIVEN_4_E,calls_1_5,"PACT - Parque do Alentejo de Ciência e Tecnologia, S.A. /  /",BENEFICIARIA,PT,,99999.75,133333.00,0.75,4,P2,311
+0084_DRIVEN_4_E,calls_1_5,"Cámara Oficial de Comercio, Industria y Servicios de Badajoz /  /",BENEFICIARIA,ES,,178486.12,237981.50,0.75,4,P2,312
+0084_DRIVEN_4_E,calls_1_5,"Fundacion Fundecyt - Parque Científico y Tecnológico de Extremadura / Consejería de Economía, Ciencia y Agenda Digital / Junta de Extremadura",BENEFICIARIA PRINCIPAL,ES,,213307.01,284409.35,0.75,4,P2,313
+0085_ATTENTIA_5_E,calls_1_5,Universidade do Algarve /  /,BENEFICIARIA,PT,,212448.30,283264.40,0.75,5,P1,314
+0085_ATTENTIA_5_E,calls_1_5,Vicerrectorado de Investigación / Rectorado (RECTOR) / Universidad de Sevilla,BENEFICIARIA,ES,,219467.62,292623.49,0.75,5,P1,315
+0085_ATTENTIA_5_E,calls_1_5,Universidad de Huelva / Universidades / Universidad de Huelva,BENEFICIARIA PRINCIPAL,ES,,330061.13,440081.51,0.75,5,P1,316
+0085_ATTENTIA_5_E,calls_1_5,Asociación de Citricultores de la Provincia de Huelva /  /,SOCIA,ES,,0.00,0.00,0,5,P1,317
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,"Centro de Investigaciones Científicas y Tecnológicas de Extremadura  (CICYTEX) / Secretaría General de Ciencia, Tecnología, Innovación y Universidad / Junta de Extremadura",BENEFICIARIA,ES,,133159.50,177546.00,0.75,4,P3,318
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,Associação de Produtores do Mundo Rural da Região de Montemor-o-Novo (APORMOR) /  /,BENEFICIARIA,PT,,50000.00,66666.67,0.75,4,P3,319
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,Actyva S. Coop. /  /,BENEFICIARIA,ES,,83486.53,111315.37,0.75,4,P3,320
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,165827.05,221102.73,0.75,4,P3,321
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,170000.00,226666.67,0.75,4,P3,322
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,Innogestiona Ambiental SL /  /,BENEFICIARIA,ES,,285078.10,380104.14,0.75,4,P3,323
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,CEBAL- Centro de Biotecnologia Agricola e Ago Alimentar do Alentejo /  /,BENEFICIARIA,PT,,140000.00,186666.67,0.75,4,P3,324
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,"Dirección General de Política Forestal / Consejería de Agricultura, DEsarrollo Rural, Población y Territorio / Junta de Extremadura",BENEFICIARIA PRINCIPAL,ES,,751755.61,1002340.82,0.75,4,P3,325
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,Associação de Agricultores do Sul - ACOS /  /,SOCIA,PT,,0.00,0.00,0,4,P3,326
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,UNAC - União da Floresta Mediterrânica /  /,SOCIA,PT,,0.00,0.00,0,4,P3,327
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,FUNPASOS - FUNDACIÓN POR LA SOSTENIBILIDAD PARTICIPATIVA INNOGESTIONA /  /,SOCIA,ES,,0.00,0.00,0,4,P3,328
+0086_SOS_PRODEHESAMONTADO_4_E,calls_1_5,FEDEHESA - FEDERACIÓN ESPAÑOLA DE LA DEHESA /  /,SOCIA,ES,,0.00,0.00,0,4,P3,329
+0088_INNOV4LIFE_1_P,calls_1_5,Vicerrectorado de Política Científica / Universidad de Santiago de Compostela / Universidad de Santiago de Compostela,BENEFICIARIA,ES,,146258.80,195011.73,0.75,1,P1,330
+0088_INNOV4LIFE_1_P,calls_1_5,UPTEC - ASSOCIAÇÃO DE TRANSFERENCIA DE TECNOLOGIA DA ASPRELA /  /,BENEFICIARIA,PT,,96321.46,128428.62,0.75,1,P1,331
+0088_INNOV4LIFE_1_P,calls_1_5,Santa Casa da Misericórdia de Riba de Ave /  /,BENEFICIARIA,PT,,110273.89,147031.85,0.75,1,P1,332
+0088_INNOV4LIFE_1_P,calls_1_5,ASOCIACIÓN DE FAMILIARES DE ENFERMOS DE ALZHEIMER Y OTRAS DEMENCIAS DE GALICIA (AFAGA) /  /,BENEFICIARIA,ES,,161161.18,214881.58,0.75,1,P1,333
+0088_INNOV4LIFE_1_P,calls_1_5,Servicio Gallego de Salud (SERGAS) / Consellería de Sanidad / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,317019.00,422692.00,0.75,1,P1,334
+0088_INNOV4LIFE_1_P,calls_1_5,Agencia Gallega para la Gestión del Conocimiento en Salud / Consellería de Sanidad / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,155232.00,206976.00,0.75,1,P1,335
+0088_INNOV4LIFE_1_P,calls_1_5,Faculdade de Farmácia - Universidade do Porto (FFUP) /  /,BENEFICIARIA PRINCIPAL,PT,,186196.59,248262.12,0.75,1,P1,336
+0089_TURISLAB_1_E,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA,PT,,103281.90,137709.20,0.75,1,P2,337
+0089_TURISLAB_1_E,calls_1_5,"Cámara de Comercio, Industria, Navegación y Servicios de Pontevedra, Vigo y Villagarcía de Arosa / Cámara de Comercio, Industria, Navegación y Servicios de Pontevedra, Vigo y Villagarcía de Arosa / Cámara de Comercio, Industria, Navegación y Servicios de Pontevedra, Vigo y Villagarcía de Arosa",BENEFICIARIA,ES,,341044.46,454725.94,0.75,1,P2,338
+0089_TURISLAB_1_E,calls_1_5,Agencia Turismo de Galicia / Presidencia de la Xunta de Galicia / Comunidad Autónoma de Galicia,BENEFICIARIA PRINCIPAL,ES,,447588.75,596785.00,0.75,1,P2,339
+0091_AGERAR_PLUS_6_E,calls_1_5,Universidade do Algarve /  /,BENEFICIARIA,PT,,112500.02,150000.03,0.75,6,P1,340
+0091_AGERAR_PLUS_6_E,calls_1_5,FUNDACIÓN CORPORACIÓN TECNOLÓGICA DE ANDALUCÍA /  /,BENEFICIARIA,ES,,147993.30,197324.40,0.75,6,P1,341
+0091_AGERAR_PLUS_6_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,80000.00,106666.67,0.75,6,P1,342
+0091_AGERAR_PLUS_6_E,calls_1_5,"INSTITUTO NACIONAL DE TÉCNICA AEROESPACIAL ""ESTEBAN TERRADAS"" (INTA) / - / CENTRO DE EXPERIMENTACIÓN DE EL ARENOSILLO (CEDEA)",BENEFICIARIA,ES,,149387.10,199182.80,0.75,6,P1,343
+0091_AGERAR_PLUS_6_E,calls_1_5,AREAL - Agência Regional de Energia e Ambiente do Algarve /  /,BENEFICIARIA,PT,,31459.88,41946.50,0.75,6,P1,344
+0091_AGERAR_PLUS_6_E,calls_1_5,FUNDACION INSTITUTO TECNOLÓGICO DE GALICIA (ITG) /  /,BENEFICIARIA,ES,,191164.21,254885.61,0.75,6,P1,345
+0091_AGERAR_PLUS_6_E,calls_1_5,Vicerrectorado de Investigación / Rectorado (RECTOR) / Universidad de Sevilla,BENEFICIARIA PRINCIPAL,ES,,148540.36,198053.81,0.75,6,P1,346
+0091_AGERAR_PLUS_6_E,calls_1_5,Instituto de Ciência e Inovação em Engenharia Mecânica e Engenharia Industrial (INEGI) /  /,SOCIA,PT,,0.00,0.00,0,6,P1,347
+0093_AIHRE_6_E,calls_1_5,Faculdade de Engenharia (FEUP) / Universidade do Porto /,BENEFICIARIA,PT,,55160.55,73547.40,0.75,6,P1,348
+0093_AIHRE_6_E,calls_1_5,Instituto Politécnico de Portalegre /  /,BENEFICIARIA,PT,,50000.00,66666.67,0.75,6,P1,349
+0093_AIHRE_6_E,calls_1_5,FUNDACION INSTITUTO TECNOLÓGICO DE GALICIA (ITG) /  /,BENEFICIARIA,ES,,299874.55,399832.74,0.75,6,P1,350
+0093_AIHRE_6_E,calls_1_5,Vicerrectorado de Investigación / Rectorado (RECTOR) / Universidad de Sevilla,BENEFICIARIA,ES,,164437.15,219249.53,0.75,6,P1,351
+0093_AIHRE_6_E,calls_1_5,"INSTITUTO NACIONAL DE TÉCNICA AEROESPACIAL ""ESTEBAN TERRADAS"" (INTA) / - / CENTRO DE EXPERIMENTACIÓN DE EL ARENOSILLO (CEDEA)",BENEFICIARIA,ES,,150375.32,200500.42,0.75,6,P1,352
+0093_AIHRE_6_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,56000.00,74666.66,0.75,6,P1,353
+0093_AIHRE_6_E,calls_1_5,Instituto de Ciência e Inovação em Engenharia Mecânica e Engenharia Industrial (INEGI) /  /,BENEFICIARIA,PT,,40007.44,53343.25,0.75,6,P1,354
+0093_AIHRE_6_E,calls_1_5,FUNDACIÓN CORPORACIÓN TECNOLÓGICA DE ANDALUCÍA /  /,BENEFICIARIA,ES,,136735.11,182313.48,0.75,6,P1,355
+0093_AIHRE_6_E,calls_1_5,FUNDACIÓN CIDAUT /  /,BENEFICIARIA PRINCIPAL,ES,,181259.47,241679.29,0.75,6,P1,356
+0098_PAISACTIVO_1_E,calls_1_5,Escuela Politécnica Superior de Ingeniería / Universidad de Santiago de Compostela / Universidad de Santiago de Compostela,BENEFICIARIA,ES,,189376.06,252501.41,0.75,1,P3,357
+0098_PAISACTIVO_1_E,calls_1_5,Direção-Geral do Território /  /,BENEFICIARIA,PT,,29010.28,38680.38,0.75,1,P3,358
+0098_PAISACTIVO_1_E,calls_1_5,Município de Baião /  /,BENEFICIARIA,PT,,178213.16,237617.55,0.75,1,P3,359
+0098_PAISACTIVO_1_E,calls_1_5,Comunidade Intermunicipal do Tâmega e Sousa (CIM do Tâmega e Sousa) /  /,BENEFICIARIA,PT,,97661.75,130215.67,0.75,1,P3,360
+0098_PAISACTIVO_1_E,calls_1_5,Faculdade de Letras - Universidade do Porto (FLUP) /  /,BENEFICIARIA,PT,,69922.71,93230.28,0.75,1,P3,361
+0098_PAISACTIVO_1_E,calls_1_5,FUNDACION JUANA DE VEGA /  /,BENEFICIARIA,ES,,131920.84,175894.45,0.75,1,P3,362
+0098_PAISACTIVO_1_E,calls_1_5,Ayuntamiento de Monterrei / Entidades Locales / Ayuntamiento de Monterrei,BENEFICIARIA,ES,,52157.86,69543.81,0.75,1,P3,363
+0098_PAISACTIVO_1_E,calls_1_5,Agencia Gallega de Desarrollo Rural (AGADER) / Consellería del Medio Rural / Comunidad Autónoma de Galicia,BENEFICIARIA PRINCIPAL,ES,,437852.03,583802.71,0.75,1,P3,364
+0100_TID4AGRO_4_E,calls_1_5,"Fundacion Fundecyt - Parque Científico y Tecnológico de Extremadura / Consejería de Economía, Ciencia y Agenda Digital / Junta de Extremadura",BENEFICIARIA,ES,,195499.10,260665.46,0.75,4,P1,365
+0100_TID4AGRO_4_E,calls_1_5,CATAA - ASSOCIAÇÃO CENTRO DE APOIO TECNOLÓGICO AGRO-ALIMENTAR DE CASTELO BRANCO /  /,BENEFICIARIA,PT,,57262.61,76350.15,0.75,4,P1,366
+0100_TID4AGRO_4_E,calls_1_5,"CONFAGRI - Confederação Nacional das Cooperativas Agrícolas e do Crédito Agrícola de Portugal, CCRL /  /",BENEFICIARIA,PT,,19992.60,26656.80,0.75,4,P1,367
+0100_TID4AGRO_4_E,calls_1_5,Associação SFCOLAB - Laboratório Colaborativo para a Inovação Digital na Agricultura /  /,BENEFICIARIA,PT,,37494.04,49992.05,0.75,4,P1,368
+0100_TID4AGRO_4_E,calls_1_5,"Cooperativas Agro-alimentarias EXtremadura, Unión de coop. /  /",BENEFICIARIA,ES,,150480.32,200640.42,0.75,4,P1,369
+0100_TID4AGRO_4_E,calls_1_5,INSTITUTO PEDRO NUNES - INSTITUTO PARA A INOVAÇÃO E DESENVOLVIMENTO EM CIÊNCIA E TECNOLOGIA /  /,BENEFICIARIA,PT,,56076.74,74768.99,0.75,4,P1,370
+0100_TID4AGRO_4_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,249999.75,333333.00,0.75,4,P1,371
+0100_TID4AGRO_4_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,194257.50,259010.00,0.75,4,P1,372
+0100_TID4AGRO_4_E,calls_1_5,Asociación  Empresarial  de  Investigación  Centro Tecnológico Nacional Agroalimentario Extremadura (CTAEX) /  /,BENEFICIARIA,ES,,196768.65,262358.20,0.75,4,P1,373
+0100_TID4AGRO_4_E,calls_1_5,"INSTITUTO NACIONAL DE INVESTIGAÇÃO AGRÁRIA E VETERINÁRIA, I.P. (INIAV) /  /",BENEFICIARIA,PT,,100006.49,133341.99,0.75,4,P1,374
+0100_TID4AGRO_4_E,calls_1_5,Universidade de Aveiro / - / -,BENEFICIARIA,PT,,39997.35,53329.80,0.75,4,P1,375
+0100_TID4AGRO_4_E,calls_1_5,"Centro de Investigaciones Científicas y Tecnológicas de Extremadura  (CICYTEX) / Secretaría General de Ciencia, Tecnología, Innovación y Universidad / Junta de Extremadura",BENEFICIARIA PRINCIPAL,ES,,1610047.00,2146729.33,0.75,4,P1,376
+0104_RURALPYME_DIGITAL_AAA_5_E,calls_1_5,Diputación Provincial de Huelva / Entidades Locales / Diputación Provincial de Huelva,BENEFICIARIA,ES,,92550.00,123400.00,0.75,5,P1,377
+0104_RURALPYME_DIGITAL_AAA_5_E,calls_1_5,Prodetur / Diputación Provincial de Sevilla / Diputación Provincial de Sevilla,BENEFICIARIA,ES,,112500.00,150000.00,0.75,5,P1,378
+0104_RURALPYME_DIGITAL_AAA_5_E,calls_1_5,Associação do Comércio e Serviços da Região do Algarve - ACRAL /  /,BENEFICIARIA,PT,,91627.50,122170.00,0.75,5,P1,379
+0104_RURALPYME_DIGITAL_AAA_5_E,calls_1_5,Instituto de Empleo y Desarrollo Socioeconómico y Tecnológico (IEDT) / Diputación Provincial de Cádiz / Diputación Provincial de Cádiz,BENEFICIARIA,ES,,112500.00,150000.00,0.75,5,P1,380
+0104_RURALPYME_DIGITAL_AAA_5_E,calls_1_5,ADRAL - Agência de Desenvolvimento Regional do Alentejo /  /,BENEFICIARIA,PT,,75000.00,100000.00,0.75,5,P1,381
+0104_RURALPYME_DIGITAL_AAA_5_E,calls_1_5,TERTULIA ALGARVIA - CENTRO DE CONHECIMENTO EM CULTURA E ALIMENTAÇÃO TRADICIONAL DO ALGARVE /  /,BENEFICIARIA,PT,,150000.00,200000.00,0.75,5,P1,382
+0104_RURALPYME_DIGITAL_AAA_5_E,calls_1_5,FUNDACION ANDANATURA PARA EL DESARROLLO SOCIOECONOMICO SOSTENIBLE /  /,BENEFICIARIA PRINCIPAL,ES,,273975.00,365300.00,0.75,5,P1,383
+0107_DIGITAL_COLOGISTICS_1_E,calls_1_5,"Instituto Gallego de Promoción Económica (IGAPE) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,272552.53,363403.37,0.75,1,P1,384
+0107_DIGITAL_COLOGISTICS_1_E,calls_1_5,"ADMINISTRAÇÃO DOS PORTOS DO DOURO, LEIXÕES E VIANA DO CASTELO /  /",BENEFICIARIA,PT,,68036.35,90715.13,0.75,1,P1,385
+0107_DIGITAL_COLOGISTICS_1_E,calls_1_5,Município de Vila Nova de Famalicão /  /,BENEFICIARIA,PT,,36521.13,48694.84,0.75,1,P1,386
+0107_DIGITAL_COLOGISTICS_1_E,calls_1_5,ASOCIACIÓN CLUSTER DA FUNCION LOXISTICA DE GALICIA /  /,BENEFICIARIA,ES,,266476.24,355301.65,0.75,1,P1,387
+0107_DIGITAL_COLOGISTICS_1_E,calls_1_5,"Autoridad Portuaria de Vigo / Puertos del Estado / Ministerio de Transportes, Movilidad y Agenda Urbana",BENEFICIARIA,ES,,199935.11,266580.15,0.75,1,P1,388
+0107_DIGITAL_COLOGISTICS_1_E,calls_1_5,AEP - Associação Empresarial de Portugal /  /,BENEFICIARIA,PT,,138422.74,184563.65,0.75,1,P1,389
+0107_DIGITAL_COLOGISTICS_1_E,calls_1_5,Confederación Empresarial de Pontevedra ( CEP ) /  /,BENEFICIARIA PRINCIPAL,ES,,433389.05,577852.07,0.75,1,P1,390
+0107_DIGITAL_COLOGISTICS_1_E,calls_1_5,Dirección General de Movilidad / Consellería de Infraestructuras y Movilidad / Comunidad Autónoma de Galicia,SOCIA,ES,,0.00,0.00,0,1,P1,391
+0108_FUTURETECH_H2_5_E,calls_1_5,Instituto Politécnico de Portalegre /  /,BENEFICIARIA,PT,,48214.99,64286.65,0.75,5,P3,392
+0108_FUTURETECH_H2_5_E,calls_1_5,FUNDACION ANDALUZA PARA EL DESARROLLO AEROESPACIAL /  /,BENEFICIARIA,ES,,141382.49,188509.98,0.75,5,P3,393
+0108_FUTURETECH_H2_5_E,calls_1_5,Fundación Nao Victoria /  /,BENEFICIARIA,ES,,446692.11,595589.48,0.75,5,P3,394
+0108_FUTURETECH_H2_5_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,56341.44,75121.92,0.75,5,P3,395
+0108_FUTURETECH_H2_5_E,calls_1_5,ADRAL - Agência de Desenvolvimento Regional do Alentejo /  /,BENEFICIARIA,PT,,67506.64,90008.85,0.75,5,P3,396
+0108_FUTURETECH_H2_5_E,calls_1_5,FEDEME - FEDERACIÓN DE EMPRESARIOS DEL METAL /  /,BENEFICIARIA PRINCIPAL,ES,,264786.02,353048.03,0.75,5,P3,397
+0110_OET_DURIUS_2_E,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA,ES,,140826.26,187768.35,0.75,2,P4,398
+0110_OET_DURIUS_2_E,calls_1_5,Clúster de Hábitat Eficiente (AEICE) /  /,BENEFICIARIA,ES,,118224.95,157633.27,0.75,2,P4,399
+0110_OET_DURIUS_2_E,calls_1_5,Asociación Ibérica de Municipios Ribereños del Duero (AIMRD) / Institucionales / Asociación Ibérica de Municipios Ribereños del Duero (AIMRD),BENEFICIARIA,ES,,211320.38,281760.50,0.75,2,P4,400
+0110_OET_DURIUS_2_E,calls_1_5,Comunidade Intermunicipal das Terras de Trás-os-Montes (CIM-TTM) /  /,BENEFICIARIA,PT,,80027.39,106703.19,0.75,2,P4,401
+0110_OET_DURIUS_2_E,calls_1_5,AYUNTAMIENTO DE ZAMORA / AYUNTAMIENTO DE ZAMORA / AYUNTAMIENTO DE ZAMORA,BENEFICIARIA,ES,,159116.89,212155.85,0.75,2,P4,402
+0110_OET_DURIUS_2_E,calls_1_5,COMUNIDADE INTERMUNICIPAL DO DOURO /  /,BENEFICIARIA,PT,,76118.24,101490.99,0.75,2,P4,403
+0110_OET_DURIUS_2_E,calls_1_5,Palombar - Associação de Conservação da Natureza e do Património Rural /  /,BENEFICIARIA,PT,,126236.78,168315.71,0.75,2,P4,404
+0110_OET_DURIUS_2_E,calls_1_5,FUNDACION SANTA MARIA LA REAL DEL PATRIMONIO HISTORICO /  /,BENEFICIARIA PRINCIPAL,ES,,267889.29,357185.72,0.75,2,P4,405
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA,ES,,156225.58,208300.78,0.75,2,P1,406
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,Universidade Católica Portuguesa - Centro Regional do Porto. Escola Superior de Biotecnologia /  /,BENEFICIARIA,PT,,95354.90,127139.87,0.75,2,P1,407
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,MOLENDUM INGREDIENTS SL / - / -,BENEFICIARIA,ES,,75503.07,100670.76,0.75,2,P1,408
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,"MOLINOS DEL DUERO Y CIA GENERAL DE HARINAS, SL /  /",BENEFICIARIA,ES,,94439.79,125919.72,0.75,2,P1,409
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,"M. FERREIRA & FILHAS, LDA /  /",BENEFICIARIA,PT,,29498.11,39330.81,0.75,2,P1,410
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,TECPAN - TECNOLOGIA E PRODUTOS PARA PASTELARIA E PANIFICAÇÃO LDA /  /,BENEFICIARIA,PT,,29496.69,39328.92,0.75,2,P1,411
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,Fundación Universidades y Enseñanzas Superiores de Castilla y León / Consejería de Educación / Junta de Castilla y León,BENEFICIARIA,ES,,120156.02,160208.03,0.75,2,P1,412
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,"Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora",BENEFICIARIA,ES,,112484.12,149978.82,0.75,2,P1,413
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,Universidad de Valladolid / Universidades / Universidad de Valladolid,BENEFICIARIA,ES,,126690.10,168920.13,0.75,2,P1,414
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,Instituto Politécnico de Bragança /  /,BENEFICIARIA PRINCIPAL,PT,,118604.26,158139.01,0.75,2,P1,415
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,"SORTEGEL - PRODUTOS CONGELADOS, S.A. /  /",SOCIA,PT,,0.00,0.00,0,2,P1,416
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,Laboratório Colaborativo Montanhas de Investigação – Associação (MORE) /  /,SOCIA,PT,,0.00,0.00,0,2,P1,417
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,Deifil Technology Lda /  /,SOCIA,PT,,0.00,0.00,0,2,P1,418
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,COPERBLANC ZAMORANA SA /  /,SOCIA,ES,,0.00,0.00,0,2,P1,419
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,"AFONSO, LOPES & CA LDA / - / -",SOCIA,PT,,0.00,0.00,0,2,P1,420
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,ASSOCIAÇÃO CNCFS - CENTRO NACIONAL DE COMPETÊNCIAS DOS FRUTOS SECOS /  /,SOCIA,PT,,0.00,0.00,0,2,P1,421
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,Fundación Rei Afonso Henriques /  /,SOCIA,ES,,0.00,0.00,0,2,P1,422
+0112_TRANSCOLAB_PLUS_2_P,calls_1_5,"LA TAHONA DE SAHAGUN,S.L. / - / -",SOCIA,ES,,0.00,0.00,0,2,P1,423
+0115_GREEN_HOSPITALS_6_P,calls_1_5,Servicio Gallego de Salud (SERGAS) / Consellería de Sanidad / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,598039.16,797385.55,0.75,6,P3,424
+0115_GREEN_HOSPITALS_6_P,calls_1_5,ENTE PUBLICO REGIONAL DE LA ENERGIA DE CASTILLA Y LEON /  /,BENEFICIARIA,ES,,210279.20,280372.26,0.75,6,P3,425
+0115_GREEN_HOSPITALS_6_P,calls_1_5,"Centro Hospitalar de Trás-os-Montes e Alto Douro, E.P.E. /  /",BENEFICIARIA,PT,,294202.20,392269.60,0.75,6,P3,426
+0115_GREEN_HOSPITALS_6_P,calls_1_5,"CHUA - CENTRO HOSPITALAR UNIVERSITÁRIO DO ALGARVE, E. P. E. / - / -",BENEFICIARIA,PT,,256962.53,342616.70,0.75,6,P3,427
+0115_GREEN_HOSPITALS_6_P,calls_1_5,Associação Portuguesa de Adminsitradores Hospitalares /  /,BENEFICIARIA,PT,,78086.48,104115.30,0.75,6,P3,428
+0115_GREEN_HOSPITALS_6_P,calls_1_5,ASSOCIAÇÃO DAS AGÊNCIAS DE ENERGIA E AMBIENTE - REDE NACIONAL (RNAE) /  /,BENEFICIARIA,PT,,106724.27,142299.03,0.75,6,P3,429
+0115_GREEN_HOSPITALS_6_P,calls_1_5,"CENTRO HOSPITALAR E UNIVERSITÁRIO DE COIMBRA, E.P.E. /  /",BENEFICIARIA PRINCIPAL,PT,,319485.83,425981.11,0.75,6,P3,430
+0117_AGRO_HUB_2_E,calls_1_5,Dirección General de Patrimonio Cultural / Viceconsejería de Acción Cultural / Junta de Castilla y León,BENEFICIARIA,ES,,170711.63,227615.51,0.75,2,P2,431
+0117_AGRO_HUB_2_E,calls_1_5,Instituto Politécnico de Viseu /  /,BENEFICIARIA,PT,,36375.00,48500.00,0.75,2,P2,432
+0117_AGRO_HUB_2_E,calls_1_5,"Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora",BENEFICIARIA,ES,,126992.78,169323.70,0.75,2,P2,433
+0117_AGRO_HUB_2_E,calls_1_5,COMUNIDADE INTERMUNICIPAL DO DOURO /  /,BENEFICIARIA,PT,,50033.73,66711.64,0.75,2,P2,434
+0117_AGRO_HUB_2_E,calls_1_5,Comunidade Intermunicipal das Terras de Trás-os-Montes (CIM-TTM) /  /,BENEFICIARIA,PT,,34367.29,45823.05,0.75,2,P2,435
+0117_AGRO_HUB_2_E,calls_1_5,Universidad de Valladolid / Universidades / Universidad de Valladolid,BENEFICIARIA,ES,,201734.38,268979.17,0.75,2,P2,436
+0117_AGRO_HUB_2_E,calls_1_5,Asociación Ibérica de Municipios Ribereños del Duero (AIMRD) / Institucionales / Asociación Ibérica de Municipios Ribereños del Duero (AIMRD),BENEFICIARIA PRINCIPAL,ES,,208268.12,277690.83,0.75,2,P2,437
+0121_REFLORESTA_6_E,calls_1_5,"Agencia de Medio Ambiente y Agua de Andalucía / Consejería de Sostenibilidad, Medio Ambiente y Economía Azul / Junta de Andalucía",BENEFICIARIA,ES,,111633.37,148844.49,0.75,6,P3,438
+0121_REFLORESTA_6_E,calls_1_5,QUERCUS - Associação Nacional de Conservação da Natureza /  /,BENEFICIARIA,PT,,83927.65,111903.54,0.75,6,P3,439
+0121_REFLORESTA_6_E,calls_1_5,AGUIARFLORESTA - Associação Florestal e Ambiental de Vila Pouca de Aguiar /  /,BENEFICIARIA,PT,,86219.53,114959.37,0.75,6,P3,440
+0121_REFLORESTA_6_E,calls_1_5,"Bóreas Desarrollo y Tecnología, S.L. /  /",BENEFICIARIA,ES,,135876.00,181168.00,0.75,6,P3,441
+0121_REFLORESTA_6_E,calls_1_5,Centro de Investigaciones Aplicadas al desarrollo agroforestal S.L. (IDAF) /  /,BENEFICIARIA,ES,,68404.60,91206.13,0.75,6,P3,442
+0121_REFLORESTA_6_E,calls_1_5,UNIVERSIDADE DE TRÁS-OS-MONTES E ALTO DOURO (UTAD) /  /,BENEFICIARIA,PT,,152818.61,203758.14,0.75,6,P3,443
+0121_REFLORESTA_6_E,calls_1_5,Universidad de Córdoba /  /,BENEFICIARIA,ES,,101404.73,135206.31,0.75,6,P3,444
+0121_REFLORESTA_6_E,calls_1_5,Universidade Da Coruña / Universidades / Universidade Da Coruña,BENEFICIARIA,ES,,95861.36,127815.15,0.75,6,P3,445
+0121_REFLORESTA_6_E,calls_1_5,"Dir. Gral. Patrimonio Natural y Política Forestal Castilla y León / Consejería de Medio Ambiente, Vivienda y Ordenación del Territorio / Junta de Castilla y León",BENEFICIARIA,ES,,224949.00,299932.00,0.75,6,P3,446
+0121_REFLORESTA_6_E,calls_1_5,"Secretaría General de Sostenibilidad, Medio Ambiente y Economía Azul / Viceconsejería (Sostenibilidad, Medio Ambiente y Economía Azul) / Junta de Andalucía",BENEFICIARIA PRINCIPAL,ES,,471147.30,628196.40,0.75,6,P3,447
+0123_IBERALEX_6_E,calls_1_5,Universidade de Coimbra /  /,BENEFICIARIA,PT,,98287.11,131049.48,0.75,6,P4,448
+0123_IBERALEX_6_E,calls_1_5,Associação Vita Nativa - Conservação do Ambiente /  /,BENEFICIARIA,PT,,171386.25,228515.00,0.75,6,P4,449
+0123_IBERALEX_6_E,calls_1_5,Universidad de Cádiz / Universidades / Universidad de Cádiz,BENEFICIARIA,ES,,335829.08,447772.11,0.75,6,P4,450
+0123_IBERALEX_6_E,calls_1_5,"Dirección General de Patrimonio Natural / Consellería de Medio Ambiente, Territorio y Vivienda / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,169500.02,226000.03,0.75,6,P4,451
+0123_IBERALEX_6_E,calls_1_5,Universidade de Aveiro / - / -,BENEFICIARIA,PT,,116915.98,155887.97,0.75,6,P4,452
+0123_IBERALEX_6_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,178156.64,237542.19,0.75,6,P4,453
+0123_IBERALEX_6_E,calls_1_5,"Departamento de Zoología, Genética y Antropología Física / Universidad de Santiago de Compostela / Universidad de Santiago de Compostela",BENEFICIARIA PRINCIPAL,ES,,347623.66,463498.21,0.75,6,P4,454
+0124_EUROAGE_MAS_4_E,calls_1_5,INSTITUTO POLITÉCNIO DE CASTELO BRANCO /  / INSTITUTO POLITÉCNIO DE CASTELO BRANCO,BENEFICIARIA,PT,,39750.00,53000.00,0.75,4,P1,455
+0124_EUROAGE_MAS_4_E,calls_1_5,CLUSTER SOCIOSANITARIO DE EXTREMADURA /  /,BENEFICIARIA,ES,,129841.66,173122.21,0.75,4,P1,456
+0124_EUROAGE_MAS_4_E,calls_1_5,Fundación Formación e Investigación de los Profesionales de la Salud de Extremadura / Vicepresidencia Segunda y Consejería de Sanidad y Servicios Sociales / Junta de Extremadura,BENEFICIARIA,ES,,107816.57,143755.43,0.75,4,P1,457
+0124_EUROAGE_MAS_4_E,calls_1_5,"Fundación Centro de Cirugia de Mínima Invasión / Secretaría General de Ciencia, Tecnología, Innovación y Universidad / Junta de Extremadura",BENEFICIARIA,ES,,324730.15,432973.53,0.75,4,P1,458
+0124_EUROAGE_MAS_4_E,calls_1_5,Instituto Politécnico da Guarda /  /,BENEFICIARIA,PT,,65718.75,87625.00,0.75,4,P1,459
+0124_EUROAGE_MAS_4_E,calls_1_5,Universidade de Coimbra /  /,BENEFICIARIA,PT,,34417.50,45890.00,0.75,4,P1,460
+0124_EUROAGE_MAS_4_E,calls_1_5,Universidad de Valladolid / Universidades / Universidad de Valladolid,BENEFICIARIA,ES,,259704.27,346272.36,0.75,4,P1,461
+0124_EUROAGE_MAS_4_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA PRINCIPAL,ES,,244664.09,326218.79,0.75,4,P1,462
+0125_EXPORT_PLUS_6_E,calls_1_5,Asociación Clúster Alimentario de Galicia /  /,BENEFICIARIA,ES,,177300.00,236400.00,0.75,6,P1,463
+0125_EXPORT_PLUS_6_E,calls_1_5,Associação Industrial Portuguesa (AIP) - Câmara de Comércio e Indústria /  /,BENEFICIARIA,PT,,80000.00,106666.67,0.75,6,P1,464
+0125_EXPORT_PLUS_6_E,calls_1_5,AEBB - Associação Empresarial da Beira Baixa /  /,BENEFICIARIA,PT,,55054.25,73405.67,0.75,6,P1,465
+0125_EXPORT_PLUS_6_E,calls_1_5,NERE - Núcleo Empresarial da Região de Évora /  /,BENEFICIARIA,PT,,79999.99,106666.66,0.75,6,P1,466
+0125_EXPORT_PLUS_6_E,calls_1_5,FUNDACION ANDANATURA PARA EL DESARROLLO SOCIOECONOMICO SOSTENIBLE /  /,BENEFICIARIA,ES,,284250.00,379000.00,0.75,6,P1,467
+0125_EXPORT_PLUS_6_E,calls_1_5,LANDALUZ -  ASOCIACION EMPRESARIAL CLUSTER AGROALIMENTARIO DE ANDALUCIA /  /,BENEFICIARIA PRINCIPAL,ES,,319635.00,426180.00,0.75,6,P1,468
+0125_EXPORT_PLUS_6_E,calls_1_5,Agencia Gallega de la Calidad Alimentaria (AGACAL) / Consellería del Medio Rural / Comunidad Autónoma de Galicia,SOCIA,ES,,0.00,0.00,0,6,P1,469
+0126_RESOTEX_6_E,calls_1_5,Município do Fundão /  /,BENEFICIARIA,PT,,44255.03,59006.71,0.75,6,P2,470
+0126_RESOTEX_6_E,calls_1_5,"MODATEX - Centro de Formação Profissional da Indústria Têxtil, Vestuário, Confecção e Lanifícios /  /",BENEFICIARIA,PT,,70333.60,93778.13,0.75,6,P2,471
+0126_RESOTEX_6_E,calls_1_5,Associação Têxtil e Vestuário de Portugal (ATP) /  /,BENEFICIARIA,PT,,91255.22,121673.63,0.75,6,P2,472
+0126_RESOTEX_6_E,calls_1_5,Município da Covilhã /  /,BENEFICIARIA,PT,,46882.38,62509.84,0.75,6,P2,473
+0126_RESOTEX_6_E,calls_1_5,CENTRO TECNOLÓGICO DAS INDÚSTRIAS TÊXTIL E DO VESTUÁRIO DE PORTUGAL (CITEVE) /  /,BENEFICIARIA,PT,,77821.31,103761.75,0.75,6,P2,474
+0126_RESOTEX_6_E,calls_1_5,Federación Española de Empresas de la Confección (FEDECON) /  /,BENEFICIARIA,ES,,307834.23,410445.64,0.75,6,P2,475
+0126_RESOTEX_6_E,calls_1_5,"Dirección General de Empresa / Consejería de Economía, Ciencia y Agenda Digital / Junta de Extremadura",BENEFICIARIA,ES,,299937.66,399916.88,0.75,6,P2,476
+0126_RESOTEX_6_E,calls_1_5,Dip. Badajoz - Área de Desarrollo Rural y Sostenibilidad / Diputación Provincial de Badajoz / Diputación Provincial de Badajoz,BENEFICIARIA,ES,,334287.75,445717.00,0.75,6,P2,477
+0126_RESOTEX_6_E,calls_1_5,Diputación Provincial de Cáceres / Entidades Locales / Diputación Provincial de Cáceres,BENEFICIARIA PRINCIPAL,ES,,733718.89,978291.85,0.75,6,P2,478
+0126_RESOTEX_6_E,calls_1_5,Asociación Ibérica de Reciclaje Textil-ASIRTEX /  /,SOCIA,ES,,0.00,0.00,0,6,P2,479
+0126_RESOTEX_6_E,calls_1_5,MODA RE- S. COOP DE INICIATIVA SOCIAL /  /,SOCIA,ES,,0.00,0.00,0,6,P2,480
+0126_RESOTEX_6_E,calls_1_5,CONFEDERACIÓN DE EMPRESAS DE LA MODA DE ESPAÑA /  /,SOCIA,ES,,0.00,0.00,0,6,P2,481
+0126_RESOTEX_6_E,calls_1_5,REMUDARTE S.L.U. /  /,SOCIA,ES,,0.00,0.00,0,6,P2,482
+0126_RESOTEX_6_E,calls_1_5,Consorcio Másmedio / Diputación Provincial de Cáceres / Diputación Provincial de Cáceres,SOCIA,ES,,0.00,0.00,0,6,P2,483
+0135_PROCTEPGER_HORIZONTE_27_I_3_E,calls_1_5,Diputación Provincial de Ávila / Entidades Locales / Diputación Provincial de Ávila,BENEFICIARIA,ES,,1057881.75,1410509.00,0.75,3,P3,484
+0135_PROCTEPGER_HORIZONTE_27_I_3_E,calls_1_5,Servicio de Prevención y Extinción de Incendios / Diputación Provincial de León / Diputación Provincial de León,BENEFICIARIA,ES,,1160106.17,1546808.23,0.75,3,P3,485
+0135_PROCTEPGER_HORIZONTE_27_I_3_E,calls_1_5,Corporacion Municipal / Ayuntamiento de León / Ayuntamiento de León,BENEFICIARIA,ES,,785125.52,1046834.02,0.75,3,P3,486
+0135_PROCTEPGER_HORIZONTE_27_I_3_E,calls_1_5,AYUNTAMIENTO DE ZAMORA / AYUNTAMIENTO DE ZAMORA / AYUNTAMIENTO DE ZAMORA,BENEFICIARIA,ES,,2986500.00,3982000.00,0.75,3,P3,487
+0135_PROCTEPGER_HORIZONTE_27_I_3_E,calls_1_5,Ayuntamiento de Salamanca / Entidades Locales / Ayuntamiento de Salamanca,BENEFICIARIA,ES,,712500.00,950000.00,0.75,3,P3,488
+0135_PROCTEPGER_HORIZONTE_27_I_3_E,calls_1_5,Diputación de Salamanca / Diputación Provincial de Salamanca / Diputación Provincial de Salamanca,BENEFICIARIA,ES,,562500.00,750000.00,0.75,3,P3,489
+0135_PROCTEPGER_HORIZONTE_27_I_3_E,calls_1_5,Comunidade Intermunicipal das Beiras e Serra da Estrela (CIM-BSE) /  /,BENEFICIARIA,PT,,513381.51,684508.68,0.75,3,P3,490
+0135_PROCTEPGER_HORIZONTE_27_I_3_E,calls_1_5,"Agencia de Protección Civil y Emergencias / Consejería de Medio Ambiente, Vivienda y Ordenación del Territorio / Junta de Castilla y León",BENEFICIARIA PRINCIPAL,ES,,1780674.97,2374233.30,0.75,3,P3,491
+0137_NSL_6_E,calls_1_5,Instituto Politécnico de Bragança /  /,BENEFICIARIA,PT,,500000.00,666666.67,0.75,6,P1,492
+0137_NSL_6_E,calls_1_5,Conselho Económico e Social /  /,BENEFICIARIA,PT,,500000.00,666666.67,0.75,6,P1,493
+0137_NSL_6_E,calls_1_5,Fundacion General Universidad de Salamanca / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA PRINCIPAL,ES,,1716021.95,2288029.27,0.75,6,P1,494
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Algarve (CCDR Algarve) / - / -,BENEFICIARIA,PT,,31614.93,42153.24,0.75,6,P3,495
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,FEUGA - FUNDACION EMPRESA-UNIVERSIDAD GALLEGA / - / -,BENEFICIARIA,ES,,118200.43,157600.57,0.75,6,P3,496
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,FUNDACIÓN DELEGACIÓN FUNDACIÓN FINNOVA /  /,BENEFICIARIA,ES,,80787.82,107717.09,0.75,6,P3,497
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Comunidade Intermunicipal da Região de Coimbra /  /,BENEFICIARIA,PT,,149210.29,198947.05,0.75,6,P3,498
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,AMAL - Comunidade Intermunicipal do Algarve /  /,BENEFICIARIA,PT,,172544.14,230058.85,0.75,6,P3,499
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Universidad de Córdoba /  /,BENEFICIARIA,ES,,119144.63,158859.51,0.75,6,P3,500
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Universidad de Huelva / Universidades / Universidad de Huelva,BENEFICIARIA,ES,,103911.92,138549.23,0.75,6,P3,501
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,270000.00,360000.00,0.75,6,P3,502
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,179920.13,239893.51,0.75,6,P3,503
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Autoridade Nacional de Emergência e Proteção Civil /  /,BENEFICIARIA,PT,,200000.00,266666.67,0.75,6,P3,504
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Fundación Centro Tecnológico de Eficiencia y Sostenibilidad Energética / EnergyLab / EnergyLab,BENEFICIARIA,ES,,164580.93,219441.24,0.75,6,P3,505
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Diputación Provincial de Ávila / Entidades Locales / Diputación Provincial de Ávila,BENEFICIARIA,ES,,169928.21,226570.95,0.75,6,P3,506
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA,PT,,151950.70,202600.93,0.75,6,P3,507
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,"Agencia de Medio Ambiente y Agua de Andalucía / Consejería de Sostenibilidad, Medio Ambiente y Economía Azul / Junta de Andalucía",BENEFICIARIA,ES,,405656.45,540875.27,0.75,6,P3,508
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA PRINCIPAL,ES,,174400.98,232534.64,0.75,6,P3,509
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,Dirección Xeral de Defensa do Monte / Consellería de Medio Rural / Comunidad Autónoma de Galicia,SOCIA,ES,,0.00,0.00,0,6,P3,510
+0139_FIREPOCTEP_MAS_6_E,calls_1_5,"D. G. de Política Forestal y Biodiversidad / Secretaría General de Sostenibilidad, Medio Ambiente y Economía Azul / Junta de Andalucía",SOCIA,ES,,0.00,0.00,0,6,P3,511
+0140_BIOIMP_ACE_MAS_6_E,calls_1_5,Instituto Politécnico da Guarda /  /,BENEFICIARIA,PT,,98098.02,130797.36,0.75,6,P1,512
+0140_BIOIMP_ACE_MAS_6_E,calls_1_5,Associação Cognitaria Vasco da Gama / - / -,BENEFICIARIA,PT,,50763.91,67685.21,0.75,6,P1,513
+0140_BIOIMP_ACE_MAS_6_E,calls_1_5,CLUSTER SOCIOSANITARIO DE EXTREMADURA /  /,BENEFICIARIA,ES,,91160.38,121547.17,0.75,6,P1,514
+0140_BIOIMP_ACE_MAS_6_E,calls_1_5,Fundación Formación e Investigación de los Profesionales de la Salud de Extremadura / Vicepresidencia Segunda y Consejería de Sanidad y Servicios Sociales / Junta de Extremadura,BENEFICIARIA,ES,,116627.74,155503.65,0.75,6,P1,515
+0140_BIOIMP_ACE_MAS_6_E,calls_1_5,Universidade do Minho /  /,BENEFICIARIA,PT,,166034.10,221378.80,0.75,6,P1,516
+0140_BIOIMP_ACE_MAS_6_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,332714.62,443619.49,0.75,6,P1,517
+0140_BIOIMP_ACE_MAS_6_E,calls_1_5,"Fundación Centro de Cirugia de Mínima Invasión / Secretaría General de Ciencia, Tecnología, Innovación y Universidad / Junta de Extremadura",BENEFICIARIA PRINCIPAL,ES,,900661.00,1200881.33,0.75,6,P1,518
+0141_BIOCOSTEIRO_1_E,calls_1_5,Câmara Municipal de Viana do Castelo /  /,BENEFICIARIA,PT,,98126.25,130835.00,0.75,1,P4,519
+0141_BIOCOSTEIRO_1_E,calls_1_5,SEO/BirdLife / - / Sociedad Española de Ornitología,BENEFICIARIA,ES,,192110.13,256146.84,0.75,1,P4,520
+0141_BIOCOSTEIRO_1_E,calls_1_5,Cooperación con los Municipios / Diputación de Pontevedra / Diputación Provincial de Pontevedra,BENEFICIARIA PRINCIPAL,ES,,272775.66,363700.88,0.75,1,P4,521
+0144_TRANSFIRESAUDE_1_E,calls_1_5,Universidad de Santiago de Compostela / Universidades / Universidad de Santiago de Compostela,BENEFICIARIA,ES,,221415.90,295221.20,0.75,1,P1,522
+0144_TRANSFIRESAUDE_1_E,calls_1_5,ACMP5 - Associação Centro de Medicina P5 / - /,BENEFICIARIA,PT,,44701.14,59601.52,0.75,1,P1,523
+0144_TRANSFIRESAUDE_1_E,calls_1_5,"Centro Clínico Académico - Braga, Associação (2CA-Braga) / - /",BENEFICIARIA,PT,,48437.01,64582.68,0.75,1,P1,524
+0144_TRANSFIRESAUDE_1_E,calls_1_5,i3S - Instituto de Investigação e Inovação em Saúde da Universidade do Porto / - / -,BENEFICIARIA,PT,,156272.47,208363.29,0.75,1,P1,525
+0144_TRANSFIRESAUDE_1_E,calls_1_5,Agrupación Europea de Cooperación Territorial Eurocidade Chaves-Verín (AECT Chaves-Verín) /  /,BENEFICIARIA,ES,,117806.25,157075.00,0.75,1,P1,526
+0144_TRANSFIRESAUDE_1_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA,ES,,191955.68,255940.91,0.75,1,P1,527
+0144_TRANSFIRESAUDE_1_E,calls_1_5,Agencia Gallega para la Gestión del Conocimiento en Salud / Consellería de Sanidad / Comunidad Autónoma de Galicia,BENEFICIARIA PRINCIPAL,ES,,585264.78,780353.04,0.75,1,P1,528
+0144_TRANSFIRESAUDE_1_E,calls_1_5,"INESC TEC - Instituto de Engenharia de Sistemas e Computadores, Tecnologia e Ciência /  /",SOCIA,PT,,0.00,0.00,0,1,P1,529
+0144_TRANSFIRESAUDE_1_E,calls_1_5,Servicio Gallego de Salud (SERGAS) / Consellería de Sanidad / Comunidad Autónoma de Galicia,SOCIA,ES,,0.00,0.00,0,1,P1,530
+0145_CROSS_3DTOOL_4ALS_3_P,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA,ES,,292822.55,390430.07,0.75,3,P1,531
+0145_CROSS_3DTOOL_4ALS_3_P,calls_1_5,Instituto de Investigación Biomédica de Salamanca (IBSAL) de la Fundación Instituto de Ciencias de la Salud en Castilla y León (IECSCYL) / Instituto de Investigación Biomédica de Salamanca (IBSAL) de la Fundación Instituto de Ciencias de la Salud en Castilla y León / Instituto de Investigación Biomédica de Salamanca (IBSAL) de la Fundación Instituto de Ciencias de la Salud en Castilla y León,BENEFICIARIA,ES,,179174.86,238899.82,0.75,3,P1,532
+0145_CROSS_3DTOOL_4ALS_3_P,calls_1_5,Universidade de Coimbra /  /,BENEFICIARIA PRINCIPAL,PT,,96424.18,128565.57,0.75,3,P1,533
+0145_CROSS_3DTOOL_4ALS_3_P,calls_1_5,Gerencia de Atención Especializada de Salamanca (Complejo Asistencial Universitario) / Gerencia de Salud del Área de Salamanca / Junta de Castilla y León,SOCIA,ES,,0.00,0.00,0,3,P1,534
+0152_GREEN_HUB_1_P,calls_1_5,"Fundación para la promoción de la innovación, investigación y desarrollo tecnológico en la industria de automoción de Galicia (CTAG) /  /",BENEFICIARIA,ES,,273741.60,364988.80,0.75,1,P1,535
+0152_GREEN_HUB_1_P,calls_1_5,"Agencia Gallega de Innovación (GAIN) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,171900.76,229201.02,0.75,1,P1,536
+0152_GREEN_HUB_1_P,calls_1_5,Agencia Gallega de la Industria Forestal / Consellería del Medio Rural / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,219802.88,293070.50,0.75,1,P1,537
+0152_GREEN_HUB_1_P,calls_1_5,PIEP - Pólo de Inovação em Engenharia de Polímeros /  /,BENEFICIARIA PRINCIPAL,PT,,174794.12,233058.83,0.75,1,P1,538
+0153_OPENLABS_1_E,calls_1_5,"Agencia Gallega de Innovación (GAIN) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,223040.31,297387.08,0.75,1,P2,539
+0153_OPENLABS_1_E,calls_1_5,Associação CCG/zgdv - Centro de Computação Gráfica / - / -,BENEFICIARIA,PT,,121359.97,161813.29,0.75,1,P2,540
+0153_OPENLABS_1_E,calls_1_5,Faculdade de Engenharia (FEUP) / Universidade do Porto /,BENEFICIARIA,PT,,91381.57,121842.09,0.75,1,P2,541
+0153_OPENLABS_1_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA,ES,,92226.67,122968.89,0.75,1,P2,542
+0153_OPENLABS_1_E,calls_1_5,"Fundación para la promoción de la innovación, investigación y desarrollo tecnológico en la industria de automoción de Galicia (CTAG) /  /",BENEFICIARIA PRINCIPAL,ES,,192704.40,256939.20,0.75,1,P2,543
+0156_AGROPYME_AVANZA_AAA_5_E,calls_1_5,Universidade do Algarve /  /,BENEFICIARIA,PT,,76150.00,101533.33,0.75,5,P1,544
+0156_AGROPYME_AVANZA_AAA_5_E,calls_1_5,Fundación Pública Andaluza Andalucía Emprende / Secretaría General de Empresa y Trabajo Autónomo / Junta de Andalucía,BENEFICIARIA,ES,,119999.99,159999.99,0.75,5,P1,545
+0156_AGROPYME_AVANZA_AAA_5_E,calls_1_5,NERA - ASSOCIAÇÃO EMPRESARIAL DA REGIÃO DO ALGARVE /  /,BENEFICIARIA,PT,,112650.00,150200.00,0.75,5,P1,546
+0156_AGROPYME_AVANZA_AAA_5_E,calls_1_5,NERE - Núcleo Empresarial da Região de Évora /  /,BENEFICIARIA,PT,,55000.00,73333.33,0.75,5,P1,547
+0156_AGROPYME_AVANZA_AAA_5_E,calls_1_5,ADRAL - Agência de Desenvolvimento Regional do Alentejo /  /,BENEFICIARIA,PT,,50000.00,66666.67,0.75,5,P1,548
+0156_AGROPYME_AVANZA_AAA_5_E,calls_1_5,FUNDACION ANDANATURA PARA EL DESARROLLO SOCIOECONOMICO SOSTENIBLE /  /,BENEFICIARIA PRINCIPAL,ES,,350925.00,467900.00,0.75,5,P1,549
+0158_INCUBTRANS_1_E,calls_1_5,Fundación Galicia Europa / Dirección General de Relaciones Exteriores y con la Unión Europea / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,26233.14,34977.52,0.75,1,P2,550
+0158_INCUBTRANS_1_E,calls_1_5,Federación Galega de Xoves Empresarios - AJE GALICIA /  /,BENEFICIARIA,ES,,102421.60,136562.13,0.75,1,P2,551
+0158_INCUBTRANS_1_E,calls_1_5,ANJE Associação Nacional de Jovens Empresários /  /,BENEFICIARIA,PT,,126719.79,168959.72,0.75,1,P2,552
+0158_INCUBTRANS_1_E,calls_1_5,ADRAT - Associação de Desenvolvimento da Região do Alto Tâmega /  /,BENEFICIARIA,PT,,21534.81,28713.08,0.75,1,P2,553
+0158_INCUBTRANS_1_E,calls_1_5,Instituto Politécnico de Bragança /  /,BENEFICIARIA,PT,,51945.84,69261.12,0.75,1,P2,554
+0158_INCUBTRANS_1_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA,ES,,87064.92,116086.56,0.75,1,P2,555
+0158_INCUBTRANS_1_E,calls_1_5,Agrupación Europea de Cooperación Territorial Eurocidade Chaves-Verín (AECT Chaves-Verín) /  /,BENEFICIARIA PRINCIPAL,ES,,450000.00,600000.00,0.75,1,P2,556
+0160_HI_MOV_1_E,calls_1_5,Agrupación Europea de Cooperación Territorial Galicia-Norte de Portugal (GNP-AECT) /  /,BENEFICIARIA,ES,,91001.24,121334.99,0.75,1,P3,557
+0160_HI_MOV_1_E,calls_1_5,PETROTEC - INOVAÇÃO E INDUSTRIA S.A. /  /,BENEFICIARIA,PT,,45217.28,60289.71,0.75,1,P3,558
+0160_HI_MOV_1_E,calls_1_5,PIEP - Pólo de Inovação em Engenharia de Polímeros /  /,BENEFICIARIA,PT,,108905.39,145207.19,0.75,1,P3,559
+0160_HI_MOV_1_E,calls_1_5,Departamento de Física de Partículas / Universidad de Santiago de Compostela / Universidad de Santiago de Compostela,BENEFICIARIA,ES,,200669.97,267559.96,0.75,1,P3,560
+0160_HI_MOV_1_E,calls_1_5,Centro de Engenharia e Desenvolvimento de Produto (CEIIA) /  /,BENEFICIARIA,PT,,42653.10,56870.80,0.75,1,P3,561
+0160_HI_MOV_1_E,calls_1_5,Fundación Centro Tecnológico de Eficiencia y Sostenibilidad Energética / EnergyLab / EnergyLab,BENEFICIARIA,ES,,252017.94,336023.92,0.75,1,P3,562
+0160_HI_MOV_1_E,calls_1_5,"Instituto Energético de Galicia (INEGA) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,113625.12,151500.16,0.75,1,P3,563
+0160_HI_MOV_1_E,calls_1_5,Universidade do Minho /  /,BENEFICIARIA,PT,,252433.32,336577.76,0.75,1,P3,564
+0160_HI_MOV_1_E,calls_1_5,Universidade do Porto / - /,BENEFICIARIA,PT,,112347.16,149796.21,0.75,1,P3,565
+0160_HI_MOV_1_E,calls_1_5,"Fundación para la promoción de la innovación, investigación y desarrollo tecnológico en la industria de automoción de Galicia (CTAG) /  /",BENEFICIARIA PRINCIPAL,ES,,413011.22,550681.63,0.75,1,P3,566
+0166_BIOCORREDOR_BIN_SAL_6_E,calls_1_5,RESERVA DA FAIA BRAVA - ATNatureza / - /,BENEFICIARIA,PT,,54791.10,73054.80,0.75,6,P4,567
+0166_BIOCORREDOR_BIN_SAL_6_E,calls_1_5,Fundación Naturaleza y Hombre /  /,BENEFICIARIA,ES,,905435.93,1207247.91,0.75,6,P4,568
+0166_BIOCORREDOR_BIN_SAL_6_E,calls_1_5,Associação de Municípios da Cova da Beira /  /,BENEFICIARIA,PT,,102714.96,136953.28,0.75,6,P4,569
+0166_BIOCORREDOR_BIN_SAL_6_E,calls_1_5,Diputación de Salamanca / Diputación Provincial de Salamanca / Diputación Provincial de Salamanca,BENEFICIARIA PRINCIPAL,ES,,126436.20,168581.60,0.75,6,P4,570
+0167_NEXOMAR_5_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,50000.00,66666.67,0.75,5,P1,571
+0167_NEXOMAR_5_E,calls_1_5,"Cámara Oficial de Comercio, Industria y Servicios de Jerez de la Frontera / - / -",BENEFICIARIA,ES,,113028.00,150704.00,0.75,5,P1,572
+0167_NEXOMAR_5_E,calls_1_5,"Cámara Oficial de Comercio, Industria, Servicios y Navegación de Sevilla /  / Cámara Oficial de Comercio, Industria, Servicios y Navegación de Sevilla",BENEFICIARIA,ES,,153508.50,204678.00,0.75,5,P1,573
+0167_NEXOMAR_5_E,calls_1_5,"Cámara Oficial de Comercio, Industria, Servicios y Navegación de Campo de Gibraltar /  /",BENEFICIARIA,ES,,179645.17,239526.90,0.75,5,P1,574
+0167_NEXOMAR_5_E,calls_1_5,"Cámara Oficial de Comercio, Industria, Servicios y Navegación de Huelva /  /",BENEFICIARIA,ES,,141663.75,188885.00,0.75,5,P1,575
+0167_NEXOMAR_5_E,calls_1_5,Instituto de Empleo y Desarrollo Socioeconómico y Tecnológico (IEDT) / Diputación Provincial de Cádiz / Diputación Provincial de Cádiz,BENEFICIARIA,ES,,173044.49,230725.99,0.75,5,P1,576
+0167_NEXOMAR_5_E,calls_1_5,SINES TECNOPOLO - ASSOCIAÇÃO CENTRO DE INCUBAÇÃO DE EMPRESAS DE BASE TECNOLÓGICA VASCO DA GAMA /  /,BENEFICIARIA,PT,,100000.00,133333.33,0.75,5,P1,577
+0167_NEXOMAR_5_E,calls_1_5,Confederación de Empresarios de Cádiz /  /,BENEFICIARIA,ES,,108367.50,144490.00,0.75,5,P1,578
+0167_NEXOMAR_5_E,calls_1_5,FUNDACION BAHÍA DE CÁDIZ PARA EL DESARROLLO ECONÓMICO / CEEI BAHÍA DE CÁDIZ / FUNDACIÓN BAHÍA DE CÁDIZ PARA EL DESARROLLO ECONÓMICO,BENEFICIARIA,ES,,177489.00,236652.00,0.75,5,P1,579
+0167_NEXOMAR_5_E,calls_1_5,"Consejo Andaluz de Cámaras Oficiales de Comercio, Industria, Servicios y Navegación /  /",BENEFICIARIA PRINCIPAL,ES,,314937.00,419916.00,0.75,5,P1,580
+0170_AGROVOLTEP_4_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,235000.00,313333.33,0.75,4,P3,581
+0170_AGROVOLTEP_4_E,calls_1_5,Ayuntamiento Arroyo de la Luz / - / -,BENEFICIARIA,ES,,128757.15,171676.20,0.75,4,P3,582
+0170_AGROVOLTEP_4_E,calls_1_5,"Make it Better, Associação para a Inovação e Economia Social /  /",BENEFICIARIA,PT,,60000.00,80000.00,0.75,4,P3,583
+0170_AGROVOLTEP_4_E,calls_1_5,Comunidade Intermunicipal do Alentejo Central (CIMAC) / - / -,BENEFICIARIA,PT,,40000.00,53333.33,0.75,4,P3,584
+0170_AGROVOLTEP_4_E,calls_1_5,Fundación MUSOL /  /,BENEFICIARIA PRINCIPAL,ES,,280524.36,374032.48,0.75,4,P3,585
+0170_AGROVOLTEP_4_E,calls_1_5,Asociación Objetivos /  /,SOCIA,ES,,0.00,0.00,0,4,P3,586
+0172_RIS_FRONTEIRA_2030_3_E,calls_1_5,MUNICIPIO DE GUARDA /  /,BENEFICIARIA,PT,,30988.51,41318.01,0.75,3,P1,587
+0172_RIS_FRONTEIRA_2030_3_E,calls_1_5,ADM Estrela - Associação Social e Desenvolvimento / - /,BENEFICIARIA,PT,,37500.00,50000.00,0.75,3,P1,588
+0172_RIS_FRONTEIRA_2030_3_E,calls_1_5,Fundación ASPAYM Castilla y León /  /,BENEFICIARIA,ES,,111281.54,148375.39,0.75,3,P1,589
+0172_RIS_FRONTEIRA_2030_3_E,calls_1_5,PLENA INCLUSION CASTILLA Y LEON / - / -,BENEFICIARIA,ES,,110186.30,146915.07,0.75,3,P1,590
+0172_RIS_FRONTEIRA_2030_3_E,calls_1_5,CERCIG - Cooperativa de Solidariedade Social / - / -,BENEFICIARIA,PT,,39283.59,52378.12,0.75,3,P1,591
+0172_RIS_FRONTEIRA_2030_3_E,calls_1_5,Instituto Politécnico da Guarda /  /,BENEFICIARIA,PT,,29728.95,39638.60,0.75,3,P1,592
+0172_RIS_FRONTEIRA_2030_3_E,calls_1_5,FUNDACION INTRAS /  /,BENEFICIARIA,ES,,150521.11,200694.81,0.75,3,P1,593
+0172_RIS_FRONTEIRA_2030_3_E,calls_1_5,Gerencia de Servicios Sociales de Castilla y León / Consejería de Familia e Igualdad de Oportunidades / Junta de Castilla y León,BENEFICIARIA,ES,,188424.49,251232.65,0.75,3,P1,594
+0172_RIS_FRONTEIRA_2030_3_E,calls_1_5,ASOCIACIÓN ASPRODES / - / ASOCIACIÓN ASPRODES,BENEFICIARIA PRINCIPAL,ES,,187561.14,250081.52,0.75,3,P1,595
+0173_ICCO_2_E,calls_1_5,"CÁMARA OFICIAL DE COMERCIO, INDUSTRIA Y SERVICIOS DE VALLADOLID /  /",BENEFICIARIA,ES,,156768.75,209025.00,0.75,2,P1,596
+0173_ICCO_2_E,calls_1_5,NERBA. Associação Empresarial do Distrito de Bragança /  /,BENEFICIARIA,PT,,43377.10,57836.13,0.75,2,P1,597
+0173_ICCO_2_E,calls_1_5,DECO. Associação Portuguesa para a Defesa do Consumidor /  /,BENEFICIARIA,PT,,79399.15,105865.53,0.75,2,P1,598
+0173_ICCO_2_E,calls_1_5,NERVIR - Associação Empresarial /  /,BENEFICIARIA,PT,,57535.01,76713.35,0.75,2,P1,599
+0173_ICCO_2_E,calls_1_5,"Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora",BENEFICIARIA,ES,,118305.00,157740.00,0.75,2,P1,600
+0173_ICCO_2_E,calls_1_5,Instituto Politécnico de Bragança /  /,BENEFICIARIA,PT,,54517.86,72690.48,0.75,2,P1,601
+0173_ICCO_2_E,calls_1_5,Universidad de Valladolid / Universidades / Universidad de Valladolid,BENEFICIARIA PRINCIPAL,ES,,482784.25,643712.33,0.75,2,P1,602
+0177_EUROCIDADE_CT_ADAPT_1_P,calls_1_5,Ayuntamiento de Tomiño / Entidades Locales / Ayuntamiento de Tomiño,BENEFICIARIA,ES,,334425.73,445900.98,0.75,1,P3,603
+0177_EUROCIDADE_CT_ADAPT_1_P,calls_1_5,MUNICIPIO DE VILA NOVA DE CERVEIRA /  /,BENEFICIARIA PRINCIPAL,PT,,141112.92,188150.56,0.75,1,P3,604
+0183_EUROBEC_ENERGY_4_E,calls_1_5,Câmara Municipal de Elvas /  /,BENEFICIARIA,PT,,194820.00,259760.00,0.75,4,P3,605
+0183_EUROBEC_ENERGY_4_E,calls_1_5,Câmara Municipal de Campo Maior /  /,BENEFICIARIA,PT,,194820.00,259760.00,0.75,4,P3,606
+0183_EUROBEC_ENERGY_4_E,calls_1_5,Ayuntamiento de Badajoz / Entidades Locales / Ayuntamiento de Badajoz,BENEFICIARIA PRINCIPAL,ES,,525000.00,700000.00,0.75,4,P3,607
+0184_ENERZAB_2_P,calls_1_5,Instituto Politécnico de Bragança /  /,BENEFICIARIA,PT,,136137.94,181517.25,0.75,2,P3,608
+0184_ENERZAB_2_P,calls_1_5,Ideas TX Ingenieria S.L /  /,BENEFICIARIA,ES,,122554.12,163405.50,0.75,2,P3,609
+0184_ENERZAB_2_P,calls_1_5,AYUNTAMIENTO DE ZAMORA / AYUNTAMIENTO DE ZAMORA / AYUNTAMIENTO DE ZAMORA,BENEFICIARIA,ES,,194831.39,259775.18,0.75,2,P3,610
+0184_ENERZAB_2_P,calls_1_5,Município de Bragança /  /,BENEFICIARIA PRINCIPAL,PT,,363077.40,484103.20,0.75,2,P3,611
+0184_ENERZAB_2_P,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,SOCIA,ES,,0.00,0.00,0,2,P3,612
+0184_ENERZAB_2_P,calls_1_5,COLEGIO OFICIAL DE PERITOS E INGENIEROS TÉCNICOS INDUSTRIALES DE ZAMORA / - / COLEGIO OFICIAL DE PERITOS E INGENIEROS TÉCNICOS INDUSTRIALES DE ZAMORA,SOCIA,ES,,0.00,0.00,0,2,P3,613
+0184_ENERZAB_2_P,calls_1_5,Ayuntamiento de Pedralba de la Pradería / Entidades Locales / Ayuntamiento de Pedralba de la Pradería,SOCIA,ES,,0.00,0.00,0,2,P3,614
+0184_ENERZAB_2_P,calls_1_5,União de Freguesias Aveleda e Rio de Onor /  /,SOCIA,PT,,0.00,0.00,0,2,P3,615
+0185_EFES_IMPACT_4_E,calls_1_5,"Fundacion Fundecyt - Parque Científico y Tecnológico de Extremadura / Consejería de Economía, Ciencia y Agenda Digital / Junta de Extremadura",BENEFICIARIA,ES,,237205.85,316274.46,0.75,4,P2,616
+0185_EFES_IMPACT_4_E,calls_1_5,Fundação Eugénio de Almeida /  /,BENEFICIARIA,PT,,184000.00,245333.33,0.75,4,P2,617
+0185_EFES_IMPACT_4_E,calls_1_5,Centro de Inovação Empresarial da Beira Interior (CIEBI) /  /,BENEFICIARIA,PT,,45816.02,61088.03,0.75,4,P2,618
+0185_EFES_IMPACT_4_E,calls_1_5,Fundación Maimona /  /,BENEFICIARIA,ES,,264145.78,352194.37,0.75,4,P2,619
+0185_EFES_IMPACT_4_E,calls_1_5,ADRAL - Agência de Desenvolvimento Regional do Alentejo /  /,BENEFICIARIA,PT,,80000.00,106666.67,0.75,4,P2,620
+0185_EFES_IMPACT_4_E,calls_1_5,Município do Fundão /  /,BENEFICIARIA,PT,,46960.16,62613.55,0.75,4,P2,621
+0185_EFES_IMPACT_4_E,calls_1_5,"Dirección General de Empresa / Consejería de Economía, Ciencia y Agenda Digital / Junta de Extremadura",BENEFICIARIA PRINCIPAL,ES,,412957.43,550609.91,0.75,4,P2,622
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA,ES,,97303.79,129738.38,0.75,3,P3,623
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,ENERAREA - Agência Regional de Energia e Ambiente do Interior /  /,BENEFICIARIA,PT,,99509.06,132678.75,0.75,3,P3,624
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,Associação de Municípios da Cova da Beira /  /,BENEFICIARIA,PT,,171730.81,228974.41,0.75,3,P3,625
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,Gerencia de Servicios Sociales de Castilla y León / Consejería de Familia e Igualdad de Oportunidades / Junta de Castilla y León,BENEFICIARIA,ES,,150586.16,200781.54,0.75,3,P3,626
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,Universidade da Beira Interior (UBI) / - /,BENEFICIARIA,PT,,79020.42,105360.56,0.75,3,P3,627
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,ASOCIACIÓN ASPRODES / - / ASOCIACIÓN ASPRODES,BENEFICIARIA PRINCIPAL,ES,,839650.94,1119534.58,0.75,3,P3,628
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,Ayuntamiento de Ciudad Rodrigo / Entidades Locales / Ayuntamiento de Ciudad Rodrigo,SOCIA,ES,,0.00,0.00,0,3,P3,629
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,Ayuntamiento de Salamanca / Entidades Locales / Ayuntamiento de Salamanca,SOCIA,ES,,0.00,0.00,0,3,P3,630
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,ALDEATEJADA / - / -,SOCIA,ES,,0.00,0.00,0,3,P3,631
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,Ayuntamiento de Alba de Tormes / Entidades Locales / Ayuntamiento de Alba de Tormes,SOCIA,ES,,0.00,0.00,0,3,P3,632
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,AYUNTAMIENTO DE VILLAMAYOR /  /,SOCIA,ES,,0.00,0.00,0,3,P3,633
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,Ayuntamiento de Santa Marta de Tormes /  / Ayuntamiento de Santa Marta de Tormes,SOCIA,ES,,0.00,0.00,0,3,P3,634
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,Ayuntamiento de Peñaranda de Bracamonte / Entidades Locales / Ayuntamiento de Peñaranda de Bracamonte,SOCIA,ES,,0.00,0.00,0,3,P3,635
+0186_FRONTEIRA_HUELLA_ZERO_2030_3_E,calls_1_5,Ayuntamiento de Carbajosa de la Sagrada / Entidades Locales / Ayuntamiento de Carbajosa de la Sagrada,SOCIA,ES,,0.00,0.00,0,3,P3,636
+0189_VIVEMAIS_2_E,calls_1_5,COMUNIDADE INTERMUNICIPAL DO DOURO /  /,BENEFICIARIA,PT,,61361.74,81815.65,0.75,2,P1,637
+0189_VIVEMAIS_2_E,calls_1_5,ASOCIACIÓN ASPRODES / - / ASOCIACIÓN ASPRODES,BENEFICIARIA,ES,,90356.29,120475.05,0.75,2,P1,638
+0189_VIVEMAIS_2_E,calls_1_5,Gerencia de Servicios Sociales de Castilla y León / Consejería de Familia e Igualdad de Oportunidades / Junta de Castilla y León,BENEFICIARIA,ES,,156472.00,208629.33,0.75,2,P1,639
+0189_VIVEMAIS_2_E,calls_1_5,FUNGE / Fundación General de la Universidad de Valladolid / Fundación General de la Universidad de Valladolid,BENEFICIARIA,ES,,152776.24,203701.65,0.75,2,P1,640
+0189_VIVEMAIS_2_E,calls_1_5,UNIVERSIDADE DE TRÁS-OS-MONTES E ALTO DOURO (UTAD) /  /,BENEFICIARIA,PT,,50034.48,66712.64,0.75,2,P1,641
+0189_VIVEMAIS_2_E,calls_1_5,FUNDACION INTRAS /  /,BENEFICIARIA PRINCIPAL,ES,,174823.21,233097.61,0.75,2,P1,642
+0189_VIVEMAIS_2_E,calls_1_5,Instituto Politécnico de Bragança /  /,SOCIA,PT,,0.00,0.00,0,2,P1,643
+0189_VIVEMAIS_2_E,calls_1_5,FUNDACION SANTA MARIA LA REAL DEL PATRIMONIO HISTORICO /  /,SOCIA,ES,,0.00,0.00,0,2,P1,644
+0189_VIVEMAIS_2_E,calls_1_5,I MAS D Y EMPLEO SERVICONSULTING S.L. / - / -,SOCIA,ES,,0.00,0.00,0,2,P1,645
+0189_VIVEMAIS_2_E,calls_1_5,"Automatización del Internet de las Cosas, S.L. (AlfaIoT) /  /",SOCIA,ES,,0.00,0.00,0,2,P1,646
+0189_VIVEMAIS_2_E,calls_1_5,Teknomechanics engineering S.L. /  /,SOCIA,ES,,0.00,0.00,0,2,P1,647
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,Associação de Defesa do Património de Mértola (ADPM) / - / -,BENEFICIARIA,PT,,122535.38,163380.51,0.75,6,P4,648
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,CORSEVILLA SOCIEDAD COOPERATIVA ANDALUZA /  /,BENEFICIARIA,ES,,179615.29,239487.05,0.75,6,P4,649
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,"D. G. de Espacios Naturales Protegidos / Secretaría General de Sostenibilidad, Medio Ambiente y Economía Azul / Junta de Andalucía",BENEFICIARIA,ES,,149999.99,199999.99,0.75,6,P4,650
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,FUNDACIÓN COOPRADO /  /,BENEFICIARIA,ES,,113754.99,151673.32,0.75,6,P4,651
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,Universidad de Córdoba /  /,BENEFICIARIA,ES,,167450.47,223267.29,0.75,6,P4,652
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,"Dirección General de Política Forestal / Consejería de Agricultura, DEsarrollo Rural, Población y Territorio / Junta de Extremadura",BENEFICIARIA,ES,,117409.44,156545.92,0.75,6,P4,653
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,Associação de Agricultores do Sul - ACOS /  /,BENEFICIARIA,PT,,64127.25,85503.00,0.75,6,P4,654
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,95882.94,127843.92,0.75,6,P4,655
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,200547.09,267396.12,0.75,6,P4,656
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,"Centro de Investigaciones Científicas y Tecnológicas de Extremadura  (CICYTEX) / Secretaría General de Ciencia, Tecnología, Innovación y Universidad / Junta de Extremadura",BENEFICIARIA,ES,,169195.88,225594.51,0.75,6,P4,657
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,FUNDACION ANDANATURA PARA EL DESARROLLO SOCIOECONOMICO SOSTENIBLE /  /,BENEFICIARIA PRINCIPAL,ES,,163145.44,217527.25,0.75,6,P4,658
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,Câmara Municipal de Mértola / - / -,SOCIA,PT,,0.00,0.00,0,6,P4,659
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,Associação de Produtores do Mundo Rural da Região de Montemor-o-Novo (APORMOR) /  /,SOCIA,PT,,0.00,0.00,0,6,P4,660
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,Federación Española de la Dehesa /  /,SOCIA,ES,,0.00,0.00,0,6,P4,661
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,Associação Nacional dos Pequenos e Médios Agricultores /  / ANPEMA,SOCIA,PT,,0.00,0.00,0,6,P4,662
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,AJASUL - Associação de jovens agricultores do sul /  /,SOCIA,PT,,0.00,0.00,0,6,P4,663
+0190_CI_MONTADO_DEHESA_6_P,calls_1_5,"Cooperativa Agrícola do Guadiana, C.R.L. /  /",SOCIA,PT,,0.00,0.00,0,6,P4,664
+0192_CIBERIA_3_E,calls_1_5,Universidade da Beira Interior (UBI) / - /,BENEFICIARIA,PT,,48554.58,64739.44,0.75,3,P1,665
+0192_CIBERIA_3_E,calls_1_5,"Secure Networks, Consultadoria Informática Lda. /  /",BENEFICIARIA,PT,,52499.78,69999.71,0.75,3,P1,666
+0192_CIBERIA_3_E,calls_1_5,Fundación Instituto Internacional de Investigación en Inteligencia Artificial y Ciencias de la Computación (AIR INSTITUTE) /  /,BENEFICIARIA,ES,,160626.11,214168.14,0.75,3,P1,667
+0192_CIBERIA_3_E,calls_1_5,Centro de Supercomputación de Castilla y León (SCAYLE) / Dirección General de Telecomunicaciones y Administración Digital / Junta de Castilla y León,BENEFICIARIA,ES,,149064.75,198753.00,0.75,3,P1,668
+0192_CIBERIA_3_E,calls_1_5,Fundacion Parque Cientifico Universidad de Salamanca / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA,ES,,176320.82,235094.42,0.75,3,P1,669
+0192_CIBERIA_3_E,calls_1_5,Universidad de León / Universidades / Universidad de León,BENEFICIARIA,ES,,42289.58,56386.11,0.75,3,P1,670
+0192_CIBERIA_3_E,calls_1_5,Comunidade Intermunicipal das Beiras e Serra da Estrela (CIM-BSE) /  /,BENEFICIARIA,PT,,52018.23,69357.64,0.75,3,P1,671
+0192_CIBERIA_3_E,calls_1_5,FUNDACIÓN CIDAUT /  /,BENEFICIARIA,ES,,153624.55,204832.73,0.75,3,P1,672
+0192_CIBERIA_3_E,calls_1_5,Instituto Politécnico da Guarda /  /,BENEFICIARIA,PT,,41412.57,55216.76,0.75,3,P1,673
+0192_CIBERIA_3_E,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA PRINCIPAL,ES,,160566.41,214088.55,0.75,3,P1,674
+0192_CIBERIA_3_E,calls_1_5,"Instituto Nacional de Ciberseguridad de España, S.A. (INCIBE) / - / -",SOCIA,ES,,0.00,0.00,0,3,P1,675
+0195_HIBA_MAS_6_E,calls_1_5,"Fundacion Fundecyt - Parque Científico y Tecnológico de Extremadura / Consejería de Economía, Ciencia y Agenda Digital / Junta de Extremadura",BENEFICIARIA,ES,,153567.36,204756.48,0.75,6,P1,676
+0195_HIBA_MAS_6_E,calls_1_5,Cooperativas Agroalimentarias de Andalucía /  /,BENEFICIARIA,ES,,155356.27,207141.69,0.75,6,P1,677
+0195_HIBA_MAS_6_E,calls_1_5,Instituto Politécnico de Beja /  /,BENEFICIARIA,PT,,60000.00,80000.00,0.75,6,P1,678
+0195_HIBA_MAS_6_E,calls_1_5,FUNDACIÓN EUROPEA PARA LA INNOVACIÓN Y DESARROLLO DE LA TECNOLOGÍA (INTEC)  /  /,BENEFICIARIA,ES,,156031.72,208042.30,0.75,6,P1,679
+0195_HIBA_MAS_6_E,calls_1_5,Asociación DIH DATALIFE - HUB DE INNOVACIÓN DIXITAL DATALIFE /  /,BENEFICIARIA,ES,,211366.61,281822.15,0.75,6,P1,680
+0195_HIBA_MAS_6_E,calls_1_5,FUNDACIÓN DELEGACIÓN FUNDACIÓN FINNOVA /  /,BENEFICIARIA,ES,,112506.75,150009.00,0.75,6,P1,681
+0195_HIBA_MAS_6_E,calls_1_5,Universidad de Córdoba /  /,BENEFICIARIA,ES,,580165.18,773553.57,0.75,6,P1,682
+0195_HIBA_MAS_6_E,calls_1_5,FUNDACION ANDALUZA PARA EL DESARROLLO AEROESPACIAL /  /,BENEFICIARIA,ES,,80209.00,106945.33,0.75,6,P1,683
+0195_HIBA_MAS_6_E,calls_1_5,Associação SFCOLAB - Laboratório Colaborativo para a Inovação Digital na Agricultura /  /,BENEFICIARIA,PT,,32339.75,43119.67,0.75,6,P1,684
+0195_HIBA_MAS_6_E,calls_1_5,Universidade do Algarve /  /,BENEFICIARIA,PT,,106948.00,142597.34,0.75,6,P1,685
+0195_HIBA_MAS_6_E,calls_1_5,"INSTITUTO NACIONAL DE INVESTIGAÇÃO AGRÁRIA E VETERINÁRIA, I.P. (INIAV) /  /",BENEFICIARIA,PT,,80000.00,106666.67,0.75,6,P1,686
+0195_HIBA_MAS_6_E,calls_1_5,"D. G. de Industrias, Innovación y Cadena Agroalimentaria / Secretaría General de Agricultura, Ganadería y Alimentación / Junta de Andalucía",BENEFICIARIA PRINCIPAL,ES,,405426.44,540568.59,0.75,6,P1,687
+0195_HIBA_MAS_6_E,calls_1_5,"Agencia Gallega de Innovación (GAIN) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",SOCIA,ES,,0.00,0.00,0,6,P1,688
+0195_HIBA_MAS_6_E,calls_1_5,"INESC TEC - Instituto de Engenharia de Sistemas e Computadores, Tecnologia e Ciência /  /",SOCIA,PT,,0.00,0.00,0,6,P1,689
+0195_HIBA_MAS_6_E,calls_1_5,"Delegación Territorial de Desarrollo Educativo y Formación Profesional y de Universidad, Investigación e Innovación en Córdoba / Consejería de Desarrollo Educativo y Formación Profesional / Junta de Andalucía",SOCIA,ES,,0.00,0.00,0,6,P1,690
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Comunidade Intermunicipal do Baixo Alentejo (CIMBAL) /  /,BENEFICIARIA,PT,,60183.07,80244.09,0.75,4,P3,691
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Dirección General de Desarrollo Rural. Junta de Extremadura /  /,BENEFICIARIA,ES,,167903.75,223871.67,0.75,4,P3,692
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Servicio de  Cooperativas y Sociedades Laborales / Dirección General de Cooperativas y Economía Social / Junta de Extremadura,BENEFICIARIA,ES,,134071.74,178762.32,0.75,4,P3,693
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Comunidade Intermunicipal do Alto Alentejo (CIMAA) /  /,BENEFICIARIA,PT,,59768.24,79690.99,0.75,4,P3,694
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,FEMPEX /  / FEDERACIÓN DE MUNICIPIOS Y PROVINCIAS DE EXTREMADURA,BENEFICIARIA,ES,,98307.38,131076.51,0.75,4,P3,695
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Comunidade Intermunicipal do Alentejo Central (CIMAC) / - / -,BENEFICIARIA,PT,,44846.45,59795.27,0.75,4,P3,696
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Dip. Badajoz - Área de Desarrollo Rural y Sostenibilidad / Diputación Provincial de Badajoz / Diputación Provincial de Badajoz,BENEFICIARIA,ES,,311290.41,415053.88,0.75,4,P3,697
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Agência Regional de Energia e Ambiente do Norte Alentejano e Tejo (AREANATejo) /  /,BENEFICIARIA,PT,,76665.74,102220.98,0.75,4,P3,698
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,69356.36,92475.15,0.75,4,P3,699
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Comunidade Intermunicipal da Beira Baixa (CIMBB) /  /,BENEFICIARIA,PT,,89399.55,119199.40,0.75,4,P3,700
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Diputación Provincial de Cáceres / Entidades Locales / Diputación Provincial de Cáceres,BENEFICIARIA,ES,,262836.30,350448.40,0.75,4,P3,701
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,139880.06,186506.75,0.75,4,P3,702
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,Agencia Extremeña de la Energía (AGENEX) / Consejería para la Transición Ecológica y Sostenibilidad / Junta de Extremadura,BENEFICIARIA PRINCIPAL,ES,,228877.92,305170.56,0.75,4,P3,703
+0198_TRANSCOM_EUROACE_4_E,calls_1_5,"Dirección General de Industria, Energía y Minas / Consejería para la Transición Ecológica y Sostenibilidad / Junta de Extremadura",SOCIA,ES,,0.00,0.00,0,4,P3,704
+0206_RAT_EOS_PC_6_E,calls_1_5,CRUZ ROJA ESPAÑOLA / - / -,BENEFICIARIA,ES,,299956.84,399942.45,0.75,6,P3,705
+0206_RAT_EOS_PC_6_E,calls_1_5,"Viceconsejería (Presidencia, Interior, Diálogo Social y Simplificación Administrativa) / Consejería de la Presidencia, Interior, Diálogo Social y Simplificación Administrativa / Junta de Andalucía",BENEFICIARIA,ES,,186022.73,248030.31,0.75,6,P3,706
+0206_RAT_EOS_PC_6_E,calls_1_5,Universidade de Aveiro / - / -,BENEFICIARIA,PT,,100958.90,134611.87,0.75,6,P3,707
+0206_RAT_EOS_PC_6_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,548502.53,731336.71,0.75,6,P3,708
+0206_RAT_EOS_PC_6_E,calls_1_5,Dirección Xeral de Defensa do Monte / Consellería de Medio Rural / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,150000.00,200000.00,0.75,6,P3,709
+0206_RAT_EOS_PC_6_E,calls_1_5,"Agência Portuguesa do Ambiente, I.P. (APA I.P.) /  /",BENEFICIARIA,PT,,119380.20,159173.60,0.75,6,P3,710
+0206_RAT_EOS_PC_6_E,calls_1_5,"Centro de Investigaciones Científicas y Tecnológicas de Extremadura  (CICYTEX) / Secretaría General de Ciencia, Tecnología, Innovación y Universidad / Junta de Extremadura",BENEFICIARIA,ES,,460446.00,613928.00,0.75,6,P3,711
+0206_RAT_EOS_PC_6_E,calls_1_5,"Dirección General de Emergencias, Protección Civil e Interior / Consejería de Agricultura, Desarrollo Rural, Población y Territorio / Junta de Extremadura",BENEFICIARIA PRINCIPAL,ES,,1923700.15,2564933.53,0.75,6,P3,712
+0206_RAT_EOS_PC_6_E,calls_1_5,FEMPEX /  / FEDERACIÓN DE MUNICIPIOS Y PROVINCIAS DE EXTREMADURA,SOCIA,ES,,0.00,0.00,0,6,P3,713
+0206_RAT_EOS_PC_6_E,calls_1_5,"Agencia de Protección Civil y Emergencias / Consejería de Medio Ambiente, Vivienda y Ordenación del Territorio / Junta de Castilla y León",SOCIA,ES,,0.00,0.00,0,6,P3,714
+0207_BID4TENDERS_1_P,calls_1_5,CONFEDERACIÓN DE EMPRESARIOS DE GALICIA /  /,BENEFICIARIA,ES,,229402.37,305869.83,0.75,1,P1,715
+0207_BID4TENDERS_1_P,calls_1_5,CEVAL - CONFEDERAÇÃO EMPRESARIAL DO ALTO MINHO /  /,BENEFICIARIA,PT,,23978.17,31970.89,0.75,1,P1,716
+0207_BID4TENDERS_1_P,calls_1_5,AEP - Associação Empresarial de Portugal /  /,BENEFICIARIA PRINCIPAL,PT,,185689.35,247585.80,0.75,1,P1,717
+0207_BID4TENDERS_1_P,calls_1_5,"Instituto Gallego de Promoción Económica (IGAPE) / Vicepresidencia Primera y Consellería de Economía, Industria e Innovación / Comunidad Autónoma de Galicia",SOCIA,ES,,0.00,0.00,0,1,P1,718
+0207_BID4TENDERS_1_P,calls_1_5,"IAPMEI, I.P. - Agência para a Competitividade e Inovação /  /",SOCIA,PT,,0.00,0.00,0,1,P1,719
+0220_BIN_SAL_TERRITORIO_COM_FUTURO_3_P,calls_1_5,Diputación de Salamanca / Diputación Provincial de Salamanca / Diputación Provincial de Salamanca,BENEFICIARIA,ES,,197561.25,263415.00,0.75,3,P5,720
+0220_BIN_SAL_TERRITORIO_COM_FUTURO_3_P,calls_1_5,Associação de Municípios da Cova da Beira /  /,BENEFICIARIA PRINCIPAL,PT,,152121.20,202828.27,0.75,3,P5,721
+0222_TSI_1_P,calls_1_5,Asociación Eixo Atlántico Do Noroeste Peninsular / Institucionales / Asociación Eixo Atlántico Do Noroeste Peninsular,BENEFICIARIA,ES,,386441.25,515255.00,0.75,1,P5,722
+0222_TSI_1_P,calls_1_5,Eixo Atlântico do Noroeste Peninsular /  /,BENEFICIARIA,PT,,250000.00,333333.33,0.75,1,P5,723
+0222_TSI_1_P,calls_1_5,"TPNP, E.R. / TPNP, E.R. / Turismo do Porto e Norte de Portugal, E.R.",BENEFICIARIA PRINCIPAL,PT,,300000.00,400000.00,0.75,1,P5,724
+0223_SILVER_JOBS_2_E,calls_1_5,Instituto Politécnico de Bragança /  /,BENEFICIARIA,PT,,65332.41,87109.88,0.75,2,P5,725
+0223_SILVER_JOBS_2_E,calls_1_5,Consorcio Universitario del Centro Asociado a la UNED en Zamora / Universidad Nacional de Educación a Distancia / Universidad Nacional de Educación a Distancia,BENEFICIARIA,ES,,119034.21,158712.28,0.75,2,P5,726
+0223_SILVER_JOBS_2_E,calls_1_5,"Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora",BENEFICIARIA,ES,,98321.40,131095.20,0.75,2,P5,727
+0223_SILVER_JOBS_2_E,calls_1_5,ICSCYL / Fundación ICSCYL / Fundación Instituto de Ciencias de la Salud de Castilla y León,BENEFICIARIA,ES,,93406.07,124541.42,0.75,2,P5,728
+0223_SILVER_JOBS_2_E,calls_1_5,Município de Bragança /  /,BENEFICIARIA,PT,,160829.15,214438.87,0.75,2,P5,729
+0223_SILVER_JOBS_2_E,calls_1_5,Diputación Provincial de Zamora / - / -,BENEFICIARIA PRINCIPAL,ES,,260768.19,347690.92,0.75,2,P5,730
+0224_NORTEAR_GNP_1_E,calls_1_5,"Dirección General de Cultura / Consellería de Cultura, Educación, Formación Profesional y Universidades / Comunidad Autónoma de Galicia",BENEFICIARIA,ES,,183150.00,244200.00,0.75,1,P5,731
+0224_NORTEAR_GNP_1_E,calls_1_5,Comissão Coordenação Desenvolvimento Regional Norte (CCDR Norte) /  /,BENEFICIARIA,PT,,52190.33,69587.11,0.75,1,P5,732
+0224_NORTEAR_GNP_1_E,calls_1_5,Agrupación Europea de Cooperación Territorial Galicia-Norte de Portugal (GNP-AECT) /  /,BENEFICIARIA PRINCIPAL,ES,,109836.43,146448.57,0.75,1,P5,733
+0225_FORTOURS_III_5_E,calls_1_5,Ayuntamiento de Moguer / Entidades Locales / Ayuntamiento de Moguer,BENEFICIARIA,ES,,128346.75,171129.00,0.75,5,P5,734
+0225_FORTOURS_III_5_E,calls_1_5,Alcance – Associação para o Desenvolvimento do Nordeste Algarvio / Asociación sin ánimo de lucro / Alcance – Associação para o Desenvolvimento do Nordeste Algarvio,BENEFICIARIA,PT,,62318.36,83091.15,0.75,5,P5,735
+0225_FORTOURS_III_5_E,calls_1_5,"Secretaría General para la Cultura / Viceconsejería (Turismo, Cultura y Deporte) / Junta de Andalucía",BENEFICIARIA,ES,,749345.86,999127.81,0.75,5,P5,736
+0225_FORTOURS_III_5_E,calls_1_5,CÁMARA MUNICIPAL DE ALCOUTIM /  / CÁMARA MUNICIPLA DE ALCOUTIM,BENEFICIARIA,PT,,112500.00,150000.00,0.75,5,P5,737
+0225_FORTOURS_III_5_E,calls_1_5,Cámara Municipal de Castro Marín / Autarquia Local – Entidade Pública / Cámara Municipal de Castro Marín,BENEFICIARIA,PT,,228750.00,305000.00,0.75,5,P5,738
+0225_FORTOURS_III_5_E,calls_1_5,Cámara Municipal de Serpa / Entidad local / Cámara Municipal de Serpa,BENEFICIARIA,PT,,112500.00,150000.00,0.75,5,P5,739
+0225_FORTOURS_III_5_E,calls_1_5,Ayuntamiento de Aracena / Entidades Locales / Ayuntamiento de Aracena,BENEFICIARIA PRINCIPAL,ES,,287348.93,383131.90,0.75,5,P5,740
+0227_TERPAT_PLUS_2_E,calls_1_5,INSTITUTO DE LA CONSTRUCCION DE CASTILLA Y LEON (ICCL) /  /,BENEFICIARIA,ES,,149031.97,198709.29,0.75,2,P5,741
+0227_TERPAT_PLUS_2_E,calls_1_5,"Património Cultural, IP /  /",BENEFICIARIA,PT,,151458.26,201944.35,0.75,2,P5,742
+0227_TERPAT_PLUS_2_E,calls_1_5,Dirección General de Patrimonio Cultural / Viceconsejería de Acción Cultural / Junta de Castilla y León,BENEFICIARIA PRINCIPAL,ES,,618699.52,824932.70,0.75,2,P5,743
+0227_TERPAT_PLUS_2_E,calls_1_5,Asociación Ibérica de Municipios Ribereños del Duero (AIMRD) / Institucionales / Asociación Ibérica de Municipios Ribereños del Duero (AIMRD),SOCIA,ES,,0.00,0.00,0,2,P5,744
+0227_TERPAT_PLUS_2_E,calls_1_5,"TPNP, E.R. / TPNP, E.R. / Turismo do Porto e Norte de Portugal, E.R.",SOCIA,PT,,0.00,0.00,0,2,P5,745
+0227_TERPAT_PLUS_2_E,calls_1_5,Associação de Municípios do Baixo Sabor /  /,SOCIA,PT,,0.00,0.00,0,2,P5,746
+0229_DESAFIOS_JOVENS_GNP_1_E,calls_1_5,"Cámara Oficial de Comercio, Industria, Servicios y Navegación de Santiago de Compostela /  /",BENEFICIARIA,ES,,148918.80,198558.40,0.75,1,P5,747
+0229_DESAFIOS_JOVENS_GNP_1_E,calls_1_5,Direção Regional do Norte do IPDJ / Instituto Português do Desporto e Juventude (IPDJ) / -,BENEFICIARIA,PT,,80688.46,107584.61,0.75,1,P5,748
+0229_DESAFIOS_JOVENS_GNP_1_E,calls_1_5,Federação Nacional de Associações Juvenis (FNAJ) /  /,BENEFICIARIA,PT,,73331.92,97775.89,0.75,1,P5,749
+0229_DESAFIOS_JOVENS_GNP_1_E,calls_1_5,Fundación Galicia Europa / Dirección General de Relaciones Exteriores y con la Unión Europea / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,114755.78,153007.71,0.75,1,P5,750
+0229_DESAFIOS_JOVENS_GNP_1_E,calls_1_5,"Dirección General de Juventud, Participación y Voluntariado / Consellería de Política Social y Juventud / Comunidad Autónoma de Galicia",BENEFICIARIA PRINCIPAL,ES,,563573.18,751430.91,0.75,1,P5,751
+0229_DESAFIOS_JOVENS_GNP_1_E,calls_1_5,"Delegação Regional do Norte / Instituto do Emprego e Formação Profissional, I.P. / Ministério do Trabalho, Solidariedade e Segurança Social",SOCIA,PT,,0.00,0.00,0,1,P5,752
+0231_TEUNESCO_4_E,calls_1_5,"Dirección General de Jóvenes y Deportes / Consejería de Cultura, Turismo, Jóvenes y Deportes / Junta de Extremadura",BENEFICIARIA,ES,,150000.00,200000.00,0.75,4,P5,753
+0231_TEUNESCO_4_E,calls_1_5,Câmara Municipal de Marvão /  /,BENEFICIARIA,PT,,75000.00,100000.00,0.75,4,P5,754
+0231_TEUNESCO_4_E,calls_1_5,Município de Portalegre / - /,BENEFICIARIA,PT,,71625.00,95500.00,0.75,4,P5,755
+0231_TEUNESCO_4_E,calls_1_5,Dirección General de Desarrollo Rural. Junta de Extremadura /  /,BENEFICIARIA,ES,,112500.00,150000.00,0.75,4,P5,756
+0231_TEUNESCO_4_E,calls_1_5,"Servicio Extremeño Público de Empleo (SEXPE) / Consejería de Economía, Empleo y Transformación Digital / Junta de Extremadura",BENEFICIARIA,ES,,150000.00,200000.00,0.75,4,P5,757
+0231_TEUNESCO_4_E,calls_1_5,Município de Idanha-a-Nova / Câmara Municipal /,BENEFICIARIA,PT,,82500.00,110000.00,0.75,4,P5,758
+0231_TEUNESCO_4_E,calls_1_5,Cámara Municipal de Penamacor /  /,BENEFICIARIA,PT,,56250.00,75000.00,0.75,4,P5,759
+0231_TEUNESCO_4_E,calls_1_5,"DIRECCIÓN GENERAL DE URBANISMO Y ORDENACIÓN DEL TERRITORIO / CONSEJERIA DE AGRICULTURA, DESARROLLO RURAL, POBLACIÓN Y TERRITORIO / JUNTA DE EXTREMADURA",BENEFICIARIA,ES,,150000.00,200000.00,0.75,4,P5,760
+0231_TEUNESCO_4_E,calls_1_5,Câmara Municipal de Vila Velha de Ródão /  /,BENEFICIARIA,PT,,112500.00,150000.00,0.75,4,P5,761
+0231_TEUNESCO_4_E,calls_1_5,Municipio de Castelo Branco / - / -,BENEFICIARIA,PT,,75000.00,100000.00,0.75,4,P5,762
+0231_TEUNESCO_4_E,calls_1_5,Município de Nisa /  /,BENEFICIARIA,PT,,75000.00,100000.00,0.75,4,P5,763
+0231_TEUNESCO_4_E,calls_1_5,"Dirección General de Bibliotecas, Archivos y Patrimonio Cultural / Consejería de Cultura, Turismo y Deportes / Junta de Extremadura",BENEFICIARIA,ES,,117900.00,157200.00,0.75,4,P5,764
+0231_TEUNESCO_4_E,calls_1_5,Município de Castelo de Vide /  /,BENEFICIARIA,PT,,59992.16,79989.55,0.75,4,P5,765
+0231_TEUNESCO_4_E,calls_1_5,"Dirección General de Sostenibilidad / Consejería de Agricultura, Ganadería y Desarrollo Sostenible / Junta de Extremadura",BENEFICIARIA,ES,,150000.00,200000.00,0.75,4,P5,766
+0231_TEUNESCO_4_E,calls_1_5,"Naturtejo - Empresa de Turismo, EIM / - /",BENEFICIARIA,PT,,30000.00,40000.00,0.75,4,P5,767
+0231_TEUNESCO_4_E,calls_1_5,Diputación Provincial de Cáceres / Entidades Locales / Diputación Provincial de Cáceres,BENEFICIARIA PRINCIPAL,ES,,312037.50,416050.00,0.75,4,P5,768
+0233_IBERLOBO_ON_BIKE_2_P,calls_1_5,"Fundación Patrimonio Natural de Castilla y León / Consejería de Medio Ambiente, Vivienda y Ordenación del Territorio / Junta de Castilla y León",BENEFICIARIA,ES,,172931.25,230575.00,0.75,2,P5,769
+0233_IBERLOBO_ON_BIKE_2_P,calls_1_5,Município de Miranda do Douro /  /,BENEFICIARIA,PT,,43813.48,58417.97,0.75,2,P5,770
+0233_IBERLOBO_ON_BIKE_2_P,calls_1_5,Município de Vimioso /  /,BENEFICIARIA,PT,,44042.71,58723.61,0.75,2,P5,771
+0233_IBERLOBO_ON_BIKE_2_P,calls_1_5,"Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora / Cámara Oficial de Comercio, Industria y Servicios de Zamora",BENEFICIARIA,ES,,95850.15,127800.20,0.75,2,P5,772
+0233_IBERLOBO_ON_BIKE_2_P,calls_1_5,Diputación Provincial de Zamora / - / -,BENEFICIARIA,ES,,235278.32,313704.42,0.75,2,P5,773
+0233_IBERLOBO_ON_BIKE_2_P,calls_1_5,Município de Bragança /  /,BENEFICIARIA PRINCIPAL,PT,,98828.76,131771.68,0.75,2,P5,774
+0234_FORMACION_DE_PROXIMIDAD_3_E,calls_1_5,MUNICIPIO DE GUARDA /  /,BENEFICIARIA,PT,,59680.38,79573.84,0.75,3,P5,775
+0234_FORMACION_DE_PROXIMIDAD_3_E,calls_1_5,ADM Estrela - Associação Social e Desenvolvimento / - /,BENEFICIARIA,PT,,69954.72,93272.96,0.75,3,P5,776
+0234_FORMACION_DE_PROXIMIDAD_3_E,calls_1_5,Instituto Politécnico da Guarda /  /,BENEFICIARIA,PT,,86083.82,114778.42,0.75,3,P5,777
+0234_FORMACION_DE_PROXIMIDAD_3_E,calls_1_5,FUNDACION INTRAS /  /,BENEFICIARIA,ES,,106447.50,141930.00,0.75,3,P5,778
+0234_FORMACION_DE_PROXIMIDAD_3_E,calls_1_5,Gerencia de Servicios Sociales de Castilla y León / Consejería de Familia e Igualdad de Oportunidades / Junta de Castilla y León,BENEFICIARIA,ES,,120092.48,160123.31,0.75,3,P5,779
+0234_FORMACION_DE_PROXIMIDAD_3_E,calls_1_5,ASOCIACIÓN ASPRODES / - / ASOCIACIÓN ASPRODES,BENEFICIARIA,ES,,104905.32,139873.76,0.75,3,P5,780
+0234_FORMACION_DE_PROXIMIDAD_3_E,calls_1_5,PLENA INCLUSION CASTILLA Y LEON / - / -,BENEFICIARIA PRINCIPAL,ES,,113574.29,151432.39,0.75,3,P5,781
+0236_IQUAL_CAMPUS_1_E,calls_1_5,Universidad de Santiago de Compostela / Universidades / Universidad de Santiago de Compostela,BENEFICIARIA,ES,,166964.13,222618.84,0.75,1,P5,782
+0236_IQUAL_CAMPUS_1_E,calls_1_5,Universidade do Porto /  /,BENEFICIARIA,PT,,107258.94,143011.92,0.75,1,P5,783
+0236_IQUAL_CAMPUS_1_E,calls_1_5,Comunidade Intermunicipal do Cávado (CIM CÁVADO) /  /,BENEFICIARIA,PT,,77498.85,103331.80,0.75,1,P5,784
+0236_IQUAL_CAMPUS_1_E,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA,PT,,72298.69,96398.25,0.75,1,P5,785
+0236_IQUAL_CAMPUS_1_E,calls_1_5,Dirección General de Relaciones Laborales / Consellería de Promoción del Empleo e Igualdad / Comunidad Autónoma de Galicia,BENEFICIARIA PRINCIPAL,ES,,278462.25,371283.00,0.75,1,P5,786
+0237_NUMAPLUS_5_E,calls_1_5,Universidad de Sevilla / Universidades / Universidad de Sevilla,BENEFICIARIA,ES,,178413.17,237884.22,0.75,5,P5,787
+0237_NUMAPLUS_5_E,calls_1_5,"Administração Regional de Saúde do Algarve, IP /  /",BENEFICIARIA,PT,,320335.40,427113.87,0.75,5,P5,788
+0237_NUMAPLUS_5_E,calls_1_5,Associação para o Desenvolvimento do Centro Académico da Investigação e Formação Biomédica do Algarve /  /,BENEFICIARIA,PT,,232691.16,310254.88,0.75,5,P5,789
+0237_NUMAPLUS_5_E,calls_1_5,CENTRO DE EMERGENCIAS SANITARIAS 061 / SERVICIO ANDALUZ DE SALUD  / CONSEJERIA DE SALUD Y CONSUMO,BENEFICIARIA,ES,,266748.35,355664.47,0.75,5,P5,790
+0237_NUMAPLUS_5_E,calls_1_5,Real e Ilustre Colegio Oficial de Farmacéuticos de Sevilla /  /,BENEFICIARIA,ES,,276881.85,369175.80,0.75,5,P5,791
+0237_NUMAPLUS_5_E,calls_1_5,Hospital Universitario Virgen del Rocío / Dirección Gerencia del Servicio Andaluz de Salud / Junta de Andalucía,BENEFICIARIA,ES,,548046.22,730728.29,0.75,5,P5,792
+0237_NUMAPLUS_5_E,calls_1_5,Universidade do Algarve /  /,BENEFICIARIA,PT,,211315.03,281753.37,0.75,5,P5,793
+0237_NUMAPLUS_5_E,calls_1_5,"INSTITUTO NACIONAL DE EMÊRGENCIA MEDICA, IP (INEM) /  /",BENEFICIARIA,PT,,202513.52,270018.02,0.75,5,P5,794
+0237_NUMAPLUS_5_E,calls_1_5,Secretaría General de Salud Pública e I+d+i en Salud / Viceconsejería (Salud y Consumo) / Junta de Andalucía,BENEFICIARIA PRINCIPAL,ES,,739743.35,986324.47,0.75,5,P5,795
+0239_RE_CORDARE_3_E,calls_1_5,Município do Fundão /  /,BENEFICIARIA,PT,,161149.12,214865.50,0.75,3,P5,796
+0239_RE_CORDARE_3_E,calls_1_5,Ayuntamiento de Juzbado / Entidades Locales / Ayuntamiento de Juzbado,BENEFICIARIA,ES,,309163.22,412217.63,0.75,3,P5,797
+0239_RE_CORDARE_3_E,calls_1_5,Ayuntamiento de Villaseco de los Gamitos / Entidades Locales / Ayuntamiento de Villaseco de los Gamitos,BENEFICIARIA,ES,,221542.93,295390.57,0.75,3,P5,798
+0239_RE_CORDARE_3_E,calls_1_5,Ayuntamiento de Monleras / Entidades Locales / Ayuntamiento de Monleras,BENEFICIARIA,ES,,115116.87,153489.16,0.75,3,P5,799
+0239_RE_CORDARE_3_E,calls_1_5,Ayuntamiento de Mogarraz / Entidades Locales / Ayuntamiento de Mogarraz,BENEFICIARIA,ES,,63602.51,84803.35,0.75,3,P5,800
+0239_RE_CORDARE_3_E,calls_1_5,Ayuntamiento de Morille / Entidades Locales / Ayuntamiento de Morille,BENEFICIARIA,ES,,73050.00,97400.00,0.75,3,P5,801
+0239_RE_CORDARE_3_E,calls_1_5,"Almaterra, Asociación de Municipios Ibéricos por la Defensa del Patrimonio / - / -",BENEFICIARIA PRINCIPAL,ES,,101734.66,135646.21,0.75,3,P5,802
+0240_TUTOR_3_E,calls_1_5,Universidade da Beira Interior (UBI) / - /,BENEFICIARIA,PT,,74155.88,98874.51,0.75,3,P5,803
+0240_TUTOR_3_E,calls_1_5,Confederación de Organizaciones de Empresarios Salmantinos - CEOE CEPYME Salamanca /  /,BENEFICIARIA,ES,,158825.87,211767.83,0.75,3,P5,804
+0240_TUTOR_3_E,calls_1_5,Município do Fundão /  /,BENEFICIARIA,PT,,65768.65,87691.54,0.75,3,P5,805
+0240_TUTOR_3_E,calls_1_5,Fundacion Parque Cientifico Universidad de Salamanca / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA PRINCIPAL,ES,,166850.60,222467.47,0.75,3,P5,806
+0240_TUTOR_3_E,calls_1_5,Diputación de Salamanca / Diputación Provincial de Salamanca / Diputación Provincial de Salamanca,SOCIA,ES,,0.00,0.00,0,3,P5,807
+0240_TUTOR_3_E,calls_1_5,Asociación de Empresarias de Salamanca (AESAL) /  /,SOCIA,ES,,0.00,0.00,0,3,P5,808
+0240_TUTOR_3_E,calls_1_5,CONETIC /  /,SOCIA,ES,,0.00,0.00,0,3,P5,809
+0240_TUTOR_3_E,calls_1_5,Adezos - Asociacionpara el Desarrollo de la Zona Oeste de Salamanca / Grupos de Acción Local /,SOCIA,ES,,0.00,0.00,0,3,P5,810
+0240_TUTOR_3_E,calls_1_5,Asociación para el Desarrollo Rural Integral de las Sierras de Salamanca (ADRISS) /  /,SOCIA,ES,,0.00,0.00,0,3,P5,811
+0240_TUTOR_3_E,calls_1_5,Adecocir - Asociacion para el Desarrollo de la Comarca de Ciudad Rodrigo / Grupos de Acción Local /,SOCIA,ES,,0.00,0.00,0,3,P5,812
+0240_TUTOR_3_E,calls_1_5,AGR.EMP.IN.CIBERSEGURIDAD Y TECN.AVANZ. /  /,SOCIA,ES,,0.00,0.00,0,3,P5,813
+0240_TUTOR_3_E,calls_1_5,Adrecag - Asociacion para el Desarrollo Rural y Economico de las Comarcas de Campo Charro - Alba de Tormes y Guijuelo / Grupos de Acción Local /,SOCIA,ES,,0.00,0.00,0,3,P5,814
+0245_GEOTRANS_5_E,calls_1_5,Câmara Municipal de Barrancos / - / -,BENEFICIARIA,PT,,57703.42,76937.89,0.75,5,P5,815
+0245_GEOTRANS_5_E,calls_1_5,Câmara Municipal de Moura /  /,BENEFICIARIA,PT,,56250.00,75000.00,0.75,5,P5,816
+0245_GEOTRANS_5_E,calls_1_5,Cámara Municipal de Serpa / Entidad local / Cámara Municipal de Serpa,BENEFICIARIA,PT,,56550.00,75400.00,0.75,5,P5,817
+0245_GEOTRANS_5_E,calls_1_5,Câmara Municipal de Mértola / - / -,BENEFICIARIA,PT,,56250.00,75000.00,0.75,5,P5,818
+0245_GEOTRANS_5_E,calls_1_5,Diputación Provincial de Huelva / Entidades Locales / Diputación Provincial de Huelva,BENEFICIARIA PRINCIPAL,ES,,227250.00,303000.00,0.75,5,P5,819
+0246_CLUSTERTUR_GNP_1_E,calls_1_5,Agencia Turismo de Galicia / Presidencia de la Xunta de Galicia / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,214473.90,285965.20,0.75,1,P5,820
+0246_CLUSTERTUR_GNP_1_E,calls_1_5,Associação de Turismo do Porto /  /,BENEFICIARIA,PT,,40703.58,54271.44,0.75,1,P5,821
+0246_CLUSTERTUR_GNP_1_E,calls_1_5,"TPNP, E.R. / TPNP, E.R. / Turismo do Porto e Norte de Portugal, E.R.",BENEFICIARIA,PT,,47500.78,63334.37,0.75,1,P5,822
+0246_CLUSTERTUR_GNP_1_E,calls_1_5,Agrupación Europea de Cooperación Territorial Galicia-Norte de Portugal (GNP-AECT) /  /,BENEFICIARIA PRINCIPAL,ES,,215500.16,287333.55,0.75,1,P5,823
+0247_IN_GENIOS_DUERO_DOURO_2_E,calls_1_5,Dirección General de Patrimonio Cultural / Viceconsejería de Acción Cultural / Junta de Castilla y León,BENEFICIARIA,ES,,157981.28,210641.70,0.75,2,P5,824
+0247_IN_GENIOS_DUERO_DOURO_2_E,calls_1_5,"TPNP, E.R. / TPNP, E.R. / Turismo do Porto e Norte de Portugal, E.R.",BENEFICIARIA,PT,,45186.51,60248.68,0.75,2,P5,825
+0247_IN_GENIOS_DUERO_DOURO_2_E,calls_1_5,Clúster de Hábitat Eficiente (AEICE) /  /,BENEFICIARIA,ES,,132192.44,176256.59,0.75,2,P5,826
+0247_IN_GENIOS_DUERO_DOURO_2_E,calls_1_5,Instituto Politécnico de Bragança /  /,BENEFICIARIA,PT,,36555.50,48740.66,0.75,2,P5,827
+0247_IN_GENIOS_DUERO_DOURO_2_E,calls_1_5,Asociación Ibérica de Municipios Ribereños del Duero (AIMRD) / Institucionales / Asociación Ibérica de Municipios Ribereños del Duero (AIMRD),BENEFICIARIA,ES,,120900.00,161200.00,0.75,2,P5,828
+0247_IN_GENIOS_DUERO_DOURO_2_E,calls_1_5,Comunidade Intermunicipal das Terras de Trás-os-Montes (CIM-TTM) /  /,BENEFICIARIA,PT,,92907.48,123876.64,0.75,2,P5,829
+0247_IN_GENIOS_DUERO_DOURO_2_E,calls_1_5,AYUNTAMIENTO DE ZAMORA / AYUNTAMIENTO DE ZAMORA / AYUNTAMIENTO DE ZAMORA,BENEFICIARIA,ES,,181110.00,241480.00,0.75,2,P5,830
+0247_IN_GENIOS_DUERO_DOURO_2_E,calls_1_5,FUNDACION SANTA MARIA LA REAL DEL PATRIMONIO HISTORICO /  /,BENEFICIARIA PRINCIPAL,ES,,101711.68,135615.57,0.75,2,P5,831
+0247_IN_GENIOS_DUERO_DOURO_2_E,calls_1_5,"Património Cultural, IP /  /",SOCIA,PT,,0.00,0.00,0,2,P5,832
+0248_IBERLONGEVA_6_E,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA,ES,,434040.03,578720.04,0.75,6,P5,833
+0248_IBERLONGEVA_6_E,calls_1_5,Instituto Politécnico de Bragança /  /,BENEFICIARIA,PT,,350000.00,466666.67,0.75,6,P5,834
+0248_IBERLONGEVA_6_E,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA PRINCIPAL,ES,,950719.49,1267625.99,0.75,6,P5,835
+0249_VISIT_RIO_MINHO_PLUS_1_P,calls_1_5,Ayuntamiento de Salvaterra de Miño / Entidades Locales / Ayuntamiento de Salvaterra de Miño,BENEFICIARIA,ES,,107700.00,143600.00,0.75,1,P5,836
+0249_VISIT_RIO_MINHO_PLUS_1_P,calls_1_5,Agencia Gallega de la Calidad Alimentaria (AGACAL) / Consellería del Medio Rural / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,129551.43,172735.24,0.75,1,P5,837
+0249_VISIT_RIO_MINHO_PLUS_1_P,calls_1_5,Universidad de Vigo / Universidades / Universidad de Vigo,BENEFICIARIA,ES,,56250.00,75000.00,0.75,1,P5,838
+0249_VISIT_RIO_MINHO_PLUS_1_P,calls_1_5,"TPNP, E.R. / TPNP, E.R. / Turismo do Porto e Norte de Portugal, E.R.",BENEFICIARIA,PT,,42239.58,56319.44,0.75,1,P5,839
+0249_VISIT_RIO_MINHO_PLUS_1_P,calls_1_5,ADRIMINHO - Associação de Desenvolvimento Rural Integrado do Vale do Minho /  /,BENEFICIARIA,PT,,28994.63,38659.51,0.75,1,P5,840
+0249_VISIT_RIO_MINHO_PLUS_1_P,calls_1_5,Agencia Turismo de Galicia / Presidencia de la Xunta de Galicia / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,103687.50,138250.00,0.75,1,P5,841
+0249_VISIT_RIO_MINHO_PLUS_1_P,calls_1_5,Instituto Politécnico de Viana do Castelo /  /,BENEFICIARIA,PT,,14497.31,19329.75,0.75,1,P5,842
+0249_VISIT_RIO_MINHO_PLUS_1_P,calls_1_5,Cooperación con los Municipios / Diputación de Pontevedra / Diputación Provincial de Pontevedra,BENEFICIARIA,ES,,282150.00,376200.00,0.75,1,P5,843
+0249_VISIT_RIO_MINHO_PLUS_1_P,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA,PT,,27801.40,37068.53,0.75,1,P5,844
+0249_VISIT_RIO_MINHO_PLUS_1_P,calls_1_5,Ayuntamiento de Tui / Entidades Locales / Ayuntamiento de Tui,BENEFICIARIA,ES,,127650.00,170200.00,0.75,1,P5,845
+0249_VISIT_RIO_MINHO_PLUS_1_P,calls_1_5,Agrupamento Europeu de Cooperação Territorial do Rio Minho (AECT Rio Minho) / - / -,BENEFICIARIA PRINCIPAL,PT,,298800.00,398400.00,0.75,1,P5,846
+0253_RECORVHABIT_4_E,calls_1_5,"Dirección General de Jóvenes y Deportes / Consejería de Cultura, Turismo, Jóvenes y Deportes / Junta de Extremadura",BENEFICIARIA,ES,,154500.00,206000.00,0.75,4,P5,847
+0253_RECORVHABIT_4_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,147642.51,196856.68,0.75,4,P5,848
+0253_RECORVHABIT_4_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA PRINCIPAL,ES,,308250.00,411000.00,0.75,4,P5,849
+0253_RECORVHABIT_4_E,calls_1_5,Ayuntamiento de Navas del Madroño / Entidades Locales / Ayuntamiento de Navas del Madroño,SOCIA,ES,,0.00,0.00,0,4,P5,850
+0253_RECORVHABIT_4_E,calls_1_5,Ayuntamiento de Brozas / Entidades Locales / Ayuntamiento de Brozas,SOCIA,ES,,0.00,0.00,0,4,P5,851
+0253_RECORVHABIT_4_E,calls_1_5,Ayuntamiento de Alcántara / Entidades Locales / Ayuntamiento de Alcántara,SOCIA,ES,,0.00,0.00,0,4,P5,852
+0253_RECORVHABIT_4_E,calls_1_5,Município de Vila Viçosa /  /,SOCIA,PT,,0.00,0.00,0,4,P5,853
+0256_ILUMINA_4_E,calls_1_5,Agência Regional de Promoção Turística do Alentejo - Turismo do Alentejo /  /,BENEFICIARIA,PT,,150000.00,200000.00,0.75,4,P5,854
+0256_ILUMINA_4_E,calls_1_5,"Turismo do Alentejo, E.R.T. /  /",BENEFICIARIA,PT,,120000.00,160000.00,0.75,4,P5,855
+0256_ILUMINA_4_E,calls_1_5,"Dirección General de Turismo. / Consejería de Cultura, Turismo y Deportes / Junta de Extremadura",BENEFICIARIA,ES,,131418.53,175224.71,0.75,4,P5,856
+0256_ILUMINA_4_E,calls_1_5,Cluster del Turismo de Extremadura - CLUTUREX /  /,BENEFICIARIA,ES,,149202.55,198936.73,0.75,4,P5,857
+0256_ILUMINA_4_E,calls_1_5,Fundación Iberdrola España /  /,BENEFICIARIA PRINCIPAL,ES,,754656.25,1006208.33,0.75,4,P5,858
+0256_ILUMINA_4_E,calls_1_5,Ayuntamiento de Valencia de Alcántara / Entidades Locales / Ayuntamiento de Valencia de Alcántara,SOCIA,ES,,0.00,0.00,0,4,P5,859
+0256_ILUMINA_4_E,calls_1_5,Câmara Municipal de Campo Maior /  /,SOCIA,PT,,0.00,0.00,0,4,P5,860
+0256_ILUMINA_4_E,calls_1_5,Hermandad Nuestra Señora de Carrión /  /,SOCIA,ES,,0.00,0.00,0,4,P5,861
+0258_WINWORK_6_P,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,BENEFICIARIA,ES,,141450.50,188600.66,0.75,6,P5,862
+0258_WINWORK_6_P,calls_1_5,"Cámara Oficial de Comercio, Industria y Servicios de Badajoz /  /",BENEFICIARIA,ES,,50715.00,67620.00,0.75,6,P5,863
+0258_WINWORK_6_P,calls_1_5,Instituto Politécnico da Guarda /  /,BENEFICIARIA,PT,,43542.94,58057.25,0.75,6,P5,864
+0258_WINWORK_6_P,calls_1_5,Universidade de Coimbra /  /,BENEFICIARIA,PT,,49125.00,65500.00,0.75,6,P5,865
+0258_WINWORK_6_P,calls_1_5,AEP - Associação Empresarial de Portugal /  /,BENEFICIARIA,PT,,71906.22,95874.96,0.75,6,P5,866
+0258_WINWORK_6_P,calls_1_5,"Fundación Centro de Cirugia de Mínima Invasión / Secretaría General de Ciencia, Tecnología, Innovación y Universidad / Junta de Extremadura",BENEFICIARIA,ES,,167951.90,223935.87,0.75,6,P5,867
+0258_WINWORK_6_P,calls_1_5,Instituto Politécnico do Porto /  /,BENEFICIARIA PRINCIPAL,PT,,87367.01,116489.35,0.75,6,P5,868
+0259_ES_FACTORY_1_E,calls_1_5,Universidad de Santiago de Compostela / Universidades / Universidad de Santiago de Compostela,BENEFICIARIA,ES,,296361.00,395148.00,0.75,1,P5,869
+0259_ES_FACTORY_1_E,calls_1_5,UNION DE COOPERATIVAS ASOCIACION GALEGA DE COOPERATIVAS AGRARIAS /  /,BENEFICIARIA,ES,,202117.51,269490.01,0.75,1,P5,870
+0259_ES_FACTORY_1_E,calls_1_5,Associação Centro de Incubação de Base Tecnológica do Minho - ACIBTM /  /,BENEFICIARIA,PT,,97292.22,129722.96,0.75,1,P5,871
+0259_ES_FACTORY_1_E,calls_1_5,Associação Universidade-Empresa para o Desenvolvimento - TecMinho /  /,BENEFICIARIA,PT,,96712.39,128949.85,0.75,1,P5,872
+0259_ES_FACTORY_1_E,calls_1_5,Unión de Cooperativas ESPAZOCOOP /  /,BENEFICIARIA,ES,,200737.50,267650.00,0.75,1,P5,873
+0259_ES_FACTORY_1_E,calls_1_5,UNIVERSIDADE DE TRÁS-OS-MONTES E ALTO DOURO (UTAD) /  /,BENEFICIARIA,PT,,96269.71,128359.61,0.75,1,P5,874
+0259_ES_FACTORY_1_E,calls_1_5,"Secretaría General de Apoyo al Empleo, Trabajo Autónomo y Economía Social / Consellería de Promoción del Empleo e Igualdad / Comunidad Autónoma de Galicia",BENEFICIARIA PRINCIPAL,ES,,379485.75,505981.00,0.75,1,P5,875
+0259_ES_FACTORY_1_E,calls_1_5,AGRUPACION EMPRESARIAL DE SOCIEDADES LABORAIS DE GALICIA (AESGAL) /  /,SOCIA,ES,,0.00,0.00,0,1,P5,876
+0266_BORDER_LAB_2_E,calls_1_5,COMUNIDADE INTERMUNICIPAL DO DOURO /  /,BENEFICIARIA,PT,,70064.26,93419.01,0.75,2,P5,877
+0266_BORDER_LAB_2_E,calls_1_5,"Ensinus - Estudos Superiores, S.A. Instituto Superior de Gestão /  /",BENEFICIARIA,PT,,58091.90,77455.87,0.75,2,P5,878
+0266_BORDER_LAB_2_E,calls_1_5,ASOCIACIÓN ASPRODES / - / ASOCIACIÓN ASPRODES,BENEFICIARIA,ES,,231238.67,308318.23,0.75,2,P5,879
+0266_BORDER_LAB_2_E,calls_1_5,FUNDACION INTRAS /  /,BENEFICIARIA,ES,,198728.10,264970.80,0.75,2,P5,880
+0266_BORDER_LAB_2_E,calls_1_5,Gerencia de Servicios Sociales de Castilla y León / Consejería de Familia e Igualdad de Oportunidades / Junta de Castilla y León,BENEFICIARIA PRINCIPAL,ES,,409235.97,545647.96,0.75,2,P5,881
+0266_BORDER_LAB_2_E,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,SOCIA,ES,,0.00,0.00,0,2,P5,882
+0266_BORDER_LAB_2_E,calls_1_5,CLUSTER SOLUCIONES INNOVADORAS PARA LA VIDA INDEPENDIENTE (SIVI) /  /,SOCIA,ES,,0.00,0.00,0,2,P5,883
+0267_PEGADAS_1_E,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA,PT,,45648.21,60864.28,0.75,1,P5,884
+0267_PEGADAS_1_E,calls_1_5,Cluster da Comunicación de Galicia /  /,BENEFICIARIA,ES,,61773.77,82365.03,0.75,1,P5,885
+0267_PEGADAS_1_E,calls_1_5,"FEMXA FORMACION, S.L. /  /",BENEFICIARIA,ES,,78905.65,105207.53,0.75,1,P5,886
+0267_PEGADAS_1_E,calls_1_5,Instituto Politécnico do Porto /  /,BENEFICIARIA,PT,,47425.29,63233.72,0.75,1,P5,887
+0267_PEGADAS_1_E,calls_1_5,Instituto Politécnico de Viana do Castelo /  /,BENEFICIARIA,PT,,41034.94,54713.25,0.75,1,P5,888
+0267_PEGADAS_1_E,calls_1_5,Universidad de Santiago de Compostela / Universidades / Universidad de Santiago de Compostela,BENEFICIARIA PRINCIPAL,ES,,191198.97,254931.96,0.75,1,P5,889
+0272_ERIS_IE_6_E,calls_1_5,Direção Geral dos Estabelecimentos Escolares. Delegação de Serviços da Região Norte /  /,BENEFICIARIA,PT,,39375.00,52500.00,0.75,6,P5,890
+0272_ERIS_IE_6_E,calls_1_5,Direção Geral dos Estabelecimentos Escolares -Direção de Serviços da Região Centro /  /,BENEFICIARIA,PT,,39375.00,52500.00,0.75,6,P5,891
+0272_ERIS_IE_6_E,calls_1_5,Dirección General de Innovación y Formación del Profesorado / Consejería de Educación / Junta de Castilla y León,BENEFICIARIA PRINCIPAL,ES,,78750.00,105000.00,0.75,6,P5,892
+0274_HEPRESTONE_4_E,calls_1_5,Instituto de Arqueologia-Merida / Agencia Estatal Consejo Superior de Investigaciones Científicas / Ministerio de Ciencia e Innovación,BENEFICIARIA,ES,,89286.26,119048.35,0.75,4,P5,893
+0274_HEPRESTONE_4_E,calls_1_5,"ARROW4D - Consultores de Engenharia e Geofísica, Lda /  /",BENEFICIARIA,PT,,55000.00,73333.33,0.75,4,P5,894
+0274_HEPRESTONE_4_E,calls_1_5,Cluster del Turismo de Extremadura - CLUTUREX /  /,BENEFICIARIA,ES,,82596.19,110128.26,0.75,4,P5,895
+0274_HEPRESTONE_4_E,calls_1_5,"Dirección General de Bibliotecas, Archivos y Patrimonio Cultural / Consejería de Cultura, Turismo y Deportes / Junta de Extremadura",BENEFICIARIA,ES,,97500.00,130000.00,0.75,4,P5,896
+0274_HEPRESTONE_4_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,80000.00,106666.67,0.75,4,P5,897
+0274_HEPRESTONE_4_E,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,101699.99,135599.99,0.75,4,P5,898
+0274_HEPRESTONE_4_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Alentejo (CCDR Alentejo) /  /,BENEFICIARIA,PT,,75000.00,100000.00,0.75,4,P5,899
+0274_HEPRESTONE_4_E,calls_1_5,INTROMAC /  / Consorcio Instituto Tecnológico de Rocas Ornamentales y Materiales de Construcción,BENEFICIARIA PRINCIPAL,ES,,171527.80,228703.74,0.75,4,P5,900
+0275_RED_CIFT_6_E,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA,PT,,41650.07,55533.43,0.75,6,P5,901
+0275_RED_CIFT_6_E,calls_1_5,ASOCIACION GALLEGA DE ACTIVIDADES NAUTICAS (AGANPLUS) /  /,BENEFICIARIA,ES,,106522.26,142029.68,0.75,6,P5,902
+0275_RED_CIFT_6_E,calls_1_5,Associação para o Desenvolvimento do Baixo Guadiana - ODIANA /  /,BENEFICIARIA,PT,,62058.85,82745.13,0.75,6,P5,903
+0275_RED_CIFT_6_E,calls_1_5,Cluster del Turismo de Extremadura - CLUTUREX /  /,BENEFICIARIA,ES,,98520.08,131360.11,0.75,6,P5,904
+0275_RED_CIFT_6_E,calls_1_5,AEBB - Associação Empresarial da Beira Baixa /  /,BENEFICIARIA,PT,,60935.53,81247.37,0.75,6,P5,905
+0275_RED_CIFT_6_E,calls_1_5,Asociación Ibérica de Municipios Ribereños del Duero (AIMRD) / Institucionales / Asociación Ibérica de Municipios Ribereños del Duero (AIMRD),BENEFICIARIA,ES,,102050.70,136067.60,0.75,6,P5,906
+0275_RED_CIFT_6_E,calls_1_5,CLUSTER MARITIMO DE ANDALUCIA /  /,BENEFICIARIA PRINCIPAL,ES,,140747.46,187663.28,0.75,6,P5,907
+0275_RED_CIFT_6_E,calls_1_5,Comissão de Coordenação e Desenvolvimento Regional do Algarve (CCDR Algarve) / - / -,SOCIA,PT,,0.00,0.00,0,6,P5,908
+0276_KAMINOS_4_E,calls_1_5,Ayuntamiento de Cáceres / Entidades Locales / Ayuntamiento de Cáceres,BENEFICIARIA,ES,,109258.20,145677.60,0.75,4,P5,909
+0276_KAMINOS_4_E,calls_1_5,Município de Castelo de Vide /  /,BENEFICIARIA,PT,,87855.14,117140.19,0.75,4,P5,910
+0276_KAMINOS_4_E,calls_1_5,"Dirección General de Bibliotecas, Archivos y Patrimonio Cultural / Consejería de Cultura, Turismo y Deportes / Junta de Extremadura",BENEFICIARIA,ES,,40659.28,54212.37,0.75,4,P5,911
+0276_KAMINOS_4_E,calls_1_5,Câmara Municipal de Marvão /  /,BENEFICIARIA,PT,,69893.12,93190.83,0.75,4,P5,912
+0276_KAMINOS_4_E,calls_1_5,Município de Portalegre / - /,BENEFICIARIA,PT,,67899.39,90532.52,0.75,4,P5,913
+0276_KAMINOS_4_E,calls_1_5,Universidade de Évora /  /,BENEFICIARIA,PT,,24006.68,32008.91,0.75,4,P5,914
+0276_KAMINOS_4_E,calls_1_5,Diputación Provincial de Cáceres / Entidades Locales / Diputación Provincial de Cáceres,BENEFICIARIA PRINCIPAL,ES,,419822.25,559763.00,0.75,4,P5,915
+0280_LONGSOCIAL_1_E,calls_1_5,Sociedade Galega de Xerontoloxia e Xeriatria /  /,BENEFICIARIA,ES,,11250.00,15000.00,0.75,1,P5,916
+0280_LONGSOCIAL_1_E,calls_1_5,Santa Casa da Misericórdia de Melgaço /  /,BENEFICIARIA,PT,,22206.58,29608.77,0.75,1,P5,917
+0280_LONGSOCIAL_1_E,calls_1_5,Centro Interparoquial e Social do Alto Mouro /  /,BENEFICIARIA,PT,,15757.55,21010.06,0.75,1,P5,918
+0280_LONGSOCIAL_1_E,calls_1_5,ASOCIACIÓN DE FAMILIARES DE ENFERMOS DE ALZHEIMER Y OTRAS DEMENCIAS DE GALICIA (AFAGA) /  /,BENEFICIARIA PRINCIPAL,ES,,112291.45,149721.93,0.75,1,P5,919
+0281_RETORAYA_2_E,calls_1_5,COMUNIDADE INTERMUNICIPAL DO DOURO /  /,BENEFICIARIA,PT,,135536.81,180715.75,0.75,2,P5,920
+0281_RETORAYA_2_E,calls_1_5,ASOCIACIÓN ASPRODES / - / ASOCIACIÓN ASPRODES,BENEFICIARIA,ES,,202342.37,269789.83,0.75,2,P5,921
+0281_RETORAYA_2_E,calls_1_5,Gerencia de Servicios Sociales de Castilla y León / Consejería de Familia e Igualdad de Oportunidades / Junta de Castilla y León,BENEFICIARIA,ES,,201134.59,268179.45,0.75,2,P5,922
+0281_RETORAYA_2_E,calls_1_5,FUNDACION INTRAS /  /,BENEFICIARIA PRINCIPAL,ES,,145729.04,194305.39,0.75,2,P5,923
+0281_RETORAYA_2_E,calls_1_5,Diputación Provincial de Zamora / - / -,SOCIA,ES,,0.00,0.00,0,2,P5,924
+0284_LEVEL_UP_4_E,calls_1_5,"Agrupamento de Escolas José Régio, Portalegre /  /",BENEFICIARIA,PT,,20630.34,27507.12,0.75,4,P5,925
+0284_LEVEL_UP_4_E,calls_1_5,I.E.S. Reino Aftasí / Delegación Provincial de Educación de Badajoz / Junta de Extremadura,BENEFICIARIA,ES,,20630.34,27507.12,0.75,4,P5,926
+0284_LEVEL_UP_4_E,calls_1_5,Sociedade Musical Euterpe /  /,BENEFICIARIA,PT,,42266.53,56355.38,0.75,4,P5,927
+0284_LEVEL_UP_4_E,calls_1_5,Fundación Ayuda en Acción /  /,BENEFICIARIA PRINCIPAL,ES,,223882.66,298510.21,0.75,4,P5,928
+0287_FAR_PAX_6_P,calls_1_5,Ayuntamiento de Ciudad Rodrigo / Entidades Locales / Ayuntamiento de Ciudad Rodrigo,BENEFICIARIA,ES,,128836.58,171782.11,0.75,6,P5,929
+0287_FAR_PAX_6_P,calls_1_5,Câmara Municipal de Marvão /  /,BENEFICIARIA,PT,,165000.00,220000.00,0.75,6,P5,930
+0287_FAR_PAX_6_P,calls_1_5,MUNICIPIO DE ALMEIDA /  /,BENEFICIARIA,PT,,200000.00,266666.67,0.75,6,P5,931
+0287_FAR_PAX_6_P,calls_1_5,Ayuntamiento de Tui / Entidades Locales / Ayuntamiento de Tui,BENEFICIARIA,ES,,291174.50,388232.67,0.75,6,P5,932
+0287_FAR_PAX_6_P,calls_1_5,Município de Valença /  /,BENEFICIARIA PRINCIPAL,PT,,114391.54,152522.05,0.75,6,P5,933
+0288_BORDERLINE_2_P,calls_1_5,Agrupación Europea de Cooperación Territorial Duero-Douro / Otros Organismos / Otros Organismos,BENEFICIARIA,ES,,152960.63,203947.51,0.75,2,P5,934
+0288_BORDERLINE_2_P,calls_1_5,Ayuntamiento de Fermoselle / Entidades Locales / Ayuntamiento de Fermoselle,BENEFICIARIA,ES,,184875.94,246501.25,0.75,2,P5,935
+0288_BORDERLINE_2_P,calls_1_5,Município de Mogadouro /  /,BENEFICIARIA PRINCIPAL,PT,,500000.00,666666.67,0.75,2,P5,936
+0288_BORDERLINE_2_P,calls_1_5,Diputación Provincial de Zamora / - / -,SOCIA,ES,,0.00,0.00,0,2,P5,937
+0288_BORDERLINE_2_P,calls_1_5,Comunidade Intermunicipal das Terras de Trás-os-Montes (CIM-TTM) /  /,SOCIA,PT,,0.00,0.00,0,2,P5,938
+0288_BORDERLINE_2_P,calls_1_5,"TPNP, E.R. / TPNP, E.R. / Turismo do Porto e Norte de Portugal, E.R.",SOCIA,PT,,0.00,0.00,0,2,P5,939
+0288_BORDERLINE_2_P,calls_1_5,Associação de Municípios do Baixo Sabor /  /,SOCIA,PT,,0.00,0.00,0,2,P5,940
+0288_BORDERLINE_2_P,calls_1_5,Junta de Freguesia de Urrós /  /,SOCIA,PT,,0.00,0.00,0,2,P5,941
+0289_SER65_PLUS_6_P,calls_1_5,Universidad de Extremadura / Universidades / Universidad de Extremadura,BENEFICIARIA,ES,,192670.10,256893.47,0.75,6,P5,942
+0289_SER65_PLUS_6_P,calls_1_5,Unidade Local de Saúde da Guarda /  /,BENEFICIARIA,PT,,46377.23,61836.30,0.75,6,P5,943
+0289_SER65_PLUS_6_P,calls_1_5,"INOVA+ Innovation Services, SA /  /",BENEFICIARIA,PT,,37207.02,49609.36,0.75,6,P5,944
+0289_SER65_PLUS_6_P,calls_1_5,Fundación Formación e Investigación de los Profesionales de la Salud de Extremadura / Vicepresidencia Segunda y Consejería de Sanidad y Servicios Sociales / Junta de Extremadura,BENEFICIARIA,ES,,112082.20,149442.93,0.75,6,P5,945
+0289_SER65_PLUS_6_P,calls_1_5,"Fundación Centro de Cirugia de Mínima Invasión / Secretaría General de Ciencia, Tecnología, Innovación y Universidad / Junta de Extremadura",BENEFICIARIA,ES,,275823.86,367765.15,0.75,6,P5,946
+0289_SER65_PLUS_6_P,calls_1_5,Comunidade Intermunicipal das Beiras e Serra da Estrela (CIM-BSE) /  /,BENEFICIARIA,PT,,40125.00,53500.00,0.75,6,P5,947
+0289_SER65_PLUS_6_P,calls_1_5,Instituto Politécnico da Guarda /  /,BENEFICIARIA PRINCIPAL,PT,,209157.66,278876.88,0.75,6,P5,948
+0289_SER65_PLUS_6_P,calls_1_5,CLUSTER SOCIOSANITARIO DE EXTREMADURA /  /,SOCIA,ES,,0.00,0.00,0,6,P5,949
+0289_SER65_PLUS_6_P,calls_1_5,Centro para a Economia e Inovação Social - CEIS /  /,SOCIA,PT,,0.00,0.00,0,6,P5,950
+0293_GERES_XURES_MAIS_SUSTENTAVEL_1_P,calls_1_5,MUNICIPIO DE MELGAÇO /  /,BENEFICIARIA,PT,,31652.83,42203.77,0.75,1,P5,951
+0293_GERES_XURES_MAIS_SUSTENTAVEL_1_P,calls_1_5,Município de Montalegre /  /,BENEFICIARIA,PT,,81984.57,109312.76,0.75,1,P5,952
+0293_GERES_XURES_MAIS_SUSTENTAVEL_1_P,calls_1_5,Associação de Desenvolvimento das Regiões do Parque Nacional da Peneda Gerês - ADERE Peneda Gerês /  /,BENEFICIARIA,PT,,72966.04,97288.05,0.75,1,P5,953
+0293_GERES_XURES_MAIS_SUSTENTAVEL_1_P,calls_1_5,Município de Ponte da Barca /  /,BENEFICIARIA,PT,,30000.74,40000.99,0.75,1,P5,954
+0293_GERES_XURES_MAIS_SUSTENTAVEL_1_P,calls_1_5,Associação Regional de Desenvolvimento do Alto Lima - ARDAL /  /,BENEFICIARIA,PT,,34109.15,45478.87,0.75,1,P5,955
+0293_GERES_XURES_MAIS_SUSTENTAVEL_1_P,calls_1_5,Município de Terras de Bouro /  /,BENEFICIARIA,PT,,30360.64,40480.85,0.75,1,P5,956
+0293_GERES_XURES_MAIS_SUSTENTAVEL_1_P,calls_1_5,"TPNP, E.R. / TPNP, E.R. / Turismo do Porto e Norte de Portugal, E.R.",BENEFICIARIA,PT,,36636.45,48848.60,0.75,1,P5,957
+0293_GERES_XURES_MAIS_SUSTENTAVEL_1_P,calls_1_5,Agencia Turismo de Galicia / Presidencia de la Xunta de Galicia / Comunidad Autónoma de Galicia,BENEFICIARIA,ES,,280435.50,373914.00,0.75,1,P5,958
+0293_GERES_XURES_MAIS_SUSTENTAVEL_1_P,calls_1_5,Municipio de Arcos de Valdevez /  / Municipio de Arcos de Valdevez,BENEFICIARIA,PT,,37500.00,50000.00,0.75,1,P5,959
+0293_GERES_XURES_MAIS_SUSTENTAVEL_1_P,calls_1_5,Diputación Provincial de Ourense / Entidades Locales / Diputación Provincial de Ourense,BENEFICIARIA,ES,,326317.50,435090.00,0.75,1,P5,960
+0293_GERES_XURES_MAIS_SUSTENTAVEL_1_P,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA PRINCIPAL,PT,,55253.61,73671.48,0.75,1,P5,961
+0297_AGROSOCIAL_6_E,calls_1_5,Diputación Provincial de Lugo / Entidades Locales / Diputación Provincial de Lugo,BENEFICIARIA,ES,,173817.46,231756.61,0.75,6,P5,962
+0297_AGROSOCIAL_6_E,calls_1_5,Comunidade Intermunicipal do Alto Minho (CIM Alto Minho) /  /,BENEFICIARIA,PT,,71096.18,94794.91,0.75,6,P5,963
+0297_AGROSOCIAL_6_E,calls_1_5,Diputación Provincial de Cáceres / Entidades Locales / Diputación Provincial de Cáceres,BENEFICIARIA,ES,,200136.01,266848.01,0.75,6,P5,964
+0297_AGROSOCIAL_6_E,calls_1_5,"Cooperativas Agro-alimentarias EXtremadura, Unión de coop. /  /",BENEFICIARIA,ES,,58211.63,77615.51,0.75,6,P5,965
+0297_AGROSOCIAL_6_E,calls_1_5,"CONFAGRI - Confederação Nacional das Cooperativas Agrícolas e do Crédito Agrícola de Portugal, CCRL /  /",BENEFICIARIA,PT,,53030.81,70707.75,0.75,6,P5,966
+0297_AGROSOCIAL_6_E,calls_1_5,Instituto de Empleo y Desarrollo Socioeconómico y Tecnológico (IEDT) / Diputación Provincial de Cádiz / Diputación Provincial de Cádiz,BENEFICIARIA,ES,,177213.49,236284.65,0.75,6,P5,967
+0297_AGROSOCIAL_6_E,calls_1_5,Município do Fundão /  /,BENEFICIARIA,PT,,109063.48,145417.97,0.75,6,P5,968
+0297_AGROSOCIAL_6_E,calls_1_5,FUNDACIÓN EUROPEA PARA LA INNOVACIÓN Y DESARROLLO DE LA TECNOLOGÍA (INTEC)  /  /,BENEFICIARIA,ES,,196055.58,261407.44,0.75,6,P5,969
+0297_AGROSOCIAL_6_E,calls_1_5,Cooperativas Agroalimentarias de Andalucía /  /,BENEFICIARIA,ES,,58211.63,77615.51,0.75,6,P5,970
+0297_AGROSOCIAL_6_E,calls_1_5,Associação para o Desenvolvimento do Baixo Guadiana - ODIANA /  /,BENEFICIARIA,PT,,107776.79,143702.39,0.75,6,P5,971
+0297_AGROSOCIAL_6_E,calls_1_5,Diputación Provincial de Córdoba /  /,BENEFICIARIA PRINCIPAL,ES,,248640.92,331521.23,0.75,6,P5,972
+0298_EQUISAM_2_E,calls_1_5,Universidad de Valladolid / Universidades / Universidad de Valladolid,BENEFICIARIA,ES,,80518.69,107358.26,0.75,2,P5,973
+0298_EQUISAM_2_E,calls_1_5,"Unidade Local de Saúde do Nordeste, EPE /  /",BENEFICIARIA,PT,,338659.60,451546.13,0.75,2,P5,974
+0298_EQUISAM_2_E,calls_1_5,Junta de Castilla y León / Dirección General de Calidad e Infraestructuras Sanitarias. Consejería de Salud / Gerencia Regional de Salud (GRS) de Castilla y León,BENEFICIARIA PRINCIPAL,ES,,803987.08,1071982.78,0.75,2,P5,975
+0298_EQUISAM_2_E,calls_1_5,Vicerrectorado de Investigación y Transferencia / Universidad de Salamanca / Universidad de Salamanca,SOCIA,ES,,0.00,0.00,0,2,P5,976
+0311_CAMINO_VERTICAL_6_E,calls_1_5,Diputación Provincial de Huelva / Entidades Locales / Diputación Provincial de Huelva,BENEFICIARIA,ES,,187500.00,250000.00,0.75,6,P5,977
+0311_CAMINO_VERTICAL_6_E,calls_1_5,"Turismo do Centro de Portugal, ERT /  /",BENEFICIARIA,PT,,124114.54,165486.05,0.75,6,P5,978
+0311_CAMINO_VERTICAL_6_E,calls_1_5,"Dirección General de Bibliotecas, Archivos y Patrimonio Cultural / Consejería de Cultura, Turismo y Deportes / Junta de Extremadura",BENEFICIARIA,ES,,204990.00,273320.00,0.75,6,P5,979
+0311_CAMINO_VERTICAL_6_E,calls_1_5,Instituto de Empleo y Desarrollo Socioeconómico y Tecnológico (IEDT) / Diputación Provincial de Cádiz / Diputación Provincial de Cádiz,BENEFICIARIA,ES,,151448.08,201930.77,0.75,6,P5,980
+0311_CAMINO_VERTICAL_6_E,calls_1_5,Diputación Provincial de Córdoba /  /,BENEFICIARIA,ES,,209204.39,278939.19,0.75,6,P5,981
+0311_CAMINO_VERTICAL_6_E,calls_1_5,Município de Barcelos /  /,BENEFICIARIA,PT,,104103.54,138804.72,0.75,6,P5,982
+0311_CAMINO_VERTICAL_6_E,calls_1_5,Diputación Provincial de Cáceres / Entidades Locales / Diputación Provincial de Cáceres,BENEFICIARIA,ES,,212044.05,282725.40,0.75,6,P5,983
+0311_CAMINO_VERTICAL_6_E,calls_1_5,Diputación Provincial de Zamora / - / -,BENEFICIARIA,ES,,103500.00,138000.00,0.75,6,P5,984
+0311_CAMINO_VERTICAL_6_E,calls_1_5,"Turismo do Alentejo, E.R.T. /  /",BENEFICIARIA,PT,,150000.00,200000.00,0.75,6,P5,985
+0311_CAMINO_VERTICAL_6_E,calls_1_5,INORDE - INSTITUTO OURENSANO DE DESARROLLO ECONÓMICO. /  /,BENEFICIARIA,ES,,122392.35,163189.80,0.75,6,P5,986
+0311_CAMINO_VERTICAL_6_E,calls_1_5,Prodetur / Diputación Provincial de Sevilla / Diputación Provincial de Sevilla,BENEFICIARIA,ES,,163687.50,218250.00,0.75,6,P5,987
+0311_CAMINO_VERTICAL_6_E,calls_1_5,Dip. Badajoz - Área de Tecnología y Digitalización / Diputación Provincial de Badajoz / Diputación Provincial de Badajoz,BENEFICIARIA PRINCIPAL,ES,,227212.43,302949.91,0.75,6,P5,988
+0312_EUROCIUDAD_TERMAL_Y_DEL_AGUA_1_E,calls_1_5,Agrupación Europea de Cooperación Territorial Eurocidade Chaves-Verín (AECT Chaves-Verín) /  /,BENEFICIARIA PRINCIPAL,ES,,386441.25,515255.00,0.75,1,P5,989
+0312_EUROCIUDAD_TERMAL_Y_DEL_AGUA_1_E,calls_1_5,Município de Chaves / - / -,SOCIA,PT,,0.00,0.00,0,1,P5,990
+0312_EUROCIUDAD_TERMAL_Y_DEL_AGUA_1_E,calls_1_5,Ayuntamiento de Verín / Entidades Locales / Ayuntamiento de Verín,SOCIA,ES,,0.00,0.00,0,1,P5,991
+0313_EUTERPE_ADN_1_E,calls_1_5,Universidade do Minho /  /,BENEFICIARIA,PT,,101647.76,135530.35,0.75,1,P5,992
+0313_EUTERPE_ADN_1_E,calls_1_5,Asociación Galega para Axuda de Enfermos Tipo Alzheimer - AGADEA /  /,BENEFICIARIA,ES,,30492.59,40656.79,0.75,1,P5,993
+0313_EUTERPE_ADN_1_E,calls_1_5,Sociedad Cooperativa Galega - Músicos ao Vivo /  /,BENEFICIARIA,ES,,65286.50,87048.67,0.75,1,P5,994
+0313_EUTERPE_ADN_1_E,calls_1_5,Santa Casa da Misericórdia do Porto /  /,BENEFICIARIA,PT,,30972.26,41296.35,0.75,1,P5,995
+0313_EUTERPE_ADN_1_E,calls_1_5,Asociación de Dano Cerebral de Compostela - SARELA /  /,BENEFICIARIA,ES,,30439.73,40586.31,0.75,1,P5,996
+0313_EUTERPE_ADN_1_E,calls_1_5,Fundação Casa da Música /  /,BENEFICIARIA,PT,,28816.03,38421.37,0.75,1,P5,997
+0313_EUTERPE_ADN_1_E,calls_1_5,Associação Portuguesa de Familiares e Amigos de Doentes de Alzheimer - Delegação Norte / - / -,BENEFICIARIA,PT,,29879.59,39839.45,0.75,1,P5,998
+0313_EUTERPE_ADN_1_E,calls_1_5,Fundación Instituto de Investigación Sanitaria de Santiago de Compostela / Consellería de Sanidad / Comunidad Autónoma de Galicia,BENEFICIARIA PRINCIPAL,ES,,401272.66,535030.21,0.75,1,P5,999
+0314_GREENER_5_E,calls_1_5,Universidade do Algarve /  /,BENEFICIARIA,PT,,65090.54,86787.39,0.75,5,P5,1000
+0314_GREENER_5_E,calls_1_5,Escuela Andaluza de Economía Social /  /,BENEFICIARIA,ES,,77486.65,103315.53,0.75,5,P5,1001
+0314_GREENER_5_E,calls_1_5,Universidad Internacional de Andalucía / Universidades / Universidad Internacional de Andalucía,BENEFICIARIA,ES,,51737.23,68982.97,0.75,5,P5,1002
+0314_GREENER_5_E,calls_1_5,SINES TECNOPOLO - ASSOCIAÇÃO CENTRO DE INCUBAÇÃO DE EMPRESAS DE BASE TECNOLÓGICA VASCO DA GAMA /  /,BENEFICIARIA,PT,,80513.71,107351.61,0.75,5,P5,1003
+0314_GREENER_5_E,calls_1_5,Universidad de Huelva / Universidades / Universidad de Huelva,BENEFICIARIA,ES,,92719.12,123625.50,0.75,5,P5,1004
+0314_GREENER_5_E,calls_1_5,Ayuntamiento de Huelva / Entidades Locales / Ayuntamiento de Huelva,BENEFICIARIA PRINCIPAL,ES,,187618.96,250158.62,0.75,5,P5,1005
+0314_GREENER_5_E,calls_1_5,NERA - ASSOCIAÇÃO EMPRESARIAL DA REGIÃO DO ALGARVE /  /,SOCIA,PT,,0.00,0.00,0,5,P5,1006
+0314_GREENER_5_E,calls_1_5,"Cámara Oficial de Comercio, Industria, Servicios y Navegación de Huelva /  /",SOCIA,ES,,0.00,0.00,0,5,P5,1007
+0314_GREENER_5_E,calls_1_5,Federación Onubense de Empresarios /  /,SOCIA,ES,,0.00,0.00,0,5,P5,1008
+0318_INNOVASOCIAL_AAA_5_E,calls_1_5,Associação In Loco / - / -,BENEFICIARIA,PT,,84625.78,112834.37,0.75,5,P5,1009
+0318_INNOVASOCIAL_AAA_5_E,calls_1_5,Federación Andaluza de Empresas Cooperativas de Trabajo - FAECTA /  /,BENEFICIARIA,ES,,86250.00,115000.00,0.75,5,P5,1010
+0318_INNOVASOCIAL_AAA_5_E,calls_1_5,"Make it Better, Associação para a Inovação e Economia Social /  /",BENEFICIARIA,PT,,63878.49,85171.32,0.75,5,P5,1011
+0318_INNOVASOCIAL_AAA_5_E,calls_1_5,TERTULIA ALGARVIA - CENTRO DE CONHECIMENTO EM CULTURA E ALIMENTAÇÃO TRADICIONAL DO ALGARVE /  /,BENEFICIARIA,PT,,86460.61,115280.81,0.75,5,P5,1012
+0318_INNOVASOCIAL_AAA_5_E,calls_1_5,FUNDACION ANDANATURA PARA EL DESARROLLO SOCIOECONOMICO SOSTENIBLE /  /,BENEFICIARIA,ES,,171525.00,228700.00,0.75,5,P5,1013
+0318_INNOVASOCIAL_AAA_5_E,calls_1_5,NERE - Núcleo Empresarial da Região de Évora /  /,BENEFICIARIA,PT,,80161.44,106881.92,0.75,5,P5,1014
+0318_INNOVASOCIAL_AAA_5_E,calls_1_5,Escuela Andaluza de Economía Social /  /,BENEFICIARIA PRINCIPAL,ES,,122207.51,162943.35,0.75,5,P5,1015
+0318_INNOVASOCIAL_AAA_5_E,calls_1_5,Fundación Pública Andaluza Andalucía Emprende / Secretaría General de Empresa y Trabajo Autónomo / Junta de Andalucía,SOCIA,ES,,0.00,0.00,0,5,P5,1016
+0318_INNOVASOCIAL_AAA_5_E,calls_1_5,Associação Portuguesa para o Desenvolvimento Local - ANIMAR /  /,SOCIA,PT,,0.00,0.00,0,5,P5,1017
+0318_INNOVASOCIAL_AAA_5_E,calls_1_5,D. G. de Trabajo Autónomo y Economía Social / Secretaría General de Empresa y Trabajo Autónomo / Junta de Andalucía,SOCIA,ES,,0.00,0.00,0,5,P5,1018
+0318_INNOVASOCIAL_AAA_5_E,calls_1_5,Confederación Española de Cooperativas de Trabajo Asociado - COCETA /  /,SOCIA,ES,,0.00,0.00,0,5,P5,1019
+0330_NEW_HEART_1_E,calls_1_5,Universidad de Santiago de Compostela / Universidades / Universidad de Santiago de Compostela,BENEFICIARIA,ES,,343230.68,457640.91,0.75,1,P5,1020
+0330_NEW_HEART_1_E,calls_1_5,Fundación Dieta Atléntica /  /,BENEFICIARIA,ES,,95445.00,127260.00,0.75,1,P5,1021
+0330_NEW_HEART_1_E,calls_1_5,"Dilema Solutions, SL /  /",BENEFICIARIA,ES,,102344.95,136459.93,0.75,1,P5,1022
+0330_NEW_HEART_1_E,calls_1_5,"Unidade Local de Saúde de Gaia/Espinho, E. P. E. /  /",BENEFICIARIA,PT,,71173.14,94897.52,0.75,1,P5,1023
+0330_NEW_HEART_1_E,calls_1_5,Universidade do Porto. Faculdade de Medicina (U.Porto/FMUP) /  /,BENEFICIARIA,PT,,245238.80,326985.07,0.75,1,P5,1024
+0330_NEW_HEART_1_E,calls_1_5,"Unidade Local de Saúde de São João, E. P. E. /  /",BENEFICIARIA,PT,,71070.77,94761.03,0.75,1,P5,1025
+0330_NEW_HEART_1_E,calls_1_5,FLOWRESERVE LABS SL /  /,BENEFICIARIA,ES,,196333.69,261778.25,0.75,1,P5,1026
+0330_NEW_HEART_1_E,calls_1_5,Fundación Instituto de Investigación Sanitaria de Santiago de Compostela / Consellería de Sanidad / Comunidad Autónoma de Galicia,BENEFICIARIA PRINCIPAL,ES,,482053.61,642738.15,0.75,1,P5,1027
+0337_SOCILIBRE_1_P,calls_1_5,CRUZ ROJA ESPAÑOLA / - / -,BENEFICIARIA,ES,,32360.11,43146.81,0.75,1,P5,1028
+0337_SOCILIBRE_1_P,calls_1_5,Alcaldia / Alcaldía / Concello de Lugo,BENEFICIARIA,ES,,111459.64,148612.86,0.75,1,P5,1029
+0337_SOCILIBRE_1_P,calls_1_5,Associação Empresarial de Braga /  /,BENEFICIARIA,PT,,23864.21,31818.95,0.75,1,P5,1030
+0337_SOCILIBRE_1_P,calls_1_5,Cruz Vermelha Portuguesa - Delegação de Braga /  /,BENEFICIARIA,PT,,8445.49,11260.65,0.75,1,P5,1031
+0337_SOCILIBRE_1_P,calls_1_5,Bragahabit - Empresa Municipal de Habitação de Braga /  /,BENEFICIARIA,PT,,8029.89,10706.52,0.75,1,P5,1032
+0337_SOCILIBRE_1_P,calls_1_5,Universidade do Minho /  /,BENEFICIARIA,PT,,58867.69,78490.26,0.75,1,P5,1033
+0337_SOCILIBRE_1_P,calls_1_5,Município de Braga /  /,BENEFICIARIA PRINCIPAL,PT,,83898.19,111864.25,0.75,1,P5,1034
+0337_SOCILIBRE_1_P,calls_1_5,Asociación Eixo Atlántico Do Noroeste Peninsular / Institucionales / Asociación Eixo Atlántico Do Noroeste Peninsular,SOCIA,ES,,0.00,0.00,0,1,P5,1035
+0337_SOCILIBRE_1_P,calls_1_5,Associação Portuguesa de Logística - Aplog /  /,SOCIA,PT,,0.00,0.00,0,1,P5,1036
+0337_SOCILIBRE_1_P,calls_1_5,FUNDACION CLUSTER DE EMPRESAS  DE AUTOMOCION DE GALICIA (CEAGA /  /,SOCIA,ES,,0.00,0.00,0,1,P5,1037
+0340_EGEXUR_1_E,calls_1_5,Xunta de Galicia. Dirección General de Patrimonio Natural,BENEFICIARIA PRINCIPAL,ES,,13125.00,17500.00,0.75,1,P7,1038
+0340_EGEXUR_1_E,calls_1_5,Instituto da Conservação da Natureza e das Florestas. Direção Regional da Conservação da Natureza e Florestas do Norte.,BENEFICIARIA,PT,,13125.00,17500.00,0.75,1,P7,1039
 0355_GREENLOW_PECUARIA_1_E,call_6,Instituto Universitario de Biodiversidad Agraria y Desarrollo Rural (IBADER),BP,,,201367.63,,,1,P1,2
 0355_GREENLOW_PECUARIA_1_E,call_6,Agencia Gallega de la Calidad Alimentaria (AGACAL),BE,,,174029.29,,,1,P1,3
 0355_GREENLOW_PECUARIA_1_E,call_6,"Comissão de Coordenação e Desenvolvimento Regional do Norte, I.P",SO,,,0.00,,,1,P1,4

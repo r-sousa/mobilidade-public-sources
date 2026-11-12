@@ -1,5 +1,5 @@
 {
-  "as_of_utc": "2026-11-12T01:03:33.921389+00:00",
+  "as_of_utc": "2026-11-12T01:04:38.602063+00:00",
   "source_latest_page_date": "2026-04-16",
   "official_project_total_2026_11": 259,
   "expected_by_call": {
@@ -148,30 +148,40 @@
   "project_register_status": "candidate_only_not_verified",
   "note": "Regex-based extraction is preliminary; source workbook may use different project IDs. Financial figures are unparsed strings and must not be aggregated or treated as approved totals.",
   "expected_total_match": false,
-  "normalized_at_utc": "2026-11-12T01:03:33.975810+00:00",
-  "strict_unique_projects": 115,
+  "normalized_at_utc": "2026-11-12T01:04:38.684076+00:00",
+  "strict_unique_projects": 259,
   "strict_by_call": {
-    "calls_1_5": 0,
+    "calls_1_5": 144,
     "call_6": 94,
     "call_7": 6,
     "call_8": 15
   },
-  "strict_match_official_by_call": false,
-  "strict_partner_records": 853,
-  "total_approved_erdf_eur_from_partner_records": "151879337.92",
-  "available_eligible_cost_eur_only_sources_with_explicit_field": "0.00",
+  "strict_match_official_by_call": true,
+  "strict_partner_records": 1891,
+  "total_approved_erdf_eur_from_partner_records": "309410028.40",
+  "available_eligible_cost_eur_only_sources_with_explicit_field": "210040920.64",
   "projects_missing_erdf": 0,
-  "normalised_register_status": "review_required",
+  "normalised_register_status": "validated_project_identifiers",
   "normalisation_diagnostics": [
     {
       "source": "calls_1_5",
-      "strict_projects": 0,
+      "role_examples": [
+        "Beneficiaria",
+        "Beneficiaria principal",
+        "Socia"
+      ],
+      "strict_projects": 144,
       "expected": 144,
-      "strict_partner_rows": 0,
+      "strict_partner_rows": 1038,
       "rejected_nonempty_code_examples": []
     },
     {
       "source": "call_6",
+      "role_examples": [
+        "BE",
+        "BP",
+        "SO"
+      ],
       "strict_projects": 94,
       "expected": 94,
       "strict_partner_rows": 674,
@@ -179,6 +189,11 @@
     },
     {
       "source": "call_7",
+      "role_examples": [
+        "BE",
+        "BP",
+        "SO"
+      ],
       "strict_projects": 6,
       "expected": 6,
       "strict_partner_rows": 76,
@@ -186,6 +201,11 @@
     },
     {
       "source": "call_8",
+      "role_examples": [
+        "BE",
+        "BP",
+        "SO"
+      ],
       "strict_projects": 15,
       "expected": 15,
       "strict_partner_rows": 103,
