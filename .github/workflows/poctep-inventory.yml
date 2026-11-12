@@ -26,18 +26,30 @@ jobs:
         run: |
           set -euo pipefail
           python external/poctep/poctep_inventory.py
-      - name: Update permanent register
+      - name: Update permanent register on unprotected data branch
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p "$RUNNER_TEMP/poctep_snapshot"
+          cp -a external/poctep/data "$RUNNER_TEMP/poctep_snapshot/data"
+          rm -rf external/poctep/data
+          git fetch origin poctep-data || true
+          if git show-ref --verify --quiet refs/remotes/origin/poctep-data; then
+            git switch -C poctep-data origin/poctep-data
+          else
+            git switch -c poctep-data
+          fi
+          rm -rf external/poctep/data
+          mkdir -p external/poctep
+          cp -a "$RUNNER_TEMP/poctep_snapshot/data" external/poctep/data
           git add external/poctep/data
           if git diff --staged --quiet; then
             echo "No source changes"
           else
             git commit -m "POCTEP: refresh official project source register and QA"
-            git push
+            git push origin HEAD:refs/heads/poctep-data
           fi
       - name: Publish a readable execution summary
         if: always()
