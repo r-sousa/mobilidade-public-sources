@@ -9,6 +9,7 @@ on:
       - ".github/workflows/poctep-inventory.yml"
       - "external/poctep/poctep_inventory.py"
       - "external/poctep/normalise.py"
+      - "external/poctep/thematic_tags.py"
 permissions:
   contents: write
 concurrency:
@@ -28,6 +29,7 @@ jobs:
           set -euo pipefail
           python external/poctep/poctep_inventory.py
           python external/poctep/normalise.py
+          python external/poctep/thematic_tags.py
       - name: Update permanent register on unprotected data branch
         shell: bash
         run: |
