@@ -1,6 +1,6 @@
 # POCTEP 2021–2027 — approved operations and beneficiaries
 
-Updated from official source 2026-11-12T01:04:38.684076+00:00.
+Updated from official source 2026-11-12T01:18:45.234763+00:00.
 
 ## Coverage and validity
 

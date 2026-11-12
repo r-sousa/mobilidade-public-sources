@@ -1,0 +1,58 @@
+{
+  "base_project_count": 259,
+  "view_stats": {
+    "thematic_energy_projects.csv": {
+      "projects": 26,
+      "erdf_eur": "32890199.20"
+    },
+    "thematic_energy_communities.csv": {
+      "projects": 6,
+      "erdf_eur": "8521631.08"
+    },
+    "thematic_climate_adaptation.csv": {
+      "projects": 17,
+      "erdf_eur": "51490153.11"
+    },
+    "thematic_climate_plans.csv": {
+      "projects": 5,
+      "erdf_eur": "4596837.60"
+    },
+    "thematic_climate_energy_models.csv": {
+      "projects": 2,
+      "erdf_eur": "3160248.14"
+    }
+  },
+  "non_exclusive_flags": true,
+  "energy_core_rule": "P3 + OE 2.1/2.2",
+  "energy_supplementary_codes": [
+    "0091_AGERAR_PLUS_6_E",
+    "0093_AIHRE_6_E",
+    "0314_GREENER_5_E",
+    "0409_INERH2_6_E",
+    "0499_AIRES_4_E"
+  ],
+  "community_codes": [
+    "0052_COMENERG_1_E",
+    "0053_ALDEALIX_1_E",
+    "0081_CEL_RURAL_6_E",
+    "0184_ENERZAB_2_P",
+    "0198_TRANSCOM_EUROACE_4_E",
+    "0408_ENECORE_6_E"
+  ],
+  "climate_plan_codes": [
+    "0027_ADAPT_CLIMA_CENCYL_3_E",
+    "0031_RISC_PLUS_6_E",
+    "0177_EUROCIDADE_CT_ADAPT_1_P",
+    "0349_ACLIMA_URBAN_CENCYL_3_E",
+    "0476_ENE_RURAL_MUNICIPALITIES_2_E"
+  ],
+  "notes": [
+    "Climate plans are a curated strict shortlist, not all projects with climate content.",
+    "An official webpage may occasionally disagree with the Excel workbook on a project's priority; the register retains workbook values and flags such discrepancies for manual source verification.",
+    "Funds are project-wide approved ERDF, not territory-specific expenditure.",
+    "Prior programme calls 9 and 10 are not yet included."
+  ],
+  "sources": [
+    "https://www.poctep.eu/en/operations-partners-list/"
+  ]
+}

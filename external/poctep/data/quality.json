@@ -1,5 +1,5 @@
 {
-  "as_of_utc": "2026-11-12T01:04:38.602063+00:00",
+  "as_of_utc": "2026-11-12T01:18:45.149416+00:00",
   "source_latest_page_date": "2026-04-16",
   "official_project_total_2026_11": 259,
   "expected_by_call": {
@@ -148,7 +148,7 @@
   "project_register_status": "candidate_only_not_verified",
   "note": "Regex-based extraction is preliminary; source workbook may use different project IDs. Financial figures are unparsed strings and must not be aggregated or treated as approved totals.",
   "expected_total_match": false,
-  "normalized_at_utc": "2026-11-12T01:04:38.684076+00:00",
+  "normalized_at_utc": "2026-11-12T01:18:45.234763+00:00",
   "strict_unique_projects": 259,
   "strict_by_call": {
     "calls_1_5": 144,
