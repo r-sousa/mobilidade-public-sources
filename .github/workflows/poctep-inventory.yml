@@ -1,0 +1,58 @@
+name: POCTEP 2021-2027 approved-projects register
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 7 * * 1"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/poctep-inventory.yml"
+      - "external/poctep/poctep_inventory.py"
+permissions:
+  contents: write
+concurrency:
+  group: poctep-projects-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Download official POCTEP spreadsheets and retain provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python external/poctep/poctep_inventory.py
+      - name: Update permanent register
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add external/poctep/data
+          if git diff --staged --quiet; then
+            echo "No source changes"
+          else
+            git commit -m "POCTEP: refresh official project source register and QA"
+            git push
+          fi
+      - name: Publish a readable execution summary
+        if: always()
+        shell: bash
+        run: |
+          echo "## POCTEP inventory bridge" >> "$GITHUB_STEP_SUMMARY"
+          if test -f external/poctep/data/quality.json; then
+            python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          x=json.load(open("external/poctep/data/quality.json"))
+          print(f"* Candidate project codes: {x['unique_codes_detected_regex']}")
+          print(f"* Official declared total: {x['official_project_total_2026_11']}")
+          print(f"* Validation: {x['project_register_status']}")
+          for k,v in x["regex_counts_by_call"].items(): print(f"* {k}: {v}")
+          PY
+          else
+            echo "Source retrieval/validation did not complete: check job logs and discovery.json." >> "$GITHUB_STEP_SUMMARY"
+          fi
