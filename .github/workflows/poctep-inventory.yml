@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/poctep-inventory.yml"
       - "external/poctep/poctep_inventory.py"
+      - "external/poctep/normalise.py"
 permissions:
   contents: write
 concurrency:
@@ -26,6 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           python external/poctep/poctep_inventory.py
+          python external/poctep/normalise.py
       - name: Update permanent register on unprotected data branch
         shell: bash
         run: |
