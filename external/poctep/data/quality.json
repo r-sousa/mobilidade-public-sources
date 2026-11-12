@@ -1,5 +1,5 @@
 {
-  "as_of_utc": "2026-11-12T00:59:56.407341+00:00",
+  "as_of_utc": "2026-11-12T01:03:33.921389+00:00",
   "source_latest_page_date": "2026-04-16",
   "official_project_total_2026_11": 259,
   "expected_by_call": {
@@ -147,5 +147,50 @@
   ],
   "project_register_status": "candidate_only_not_verified",
   "note": "Regex-based extraction is preliminary; source workbook may use different project IDs. Financial figures are unparsed strings and must not be aggregated or treated as approved totals.",
-  "expected_total_match": false
+  "expected_total_match": false,
+  "normalized_at_utc": "2026-11-12T01:03:33.975810+00:00",
+  "strict_unique_projects": 115,
+  "strict_by_call": {
+    "calls_1_5": 0,
+    "call_6": 94,
+    "call_7": 6,
+    "call_8": 15
+  },
+  "strict_match_official_by_call": false,
+  "strict_partner_records": 853,
+  "total_approved_erdf_eur_from_partner_records": "151879337.92",
+  "available_eligible_cost_eur_only_sources_with_explicit_field": "0.00",
+  "projects_missing_erdf": 0,
+  "normalised_register_status": "review_required",
+  "normalisation_diagnostics": [
+    {
+      "source": "calls_1_5",
+      "strict_projects": 0,
+      "expected": 144,
+      "strict_partner_rows": 0,
+      "rejected_nonempty_code_examples": []
+    },
+    {
+      "source": "call_6",
+      "strict_projects": 94,
+      "expected": 94,
+      "strict_partner_rows": 674,
+      "rejected_nonempty_code_examples": []
+    },
+    {
+      "source": "call_7",
+      "strict_projects": 6,
+      "expected": 6,
+      "strict_partner_rows": 76,
+      "rejected_nonempty_code_examples": []
+    },
+    {
+      "source": "call_8",
+      "strict_projects": 15,
+      "expected": 15,
+      "strict_partner_rows": 103,
+      "rejected_nonempty_code_examples": []
+    }
+  ],
+  "financial_caution": "ERDF is summed only once per beneficiary row. Eligible total cost is published in the first five call workbook but not in the 6th-8th call workbooks. Do not infer missing investment by dividing ERDF by a maximum cofinancing rate; partial eligible-cost totals cannot describe the entire programme."
 }
