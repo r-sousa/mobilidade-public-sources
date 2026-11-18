@@ -1,0 +1,72 @@
+name: Corridor AEAT regional coverage residual diagnostics
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-aeat-coverage-residual.yml']
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - name: Compare definitive JCyL controls by province and named partner
+        run: |
+          python - <<'PY'
+          import os,requests,json,csv,io,zipfile,hashlib,base64,unicodedata,collections,re
+          from decimal import Decimal as D
+          t=os.environ['MN_PRIVATE_SINK_TOKEN'];base='https://api.github.com/repos/r-sousa/EU-transp-weekly';branch='audit/corridor-observatories-20261118';root='statistics/audits/'
+          hdr={'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json'}
+          def get(p):
+              r=requests.get(base+'/contents/'+root+p,params={'ref':branch},headers=hdr,timeout=45);r.raise_for_status()
+              return base64.b64decode(r.json()['content'])
+          def rows(b):return list(csv.DictReader(io.StringIO(b.decode('utf-8-sig'))))
+          def norm(s):return re.sub(r'[^a-z0-9]+','',unicodedata.normalize('NFKD',s).encode('ascii','ignore').decode().lower())
+          rr=requests.get(base+'/releases/assets/564454960',headers={'Authorization':'Bearer '+t,'Accept':'application/octet-stream'},timeout=90);rr.raise_for_status()
+          z=zipfile.ZipFile(io.BytesIO(rr.content));c=rows(z.read('normalized/jcyl-country-trade-2019-2024.csv'))
+          p=rows(get('corridor-aeat-2024-province-controls-44228760949.csv'));country=rows(get('corridor-aeat-2024-country-44228760949.csv'))
+          cb=rows(get('corridor-aeat-codebook-Clasif-_Pa_ses-44228017605.csv'))
+          lookup=collections.defaultdict(set)
+          for x in cb:
+              code=x['col_1'].strip();name=norm(x['col_2'])
+              if len(code)==2 and name:lookup[name].add(code)
+          province={'avila':'05','burgos':'09','leon':'24','palencia':'34','salamanca':'37','segovia':'40','soria':'42','valladolid':'47','zamora':'49'}
+          mapping={'exports':'E','imports':'I'}
+          o={'run':os.environ['GITHUB_RUN_ID'],'source_asset':564454960,'archive_sha256':hashlib.sha256(rr.content).hexdigest(),'province_comparisons':[],'country_comparisons':[],'unmatched_published_country_rows':[],'unmatched_aeat_codes':[]}
+          a=[x for x in c if x['period']=='2024' and x['measure']=='trade_value' and x['unit']=='thousand_EUR' and x['value_status']=='numeric' and x['flow'] in mapping]
+          pp={(x['province_code'],x['flow_code']):D(x['eur_cents'])/100 for x in p if x['nuts2']=='ES41'}
+          for x in a:
+              if x['reporter_level']!='province' or x['partner_label'].strip().upper()!='TOTAL':continue
+              code=province.get(norm(x['reporter_name']));f=mapping[x['flow']]
+              if (code,f) not in pp:continue
+              va=pp[(code,f)];ref=D(x['value'])*1000
+              o['province_comparisons'].append({'province':x['reporter_name'],'flow':f,'aeat_eur':str(va),'jcyl_eur':str(ref),'difference_eur':str(va-ref),'source_cell':x['source_cell']})
+          ac={(x['country_code'],x['flow_code']):D(x['eur_cents'])/100 for x in country if x['nuts2']=='ES41'}
+          keys=set()
+          for x in a:
+              if x['reporter_level']!='region' or x['partner_label'].strip().upper()=='TOTAL':continue
+              code=x['partner_iso2'].strip()
+              if not code:
+                  codes=lookup.get(norm(x['partner_label']),set());code=next(iter(codes)) if len(codes)==1 else ''
+              f=mapping[x['flow']];ref=D(x['value'])*1000
+              if not code or (code,f) not in ac:
+                  o['unmatched_published_country_rows'].append({'label':x['partner_label'],'flow':f,'value_eur':str(ref),'matched_code':code,'partner_type':x['partner_type']});continue
+              if (code,f) in keys:continue
+              keys.add((code,f));va=ac[(code,f)]
+              o['country_comparisons'].append({'code':code,'label':x['partner_label'],'flow':f,'aeat_eur':str(va),'jcyl_eur':str(ref),'difference_eur':str(va-ref)})
+          for k,v in ac.items():
+              if k not in keys:o['unmatched_aeat_codes'].append({'code':k[0],'flow':k[1],'value_eur':str(v)})
+          o['province_comparisons'].sort(key=lambda x:abs(D(x['difference_eur'])),reverse=True)
+          o['country_comparisons'].sort(key=lambda x:abs(D(x['difference_eur'])),reverse=True)
+          for key in ['unmatched_published_country_rows','unmatched_aeat_codes']:o[key].sort(key=lambda x:abs(D(x['value_eur'])),reverse=True)
+          o['notes']='Exact province mapping and exact source label or explicit country code only. No unmatched allocation; comparisons are not complete unless all additive categories are verified. Special categories retain producer semantics.'
+          payload=json.dumps(o,ensure_ascii=False,indent=2).encode()
+          r=requests.put(base+'/contents/'+root+'corridor-aeat-coverage-residual-v1.json',headers=hdr,json={'branch':branch,'message':'Preserve regional customs coverage residual diagnostics','content':base64.b64encode(payload).decode()},timeout=45);r.raise_for_status()
+          print('province comparisons',len(o['province_comparisons']),'country comparisons',len(o['country_comparisons']),'private receipt',r.status_code)
+          PY
