@@ -1,0 +1,88 @@
+name: Corridor targeted historical rail and Norte modal gaps
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-gap-closure-20261118.yml']
+permissions:
+  contents: read
+jobs:
+  gap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    strategy:
+      fail-fast: false
+      matrix:
+        task: [rail, ine]
+    env:
+      TASK: ${{ matrix.task }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - run: |
+          python - <<'PY'
+          import os,requests,json,base64,hashlib,time,csv,io
+          T=os.environ['MN_PRIVATE_SINK_TOKEN']; task=os.environ['TASK']; run=os.environ['GITHUB_RUN_ID']
+          base='https://api.github.com/repos/r-sousa/EU-transp-weekly';branch='audit/corridor-observatories-20261118';root='statistics/audits/'
+          auth={'Authorization':'Bearer '+T,'Accept':'application/vnd.github+json'}
+          sess=requests.Session();sess.headers['User-Agent']='MobilidadeNorte-source-audit/1.0'
+          out={'task':task,'run':run,'results':[],'errors':[]}
+          def save(n,o):
+              b=json.dumps(o,ensure_ascii=False,indent=2).encode()
+              for i in range(6):
+                  r=requests.put(base+'/contents/'+root+n,headers=auth,json={'branch':branch,'message':'Preserve targeted historical rail or regional modal source '+n,'content':base64.b64encode(b).decode()},timeout=45)
+                  if r.status_code==201:break
+                  if r.status_code not in (409,422):break
+                  time.sleep(2+i*3)
+              r.raise_for_status();print('saved',n,len(b),flush=True)
+          if task=='rail':
+              # Previously preserved 2024+ response was valid empty. Query distinct historical editions and keep reporter dimension.
+              targets=['PT11','ES11','ES41']
+              endpoint='https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/tran_r_rago'
+              allrows=[]
+              for period in ['2015','2020','2025']:
+                  for scope,dims in [('bilateral',[('c_load',v) for v in targets]+[('c_unload',v) for v in targets]),('loading',[('c_load',v) for v in targets]),('unloading',[('c_unload',v) for v in targets])]:
+                      try:
+                          params=[('lang','EN'),('time',period)]+dims
+                          r=sess.get(endpoint,params=params,timeout=(15,75));r.raise_for_status();j=r.json()
+                          if j.get('class')!='dataset' or 'id' not in j:raise ValueError('not JSON-stat dataset')
+                          ids=j['id']; sizes=j['size']; ix=[]
+                          for d in ids:
+                              m=j['dimension'][d]['category']['index'];ix.append(m if isinstance(m,list) else [k for k,v in sorted(m.items(),key=lambda p:p[1])])
+                          vals=j.get('value',{});st=j.get('status',{});entries=[]
+                          for pos,value in (vals.items() if isinstance(vals,dict) else enumerate(vals)):
+                              k=int(pos);coords=[]
+                              for size,idx in reversed(list(zip(sizes,ix))):coords.append(idx[k%size]);k//=size
+                              if value is None:continue
+                              coord=dict(zip(ids,reversed(coords))); flag=st.get(str(pos)) if isinstance(st,dict) else (st[int(pos)] if isinstance(st,list) and int(pos)<len(st) else None)
+                              entries.append({'coord':coord,'value':value,'status':flag})
+                          rec={'period':period,'scope':scope,'url':r.url,'sha256':hashlib.sha256(r.content).hexdigest(),'dimensions':dict(zip(ids,sizes)),'numeric_rows':len(entries),'rows':entries,'source_body':j}
+                          save('corridor-rail-'+period+'-'+scope+'-v1.json',rec)
+                          out['results'].append({k:v for k,v in rec.items() if k not in ('rows','source_body')})
+                          allrows.extend(entries)
+                      except Exception as e:out['errors'].append({'year':period,'scope':scope,'error':repr(e)[:300]})
+                      time.sleep(0.5)
+              # Dedup repeated scope selections, retain full native reporter/OD cells, do not add mirror reports.
+              unique={}
+              for x in allrows:
+                  key=tuple(sorted(x['coord'].items()))
+                  if key in unique and unique[key]!=x:raise ValueError('same native key conflicting value')
+                  unique[key]=x
+              save('corridor-rail-2015-2025-deduplicated-v1.json',list(unique.values()))
+              out['unique_numeric_rows']=len(unique);out['bilateral_rows']=[x for x in unique.values() if x['coord'].get('c_load') in targets and x['coord'].get('c_unload') in targets]
+          else:
+              # Check known source and immediate adjacent indicator metadata for distinct public modal measures.
+              for code in ['0011465','0014148','0014149','0014150','0014152','0014153','0014154']:
+                  try:
+                      r=sess.get('https://www.ine.pt/ine/json_indicador/pindica.jsp',params={'op':2,'varcd':code,'lang':'PT','Dim1':'S7A2024','Dim2':'11'},timeout=(12,35));r.raise_for_status(); j=r.json();x=j[0] if isinstance(j,list) else j
+                      title=x.get('IndicadorDsg','');rows=x.get('Dados',{}).get('2024',[])
+                      if not isinstance(rows,list):rows=[]
+                      rec={'code':code,'title':title,'url':r.url,'sha256':hashlib.sha256(r.content).hexdigest(),'rows':len(rows),'geos':sorted({str(y.get('geocod')) for y in rows}),'relevant':('mercadoria' in title.lower() and ('transporte' in title.lower() or 'modo' in title.lower()))}
+                      out['results'].append(rec)
+                      if rec['relevant'] and rows and all(str(y.get('geocod'))=='11' and y.get('geodsg')=='Norte' for y in rows):save('corridor-ine-modal-'+code+'-2024-v1.json',{'metadata':rec,'source_body':j})
+                  except Exception as e:out['errors'].append({'code':code,'error':repr(e)[:300]})
+                  time.sleep(0.7)
+          save('corridor-gap-closure-'+task+'-v1.json',out)
+          PY
