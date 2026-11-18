@@ -1,0 +1,70 @@
+name: Definitive Castilla chapter reconciliation
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-jcyl-chapters.yml']
+permissions:
+  contents: read
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests openpyxl
+      - run: |
+          python - <<'PY'
+          import os, requests, json, csv, io, zipfile, base64, hashlib, re
+          from decimal import Decimal as D
+          from openpyxl import load_workbook
+          T=os.environ['MN_PRIVATE_SINK_TOKEN'];base='https://api.github.com/repos/r-sousa/EU-transp-weekly';branch='audit/corridor-observatories-20261118';root='statistics/audits/'
+          auth={'Authorization':'Bearer '+T,'Accept':'application/vnd.github+json'}
+          def get(n):
+              r=requests.get(base+'/contents/'+root+n,params={'ref':branch},headers=auth,timeout=30);r.raise_for_status();return base64.b64decode(r.json()['content'])
+          def put(n,b):
+              if isinstance(b,str):b=b.encode()
+              r=requests.put(base+'/contents/'+root+n,headers=auth,json={'branch':branch,'message':'Integrate definitive regional NC2 chapter controls','content':base64.b64encode(b).decode()},timeout=30);r.raise_for_status();print('saved',n,flush=True)
+          r=requests.get(base+'/releases/assets/564454960',headers={'Authorization':'Bearer '+T,'Accept':'application/octet-stream'},timeout=60);r.raise_for_status()
+          z=zipfile.ZipFile(io.BytesIO(r.content));a=zipfile.ZipFile(io.BytesIO(z.read('raw/annual-2019-2024.zip')))
+          n=next(s for s in a.namelist() if s.endswith('/T 3.1.xlsx'))
+          raw=a.read(n);wb=load_workbook(io.BytesIO(raw),read_only=True,data_only=True)
+          out=[];qa=[];heads=[]
+          for sheet,flow in [('T 3.1.1.','E'),('T 3.1.2.','I')]:
+              rows=list(wb[sheet].values); active=False; total=None; start=None; details=[]
+              for i,row in enumerate(rows,1):
+                  s=' '.join(str(x) for x in row if x is not None)
+                  if 'COMERCIO EXTERIOR POR CAP' in s.upper():
+                      heads.append({'sheet':sheet,'row':i,'title':s})
+                      if active:break
+                      active='CASTILLA Y LE' in s.upper()
+                      if active:start=i
+                  if not active:continue
+                  a0=str(row[0] or '').strip()
+                  if a0=='TOTAL':
+                      total=D(str(row[1]))*1000;continue
+                  match=re.match(r'^(\d{2})\s+',a0)
+                  if match:
+                      code=match.group(1)
+                      v=row[1];val=D(str(v))*1000 if isinstance(v,(int,float)) else None
+                      details.append({'year':2024,'nuts2':'ES41','flow':flow,'partner_scope':'WORLD','cn2':code,'value_eur':str(val) if val is not None else '', 'source_status':'reported' if val is not None else 'source_marker','source_marker':str(v) if val is None else '', 'source_member':n,'sheet':sheet,'cell':'B'+str(i),'label':a0})
+              if not details or total is None:raise ValueError('region block not found '+sheet+str(heads))
+              s=sum(D(x['value_eur']) for x in details if x['value_eur'])
+              qa.append({'flow':flow,'title_row':start,'total_eur':str(total),'sum_chapters_eur':str(s),'residual_eur':str(total-s),'rows':len(details),'unique':len({x['cn2'] for x in details})})
+              if len(details)!=len({x['cn2'] for x in details}):raise ValueError('duplicate')
+              out+=details
+          f=io.StringIO();w=csv.DictWriter(f,fieldnames=list(out[0]));w.writeheader();w.writerows(out)
+          put('corridor-jcyl-definitive-chapters-2024-v1.csv',f.getvalue())
+          p=list(csv.DictReader(io.StringIO(get('corridor-regional-cn2-trade-profile-v1.csv').decode('utf-8-sig'))))
+          aa={(x['flow'],x['cn2']):D(x['value_eur']) for x in p if x['nuts2']=='ES41'and x['partner_scope']=='WORLD'and x['value_eur']}
+          diff=[]
+          for x in out:
+              if x['value_eur']:
+                  v=D(x['value_eur']);av=aa.get((x['flow'],x['cn2']))
+                  diff.append({'flow':x['flow'],'cn2':x['cn2'],'jcyl_eur':str(v),'aeat_eur':str(av) if av is not None else '', 'difference_eur':str(v-av) if av is not None else ''})
+          diff.sort(key=lambda x:abs(D(x['difference_eur'])) if x['difference_eur'] else D(0),reverse=True)
+          put('corridor-jcyl-definitive-chapters-qa-v1.json',json.dumps({'source_asset':564454960,'workbook':n,'workbook_sha256':hashlib.sha256(raw).hexdigest(),'qa':qa,'top_differences':diff[:30],'scope':'Published chapter values only; no allocation by border mode or partner. Source markers preserved; compare to official total.'},indent=2))
+          PY
