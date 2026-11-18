@@ -1,0 +1,103 @@
+name: Corridor 2024 reconciliation final controls v1
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-final-controls-v1.yml']
+permissions:
+  contents: read
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - name: Verify regional controls, create consumer profile and integration manifest
+        run: |
+          python - <<'PY'
+          import os,requests,json,io,csv,zipfile,hashlib,base64,collections,time
+          from decimal import Decimal as Dec
+          T=os.environ['MN_PRIVATE_SINK_TOKEN']; B='audit/corridor-observatories-20261118'; C='mobilidade-norte-recovery-20260919'; D='statistics/audits/'
+          base='https://api.github.com/repos/r-sousa/EU-transp-weekly';auth={'Authorization':'Bearer '+T,'Accept':'application/vnd.github+json'}
+          receipt={'version':'v1','period':2024,'run_id':os.environ['GITHUB_RUN_ID'],'scope':'internal analytical integration, no canonical/source-set changes, no publication permission','inputs':[],'checks':[],'outputs':[],'warnings':[]}
+          def read(p,branch=B):
+              rr=requests.get(base+'/contents/'+p,params={'ref':branch},headers=auth,timeout=45);rr.raise_for_status();j=rr.json();b=base64.b64decode(j['content'])
+              receipt['inputs'].append({'path':p,'branch':branch,'blob':j['sha'],'sha256':hashlib.sha256(b).hexdigest()});return b
+          def save(n,s):
+              b=s.encode();path=D+n
+              for i in range(5):
+                  rr=requests.put(base+'/contents/'+path,headers=auth,json={'branch':B,'message':'Consolidate corridor common 2024 baseline '+n,'content':base64.b64encode(b).decode()},timeout=45)
+                  if rr.status_code==201:break
+                  if rr.status_code not in (409,422):break
+                  time.sleep(2+i*3)
+              rr.raise_for_status();receipt['outputs'].append({'path':path,'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)})
+              print('saved',n,len(b),flush=True)
+          def readcsv(b):return list(csv.DictReader(io.StringIO(b.decode('utf-8-sig'))))
+          def out(n,records):
+              f=io.StringIO();w=csv.DictWriter(f,fieldnames=list(records[0]));w.writeheader();w.writerows(records);save(n,f.getvalue())
+          def validate(label,ok,detail):
+              receipt['checks'].append({'test':label,'pass':bool(ok),'detail':detail})
+              if not ok:print('QA_FAIL',label,flush=True)
+          def d(x):return Dec(str(x))
+          profile=readcsv(read(D+'corridor-regional-cn2-trade-profile-v1.csv'))
+          road=readcsv(read(D+'corridor-regional-road-freight-profile-v1.csv'))
+          edge=readcsv(read(D+'corridor-integrated-directed-facts-v1.csv'))
+          cross=readcsv(read(D+'corridor-cintereg-sector-facts-v1.csv'))
+          validate('unique regional product keys',len(profile)==len({tuple(x[k] for k in ('year','nuts2','flow','partner_scope','cn2')) for x in profile})==976,len(profile))
+          validate('unique directed statistical facts',len(edge)==len({tuple(x[k] for k in ('year','origin','destination','mode','metric','unit','basis','source','scope','product')) for x in edge})==1504,len(edge))
+          validate('regional road profile EU27 all measures',len(road)==18 and all(x['eu27_reporters'] for x in road),len(road))
+          for x in road:
+              if x['national_reporter']:validate('EU27 vs national '+x['nuts2']+' '+x['role']+' '+x['unit'],d(x['eu27_reporters'])>=d(x['national_reporter']),x['eu27_minus_national_reporter'])
+          ptotal={}
+          for reg in ('PT11','ES11','ES41'):
+              for flow in ('E','I'):
+                  sub=[x for x in profile if x['nuts2']==reg and x['flow']==flow and x['partner_scope']=='WORLD']
+                  ptotal[(reg,flow)]=sum(d(x['value_eur']) for x in sub if x['value_eur']!='')
+          control=[]
+          def ctl(reg,flow,partner,metric,unit,calc,reference,source,scope,tol):
+              diff=calc-reference
+              control.append(dict(nuts2=reg,flow=flow,partner=partner,metric=metric,unit=unit,computed=str(calc),published=str(reference),difference=str(diff),difference_pct=str(round(diff*100/reference,6)) if reference else '',tolerance=str(tol),status='MATCH_AT_PRINT_PRECISION' if abs(diff)<=tol else 'NONMATCH_RETAIN_SEPARATE',control_source=source,scope_note=scope))
+          # IGE public table values in thousand EUR for 2024, observed 2026-11-18.
+          ige='https://www.ige.gal/igebdt/esq.jsp?C=2%5Ball%5D&F=0%3A2024%3B9912%3A12%3B3%3A22&OP=1&R=1%5Ball%5D&c=0307004001&idioma=es&ruta=verTabla.jsp%3FCOD%3D9646'
+          iget='https://www.ige.gal/igebdt/principais.jsp?C=2%5Ball%5D&COD=9658&F=1%3A0%3B9912%3A12&OP=1&R=0%5Ball%5D'
+          aeat=readcsv(read(D+'corridor-aeat-2024-country-44228760949.csv'))
+          def ac(r,f,partner,metric):
+              ss=[x for x in aeat if x['nuts2']==r and x['flow_code']==f and (partner=='WORLD' or x['country_code']==partner)]
+              return sum(d(x['eur_cents'])/100 if metric=='trade_value' else d(x['kg'])/1000 for x in ss)
+          for f,v,w in [('E','4326725.9','31105481.5'),('I','2728013.4','21258053.1')]:
+              ctl('ES11',f,'PT','trade_value','EUR',ac('ES11',f,'PT','trade_value'),d(v)*1000,ige,'same AEAT lineage, IGE published with 0.1 thousand EUR rounding',d(50))
+              ctl('ES11',f,'WORLD','trade_value','EUR',ptotal[('ES11',f)],d(w)*1000,iget,'unresolved publication / coverage difference; do not allocate residual to chapters',d(50))
+          rr=requests.get(base+'/releases/assets/564454960',headers={'Authorization':'Bearer '+T,'Accept':'application/octet-stream'},timeout=90);rr.raise_for_status()
+          z=zipfile.ZipFile(io.BytesIO(rr.content));receipt['inputs'].append({'release_asset_id':564454960,'sha256':hashlib.sha256(rr.content).hexdigest()})
+          p=readcsv(z.read('normalized/jcyl-portugal-trade-2024.csv'));a=readcsv(z.read('normalized/jcyl-country-trade-2019-2024.csv'))
+          sources={'exports':'E','imports':'I'}
+          for x in p:
+              if x['reporter_level']=='region' and x['period']=='2024' and x['partner_iso2']=='PT' and x['measure'] in ('trade_value','net_mass') and x['value_status']=='numeric':
+                  f=sources[x['flow']];metric=x['measure'];unit='EUR' if x['unit']=='thousand_EUR' else x['unit'];ref=d(x['value'])*(1000 if x['unit']=='thousand_EUR' else 1)
+                  ctl('ES41',f,'PT',metric,unit,ac('ES41',f,'PT','trade_value' if metric=='trade_value' else 'net_mass'),ref,'F33 archived definitive JCyL '+x['source_member']+' '+x['source_sheet']+' '+x['source_cell'],'same producer lineage; compare definitive annual province/country data',d('0.01'))
+          for x in a:
+              if x['reporter_level']=='region' and x['period']=='2024' and x['partner_label'].strip().upper()=='TOTAL' and x['measure']=='trade_value' and x['value_status']=='numeric':
+                  f=sources[x['flow']];ref=d(x['value'])*(1000 if x['unit']=='thousand_EUR' else 1)
+                  ctl('ES41',f,'WORLD','trade_value','EUR',ptotal[('ES41',f)],ref,'F31 archived definitive JCyL '+x['source_member']+' '+x['source_sheet']+' '+x['source_cell'],'same AEAT lineage; retain any coverage discrepancy',d('0.01'))
+          validate('JCyL regional Portugal controls present',len([x for x in control if x['nuts2']=='ES41' and x['partner']=='PT'])==4,len([x for x in control if x['nuts2']=='ES41' and x['partner']=='PT']))
+          # All comparisons are reported even if they differ; no scaling of source facts.
+          out('corridor-customs-external-controls-v1.csv',control)
+          pin=json.loads(read('statistics/recovery-20260920/simple-runtime/outputs/W1C/20260921T2222PT-pkg01-F19-2024-export-value-consumer/consumer-table.json',C))
+          norte=next(d(x['value']) for x in pin['observations'] if x['geography_code']=='11' and x['geography_label']=='Norte')
+          validate('INE chapters total equals accepted F19',ptotal[('PT11','E')]==norte,str(norte))
+          imp=json.loads(read(D+'corridor-ine-2024-0012348-v1.json'))
+          v=d(imp['source_body'][0]['Dados']['2024'][0]['valor'])
+          validate('INE import chapter sum equals published total',ptotal[('PT11','I')]==v,str(v))
+          panel=[]
+          for reg in ('PT11','ES11','ES41'):
+              calc=lambda role:next(d(x['eu27_reporters']) for x in road if x['nuts2']==reg and x['role']==role and x['unit']=='THS_T')
+              panel.append(dict(year=2024,nuts2=reg,road_load_kt=str(calc('loading')),road_unload_kt=str(calc('unloading')),exports_eur=str(ptotal[(reg,'E')]),imports_eur=str(ptotal[(reg,'I')]),trade_source='INE' if reg=='PT11' else 'AEAT territorial records',freight_source='Eurostat F140/F141 EU27_2020 reporter aggregate',trade_caveat='operator geography' if reg=='PT11' else 'economic province; aggregate publication reconciliation separate'))
+          out('corridor-regional-2024-panel-v1.csv',panel)
+          receipt['summary']={'regional_panel':panel,'external_controls':control,'product_rows':len(profile),'directed_facts':len(edge),'cintereg_sector_rows':len(cross),'regional_road_rows':len(road)}
+          receipt['warnings']=['No sum across units, mode subsets plus total, partner scope plus total, or statistical bases. Eurostat reporter country is not cargo OD. INE operator location differs from Spanish economic origin/destination. C-intereg model is not independent of AEAT. Do not substitute Galicia-CyL physical road OD for trade value. Portugal-mode share and Spain percentages are distinct rounded indicators. Rail 2024+ F148 is valid-empty. Rights and canonical acceptance remain separate.']
+          save('corridor-integration-final-manifest-v1.json',json.dumps(receipt,ensure_ascii=False,indent=2))
+          PY
