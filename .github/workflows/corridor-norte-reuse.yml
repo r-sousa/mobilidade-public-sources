@@ -1,0 +1,63 @@
+name: Reuse Norte regional evidence from private Mobilidade Norte releases
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-norte-reuse.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - name: Inspect existing release bytes only, no producer requests
+        run: |
+          python - <<'PY'
+          import os, json, requests, csv, io, hashlib, zipfile, base64, re
+          t=os.environ['MN_PRIVATE_SINK_TOKEN']
+          base='https://api.github.com/repos/r-sousa/EU-transp-weekly'
+          h={'Authorization':'Bearer '+t,'Accept':'application/octet-stream','X-GitHub-Api-Version':'2022-11-28'}
+          def asset(i):
+              r=requests.get(base+'/releases/assets/'+str(i),headers=h,timeout=90);r.raise_for_status();return r.content
+          result={'scope':'existing private releases only; no producer reacquisition; no canonical mutation','assets':{}}
+          for i,n in [(564455120,'cintereg-norte-annual-totals.csv'),(564455146,'cintereg-view-validation.json'),(564455131,'cintereg-acquisition.json')]:
+              b=asset(i); entry={'sha256':hashlib.sha256(b).hexdigest(),'size':len(b)}
+              if n.endswith('.csv'):
+                  rows=list(csv.DictReader(io.StringIO(b.decode('utf-8-sig'))))
+                  entry.update({'rows':len(rows),'columns':list(rows[0]) if rows else [],'sample':rows[:4],'target_rows':[x for x in rows if re.search(r'galic|castilla y le[oó]n|ES11|ES41',json.dumps(x,ensure_ascii=False),re.I)][:100]})
+              else:entry['data']=json.loads(b)
+              result['assets'][n]=entry
+          b=asset(565922694); z=zipfile.ZipFile(io.BytesIO(b))
+          result['recovery_archive']={'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b),'matching_members':[n for n in z.namelist() if re.search(r'F13[3-7]|F14[01]',n)]}
+          for n in result['recovery_archive']['matching_members']:
+              if not n.endswith('.json') or not re.search(r'F14[01]',n):continue
+              raw=z.read(n); j=json.loads(raw)
+              e={'sha256':hashlib.sha256(raw).hexdigest(),'size':len(raw),'id':j.get('id'),'dimensions':j.get('size'),'source':j.get('source'),'label':j.get('label'),'norte_rows':[]}
+              if isinstance(j.get('dimension'),dict) and j.get('id') and j.get('size'):
+                  dims=j['id']; sizes=j['size']; ix=[]
+                  for d in dims:
+                      cat=j['dimension'][d]['category']; ids=cat['index']; ix.append(ids if isinstance(ids,list) else [x for x,v in sorted(ids.items(),key=lambda kv:kv[1])])
+                  e['dimension_codes']={d:({'count':len(v),'sample':v[:12]}) for d,v in zip(dims,ix)}
+                  vals=j.get('value',{}); it=vals.items() if isinstance(vals,dict) else enumerate(vals); statuses=j.get('status',{})
+                  for k,v in it:
+                      if v is None:continue
+                      p=int(k); keys=[]
+                      for size,idx in reversed(list(zip(sizes,ix))):keys.append(idx[p%size]);p//=size
+                      coord=dict(zip(dims,reversed(keys)))
+                      if 'PT11' not in coord.values():continue
+                      st=statuses.get(str(k)) if isinstance(statuses,dict) else (statuses[int(k)] if isinstance(statuses,list) and int(k)<len(statuses) else None)
+                      e['norte_rows'].append({'coord':coord,'value':v,'status':st})
+                  e['norte_rows']=e['norte_rows'][:200]
+              result['assets'][n]=e
+          body=json.dumps(result,ensure_ascii=False,indent=2).encode()
+          p='statistics/audits/corridor-norte-existing-evidence-'+os.environ['GITHUB_RUN_ID']+'.json'
+          r=requests.put(base+'/contents/'+p,headers={'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json'},json={'message':'Record existing Norte release evidence without reacquisition','branch':'audit/corridor-observatories-20261118','content':base64.b64encode(body).decode()},timeout=30)
+          print('private receipt',r.status_code,'size',len(body),'asset_count',len(result['assets']))
+          r.raise_for_status()
+          PY
