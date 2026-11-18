@@ -1,0 +1,137 @@
+name: Corridor observatories schema inventory
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-observatories-schema.yml']
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright requests beautifulsoup4
+      - run: python -m playwright install chromium
+      - name: Inventory only metadata exposed by normal public report loading
+        shell: bash
+        run: |
+          python - <<'PY'
+          import requests,json,hashlib,os,base64,re,time
+          from urllib.parse import urlsplit
+          from urllib.robotparser import RobotFileParser
+          from bs4 import BeautifulSoup
+          from playwright.sync_api import sync_playwright
+          s=requests.Session()
+          s.headers['User-Agent']='Mozilla/5.0 (compatible; MN-Corridor-Audit/1.0)'
+          reports={
+            'flows':'5740bffe-6f43-45f3-a70a-8bee2515b211',
+            'assets':'79c59de8-c196-4533-b16b-efe081a674ef',
+            'benchmark':'ec7ee36a-4f2a-45e7-929b-bbf4236413a5',
+            'investment':'99850f95-cf1e-4499-be24-e1536f2ce12b',
+            'training':'fe7bbe02-1e49-4ee4-abc5-841d4d9a2eb9'}
+          tenants={'flows':'70a6d36d-6b40-4f4e-b04e-09d2a5037f61','assets':'70a6d36d-6b40-4f4e-b04e-09d2a5037f61','benchmark':'70a6d36d-6b40-4f4e-b04e-09d2a5037f61','investment':'898091e4-fef7-401f-ab0c-03ee782caa43','training':'b424eb7d-946b-4ed9-8c45-dc78d8643ea5'}
+          urls={k:'https://app.powerbi.com/view?r='+base64.b64encode(json.dumps({'k':v,'t':tenants[k],'c':9},separators=(',',':')).encode()).decode().rstrip('=') for k,v in reports.items()}
+          urls['investment']+='&pageName=f3743276e2c4c6d48619'
+          # Discover extra documented report without scraping the site at scale.
+          def allowed(u):
+              root=urlsplit(u); r=s.get(root.scheme+'://'+root.netloc+'/robots.txt',timeout=15)
+              if r.status_code==404:return True
+              if r.status_code!=200:return False
+              p=RobotFileParser();p.parse(r.text.splitlines());return p.can_fetch(s.headers['User-Agent'],u)
+          try:
+              u='https://digitalcologistics.eu/documentacion/'
+              if allowed(u):
+                  x=s.get(u,timeout=25);x.raise_for_status()
+                  a=[a.get('href') for a in BeautifulSoup(x.content,'html.parser').select('a[href]') if urlsplit(a['href']).hostname=='app.powerbi.com']
+                  if len(set(a))==1:urls['valuechains']=a[0]
+                  print('documentation_powerbi_links',len(set(a)),flush=True)
+          except Exception as e:print('documentation_probe',type(e).__name__,flush=True)
+          inventory={}
+          # Inventory names/types only in private receipt, never copy sample values, DAX or raw response bytes.
+          def extract(obj):
+              groups=[]
+              def walk(v,depth=0):
+                  if depth>16:return
+                  if isinstance(v,dict):
+                      for k,z in v.items():
+                          if k.lower() in ('entities','tables') and isinstance(z,list):
+                              for t in z:
+                                  if not isinstance(t,dict):continue
+                                  name=t.get('name') or t.get('Name')
+                                  if not isinstance(name,str):continue
+                                  fields=[]
+                                  for key,items in t.items():
+                                      if key.lower() not in ('properties','columns','measures') or not isinstance(items,list):continue
+                                      for i in items:
+                                          if not isinstance(i,dict):continue
+                                          n=i.get('name') or i.get('Name')
+                                          if isinstance(n,str):
+                                              dtype=i.get('dataType',i.get('type'))
+                                              fields.append({'name':n[:200],'kind':key,'type':dtype if isinstance(dtype,(str,int)) else None})
+                                  groups.append({'name':name[:200],'fields':fields})
+                          elif isinstance(z,(dict,list)):walk(z,depth+1)
+                  elif isinstance(v,list):
+                      for z in v[:1000]:walk(z,depth+1)
+              walk(obj)
+              return groups
+          def shape(v):
+              # Protocol shape only: do not log values.
+              if isinstance(v,dict):return sorted(v.keys())
+              return type(v).__name__
+          with sync_playwright() as p:
+              browser=p.chromium.launch(headless=True)
+              for key,u in urls.items():
+                  item={'source':key,'schemas':[],'query_responses':0,'query_response_json':0,'query_response_errors':0,'model_responses':0}
+                  inventory[key]=item
+                  try:
+                      if not allowed(u):item['status']='robots_not_cleared';continue
+                      ctx=browser.new_context(accept_downloads=False)
+                      page=ctx.new_page()
+                      pending=[]
+                      def receive(resp):
+                          h=urlsplit(resp.url).hostname or ''
+                          path=urlsplit(resp.url).path.lower()
+                          if (h.endswith('.powerbi.com') or h.endswith('.analysis.windows.net')) and resp.status==200 and any(z in path for z in ('conceptualschema','querydata','modelsandexploration')):
+                              pending.append(resp)
+                      page.on('response',receive)
+                      page.goto(u,wait_until='domcontentloaded',timeout=45000)
+                      page.wait_for_timeout(24000)
+                      for resp in pending:
+                          path=urlsplit(resp.url).path.lower()
+                          try:
+                              if 'modelsandexploration' in path:item['model_responses']+=1
+                              elif 'conceptualschema' in path:
+                                  j=resp.json()
+                                  tables=extract(j)
+                                  item['schemas'].append({'top_keys':shape(j),'tables':tables,'sha256':hashlib.sha256(resp.body()).hexdigest()})
+                              elif 'querydata' in path:
+                                  item['query_responses']+=1
+                                  try:
+                                      j=resp.json()
+                                      item['query_response_json']+=1
+                                      if isinstance(j,dict) and 'error' in j:item['query_response_errors']+=1
+                                  except Exception:pass
+                          except Exception as e:item.setdefault('parse_errors',[]).append(type(e).__name__)
+                      item['status']='loaded'
+                  except Exception as e:item['status']=type(e).__name__
+                  finally:
+                      if 'ctx' in locals():ctx.close();del ctx
+                      print(json.dumps({'report':key,'status':item.get('status'),'schemas':len(item['schemas']),'table_count':sum(len(z['tables']) for z in item['schemas']),'field_count':sum(len(t['fields']) for z in item['schemas'] for t in z['tables']),'query_responses':item['query_responses'],'query_response_json':item['query_response_json'],'query_response_errors':item['query_response_errors'],'model_responses':item['model_responses'],'parse_errors':item.get('parse_errors',[])},ensure_ascii=True),flush=True)
+              browser.close()
+          # Same restricted existing sink secret; isolated private audit branch only. No Fxx or model data.
+          token=os.getenv('MN_PRIVATE_SINK_TOKEN')
+          if token:
+              payload={'scope':'technical metadata only; no raw report values or expressions','run_id':os.getenv('GITHUB_RUN_ID'),'reports':inventory}
+              body=base64.b64encode(json.dumps(payload,ensure_ascii=False,indent=2).encode()).decode()
+              dest='https://api.github.com/repos/r-sousa/EU-transp-weekly/contents/statistics/audits/corridor-observatories-schema-'+str(os.getenv('GITHUB_RUN_ID'))+'.json'
+              try:
+                  r=requests.put(dest,headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'},json={'message':'Preserve bounded report schema metadata for internal review','content':body,'branch':'audit/corridor-observatories-20261118'},timeout=25)
+                  print('private_metadata_sink_status',r.status_code,flush=True)
+              except Exception as e:print('private_metadata_sink_error',type(e).__name__,flush=True)
+          else:print('private_sink_unconfigured_metadata_counts_only',flush=True)
+          PY
