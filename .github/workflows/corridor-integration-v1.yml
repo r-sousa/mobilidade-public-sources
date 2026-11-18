@@ -1,0 +1,184 @@
+name: Corridor reconciliation and integration v1
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-integration-v1.yml']
+permissions:
+  contents: read
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        layer: [core, regional]
+    env:
+      LAYER: ${{ matrix.layer }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - name: Reconcile preserved source data; isolate remaining geographical gaps
+        run: |
+          python - <<'PY'
+          import os,requests,csv,io,json,hashlib,base64,time,collections,zipfile,tempfile,re
+          from decimal import Decimal
+          T=os.environ['MN_PRIVATE_SINK_TOKEN']; R=os.environ['GITHUB_RUN_ID']; L=os.environ['LAYER']
+          base='https://api.github.com/repos/r-sousa/EU-transp-weekly'
+          B='audit/corridor-observatories-20261118'; C='mobilidade-norte-recovery-20260919'; D='statistics/audits/'
+          auth={'Authorization':'Bearer '+T,'Accept':'application/vnd.github+json'}
+          audit={'run':R,'layer':L,'inputs':[],'checks':[],'gaps':[],'outputs':[]}
+          def sha(b):return hashlib.sha256(b).hexdigest()
+          def get(path,branch=B):
+              r=requests.get(base+'/contents/'+path,params={'ref':branch},headers=auth,timeout=60);r.raise_for_status();j=r.json()
+              b=base64.b64decode(j['content']);audit['inputs'].append({'path':path,'branch':branch,'blob':j['sha'],'sha256':sha(b)});return b
+          def asset(i):
+              r=requests.get(base+'/releases/assets/'+str(i),headers={'Authorization':'Bearer '+T,'Accept':'application/octet-stream'},timeout=180);r.raise_for_status()
+              b=r.content;audit['inputs'].append({'release_asset_id':i,'bytes':len(b),'sha256':sha(b)});return b
+          def put(name,b):
+              if isinstance(b,str):b=b.encode()
+              for k in range(6):
+                  r=requests.put(base+'/contents/'+D+name,headers=auth,json={'message':'Preserve corridor integrated analytical baseline '+name,'branch':B,'content':base64.b64encode(b).decode()},timeout=60)
+                  if r.status_code==201:break
+                  if r.status_code not in (409,422):break
+                  time.sleep(2+k*3)
+              r.raise_for_status();audit['outputs'].append({'name':name,'sha256':sha(b),'size':len(b)});print('saved',name,len(b),flush=True)
+          def rows(b):return list(csv.DictReader(io.StringIO(b.decode('utf-8-sig'))))
+          def jsonfile(path,branch=B):return json.loads(get(path,branch))
+          def check(label,passed,detail):
+              audit['checks'].append({'test':label,'pass':bool(passed),'detail':detail})
+              if not passed:print('QA_FAIL',label,flush=True)
+          def out(name,fields,data):
+              f=io.StringIO();w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(data);put(name,f.getvalue())
+          def sums(data,cols):
+              return tuple(sum(Decimal(x[k]) for x in data) for k in cols)
+          regions=['PT11','ES11','ES41']
+          if L=='core':
+              c=rows(asset(564455120)); cp=rows(asset(564455091));meta=json.loads(asset(564455131));val=json.loads(asset(564455146))
+              k=['period','origin_region','destination_region','unit']
+              check('C-intereg annual unique keys',len(c)==len({tuple(x[i] for i in k) for x in c})==168,len(c))
+              check('C-intereg pilot unique full rows',len(cp)==len({tuple(sorted(x.items())) for x in cp})==2520,len(cp))
+              check('C-intereg previous view validation',val.get('passed') is True,val.get('scope'))
+              cols=list(cp[0]);audit['cintereg_pilot_columns']=cols
+              # Detect exact pilot column names, check annual aggregation without assuming currency or sectors.
+              if set(k+['value']).issubset(cols):
+                  agg=collections.defaultdict(Decimal)
+                  for x in cp:agg[tuple(x[i] for i in k)]+=Decimal(x['value'])
+                  errs=[str(abs(agg[tuple(x[i] for i in k)]-Decimal(x['value']))) for x in c]
+                  check('C-intereg sector sums vs annual',all(Decimal(e)<Decimal('0.01') for e in errs),{'maximum_abs_difference':str(max(map(Decimal,errs)))})
+              else:audit['gaps'].append('C-intereg sector aggregation column aliases require mapping')
+              aa=rows(get(D+'corridor-aeat-2024-ES11-cn2-mode-44228760949.csv'))+rows(get(D+'corridor-aeat-2024-ES41-cn2-mode-44228760949.csv'))
+              ac=rows(get(D+'corridor-aeat-2024-country-44228760949.csv'));ap=rows(get(D+'corridor-aeat-2024-province-controls-44228760949.csv'))
+              cols=['kg','eur_cents','source_rows']
+              for r in regions[1:]:
+                  for f in ['E','I']:
+                      sel=lambda x:x['nuts2']==r and x['flow_code']==f
+                      check('AEAT three-way totals '+r+f,sums([x for x in aa if sel(x) and x['partner_scope']=='ALL_DECLARED_PARTNERS'],cols)==sums([x for x in ac if sel(x)],cols)==sums([x for x in ap if sel(x)],cols), 'kg EUR cents records')
+                      check('AEAT Portugal subset '+r+f,sums([x for x in aa if sel(x) and x['partner_scope']=='PT'],cols)==sums([x for x in ac if sel(x) and x['country_code']=='PT'],cols),'kg EUR cents records')
+              key=['year','nuts2','flow_code','cn2','border_mode_code','partner_scope'];check('AEAT product key uniqueness',len(aa)==len({tuple(x[k] for k in key) for x in aa}),len(aa))
+              e=rows(get(D+'corridor-eptmc-2024-od-matrix.csv'));ec=rows(get(D+'corridor-eptmc-2024-od-controls.csv'))
+              old=jsonfile('statistics/source-sets/F131/data/g64-rollback-r6-20260927-approved-266.json',C)['records']
+              # Table 6.7 totals versus independent table 6.3 of the same survey: rounded to 1 kt.
+              for r,label in [('ES11','Galicia'),('ES41','Castilla y León')]:
+                  x=next(x for x in ec if x['nuts2']==r)
+                  for role,field in [('interregional_received','destination_interregional_kt'),('interregional_dispatched','origin_interregional_kt')]:
+                      y=next(y for y in old if y['geography_label']==label and y['source_table']=='6.3' and y['measure']==role)
+                      diff=Decimal(x[field])-Decimal(str(y['value']))
+                      check('EPTMC 6.7 vs accepted F131 6.3 '+r+role,abs(diff)<=Decimal('1'),str(diff)+' kt; published rounded table')
+                  diag=next(z for z in e if z['origin_nuts2']==r and z['destination_nuts2']==r)
+                  y=next(y for y in old if y['geography_label']==label and y['source_table']=='6.3' and y['measure']=='intra_total')
+                  diff=Decimal(diag['thousand_tonnes'])-Decimal(str(y['value']))
+                  check('EPTMC intraregional '+r,abs(diff)<=Decimal('1'),str(diff)+' kt')
+              check('EPTMC full OD key set',len(e)==len({(x['origin_nuts2'],x['destination_nuts2']) for x in e})==324,len(e))
+              # Common directed edge table, preserving statistical universe and native units.
+              fact=[]
+              def add(year,o,d,mode,metric,unit,value,basis,source,scope,product='TOTAL',status='reported'):
+                  fact.append(dict(year=year,origin=o,destination=d,mode=mode,metric=metric,unit=unit,value=str(value),basis=basis,source=source,scope=scope,product=product,status=status))
+              for x in c:add(x['period'],x['origin_region'],x['destination_region'],'road','trade_value' if x['unit']=='EUR' else 'trade_weight',x['unit'],x['value'],'publisher_model_estimate','F36/F37','bilateral NUTS2')
+              for x in e:
+                  if x['origin_nuts2'] in regions[1:] and x['destination_nuts2'] in regions[1:]:
+                      add(2024,x['origin_nuts2'],x['destination_nuts2'],'road','freight_movement','tonne',Decimal(x['thousand_tonnes'])*1000,'survey_estimate','F131 table 6.7','Spanish domestic road movements')
+              for x in ac:
+                  if x['country_code']!='PT':continue
+                  o,d=(x['nuts2'],'PT') if x['flow_code']=='E' else ('PT',x['nuts2'])
+                  add(2024,o,d,'all','trade_value','EUR',Decimal(x['eur_cents'])/100,'customs_statistics','AEAT 2024 territorial','Spanish economic province vs partner country')
+                  add(2024,o,d,'all','trade_weight','tonne',Decimal(x['kg'])/1000,'customs_statistics','AEAT 2024 territorial','Spanish economic province vs partner country')
+              mode_map={'1':'sea','2':'rail','3':'road','4':'air','5':'postal','7':'fixed_installations','8':'inland_water','9':'own_propulsion'}
+              for x in aa:
+                  if x['partner_scope']!='PT':continue
+                  o,d=(x['nuts2'],'PT') if x['flow_code']=='E' else ('PT',x['nuts2'])
+                  md=mode_map.get(x['border_mode_code'],'unknown')
+                  add(2024,o,d,md,'trade_value','EUR',Decimal(x['eur_cents'])/100,'customs_statistics','AEAT 2024 territorial','Spanish economic province vs partner country; border mode','CN2:'+x['cn2'])
+                  add(2024,o,d,md,'trade_weight','tonne',Decimal(x['kg'])/1000,'customs_statistics','AEAT 2024 territorial','Spanish economic province vs partner country; border mode','CN2:'+x['cn2'])
+              # Non-equivalent denominator comparisons are diagnostic, not calibration or error rate.
+              cmp=[]
+              for x in c:
+                  if x['period']!='2024':continue
+                  o,d=x['origin_region'],x['destination_region'];reg=d if o=='PT11' else o;fl='I' if o=='PT11' else 'E'
+                  a=[z for z in aa if z['nuts2']==reg and z['flow_code']==fl and z['partner_scope']=='PT' and z['border_mode_code']=='3']
+                  denom=sums(a,['kg','eur_cents']); v=denom[1]/100 if x['unit']=='EUR' else denom[0]/1000
+                  cmp.append(dict(origin=o,destination=d,unit=x['unit'],cintereg_nuts2_road=x['value'],aeat_region_country_road=str(v),ratio_pct=str(round(Decimal(x['value'])*100/v,3)) if v else '',interpretation='diagnostic only; differing geography and model universe; AEAT is an input to C-intereg'))
+              out('corridor-integrated-directed-facts-v1.csv',list(fact[0]),fact)
+              out('corridor-cintereg-aeat-reconciliation-v1.csv',list(cmp[0]),cmp)
+              out('corridor-cintereg-sector-facts-v1.csv',cols if False else list(cp[0]),cp)
+              audit['summary']={'facts':len(fact),'comparison_rows':cmp,'cintereg_sector_rows':len(cp),'cintereg_reference':meta['coverage']}
+          else:
+              # Reuse original private archives first; manifest-pinned assets have differing layouts.
+              wanted={'F133','F134','F135','F136','F140','F141','F148','0012348','0013373','0013374','0012347'}
+              found={}
+              for i in [565922694,565354564,565428232,565876530]:
+                  if wanted.issubset(found):break
+                  try:
+                      b=asset(i);z=zipfile.ZipFile(io.BytesIO(b))
+                      for name in z.namelist():
+                          if not name.lower().endswith('.json'):continue
+                          bn=name.rsplit('/',1)[-1];matches=[k for k in wanted if re.search(r'(?<![0-9A-Za-z])'+k+r'(?![0-9A-Za-z])',bn)]
+                          for k in matches:
+                              if k in found:continue
+                              raw=z.read(name);j=json.loads(raw)
+                              found[k]=(j,i,name,sha(raw))
+                      del b,z
+                  except Exception as e:audit['gaps'].append({'archive':i,'error':type(e).__name__})
+              audit['archive_contents']={k:{'asset_id':v[1],'member':v[2],'sha256':v[3]} for k,v in found.items()}
+              reg=[]
+              for key in ['F140','F141','F148']:
+                  if key not in found:continue
+                  j,i,name,h=found[key]
+                  if not isinstance(j,dict) or not j.get('id') or not j.get('size'):continue
+                  dims=j['id'];sizes=j['size'];ix=[]
+                  for d in dims:
+                      ids=j['dimension'][d]['category']['index'];ix.append(ids if isinstance(ids,list) else [x for x,v in sorted(ids.items(),key=lambda kv:kv[1])])
+                  audit.setdefault('regional_dimension_codes',{})[key]={d:{'count':len(a),'sample':a[:15]} for d,a in zip(dims,ix)}
+                  vals=j.get('value',{});it=vals.items() if isinstance(vals,dict) else enumerate(vals);st=j.get('status',{})
+                  for p,v in it:
+                      if v is None:continue
+                      n=int(p);c=[]
+                      for size,idx in reversed(list(zip(sizes,ix))):c.append(idx[n%size]);n//=size
+                      coord=dict(zip(dims,reversed(c)))
+                      if not any(x in coord.values() for x in regions):continue
+                      status=st.get(str(p)) if isinstance(st,dict) else st[int(p)] if isinstance(st,list) and int(p)<len(st) else None
+                      reg.append({'source':key,'coord':coord,'value':v,'status':status,'asset':i,'member':name})
+              put('corridor-regional-archive-extract-v1.json',json.dumps(reg,ensure_ascii=False,indent=2))
+              ine=[]
+              for k in ['F133','F134','F135','F136','0012348','0013373','0013374','0012347']:
+                  if k not in found:continue
+                  j,i,name,h=found[k]
+                  items=j if isinstance(j,list) else [j]
+                  for x in items:
+                      if not isinstance(x,dict):continue
+                      data=x.get('Dados',{});desc={a:v for a,v in x.items() if a!='Dados'}
+                      selected=[]
+                      if isinstance(data,dict):
+                          for year,d in data.items():
+                              if isinstance(d,list):
+                                  for row in d:
+                                      if isinstance(row,dict) and str(row.get('geocod','')) in ('11','PT11'):
+                                          selected.append({'period':year,**row})
+                      ine.append({'key':k,'asset':i,'member':name,'metadata':desc,'periods':list(data)[:20] if isinstance(data,dict) else [],'norte_rows':selected[:500]})
+              put('corridor-ine-archive-extract-v1.json',json.dumps(ine,ensure_ascii=False,indent=2))
+              audit['summary']={'found':list(found),'missing':sorted(wanted-set(found)),'regional_rows':len(reg),'ine_products':len(ine)}
+          put('corridor-integration-'+L+'-receipt-v1.json',json.dumps(audit,ensure_ascii=False,indent=2))
+          PY
