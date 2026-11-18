@@ -1,0 +1,60 @@
+name: CoLogistics archived studies and contract evidence
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/cologistics-study-tables.yml']
+permissions:
+  contents: read
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests pymupdf
+      - run: |
+          python - <<'PY'
+          import os,requests,hashlib,json,base64,time,re,fitz
+          T=os.environ['MN_PRIVATE_SINK_TOKEN']; api='https://api.github.com/repos/r-sousa/EU-transp-weekly';branch='audit/corridor-observatories-20261118'
+          hdr={'Authorization':'Bearer '+T,'Accept':'application/vnd.github+json'}
+          binary={'Authorization':'Bearer '+T,'Accept':'application/octet-stream'}
+          path='statistics/audits/cologistics-preservation/44326358622/'
+          def save(n,j):
+              b=json.dumps(j,ensure_ascii=False,indent=2).encode()
+              if len(b)>700000:raise ValueError('bounded receipt too large')
+              for i in range(6):
+                  r=requests.put(api+'/contents/'+path+n,headers=hdr,json={'branch':branch,'message':'Preserve CoLogistics study table candidates '+n,'content':base64.b64encode(b).decode()},timeout=40)
+                  if r.status_code==201:break
+                  if r.status_code not in (409,422):break
+                  time.sleep(2+i*3)
+              r.raise_for_status()
+          def download(i):
+              x=requests.get(api+'/releases/assets/'+str(i),headers=binary,timeout=100);x.raise_for_status();return x.content
+          result=[]
+          for name,i in [('textile',763743844),('renewables',763744896),('construction',763745316),('sources',763744172),('predictive',763744489)]:
+              b=download(i);doc=fitz.open(stream=b,filetype='pdf')
+              pages=[];facts=[];errors=[]
+              for p in doc:
+                  text=p.get_text('text');lines=[z.strip() for z in text.splitlines() if z.strip()]
+                  tags=[z for z in lines if re.search(r'(?i)\b(?:TARIC|CNAE|NC8|NC4|NC2|HS4|HS6|toneladas|exportaciones|importaciones|Eurostat|Agencia Tributaria|DataComex)\b',z)]
+                  pages.append({'page':p.number+1,'text_chars':len(text),'images':len(p.get_images()),'matched_terms':len(tags),'heading_candidates':lines[:4]})
+                  if len(tags)==0 and name!='sources':continue
+                  try:
+                      for q,t in enumerate(p.find_tables().tables):
+                          rows=t.extract()
+                          if len(rows)<2 or t.col_count<2:continue
+                          if name!='sources' and sum(bool(re.search(r'\d',str(c))) for row in rows for c in row if c is not None)<3:continue
+                          if any(re.search(r'(?i)correo electr[oó]nico|tel[eé]fono|persona de contacto',str(c)) for row in rows for c in row if c):continue
+                          facts.append({'page':p.number+1,'table_index':q,'bbox':list(t.bbox),'row_count':t.row_count,'column_count':t.col_count,'candidate_rows':rows,'status':'automatic geometry extraction; visual QA required before analytical use'})
+                  except Exception as e:errors.append({'page':p.number+1,'type':type(e).__name__})
+              save('study-'+name+'-page-index.json',{'release_asset_id':i,'source_sha256':hashlib.sha256(b).hexdigest(),'pages':pages,'pdf_pages':len(doc),'errors':errors})
+              if facts:
+                  for k in range(0,len(facts),20):save('study-'+name+'-tables-'+str(k//20)+'.json',{'release_asset_id':i,'source_sha256':hashlib.sha256(b).hexdigest(),'tables':facts[k:k+20]})
+              result.append({'name':name,'pages':len(doc),'candidate_tables':len(facts),'candidate_rows':sum(t['row_count'] for t in facts),'errors':len(errors)})
+              print(name,len(doc),len(facts),flush=True)
+          save('study-extraction-receipt.json',{'studies':result,'scope':'private candidate table extraction from archived original producer PDFs; not admitted statistical observations'})
+          PY
