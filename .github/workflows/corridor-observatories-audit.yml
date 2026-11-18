@@ -1,0 +1,106 @@
+name: Corridor observatories bounded reconnaissance
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-observatories-audit.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright requests beautifulsoup4
+      - run: python -m playwright install --with-deps chromium
+      - name: Inspect public pages without exporting data
+        shell: bash
+        run: |
+          python - <<'PY'
+          import requests, json, hashlib, time, re
+          from bs4 import BeautifulSoup
+          from urllib.parse import urljoin, urlsplit
+          from urllib.robotparser import RobotFileParser
+          from playwright.sync_api import sync_playwright
+          roots = {
+              'flows':'sistema-de-inteligencia-de-negocio-de-los-flujos-logisticos',
+              'assets':'mapa-digital-de-capacidades-y-suelo-logistico',
+              'benchmark':'sistema-de-analitica-objetiva-de-la-competitividad-de-las-infraestructuras-y-capacidades-logisticas',
+              'investment':'catalogo-integrado-para-la-atraccion-de-inversion-logistica-al-sistema-logistico-de-la-eurorregion',
+              'training':'catalogo-de-oferta-formativa-en-materias-vinculadas-a-la-digitalizacion-de-la-logistica'}
+          session = requests.Session()
+          ua = 'Mozilla/5.0 (compatible; MN-Corridor-Audit/1.0)'
+          session.headers['User-Agent']=ua
+          robots={}
+          def permitted(u):
+              s=urlsplit(u); origin=s.scheme+'://'+s.netloc
+              if origin not in robots:
+                  try:
+                      x=session.get(origin+'/robots.txt',timeout=15)
+                      if x.status_code==404: robots[origin]=True
+                      elif x.status_code==200:
+                          rp=RobotFileParser(); rp.parse(x.text.splitlines()); robots[origin]=rp
+                      else: robots[origin]=False
+                  except requests.RequestException: robots[origin]=False
+              rp=robots[origin]; return rp if isinstance(rp,bool) else rp.can_fetch(ua,u)
+          def get(u):
+              if not permitted(u): raise ValueError('robots not cleared')
+              time.sleep(1)
+              x=session.get(u,timeout=25); x.raise_for_status()
+              return x
+          def safe(u):
+              s=urlsplit(u); return s.scheme+'://'+s.netloc+s.path
+          def emit(x): print(json.dumps(x,ensure_ascii=True),flush=True)
+          def receipt(x):
+              return dict(status=x.status_code,bytes=len(x.content),sha256=hashlib.sha256(x.content).hexdigest(),mime=x.headers.get('Content-Type'))
+          urls={}
+          for key,slug in roots.items():
+              try:
+                  x=get('https://observatorio.digitalcologistics.eu/herramientas/'+slug)
+                  soup=BeautifulSoup(x.content,'html.parser')
+                  urls[key]=next(a['href'] for a in soup.select('a[href]') if urlsplit(a['href']).hostname=='app.powerbi.com')
+                  emit(dict(source=key,html=receipt(x),report_host='app.powerbi.com',public_view_link=True))
+              except Exception as e: emit(dict(source=key,error=type(e).__name__,stage='landing'))
+          # Collect only protocol metadata and aggregate diagnostics of normal browser responses.
+          # No model content, network payloads, tokens, identifiers, raw data or screenshots are printed.
+          with sync_playwright() as p:
+              browser=p.chromium.launch(headless=True)
+              for key,u in urls.items():
+                  if not permitted(u):
+                      emit(dict(source=key,stage='browser',status='robots_not_cleared')); continue
+                  context=browser.new_context(accept_downloads=False)
+                  page=context.new_page()
+                  seen=[]
+                  def observe(resp):
+                      try:
+                          host=urlsplit(resp.url).hostname or ''
+                          if not (host.endswith('.powerbi.com') or host.endswith('.analysis.windows.net')): return
+                          if resp.request.resource_type not in ('xhr','fetch'): return
+                          path=urlsplit(resp.url).path.lower()
+                          kind=next((k for k in ('querydata','conceptualschema','modelsandexploration','metadata','exploration','report') if k in path),'other')
+                          seen.append((kind,resp.status))
+                      except Exception: pass
+                  page.on('response',observe)
+                  try:
+                      page.goto(u,wait_until='domcontentloaded',timeout=45000)
+                      page.wait_for_timeout(15000)
+                      from collections import Counter
+                      emit(dict(source=key,stage='browser',title=page.title(),response_classes=[dict(kind=k[0],status=k[1],count=v) for k,v in Counter(seen).items()]))
+                  except Exception as e: emit(dict(source=key,stage='browser',error=type(e).__name__))
+                  finally: context.close()
+              browser.close()
+          base='https://elcorredormediterraneo.com/estado-de-las-obras/'
+          try:
+              x=get(base); soup=BeautifulSoup(x.content,'html.parser')
+              links=sorted(set(urljoin(base,a['href']) for a in soup.select('a[href]') if '/tramo/' in a['href']))
+              pdfs=sorted(set(urljoin(base,a['href']) for a in soup.select('a[href]') if '.pdf' in a['href'].lower()))
+              emit(dict(source='mediterranean',landing=receipt(x),sections=len(links),pdf_links=len(pdfs)))
+              for u in links[:8]:
+                  try:
+                      x=get(u); soup=BeautifulSoup(x.content,'html.parser')
+                      emit(dict(source='mediterranean_section',url=safe(u),html=receipt(x),list_items=len(soup.select('li')),headings=len(soup.select('h1,h2,h3'))))
+                  except Exception as e: emit(dict(source='mediterranean_section',url=safe(u),error=type(e).__name__))
+          except Exception as e: emit(dict(source='mediterranean',error=type(e).__name__))
+          PY
