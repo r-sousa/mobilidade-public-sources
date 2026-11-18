@@ -1,0 +1,81 @@
+name: Corridor targeted product and road data completion
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-final-gap-products.yml']
+permissions:
+  contents: read
+jobs:
+  gap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        task: [jcyl, ine, cintereg]
+    env:
+      TASK: ${{ matrix.task }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests beautifulsoup4 openpyxl
+      - run: |
+          python - <<'PY'
+          import os, requests, json, io, csv, base64, zipfile, hashlib, time, re
+          from urllib.parse import urljoin,urlsplit
+          from bs4 import BeautifulSoup
+          from openpyxl import load_workbook
+          from urllib.robotparser import RobotFileParser
+          T=os.environ['MN_PRIVATE_SINK_TOKEN']; task=os.environ['TASK']; run=os.environ['GITHUB_RUN_ID']
+          base='https://api.github.com/repos/r-sousa/EU-transp-weekly';branch='audit/corridor-observatories-20261118';root='statistics/audits/'
+          auth={'Authorization':'Bearer '+T,'Accept':'application/vnd.github+json'}
+          sess=requests.Session();sess.headers['User-Agent']='MobilidadeNorte-source-audit/1.0'
+          out={'task':task,'run':run,'results':[],'errors':[]}
+          def save(n,o):
+              b=json.dumps(o,ensure_ascii=False,indent=2).encode()
+              for i in range(6):
+                  r=requests.put(base+'/contents/'+root+n,headers=auth,json={'branch':branch,'message':'Preserve targeted source gap evidence '+n,'content':base64.b64encode(b).decode()},timeout=40)
+                  if r.status_code==201:break
+                  if r.status_code not in (409,422):break
+                  time.sleep(2+i*3)
+              r.raise_for_status();print('saved',n,len(b),flush=True)
+          if task=='ine':
+              for code in ['0011463','0011464','0011465','0011466']:
+                  try:
+                      r=sess.get('https://www.ine.pt/ine/json_indicador/pindica.jsp',params={'op':2,'varcd':code,'lang':'PT','Dim1':'S7A2024','Dim2':'11'},timeout=(15,45));r.raise_for_status();j=r.json();x=j[0] if isinstance(j,list) else j
+                      title=x.get('IndicadorDsg','');rr=x.get('Dados',{}).get('2024',[])
+                      rec={'code':code,'title':title,'url':r.url,'sha256':hashlib.sha256(r.content).hexdigest(),'rows':len(rr),'selection_ok':bool(rr) and all(str(y.get('geocod'))=='11' and y.get('geodsg')=='Norte' for y in rr)}
+                      out['results'].append(rec)
+                      if rec['selection_ok'] and 'mercadorias estrangeiros' in title.lower():save('corridor-ine-foreign-'+code+'-2024-v1.json',{'metadata':rec,'source_body':j})
+                  except Exception as e:out['errors'].append([code,repr(e)[:200]])
+                  time.sleep(1)
+          elif task=='jcyl':
+              rr=requests.get(base+'/releases/assets/564454960',headers={'Authorization':'Bearer '+T,'Accept':'application/octet-stream'},timeout=90);rr.raise_for_status()
+              z=zipfile.ZipFile(io.BytesIO(rr.content));bb=z.read('raw/annual-2019-2024.zip');a=zipfile.ZipFile(io.BytesIO(bb))
+              out['archive_sha256']=hashlib.sha256(bb).hexdigest();out['members']=a.namelist()
+              # Inspect exact source tables, region columns, NC chapters and sections. Preserve native grids where compact.
+              for n in a.namelist():
+                  if not n.lower().endswith('.xlsx') or not re.search(r'/(?:T 2\.[12456789]|T 3\.[13456789])',n):continue
+                  try:
+                      raw=a.read(n);w=load_workbook(io.BytesIO(raw),read_only=True,data_only=True)
+                      for s in w:
+                          grid=[['' if x is None else str(x) for x in row] for row in s.values]
+                          if not any('2024' in ' '.join(row) for row in grid[:20]):continue
+                          if not any(re.search(r'(?i)cap[ií]tulo|secci[oó]n|arancel|taric|nomenclatura', ' '.join(row)) for row in grid[:25]):continue
+                          rec={'member':n,'sheet':s.title,'sha256':hashlib.sha256(raw).hexdigest(),'shape':[len(grid),max(map(len,grid),default=0)],'header':grid[:18]}
+                          # Region sheet or combined all-province table; no inferred values.
+                          if len(grid)<300 and max(map(len,grid),default=0)<50:
+                              rec['grid']=grid
+                          out['results'].append(rec)
+                  except Exception as e:out['errors'].append([n,repr(e)[:200]])
+          else:
+              # Public C-intereg page and its official embedded display only. Do not visit sponsor-only surfaces.
+              u='https://www.c-intereg.es/dashboard-comercio-anual-por-ramas-y-origen-destino-ccaa/'
+              r=sess.get(u,timeout=30);r.raise_for_status();s=BeautifulSoup(r.content,'html.parser')
+              out['source']={'url':u,'sha256':hashlib.sha256(r.content).hexdigest()}
+              out['results']=[{'type':el.name,'url':urljoin(u,el.get('src') or el.get('href') or el.get('data-url') or ''),'text':el.get_text(' ',strip=True)[:100]} for el in s.select('iframe[src], a[href], tableau-viz[src], param[name]') if any(t in str(el).lower() for t in ['tableau','powerbi','portalestadistico','csv','xlsx','.twb'])][:40]
+              out['notes']='C-intereg public annual R5 portal currently visibly lists 2023A/2022P, no 2024. Check public dashboard separate edition; no protected or unexposed data access.'
+          save('corridor-final-gap-'+task+'-v1.json',out)
+          PY
