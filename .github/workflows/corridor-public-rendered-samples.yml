@@ -1,0 +1,113 @@
+name: Corridor public rendered data samples
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-public-rendered-samples.yml']
+permissions:
+  contents: read
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        report: [flows, assets, benchmark, investment, valuechains]
+    env:
+      REPORT: ${{ matrix.report }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright requests beautifulsoup4
+      - run: python -m playwright install chromium
+      - name: Capture bounded sample of rendered public factual data
+        run: |
+          python - <<'PY'
+          import requests,os,json,base64,re,time,hashlib
+          from urllib.parse import urlsplit
+          from urllib.robotparser import RobotFileParser
+          from bs4 import BeautifulSoup
+          from playwright.sync_api import sync_playwright
+          key=os.environ['REPORT']
+          keys={'flows':'5740bffe-6f43-45f3-a70a-8bee2515b211','assets':'79c59de8-c196-4533-b16b-efe081a674ef','benchmark':'ec7ee36a-4f2a-45e7-929b-bbf4236413a5','investment':'99850f95-cf1e-4499-be24-e1536f2ce12b'}
+          tenant='898091e4-fef7-401f-ab0c-03ee782caa43' if key=='investment' else '70a6d36d-6b40-4f4e-b04e-09d2a5037f61'
+          s=requests.Session();s.headers['User-Agent']='Mozilla/5.0 (compatible; MN-Corridor-Audit/1.0)'
+          def allowed(u):
+              a=urlsplit(u);r=s.get(a.scheme+'://'+a.netloc+'/robots.txt',timeout=15)
+              if r.status_code==404:return True
+              if r.status_code!=200:return False
+              p=RobotFileParser();p.parse(r.text.splitlines());return p.can_fetch(s.headers['User-Agent'],u)
+          if key=='valuechains':
+              u='https://digitalcologistics.eu/documentacion/'
+              if not allowed(u):raise SystemExit('robots not cleared')
+              x=s.get(u,timeout=25);x.raise_for_status()
+              links={a['href'] for a in BeautifulSoup(x.content,'html.parser').select('a[href]') if urlsplit(a['href']).hostname=='app.powerbi.com'}
+              if len(links)!=1:raise SystemExit('ambiguous')
+              u=links.pop()
+          else:
+              u='https://app.powerbi.com/view?r='+base64.b64encode(json.dumps({'k':keys[key],'t':tenant,'c':9},separators=(',',':')).encode()).decode().rstrip('=')
+              if key=='investment':u+='&pageName=f3743276e2c4c6d48619'
+          if not allowed(u):raise SystemExit('robots not cleared')
+          out={'report':key,'run_id':os.getenv('GITHUB_RUN_ID'),'scope':'bounded factual public visual labels, internal sample only; no bulk extraction, raw response or protected design','pages':[]}
+          with sync_playwright() as p:
+              browser=p.chromium.launch(headless=True)
+              context=browser.new_context(accept_downloads=False)
+              page=context.new_page()
+              page.goto(u,wait_until='domcontentloaded',timeout=45000);page.wait_for_timeout(13000)
+              seen=set()
+              def capture(step):
+                  data=page.locator('[aria-label], [role=gridcell], [role=columnheader], [role=row], svg text').evaluate_all("""els=>els.filter(e=>{let r=e.getBoundingClientRect();return r.width>1&&r.height>1&&getComputedStyle(e).visibility==='visible'}).slice(0,2000).map(e=>({tag:e.tagName,role:e.getAttribute('role'),label:(e.getAttribute('aria-label')||e.innerText||e.textContent||'').trim().slice(0,250)})).filter(e=>e.label)""")
+                  title=[x['label'] for x in data if re.search(r'(?i)page navigation|indicadores|infraestruct|flujos|cadena|comercio|competitividad',x['label']) and len(x['label'])<100][:15]
+                  # Only a small number of public chart datum labels, plus visible non-personal infrastructure table cells.
+                  facts=[]
+                  for x in data:
+                      label=x['label']
+                      if re.search(r'(?i)@|sharepoint|https?://|email|encuestad|teléfono|phone|dirección personal',label):continue
+                      if re.search(r'(?i)(year|año|fecha|país|country|tonelada|tonnes|mercanc|importe|valor|recuento|count|total|kg|%|teu|pasajero|tráfico|latitud|longitud|superficie|ancho de vía|electrificaci)',label) and re.search(r'\d',label) and 7<len(label)<200:
+                          if label not in facts:facts.append(label)
+                  cells=[]
+                  if key=='assets':
+                      for x in data:
+                          if x['role'] in ('gridcell','columnheader') and not re.search(r'(?i)@|https?://|teléfono|email',x['label']) and len(x['label'])<120:
+                              cells.append(x['label'])
+                          if len(cells)>=30:break
+                  fingerprint=hashlib.sha256(json.dumps([title,facts[:30],cells],ensure_ascii=False).encode()).hexdigest()
+                  if fingerprint in seen:return False
+                  seen.add(fingerprint)
+                  out['pages'].append({'step':step,'page_labels':list(dict.fromkeys(title)),'public_numeric_labels':facts[:30],'public_grid_cells':cells,'fingerprint':fingerprint})
+                  return True
+              capture('initial')
+              for i in range(5):
+                  # Next button is explicit public page navigation; cover-only reports expose Page navigation shape.
+                  candidates=page.locator('[aria-label="Next Page"], [title="Next Page"], [aria-label^="Page navigation"]')
+                  chosen=False
+                  for j in range(min(candidates.count(),12)):
+                      loc=candidates.nth(j)
+                      if not loc.is_visible():continue
+                      label=loc.get_attribute('aria-label') or loc.get_attribute('title') or ''
+                      if label.startswith('Page navigation') and re.search(r'(?i)ETS|nota metod',label):continue
+                      try:
+                          before=page.url
+                          loc.click(timeout=2500)
+                          page.wait_for_timeout(8000)
+                          if urlsplit(page.url).hostname!='app.powerbi.com':page.go_back(timeout=20000);continue
+                          if capture('navigation_'+str(i+1)):
+                              chosen=True;break
+                      except Exception:continue
+                  if not chosen:break
+              browser.close()
+          print(json.dumps({'report':key,'pages':len(out['pages']),'numeric_labels':sum(len(x['public_numeric_labels']) for x in out['pages']),'grid_cells':sum(len(x['public_grid_cells']) for x in out['pages'])}),flush=True)
+          token=os.getenv('MN_PRIVATE_SINK_TOKEN')
+          if not token:raise SystemExit('no private sink')
+          dest='https://api.github.com/repos/r-sousa/EU-transp-weekly/contents/statistics/audits/corridor-rendered-sample-'+os.getenv('GITHUB_RUN_ID')+'-'+key+'.json'
+          payload=base64.b64encode(json.dumps(out,ensure_ascii=False,indent=2).encode()).decode()
+          for i in range(4):
+              rr=requests.put(dest,headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'},json={'message':'Preserve bounded public rendered factual sample '+key,'content':payload,'branch':'audit/corridor-observatories-20261118'},timeout=30)
+              if rr.status_code==201:break
+              if rr.status_code not in (409,422):break
+              time.sleep(2+i*3)
+          print('private_sink_status',rr.status_code,flush=True)
+          if rr.status_code!=201:raise SystemExit('missing receipt')
+          PY
