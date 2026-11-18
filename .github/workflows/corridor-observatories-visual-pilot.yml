@@ -1,0 +1,154 @@
+name: Corridor observatories bounded visual data pilot
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-observatories-visual-pilot.yml']
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        report: [flows, assets, benchmark, investment, valuechains]
+    env:
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+      REPORT: ${{ matrix.report }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright requests beautifulsoup4
+      - run: python -m playwright install chromium
+      - name: Test ordinary published visual navigation and bounded aggregate data
+        run: |
+          python - <<'PY'
+          import os, re, json, base64, hashlib, requests, time
+          from urllib.parse import urlsplit
+          from urllib.robotparser import RobotFileParser
+          from bs4 import BeautifulSoup
+          from playwright.sync_api import sync_playwright
+          name=os.environ['REPORT']
+          keys={'flows':'5740bffe-6f43-45f3-a70a-8bee2515b211','assets':'79c59de8-c196-4533-b16b-efe081a674ef','benchmark':'ec7ee36a-4f2a-45e7-929b-bbf4236413a5','investment':'99850f95-cf1e-4499-be24-e1536f2ce12b'}
+          tenant='898091e4-fef7-401f-ab0c-03ee782caa43' if name=='investment' else '70a6d36d-6b40-4f4e-b04e-09d2a5037f61'
+          s=requests.Session()
+          s.headers['User-Agent']='Mozilla/5.0 (compatible; MN-Corridor-Audit/1.0)'
+          def allowed(u):
+              a=urlsplit(u);r=s.get(a.scheme+'://'+a.netloc+'/robots.txt',timeout=15)
+              if r.status_code==404:return True
+              if r.status_code!=200:return False
+              p=RobotFileParser();p.parse(r.text.splitlines());return p.can_fetch(s.headers['User-Agent'],u)
+          if name=='valuechains':
+              u='https://digitalcologistics.eu/documentacion/'
+              if not allowed(u):raise SystemExit('robots denied documentation')
+              x=s.get(u,timeout=25);x.raise_for_status()
+              links={a['href'] for a in BeautifulSoup(x.content,'html.parser').select('a[href]') if urlsplit(a['href']).hostname=='app.powerbi.com'}
+              if len(links)!=1:raise SystemExit('ambiguous report link')
+              u=links.pop()
+          else:
+              u='https://app.powerbi.com/view?r='+base64.b64encode(json.dumps({'k':keys[name],'t':tenant,'c':9},separators=(',',':')).encode()).decode().rstrip('=')
+              if name=='investment':u+='&pageName=f3743276e2c4c6d48619'
+          if not allowed(u):raise SystemExit('robots denied report')
+          out={'report':name,'scope':'bounded ordinary public visual interactions; private internal sample, not cleared for distribution','run_id':os.getenv('GITHUB_RUN_ID'),'visits':[],'query_diagnostics':[],'aggregate_samples':[]}
+          # Retain only a small set of numeric aggregate cells whose public visual descriptor is identifiable.
+          # Never retain individual company survey data, personal records, SharePoint/helper metadata, credentials, or raw responses.
+          permitted_tables={'flows':{'0 - Medidas','00_NST','M_FER','00_Portugal','M_CAR','M_MAR','M_AERO','00_MAR','00_AEREO','Agencia Tributaria_actual','Agencia Tributaria_hist','00_TARIC_actual','00_TARIC_hist','E_CARR'},'benchmark':{'_medidas','CFLOX_mar_mercancias','carretera_matrix','OTLE_intermodal','AEREO','PIB','POP','UNCTAD_PLSCI','carretera','superficie logistica'},'investment':{'Mercancías','Mercancías-OPPE','Mercancías-AENA','indicadores digitalización','OECD','CCDR NORTE','mercancías_pt','Indicadores POCTEP'},'assets':set(),'valuechains':set()}[name]
+          def scrub_query(req):
+              try:
+                  j=req.post_data_json
+                  # Power BI semantic queries: resolve From aliases and Select property references.
+                  found=[]
+                  def walk(x):
+                      if isinstance(x,dict):
+                          if isinstance(x.get('From'),list) and isinstance(x.get('Select'),list):
+                              alias={f.get('Name'):f.get('Entity') for f in x['From'] if isinstance(f,dict)}
+                              for sel in x['Select']:
+                                  if not isinstance(sel,dict):continue
+                                  for kind in ('Measure','Aggregation','Column'):
+                                      if kind not in sel:continue
+                                      z=sel[kind]; a=z.get('Expression',{})
+                                      if kind=='Aggregation':a=a.get('Column',{}).get('Expression',a)
+                                      table=alias.get(a.get('SourceRef',{}).get('Source')) or a.get('SourceRef',{}).get('Entity')
+                                      prop=z.get('Property') or z.get('Expression',{}).get('Column',{}).get('Property')
+                                      found.append({'kind':kind,'table':table,'property':prop})
+                          for v in x.values():
+                              if isinstance(v,(dict,list)):walk(v)
+                      elif isinstance(x,list):
+                          for v in x:walk(v)
+                  walk(j)
+                  return found
+              except Exception:return []
+          def query_result(resp,visit):
+              try:
+                  selected=scrub_query(resp.request)
+                  j=resp.json()
+                  diagnostic={'visit':visit,'http':resp.status,'select_count':len(selected),'result_count':len(j.get('results',[])) if isinstance(j,dict) else None}
+                  out['query_diagnostics'].append(diagnostic)
+                  if len(out['aggregate_samples'])>=12 or not selected:return
+                  # Only simple single aggregate KPI queries, no grouped axes or dimensions; do not reconstruct raw facts.
+                  if len(selected)!=1 or selected[0]['kind'] not in ('Measure','Aggregation') or selected[0]['table'] not in permitted_tables:return
+                  for res in j.get('results',[]):
+                      data=res.get('result',{}).get('data',{})
+                      dsr=data.get('dsr',{})
+                      for ds in dsr.get('DS',[]):
+                          for ph in ds.get('PH',[]):
+                              for k,rows in ph.items():
+                                  if not isinstance(rows,list) or len(rows)!=1:continue
+                                  vals=rows[0].get('C',[]) if isinstance(rows[0],dict) else []
+                                  if len(vals)==1 and isinstance(vals[0],(int,float)) and not isinstance(vals[0],bool):
+                                      out['aggregate_samples'].append({'visit':visit,'measure':selected[0],'numeric_value':vals[0],'filter_context':'public visual/default page context; not independently reconciled','source_sha256':hashlib.sha256(resp.body()).hexdigest()})
+                                      if len(out['aggregate_samples'])>=12:return
+              except Exception:pass
+          with sync_playwright() as p:
+              browser=p.chromium.launch(headless=True)
+              ctx=browser.new_context(accept_downloads=False)
+              page=ctx.new_page()
+              pending=[]
+              def receive(resp):
+                  h=urlsplit(resp.url).hostname or ''
+                  if (h.endswith('.powerbi.com') or h.endswith('.analysis.windows.net')) and 'querydata' in urlsplit(resp.url).path.lower() and resp.status==200:pending.append(resp)
+              page.on('response',receive)
+              page.goto(u,wait_until='domcontentloaded',timeout=45000)
+              page.wait_for_timeout(15000)
+              visited=set()
+              def inspect(label):
+                  # Only accessible labels exposed in the rendered interface. No hidden model pages.
+                  for resp in pending[:40]:query_result(resp,label)
+                  pending.clear()
+                  els=page.locator('button, [role=button], [role=tab], [role=link], a, [tabindex="0"]').evaluate_all("""xs=>xs.filter(e=>{let r=e.getBoundingClientRect();return r.width>1&&r.height>1&&getComputedStyle(e).visibility==='visible'}).slice(0,250).map(e=>({t:(e.getAttribute('aria-label')||e.getAttribute('title')||e.innerText||'').trim().slice(0,160),role:e.getAttribute('role')||e.tagName.toLowerCase()})).filter(e=>e.t)""")
+                  # Restrict metadata to labels of navigation/visual controls, no free-form page text.
+                  labels=list(dict.fromkeys(x['t'] for x in els if len(x['t'])<100 and re.search(r'(?i)page|página|next|siguiente|anterior|comercio|mercanc|transporte|infraestruct|competitiv|ferrocarr|portuari|cadena|sector|flujos|indicador|mapa|inicio|menu',x['t'])))[:60]
+                  out['visits'].append({'label':label,'navigation_labels':labels,'visible_controls':len(els)})
+                  return labels
+              labels=inspect('initial')
+              # Use only clearly labelled visible public navigation controls. A click is not a custom query.
+              for step in range(4):
+                  choices=[l for l in labels if l not in visited and re.search(r'(?i)next page|página siguiente|siguiente página|comercio|mercanc|flujos|infraestruct|ferrocarr|cadena|sector|mapa|transporte',l) and not re.search(r'(?i)share|compartir|export|download|descarg|external|website|http|contact|empresa',l)]
+                  if not choices:break
+                  label=choices[0];visited.add(label)
+                  try:
+                      loc=page.get_by_role('button',name=label,exact=True).or_(page.get_by_role('tab',name=label,exact=True)).or_(page.locator('[tabindex="0"]').filter(has_text=re.compile('^'+re.escape(label)+'$')))
+                      if not loc.count():continue
+                      loc.first.click(timeout=4500)
+                      page.wait_for_timeout(9000)
+                      if urlsplit(page.url).hostname!='app.powerbi.com':break
+                      labels=inspect(label)
+                  except Exception:continue
+              browser.close()
+          out['aggregate_samples']=out['aggregate_samples'][:12]
+          print(json.dumps({'report':name,'visits':len(out['visits']),'query_responses':len(out['query_diagnostics']),'numeric_samples':len(out['aggregate_samples'])}),flush=True)
+          token=os.getenv('MN_PRIVATE_SINK_TOKEN')
+          if not token:raise SystemExit('private sink missing; cannot preserve')
+          path='statistics/audits/corridor-visual-pilot-'+os.getenv('GITHUB_RUN_ID')+'-'+name+'.json'
+          dest='https://api.github.com/repos/r-sousa/EU-transp-weekly/contents/'+path
+          body=base64.b64encode(json.dumps(out,ensure_ascii=False,indent=2).encode()).decode()
+          for attempt in range(4):
+              res=requests.put(dest,headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'},json={'message':'Preserve bounded visual pilot for '+name,'content':body,'branch':'audit/corridor-observatories-20261118'},timeout=30)
+              if res.status_code==201:break
+              if res.status_code not in (409,422):break
+              time.sleep(2+attempt*3)
+          print('private_sink_status',res.status_code,flush=True)
+          if res.status_code!=201:raise SystemExit('private receipt failed')
+          PY
