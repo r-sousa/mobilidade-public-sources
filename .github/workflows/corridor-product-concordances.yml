@@ -1,0 +1,65 @@
+name: Corridor official 2024 product concordances
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-product-concordances.yml']
+permissions:
+  contents: read
+jobs:
+  mappings:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - name: Discover official XKOS tables and retrieve exact-year crosswalks
+        run: |
+          python - <<'PY'
+          import os,json,requests,re,csv,io,hashlib,base64,time,collections
+          run=os.environ['GITHUB_RUN_ID'];token=os.environ.get('MN_PRIVATE_SINK_TOKEN')
+          if not token:raise SystemExit('private sink required')
+          url='https://publications.europa.eu/webapi/rdf/sparql'
+          prefixes='PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#> PREFIX dct: <http://purl.org/dc/terms/> '
+          def query(q):
+              r=requests.post(url,data={'query':prefixes+q},headers={'Accept':'text/csv','User-Agent':'MN-Corridor-Audit/1.0'},timeout=100);r.raise_for_status()
+              if r.text.lstrip().startswith('<'):raise ValueError('not CSV')
+              return list(csv.DictReader(io.StringIO(r.text))),hashlib.sha256(r.content).hexdigest()
+          def preserve(name,body):
+              data=body.encode()
+              if len(data)>650000:raise ValueError('partition too large')
+              target='https://api.github.com/repos/r-sousa/EU-transp-weekly/contents/statistics/audits/'+name
+              for n in range(5):
+                  r=requests.put(target,headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'},json={'message':'Preserve official product concordance candidate '+name,'branch':'audit/corridor-observatories-20261118','content':base64.b64encode(data).decode()},timeout=35)
+                  if r.status_code==201:break
+                  if r.status_code not in (409,422):break
+                  time.sleep(3+n*2)
+              if r.status_code!=201:raise RuntimeError('sink failure '+str(r.status_code))
+          cand,h=query('SELECT DISTINCT ?corr WHERE { ?corr a xkos:Correspondence . FILTER(CONTAINS(LCASE(STR(?corr)), "cn2024") || CONTAINS(LCASE(STR(?corr)), "cn2025") || CONTAINS(LCASE(STR(?corr)), "nace2_cpa21")) } ORDER BY ?corr')
+          ids=[r['corr'] for r in cand if r.get('corr')]
+          receipt={'official_endpoint':url,'discovery_sha256':h,'candidates':ids,'products':[]}
+          print('discovered',len(ids),flush=True)
+          selected=[u for u in ids if re.search(r'(?i)(CN2024.*(?:CPA21|NACE2|NST2007)|(?:CPA21|NACE2|NST2007).*CN2024|NACE2_CPA21)',u)]
+          # Exact 2024 only. Do not substitute CN2025 or reinterpret producer sector labels.
+          for u in selected[:8]:
+              if not u.startswith('http') or any(v in u for v in '<> '):continue
+              n=u.rsplit('/',1)[-1];rows=[];hashes=[]
+              for off in range(0,30000,5000):
+                  q='SELECT DISTINCT ?source ?target ?association WHERE { <'+u+'> xkos:madeOf ?association . ?association xkos:sourceConcept ?s . ?s skos:notation ?source . OPTIONAL { ?association xkos:targetConcept ?t . ?t skos:notation ?target . } } ORDER BY ?source ?target ?association LIMIT 5000 OFFSET '+str(off)
+                  batch,h=query(q);hashes.append(h);rows+=batch
+                  if len(batch)<5000:break
+              if not rows:continue
+              if len(rows)>=30000:raise ValueError('bounded cap reached')
+              pairs=sorted(set((r['source'],r.get('target','')) for r in rows))
+              counts=collections.defaultdict(set)
+              for a,b in pairs:counts[a].add(b)
+              for p in range(0,len(pairs),10000):
+                  f=io.StringIO();w=csv.writer(f);w.writerow(['source_code','target_code']);w.writerows(pairs[p:p+10000]);preserve('corridor-official-concordance-'+n+'-'+str(p//10000)+'-'+run+'.csv',f.getvalue())
+              receipt['products'].append({'uri':u,'rows':len(rows),'unique_pairs':len(pairs),'distinct_sources':len(counts),'multiple_targets':sum(len(v)>1 for v in counts.values()),'unmapped_sources':sum(v=={''} for v in counts.values()),'query_page_hashes':hashes})
+              print('mapping',n,len(pairs),flush=True)
+          preserve('corridor-official-concordance-receipt-'+run+'.json',json.dumps(receipt,indent=2))
+          if not receipt['products']:raise SystemExit('no exact-year usable mapping from CELLAR')
+          PY
