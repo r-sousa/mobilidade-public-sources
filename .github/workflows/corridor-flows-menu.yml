@@ -1,0 +1,80 @@
+name: CoLogistics flows public menu exploration
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-flows-menu.yml']
+permissions:
+  contents: read
+jobs:
+  visit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    strategy:
+      fail-fast: false
+      matrix:
+        menu_index: [0, 1, 2, 3, 4]
+    env:
+      INDEX: ${{ matrix.menu_index }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright requests
+      - run: python -m playwright install chromium
+      - name: Visit one explicitly visible menu link from a fresh browser
+        run: |
+          python - <<'PY'
+          import os,json,hashlib,requests,base64,re,time
+          from urllib.parse import urlsplit
+          from urllib.robotparser import RobotFileParser
+          from playwright.sync_api import sync_playwright
+          i=int(os.environ['INDEX'])
+          u='https://app.powerbi.com/view?r=eyJrIjoiNTc0MGJmZmUtNmY0My00NWYzLWE3MGEtOGJlZTI1MTViMjExIiwidCI6IjcwYTZkMzZkLTZiNDAtNGY0ZS1iMDRlLTA5ZDJhNTAzN2Y2MSIsImMiOjl9'
+          s=requests.Session();s.headers['User-Agent']='Mozilla/5.0 (compatible; MN-Corridor-Audit/1.0)'
+          rr=s.get('https://app.powerbi.com/robots.txt',timeout=15)
+          if rr.status_code!=404:
+              if rr.status_code!=200:raise SystemExit('robots unavailable')
+              rp=RobotFileParser();rp.parse(rr.text.splitlines())
+              if not rp.can_fetch(s.headers['User-Agent'],u):raise SystemExit('robots not cleared')
+          o={'report':'flows','menu_index':i,'run_id':os.getenv('GITHUB_RUN_ID'),'scope':'bounded public rendered factual sample; no private data, no raw query response, no redistribution','pages':[]}
+          with sync_playwright() as p:
+              browser=p.chromium.launch(headless=True)
+              ctx=browser.new_context(accept_downloads=False)
+              page=ctx.new_page()
+              page.goto(u,wait_until='domcontentloaded',timeout=45000);page.wait_for_timeout(12000)
+              def links():
+                  return [v for v in page.locator('[role=link][aria-label*="Page navigation"]').all() if v.is_visible()]
+              def snapshot(stage):
+                  elems=page.locator('[aria-label], [role=gridcell], [role=columnheader], [role=option], [role=checkbox], svg text').evaluate_all("""es=>es.filter(e=>{let r=e.getBoundingClientRect();return r.width>1&&r.height>1&&getComputedStyle(e).visibility==='visible'}).slice(0,1800).map(e=>({l:(e.getAttribute('aria-label')||e.innerText||e.textContent||'').trim().slice(0,180),r:e.getAttribute('role'),selected:e.getAttribute('aria-selected'),checked:e.getAttribute('aria-checked')})).filter(v=>v.l)""")
+                  def safe(t):return not re.search(r'(?i)@|sharepoint|https?://|encuestad|email|teléfono|phone|dirección personal',t)
+                  titles=list(dict.fromkeys(v['l'] for v in elems if v['r'] in ('document','heading','link') and safe(v['l'])))[:25]
+                  numeric=list(dict.fromkeys(v['l'] for v in elems if safe(v['l']) and re.search(r'\d',v['l']) and re.search(r'(?i)taric|fecha|año|year|país|country|mercanc|ton|kg|importe|valor|%|teu|origen|destino|flow|flujo',v['l'])))[:35]
+                  filters=[v for v in elems if safe(v['l']) and (v['checked'] is not None or v['selected'] is not None or re.search(r'(?i)slicer|filter|filtro|año|flujo|origen|destino|taric|provincia|modo de transporte',v['l']))][:50]
+                  o['pages'].append({'stage':stage,'visible_navigation_count':len(links()),'titles':titles,'numeric_labels':numeric,'filter_context':filters})
+              nav=links()
+              if len(nav)!=1:raise SystemExit('unexpected cover navigation count '+str(len(nav)))
+              nav[0].click(timeout=4000);page.wait_for_timeout(8500)
+              snapshot('menu')
+              nav=links()
+              if i>=len(nav):o['status']='menu index unavailable'
+              else:
+                  nav[i].click(timeout=4000);page.wait_for_timeout(12000)
+                  if urlsplit(page.url).hostname=='app.powerbi.com':
+                      snapshot('menu_selection')
+                      o['status']='visited'
+                  else:o['status']='external link; stopped'
+              browser.close()
+          print(json.dumps({'index':i,'status':o.get('status'),'pages':len(o['pages']),'numeric_labels':sum(len(x['numeric_labels']) for x in o['pages'])}),flush=True)
+          tok=os.getenv('MN_PRIVATE_SINK_TOKEN')
+          if not tok:raise SystemExit('private sink missing')
+          dest='https://api.github.com/repos/r-sousa/EU-transp-weekly/contents/statistics/audits/corridor-flows-menu-'+os.getenv('GITHUB_RUN_ID')+'-'+str(i)+'.json'
+          body=base64.b64encode(json.dumps(o,ensure_ascii=False,indent=2).encode()).decode()
+          for attempt in range(4):
+              x=requests.put(dest,headers={'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'},json={'message':'Preserve public flows menu pilot '+str(i),'branch':'audit/corridor-observatories-20261118','content':body},timeout=25)
+              if x.status_code==201:break
+              if x.status_code not in (409,422):break
+              time.sleep(2+3*attempt)
+          print('private_sink_status',x.status_code,flush=True)
+          if x.status_code!=201:raise SystemExit('receipt failed')
+          PY
