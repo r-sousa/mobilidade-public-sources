@@ -1,0 +1,219 @@
+name: Digital CoLogistics value-chain and Portuguese flow recovery
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/cologistics-priority-recovery.yml']
+permissions:
+  contents: read
+jobs:
+  preserve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        target: [valuechains-0, valuechains-1, valuechains-2, flows-1]
+    env:
+      TARGET: ${{ matrix.target }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests beautifulsoup4 playwright
+      - if: matrix.target != 'documents'
+        run: python -m playwright install chromium
+      - name: Preserve ordinary public downloads and rendered factual data privately
+        run: |
+          python - <<'PY'
+          import os,json,hashlib,base64,re,time,requests,collections
+          from urllib.parse import urlsplit,urljoin,quote
+          from urllib.robotparser import RobotFileParser
+          from bs4 import BeautifulSoup
+          from playwright.sync_api import sync_playwright
+          key=os.environ['TARGET'];run=os.environ['GITHUB_RUN_ID'];token=os.environ.get('MN_PRIVATE_SINK_TOKEN')
+          if not token:raise SystemExit('private sink unavailable')
+          branch='audit/corridor-observatories-20261118'
+          api='https://api.github.com/repos/r-sousa/EU-transp-weekly'
+          auth={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'}
+          repo=requests.get(api,headers=auth,timeout=25);repo.raise_for_status()
+          if repo.json().get('private') is not True:raise SystemExit('private sink check failed')
+          s=requests.Session();s.headers['User-Agent']='Mozilla/5.0 (compatible; MN-Corridor-Audit/1.0)'
+          def allowed(u):
+              l=urlsplit(u);rr=s.get(l.scheme+'://'+l.netloc+'/robots.txt',timeout=20)
+              if rr.status_code==404:return True
+              if rr.status_code!=200:return False
+              rp=RobotFileParser();rp.parse(rr.text.splitlines());return rp.can_fetch(s.headers['User-Agent'],u)
+          def get(u,timeout=60):
+              if not allowed(u):raise ValueError('robots not cleared')
+              x=s.get(u,timeout=timeout);x.raise_for_status();return x
+          def store(name,obj):
+              raw=json.dumps(obj,ensure_ascii=False,indent=2).encode()
+              # Keep each receipt comfortably within REST file limits.
+              if len(raw)>700000:raise ValueError('receipt part too large')
+              path='statistics/audits/cologistics-preservation/'+run+'/'+name
+              for i in range(7):
+                  z=requests.put(api+'/contents/'+path,headers=auth,json={'message':'Preserve public CoLogistics evidence '+name,'branch':branch,'content':base64.b64encode(raw).decode()},timeout=50)
+                  if z.status_code==201:break
+                  if z.status_code not in (409,422):break
+                  time.sleep(2+i*2)
+              if z.status_code!=201:raise ValueError('private store HTTP '+str(z.status_code))
+              return {'path':path,'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)}
+          if key=='documents':
+              page='https://digitalcologistics.eu/documentacion/'
+              x=get(page);soup=BeautifulSoup(x.content,'html.parser')
+              links={}
+              for a in soup.select('a[href]'):
+                  u=urljoin(page,a['href'])
+                  if urlsplit(u).hostname=='digitalcologistics.eu' and urlsplit(u).path.lower().endswith(('.pdf','.xlsx','.csv','.zip','.geojson','.gpkg')):
+                      links[u]=' '.join(a.stripped_strings)[:250]
+              tag='source-digital-cologistics-public-'+run
+              rel=requests.post(api+'/releases',headers=auth,json={'tag_name':tag,'target_commitish':branch,'name':'Digital CoLogistics — public producer downloads, private preservation '+run,'body':'Original publisher-provided downloads archived internally with source receipt; no public redistribution or licence inference.','prerelease':True,'draft':False},timeout=40);rel.raise_for_status()
+              release=rel.json();rid=release['id'];upload=release['upload_url'].split('{')[0]
+              manifest={'source_page':page,'page_sha256':hashlib.sha256(x.content).hexdigest(),'release_tag':tag,'release_id':rid,'assets':[],'failures':[]}
+              for u,title in links.items():
+                  try:
+                      z=get(u,120);data=z.content
+                      if not data.startswith((b'%PDF-',b'PK')) and not urlsplit(u).path.endswith(('.csv','.geojson')):raise ValueError('unexpected file signature')
+                      if len(data)>80_000_000:raise ValueError('file exceeds bounded archive size')
+                      name=urlsplit(u).path.rsplit('/',1)[-1]
+                      name=re.sub('[^A-Za-z0-9._-]','_',name)
+                      rr=requests.post(upload,params={'name':name},headers={'Authorization':'Bearer '+token,'Content-Type':'application/octet-stream'},data=data,timeout=150);rr.raise_for_status()
+                      result=rr.json()
+                      # Independent readback of uploaded bytes.
+                      rd=requests.get(api+'/releases/assets/'+str(result['id']),headers={'Authorization':'Bearer '+token,'Accept':'application/octet-stream'},timeout=150);rd.raise_for_status()
+                      h=hashlib.sha256(data).hexdigest()
+                      if hashlib.sha256(rd.content).hexdigest()!=h:raise ValueError('archive readback hash mismatch')
+                      manifest['assets'].append({'name':name,'source_url':u,'label':title,'bytes':len(data),'sha256':h,'release_asset_id':result['id'],'verified':True})
+                      print('document preserved',name,len(data),flush=True)
+                  except Exception as e:manifest['failures'].append({'url':u,'error':type(e).__name__+': '+str(e)[:160]})
+                  time.sleep(1)
+              store('documents.json',manifest);print('document receipt',len(manifest['assets']),len(manifest['failures']),flush=True)
+              if not manifest['assets']:raise SystemExit('no files preserved')
+              raise SystemExit(0)
+          report=key.split('-')[0]
+          keys={'flows':'5740bffe-6f43-45f3-a70a-8bee2515b211','assets':'79c59de8-c196-4533-b16b-efe081a674ef','benchmark':'ec7ee36a-4f2a-45e7-929b-bbf4236413a5','investment':'99850f95-cf1e-4499-be24-e1536f2ce12b'}
+          tenant='898091e4-fef7-401f-ab0c-03ee782caa43' if report=='investment' else '70a6d36d-6b40-4f4e-b04e-09d2a5037f61'
+          if report=='valuechains':
+              d=get('https://digitalcologistics.eu/documentacion/')
+              ls={a['href'] for a in BeautifulSoup(d.content,'html.parser').select('a[href]') if urlsplit(a['href']).hostname=='app.powerbi.com'}
+              if len(ls)!=1:raise ValueError('ambiguous report link')
+              u=ls.pop()
+          else:
+              u='https://app.powerbi.com/view?r='+base64.b64encode(json.dumps({'k':keys[report],'t':tenant,'c':9},separators=(',',':')).encode()).decode().rstrip('=')
+              if report=='investment':u+='&pageName=f3743276e2c4c6d48619'
+          if not allowed(u):raise SystemExit('robots not cleared')
+          meta={'target':key,'report_url':u,'run':run,'scope':'ordinary public visual facts and public UI navigation; private evidence, not source database, no bypass or raw queries','pages':[],'navigation_errors':[]}
+          def safe(v):return not re.search(r'(?i)@|sharepoint|correo electr|email|tel[eé]fono|phone|encuestad|encuesta empresa|persona de contacto|contact person',v)
+          with sync_playwright() as p:
+              browser=p.chromium.launch(headless=True)
+              ctx=browser.new_context(viewport={'width':1280,'height':720},accept_downloads=True)
+              pg=ctx.new_page()
+              def load():
+                  pg.goto(u,wait_until='domcontentloaded',timeout=45000)
+                  try:pg.locator('[role=link][aria-label*="Page navigation"]').first.wait_for(state='visible',timeout=50000)
+                  except Exception:pg.wait_for_timeout(5000)
+                  pg.wait_for_timeout(4500)
+              load()
+              seen=set()
+              def links():
+                  return [v for v in pg.locator('[role=link][aria-label*="Page navigation"]').all() if v.is_visible()]
+              def snap(stage):
+                  data=pg.locator('[aria-label],[role=gridcell],[role=columnheader],[role=option],[role=checkbox],svg text').evaluate_all("""es=>es.filter(e=>{let r=e.getBoundingClientRect();return r.width>1&&r.height>1&&getComputedStyle(e).visibility==='visible'}).slice(0,6000).map(e=>{let v=e.closest('.visualContainer, .visual-container, [role=document]');return {label:(e.getAttribute('aria-label')||e.innerText||e.textContent||'').trim().slice(0,400),role:e.getAttribute('role'),selected:e.getAttribute('aria-selected'),checked:e.getAttribute('aria-checked'),value:e.getAttribute('aria-valuetext'),visual:v?(v.getAttribute('aria-label')||'').slice(0,200):''}}).filter(x=>x.label)""")
+                  facts=[v for v in data if safe(v['label']) and re.search(r'\d',v['label']) and (v['role'] in ('graphics-symbol','img','gridcell','option') or re.search(r'(?i)\b(?:ton|kg|teu|valor|importe|año|year|total|count|recuento|mercanc|km|%|puerto|tr[aá]fico|peso|superficie|taric|origen|destino)\b',v['label']))]
+                  controls=[v for v in data if safe(v['label']) and (v['role'] in ('document','heading','link','columnheader','checkbox','option','combobox','listbox') or v['selected'] is not None or v['checked'] is not None or v['value'] is not None or re.search(r'(?i)filtro|slicer|filter|mercado|año|origen|destino|flujo|periodo|fuente',v['label']))]
+                  def uniq(arr):
+                      return list({json.dumps(x,sort_keys=True,ensure_ascii=False):x for x in arr}.values())
+                  facts=uniq(facts);controls=uniq(controls)
+                  fp=hashlib.sha256(json.dumps([facts,controls],sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+                  if fp in seen and not stage.startswith('sector_'):return False
+                  seen.add(fp)
+                  # Preserve exact visible table rows, with blank cells and header context, only via ordinary scrolling.
+                  grids=[]
+                  for gi,g in enumerate(pg.locator('[role=grid],[role=table]').all()):
+                      if not g.is_visible():continue
+                      try:
+                          heads=g.locator('[role=columnheader]').evaluate_all("(xs)=>xs.map(e=>(e.innerText||e.getAttribute('aria-label')||'').trim())")
+                          accum={};stable=0
+                          def gather():
+                              rr=g.locator('[role=row]').evaluate_all("""xs=>xs.map(e=>({index:e.getAttribute('aria-rowindex'),cells:Array.from(e.querySelectorAll('[role=gridcell], [role=cell]')).map(c=>({index:c.getAttribute('aria-colindex'),text:(c.innerText||c.getAttribute('aria-label')||'').trim()}))})).filter(x=>x.cells.length)""")
+                              for row in rr:
+                                  if not all(safe(c['text']) for c in row['cells']):continue
+                                  k=json.dumps(row,ensure_ascii=False,sort_keys=True);accum[k]=row
+                          gather()
+                          if report in ('assets','valuechains','flows') and heads and accum:
+                              g.hover(timeout=2500)
+                              for i in range(32):
+                                  before=len(accum);pg.mouse.wheel(0,340);pg.wait_for_timeout(275);gather()
+                                  stable=stable+1 if len(accum)==before else 0
+                                  if stable>=4:break
+                          grids.append({'grid_index':gi,'headers':heads,'rows':list(accum.values()),'declared_rowcount':g.get_attribute('aria-rowcount'),'scroll_stable':stable>=4})
+                      except Exception as e:meta['navigation_errors'].append({'stage':stage,'grid':gi,'type':type(e).__name__})
+                  data={'stage':stage,'page_url':pg.url,'fingerprint':fp,'numeric_labels':facts,'context':controls,'grids':grids}
+                  ref=store(key+'-page-'+str(len(meta['pages'])).zfill(2)+'.json',data);ref.update({'stage':stage,'numeric_labels':len(facts),'grid_rows':sum(len(g['rows']) for g in grids),'grid_headers':[g['headers'] for g in grids]});meta['pages'].append(ref)
+                  print('page preserved',key,stage,ref['numeric_labels'],ref['grid_rows'],flush=True)
+                  return True
+              snap('initial')
+              if report=='flows':
+                  nav=links()
+                  if len(nav)==1:
+                      nav[0].click(timeout=5000);pg.wait_for_timeout(8000);snap('menu')
+                      idx=int(key.split('-')[1]);nav=links()
+                      if idx<len(nav):
+                          try:nav[idx].click(timeout=3500)
+                          except Exception:
+                              # Keyboard activation of the same visible navigation control.
+                              nav[idx].focus();nav[idx].press('Enter',timeout=3500)
+                          pg.wait_for_timeout(9500)
+                          if urlsplit(pg.url).hostname=='app.powerbi.com':snap('menu_'+str(idx))
+              if report=='valuechains':
+                  idx=int(key.split('-')[1]);nav=links()
+                  if idx<len(nav):
+                      try:nav[idx].click(timeout=4500)
+                      except Exception:nav[idx].focus();nav[idx].press('Enter',timeout=4500)
+                      pg.wait_for_timeout(10000);snap('cover_link_'+str(idx))
+                  # Capture all individually published value-chain pages from the visible sector menu.
+                  sectors=['Agroalimentario','Conserva','Energía y petrolíferos','Forestal y madera','Automoción','Cerámica','Mineral/Metal','Vitivinícola','Pesca fresca y congelada','Piedra natural','Aeronáutico','Naval']
+                  if any(pg.locator('[aria-label*="'+name+'"][role=link]').count()>0 for name in sectors):
+                      for name in sectors:
+                          nav=pg.locator('[role=link][aria-label*="'+name+'"]')
+                          if not nav.count() or not nav.first.is_visible():
+                              continue
+                          try:
+                              nav.first.click(timeout=4000);pg.wait_for_timeout(8000);snap('sector_'+name)
+                              # Use displayed navigation back to chain menu when possible, else reopen exact public cover and same cover link.
+                              if not any(pg.locator('[role=link][aria-label*="'+x+'"]').count()>0 for x in sectors):
+                                  load();navs=links()
+                                  if idx>=len(navs):break
+                                  navs[idx].click(timeout=4500);pg.wait_for_timeout(8000)
+                          except Exception as e:meta['navigation_errors'].append({'sector':name,'type':type(e).__name__})
+              # Navigate explicitly visible report controls. No hidden page routes.
+              if report not in ('flows','valuechains') or (report=='flows' and len(meta['pages'])>=3):
+                  visited=set()
+                  for i in range(10 if report=='assets' else 7):
+                      candidates=pg.locator('[aria-label*="Page navigation"],[aria-label="Next Page"],[title="Next Page"]')
+                      available=[]
+                      for j in range(min(candidates.count(),40)):
+                          l=candidates.nth(j)
+                          if not l.is_visible():continue
+                          lab=l.get_attribute('aria-label') or l.get_attribute('title') or ''
+                          if re.search(r'(?i)inicio|home|volver|back|ETS|nota metod',lab):continue
+                          rank=0 if lab=='Next Page' else 1
+                          if re.search(r'(?i)cadena|mercado|infraestruct|comercio|taric',lab):rank=0
+                          available.append((rank,j,lab))
+                      moved=False
+                      for _,j,lab in sorted(available):
+                          k=(meta['pages'][-1]['path'],j,lab)
+                          if k in visited:continue
+                          visited.add(k)
+                          try:
+                              candidates.nth(j).click(timeout=3000);pg.wait_for_timeout(6500)
+                              if urlsplit(pg.url).hostname!='app.powerbi.com':pg.go_back(timeout=20000);continue
+                              if snap('navigation_'+str(i+1)+'_'+str(j)):moved=True;break
+                          except Exception as e:meta['navigation_errors'].append({'stage':i,'index':j,'type':type(e).__name__})
+                      if not moved:break
+              browser.close()
+          store(key+'-receipt.json',meta)
+          print('report receipt',key,'pages',len(meta['pages']),'numeric labels',sum(x['numeric_labels'] for x in meta['pages']),'grid rows',sum(x['grid_rows'] for x in meta['pages']),flush=True)
+          PY
