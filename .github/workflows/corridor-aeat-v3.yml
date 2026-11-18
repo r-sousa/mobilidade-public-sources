@@ -1,0 +1,187 @@
+name: Corridor AEAT annual record verified parser
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-aeat-v3.yml']
+permissions:
+  contents: read
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        product: [aeat]
+    env:
+      PRODUCT: ${{ matrix.product }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests beautifulsoup4 openpyxl xlrd pandas
+      - name: Acquire primary public source products and preserve private candidate evidence
+        run: |
+          python - <<'PY'
+          import os,requests,zipfile,io,json,hashlib,base64,re,csv,time,collections,concurrent.futures
+          from urllib.parse import urljoin,urlsplit
+          from bs4 import BeautifulSoup
+          from urllib.robotparser import RobotFileParser
+          import pandas as pd
+          from openpyxl import load_workbook
+          product=os.environ['PRODUCT']
+          run=os.environ['GITHUB_RUN_ID']
+          token=os.environ.get('MN_PRIVATE_SINK_TOKEN')
+          if not token:raise SystemExit('existing private sink required')
+          branch='audit/corridor-observatories-20261118'
+          sess=requests.Session();sess.headers['User-Agent']='Mozilla/5.0 (compatible; MN-Corridor-Audit/1.0)'
+          robots={}
+          def check(u):
+              s=urlsplit(u);root=s.scheme+'://'+s.netloc
+              if root not in robots:
+                  x=sess.get(root+'/robots.txt',timeout=20)
+                  if x.status_code==404:robots[root]=True
+                  elif x.status_code==200:
+                      z=RobotFileParser();z.parse(x.text.splitlines());robots[root]=z
+                  else:robots[root]=False
+              z=robots[root]
+              return z if isinstance(z,bool) else z.can_fetch(sess.headers['User-Agent'],u)
+          def get(u):
+              if not check(u):raise ValueError('robots not cleared')
+              x=sess.get(u,timeout=(20,150));x.raise_for_status();return x
+          def sha(x):return hashlib.sha256(x).hexdigest()
+          def save(name,content):
+              if isinstance(content,str):content=content.encode()
+              if len(content)>750000:raise ValueError('candidate output exceeds bounded file size')
+              dest='https://api.github.com/repos/r-sousa/EU-transp-weekly/contents/statistics/audits/'+name
+              body=base64.b64encode(content).decode()
+              for i in range(6):
+                  r=requests.put(dest,headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'},json={'message':'Preserve corridor primary-source candidate '+name,'branch':branch,'content':body},timeout=45)
+                  if r.status_code==201:break
+                  if r.status_code not in (409,422):break
+                  time.sleep(2+i*4)
+              print('preserved',name,len(content),r.status_code,flush=True)
+              if r.status_code!=201:raise RuntimeError('private sink failed')
+          def save_json(name,obj):save(name,json.dumps(obj,ensure_ascii=False,indent=2))
+          def save_csv(name,head,rows):
+              f=io.StringIO();w=csv.writer(f);w.writerow(head);w.writerows(rows);save(name,f.getvalue())
+          receipt={'product':product,'run':run,'scope':'noncanonical candidate, public producer data, internal private use only','assets':[]}
+          aeat='https://sede.agenciatributaria.gob.es/Sede/estadisticas/estadisticas-comercio-exterior/2024.html'
+          classification='https://sede.agenciatributaria.gob.es/static_files/AEAT/Aduanas/Contenidos_Privados/Estadisticas_Comercio_Exterior/Clasi_new_fich.xlsx'
+          if product=='aeat':
+              x=get(aeat)
+              soup=BeautifulSoup(x.content,'html.parser')
+              links=[]
+              for a in soup.select('a[href]'):
+                  u=urljoin(aeat,a['href'])
+                  if '.zip' in urlsplit(u).path.lower():
+                      label=' '.join(a.stripped_strings)
+                      if u not in [v[0] for v in links]:links.append((u,label))
+              if len(links)!=10:raise ValueError('expected exactly 10 annual chapter partitions, got '+str(len(links)))
+              prov={'15':'ES11','27':'ES11','32':'ES11','36':'ES11',**{k:'ES41' for k in ['05','09','24','34','37','40','42','47','49']}}
+              def consume(pair):
+                  u,label=pair;x=get(u);z=zipfile.ZipFile(io.BytesIO(x.content))
+                  if z.testzip() is not None:raise ValueError('ZIP CRC failure')
+                  sums=collections.defaultdict(lambda:[0,0,0]);partner_totals=collections.defaultdict(lambda:[0,0,0]);raw=0;selected=0;bad=collections.Counter();codes=collections.Counter();years=collections.Counter();chapters=set()
+                  for member in z.infolist():
+                      if member.is_dir():continue
+                      with z.open(member) as f:
+                          for line in f:
+                              raw+=1;b=line.rstrip(b'\r\n')
+                              if not b:continue
+                              if b.startswith(b'AA F AD PR PA POSICION T'):continue
+                              m=re.fullmatch(rb'(\d{2}) ([EI]) ([0-9 ]{3,5}) ([A-Z0-9]{2}) ([A-Z0-9]{8}) ([0-9 ]) ([+-]?\d{11,12}) ([+-]?\d{11,12}) ([+-]?\d{12,13}) ([0-9 ]{2})',b)
+                              fields=None
+                              if m:
+                                  yr,flow,prefix,country,cn,mode,kg,units,cents,fiscal=m.groups()
+                                  if len(prefix)==5 and prefix[2:3]==b' ':
+                                      custom,p=prefix[:2].strip(),prefix[3:5].strip()
+                                  elif not prefix.strip():
+                                      custom,p=b'',b''
+                                  elif len(prefix)==4 and prefix[:2].isdigit() and not prefix[2:].strip():
+                                      custom,p=prefix[:2],b''
+                                  elif len(prefix)==4 and prefix[-2:].isdigit() and not prefix[:-2].strip():
+                                      custom,p=b'',prefix[-2:]
+                                  else:
+                                      custom,p=None,None
+                                  if custom is not None:fields=[yr,flow,custom,p,country,cn,mode,kg,units,cents,fiscal]
+                              if fields is None:
+                                  bad['record_structure_'+str(len(b))]+=1
+                                  if sum(bad.values())<=3:receipt.setdefault('private_diagnostic_samples',[]).append({'url':u,'row':raw,'text':b.decode('latin1')})
+                                  continue
+                              try:
+                                  yr,flow,custom,p,country,cn,mode,kg,units,cents,fiscal=[w.decode('ascii') for w in fields]
+                                  if yr=='2024':yr='24'
+                                  if p.isdigit():p=p.zfill(2)
+                                  kg=int(kg);cents=int(cents)
+                                  if not re.fullmatch(r'[A-Z0-9]{8}',cn) or not re.fullmatch(r'[A-Z0-9]{2}',country) or len(flow)!=1 or len(mode)!=1:raise ValueError('invalid field shape')
+                              except Exception:
+                                  bad['parse']+=1
+                                  if sum(bad.values())<=3:receipt.setdefault('private_diagnostic_samples',[]).append({'url':u,'row':raw,'text':b.decode('latin1')})
+                                  continue
+                              years[yr]+=1
+                              if yr!='24':bad['unexpected_year']+=1;continue
+                              chapters.add(cn[:2])
+                              if p not in prov:continue
+                              selected+=1;codes[(flow,mode)]+=1
+                              k=(prov[p],p,flow,cn[:2],mode,country)
+                              v=sums[k];v[0]+=kg;v[1]+=cents;v[2]+=1
+                              k=(prov[p],p,flow,country)
+                              v=partner_totals[k];v[0]+=kg;v[1]+=cents;v[2]+=1
+                  if bad:
+                      save_json('corridor-aeat-parser-diagnostic-'+run+'.json',{'bad':dict(bad),'samples':receipt.get('private_diagnostic_samples',[])})
+                      raise ValueError('parse failure '+json.dumps(bad))
+                  return {'url':u,'label':label,'bytes':len(x.content),'sha256':sha(x.content),'members':[m.filename for m in z.infolist() if not m.is_dir()],'raw_rows':raw,'selected_rows':selected,'years':dict(years),'chapters':sorted(chapters),'flow_mode_codes':{'/'.join(k):v for k,v in codes.items()}},sums,partner_totals
+              # Sequential downloads avoid overloading the producer; aggregate separately by region to limit outputs.
+              data=collections.defaultdict(lambda:[0,0,0]);countries=collections.defaultdict(lambda:[0,0,0]);controls=collections.defaultdict(lambda:[0,0,0])
+              def merge(dst,k,v):
+                  a=dst[k];a[0]+=v[0];a[1]+=v[1];a[2]+=v[2]
+              for link in links:
+                  a,sums,pt=consume(link);receipt['assets'].append(a)
+                  print('partition',a['label'],a['raw_rows'],a['selected_rows'],flush=True)
+                  for (region,p,flow,cn,mode,country),v in sums.items():
+                      merge(data,(region,flow,cn,mode),v)
+                      if country=='PT':merge(data,(region,flow,cn,mode,'PT'),v)
+                  for (region,p,flow,country),v in pt.items():
+                      merge(countries,(region,flow,country),v);merge(controls,(region,p,flow),v)
+              global_total=sum(a['selected_rows'] for a in receipt['assets'])
+              if sum(v[2] for k,v in data.items() if len(k)==4)!=global_total or sum(v[2] for v in countries.values())!=global_total:raise ValueError('row conservation failed')
+              for region in ['ES11','ES41']:
+                  arr=[(2024,k[0],k[1],k[2],k[3],k[4] if len(k)==5 else 'ALL_DECLARED_PARTNERS',*v) for k,v in sorted(data.items()) if k[0]==region]
+                  save_csv('corridor-aeat-2024-'+region+'-cn2-mode-'+run+'.csv',['year','nuts2','flow_code','cn2','border_mode_code','partner_scope','kg','eur_cents','source_rows'],arr)
+              save_csv('corridor-aeat-2024-country-'+run+'.csv',['year','nuts2','flow_code','country_code','kg','eur_cents','source_rows'],[(2024,*k,*v) for k,v in sorted(countries.items())])
+              save_csv('corridor-aeat-2024-province-controls-'+run+'.csv',['year','nuts2','province_code','flow_code','kg','eur_cents','source_rows'],[(2024,*k,*v) for k,v in sorted(controls.items())])
+              receipt['selected_rows']=global_total;receipt['raw_rows']=sum(a['raw_rows'] for a in receipt['assets']);receipt['region_flow_controls']=[{'region':k[0],'flow_code':k[1],'country_code':k[2],'kg':v[0],'eur_cents':v[1],'rows':v[2]} for k,v in sorted(countries.items()) if k[2]=='PT'];receipt['country_PT_is_candidate_alpha_code']='confirm against AEAT classification workbook; if code system differs, country table retains original codes; no interpretation as yet';receipt['notes']='Actual archives space-separated fixed-position with 65/67 character records and 13-character value field, header skipped; format deviation documented. 2024 definitive annual territorial; province economic origin/destination; customs province and fiscal domicile not used; integer euro cents and kg retained; no raw producer bytes redistributed; only annual territorial mode data, not customer Italian etc. Country partner does not identify Portuguese NUTS2.'
+          elif product=='eptmc':
+              base='https://apps.fomento.gob.es/BOLETINONLINE2/sedal/'
+              for n,suffix in [('6.07a','58060250.XLS'),('6.07b','58060260.XLS')]:
+                  u=base+suffix;x=get(u);b=x.content
+                  if not b.startswith(bytes.fromhex('d0cf11e0a1b11ae1')) and not b.startswith(b'PK'):raise ValueError('not an Excel workbook')
+                  book=pd.ExcelFile(io.BytesIO(b));sheets={}
+                  for sheet in book.sheet_names:
+                      a=pd.read_excel(book,sheet_name=sheet,header=None,dtype=object).fillna('')
+                      rows=[[str(v) if v!='' else '' for v in line] for line in a.itertuples(index=False,name=None)]
+                      sheets[sheet]={'shape':list(a.shape),'rows':rows}
+                  receipt['assets'].append({'url':u,'sha256':sha(b),'bytes':len(b),'table':n,'sheets':{k:v['shape'] for k,v in sheets.items()}})
+                  save_json('corridor-eptmc-'+n+'-2024-'+run+'.json',{'url':u,'table':n,'sheets':sheets,'scope':'native table grid, no inferred row/column meaning; check table title and year'})
+          else:
+              x=get(classification);b=x.content
+              wb=load_workbook(io.BytesIO(b),read_only=True,data_only=True)
+              sh=[]
+              for w in wb:
+                  rows=[]
+                  for i,row in enumerate(w.iter_rows(values_only=True)):
+                      if i>=15:break
+                      rows.append([str(z) if z is not None else '' for z in row[:20]])
+                  sh.append({'sheet':w.title,'dimensions':[w.max_row,w.max_column],'first_rows':rows})
+              receipt['assets'].append({'url':classification,'sha256':sha(b),'bytes':len(b),'sheets':sh})
+              # Save only relevant code lists, not huge classification workbook.
+              for w in wb:
+                  if not re.search(r'(?i)pa[ií]s|fluj|transp|provinc|aduana|domicilio|country',w.title):continue
+                  rows=[['' if z is None else str(z) for z in row] for row in w.iter_rows(values_only=True)]
+                  if len(rows)>10000:continue
+                  name=re.sub('[^a-zA-Z0-9_-]','_',w.title)
+                  save_csv('corridor-aeat-codebook-'+name+'-'+run+'.csv',['source_row',*[f'col_{i+1}' for i in range(len(rows[0]))]],[(i+1,*row) for i,row in enumerate(rows)])
+          save_json('corridor-primary-'+product+'-'+run+'.json',receipt)
+          PY
