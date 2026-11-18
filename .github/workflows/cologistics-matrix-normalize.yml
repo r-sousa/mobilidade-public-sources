@@ -1,0 +1,96 @@
+name: CoLogistics preserved country matrix normalization
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/cologistics-matrix-normalize.yml']
+permissions:
+  contents: read
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    env:
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - run: |
+          python - <<'PY'
+          import os, requests, json, csv, gzip, hashlib, base64, time, io, re, collections
+          token=os.environ['MN_PRIVATE_SINK_TOKEN'];base='https://api.github.com/repos/r-sousa/EU-transp-weekly'
+          branch='audit/corridor-observatories-20261118';dir='statistics/audits/cologistics-preservation/44328033893/'
+          headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'}
+          targets=['valuechains-0','valuechains-2','valuechains-1-a','valuechains-1-b','valuechains-1-c']
+          def read(path):
+              x=requests.get(base+'/contents/'+path,params={'ref':branch},headers=headers,timeout=40)
+              if x.status_code==404:return None
+              x.raise_for_status();return base64.b64decode(x.json()['content'])
+          def put(name,data):
+              if len(data)>600000:data=gzip.compress(data,mtime=0);name+='.gz'
+              path=dir+'normalized/'+name
+              for i in range(6):
+                  rr=requests.put(base+'/contents/'+path,headers=headers,json={'branch':branch,'message':'Preserve keyed value-chain matrix data '+name,'content':base64.b64encode(data).decode()},timeout=45)
+                  if rr.status_code==201:break
+                  if rr.status_code not in (409,422):break
+                  time.sleep(2+i*2)
+              rr.raise_for_status();return {'path':path,'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data)}
+          receipts={}
+          for _ in range(24):
+              for key in targets:
+                  if key in receipts:continue
+                  raw=read(dir+key+'-receipt.json')
+                  if raw:receipts[key]=json.loads(raw)
+              if len(receipts)==len(targets):break
+              time.sleep(10)
+          check={'source_capture_run':44328033893,'normalization_run':os.environ['GITHUB_RUN_ID'],'complete_target_receipts':len(receipts),'missing_targets':sorted(set(targets)-set(receipts)),'views':[],'outputs':[]}
+          used=set()
+          for key,j in receipts.items():
+              for ref in j['pages']:
+                  stage=ref['stage']
+                  if stage=='initial':continue
+                  raw=read(ref['path'])
+                  if raw is None or hashlib.sha256(raw).hexdigest()!=ref['sha256']:raise ValueError('missing or mismatched source blob')
+                  if ref['path'].endswith('.gz'):raw=gzip.decompress(raw)
+                  d=json.loads(raw)
+                  if stage in used:continue
+                  used.add(stage);rows=[];grids=[]
+                  for g in d['grids']:
+                      by_i=collections.defaultdict(set)
+                      for c in g.get('header_cells',[]):by_i[c['index']].add(c['text'])
+                      idx=[]; keyed=0;blank=0;nr=0; totals=0;collisions=0
+                      for row in g['rows']:
+                          index=row.get('index');idx.append(index)
+                          rc=[c for c in row['cells'] if c.get('role')=='rowheader']
+                          label=' | '.join(c['text'] for c in rc).strip()
+                          if label:keyed+=1
+                          else:blank+=1
+                          if label.lower() in ('total','grand total','totales'):totals+=1
+                          cols=set()
+                          for c in row['cells']:
+                              if c.get('role')!='gridcell':continue
+                              ix=c.get('index')
+                              if ix in cols:collisions+=1
+                              cols.add(ix)
+                              labels=' | '.join(sorted(by_i[ix]))
+                              v=c.get('text','')
+                              good=bool(re.fullmatch(r'-?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?',v))
+                              if good:nr+=1
+                              rows.append([stage,g['grid_index'],index,label,ix,labels,v,v.replace(',','') if good else '', 'numeric' if good else ('blank' if not v else 'source_text_or_marker'), 'total' if label.lower() in ('total','grand total','totales') else ('blank_row_key' if not label else 'detail'),ref['path']])
+                      declared=int(g['declared_rowcount']) if g.get('declared_rowcount') and str(g['declared_rowcount']).isdigit() else None
+                      present={int(x) for x in idx if x and x.isdigit()}
+                      minidx=min(present) if present else None
+                      missing=sorted(set(range(minidx,declared+1))-present) if declared and minidx is not None else []
+                      grids.append({'grid':g['grid_index'],'headers':g['headers'],'row_count':len(idx),'unique_row_indices':len(set(idx)),'missing_index_positions':missing,'declared_rowcount':declared,'row_key_present':keyed,'blank_source_row_key':blank,'total_rows':totals,'numeric_cells':nr,'column_collisions':collisions,'guard':'Preserve unnamed source rows, distinguish total and detail; source view/grid index is part of the key.'})
+                  if not rows:continue
+                  f=io.StringIO();w=csv.writer(f);w.writerow(['source_view','grid_index','source_row_index','source_row_label','source_column_index','native_column_header','raw_cell_value','decimal_value_if_unambiguous','value_status','row_kind','source_page']);w.writerows(rows)
+                  name=re.sub(r'[^A-Za-z0-9_-]+','_',stage)+'.csv';out=put(name,f.getvalue().encode())
+                  check['outputs'].append(out);check['views'].append({'view':stage,'source_path':ref['path'],'cells':len(rows),'grids':grids})
+                  print('normalized',stage,len(rows),'grids',len(grids),flush=True)
+          check['summary']={'views':len(check['views']),'sector_views':sum(x['view'].startswith('sector_') for x in check['views']),'matrix_rows':sum(g['row_count'] for x in check['views'] for g in x['grids']),'keyed_rows':sum(g['row_key_present'] for x in check['views'] for g in x['grids']),'numeric_cells':sum(g['numeric_cells'] for x in check['views'] for g in x['grids']),'all_cells':sum(x['cells'] for x in check['views']),'row_index_gaps':sum(len(g['missing_index_positions']) for x in check['views'] for g in x['grids']),'blank_row_keys':sum(g['blank_source_row_key'] for x in check['views'] for g in x['grids'])}
+          check['guard']='Raw report context only. 2024 explicitly ends in August; no inferred flow, geography, unit or country codes; numeric cells are not distinct transactions. Do not sum totals and detail, or overlapping views. No public rights or canonical counts changed.'
+          put('manifest.json',json.dumps(check,ensure_ascii=False,indent=2).encode())
+          print(json.dumps(check['summary']),flush=True)
+          if len(receipts)!=len(targets) or check['summary']['sector_views']!=12:raise SystemExit('partial evidence preserved; expected scope incomplete')
+          PY
