@@ -1,0 +1,91 @@
+name: Corridor 2024 Portuguese trade gap and Castilla controls
+on:
+  push:
+    branches: ['audit/corridor-observatories-20261118']
+    paths: ['.github/workflows/corridor-pt-trade-controls.yml']
+permissions:
+  contents: read
+jobs:
+  gaps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        task: [ine, jcyl]
+    env:
+      TASK: ${{ matrix.task }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests openpyxl xlrd
+      - name: Fill verified 2024 gaps only; reuse Castilla release
+        run: |
+          python - <<'PY'
+          import os,requests,csv,io,json,hashlib,base64,time,collections,zipfile,re
+          from openpyxl import load_workbook
+          import xlrd
+          T=os.environ['MN_PRIVATE_SINK_TOKEN'];R=os.environ['GITHUB_RUN_ID'];task=os.environ['TASK']
+          base='https://api.github.com/repos/r-sousa/EU-transp-weekly';branch='audit/corridor-observatories-20261118';D='statistics/audits/'
+          auth={'Authorization':'Bearer '+T,'Accept':'application/vnd.github+json'}
+          audit={'run':R,'task':task,'results':[],'errors':[]}
+          def put(n,obj):
+              b=json.dumps(obj,ensure_ascii=False,indent=2).encode()
+              for i in range(5):
+                  r=requests.put(base+'/contents/'+D+n,headers=auth,json={'message':'Preserve targeted 2024 trade controls '+n,'branch':branch,'content':base64.b64encode(b).decode()},timeout=40)
+                  if r.status_code==201:break
+                  if r.status_code not in (409,422):break
+                  time.sleep(2+i*3)
+              r.raise_for_status();print('preserved',n,len(b),flush=True)
+          if task=='ine':
+              # Previously preserved source files contain 2025 for these indicators, not 2024.
+              # Use year-specific official public API and one geography selection, sequential traffic.
+              specs={'0012348':'F101','0013373':'F109','0013374':'F110','0012347':'F75','0012346':'candidate NUTS2024 import counterpart of F113','0014151':'candidate regional intra-EU road modal share'}
+              sess=requests.Session();sess.headers['User-Agent']='Mozilla/5.0 (compatible; MN-Corridor-Audit/1.0)'
+              for code,ref in specs.items():
+                  p={'op':2,'varcd':code,'lang':'PT','Dim1':'S7A2024','Dim2':'11'}
+                  try:
+                      r=sess.get('https://www.ine.pt/ine/json_indicador/pindica.jsp',params=p,timeout=(15,75));r.raise_for_status()
+                      j=r.json();x=j[0] if isinstance(j,list) else j
+                      data=x.get('Dados',{});rr=data.get('2024',[])
+                      if not isinstance(rr,list) or not rr:raise ValueError('2024 absent')
+                      sel=[z for z in rr if str(z.get('geocod'))=='11' and z.get('geodsg')=='Norte']
+                      if len(sel)!=len(rr):raise ValueError('unexpected geographical selection')
+                      if str(x.get('IndicadorCod'))!=code:raise ValueError('indicator mismatch')
+                      keys=[(row.get('geocod'),tuple(sorted((k,v) for k,v in row.items() if re.fullmatch(r'dim_\d+',k)))) for row in sel]
+                      if len(keys)!=len(set(keys)):raise ValueError('duplicate coordinates')
+                      rec={'code':code,'ref':ref,'url':r.url,'sha256':hashlib.sha256(r.content).hexdigest(),'description':x.get('IndicadorDsg'),'last_update':x.get('DataUltimoAtualizacao'),'reference_period':'2024','geography':'Norte (11)','rows':len(sel),'numeric_rows':sum(str(z.get('valor','')).replace('.','',1).replace('-','',1).isdigit() for z in sel),'source_body':j}
+                      put('corridor-ine-2024-'+code+'-v1.json',rec)
+                      audit['results'].append({k:v for k,v in rec.items() if k!='source_body'})
+                  except Exception as e:audit['errors'].append({'code':code,'type':type(e).__name__,'detail':str(e)[:250]})
+                  time.sleep(1.5)
+          else:
+              rr=requests.get(base+'/releases/assets/564454960',headers={'Authorization':'Bearer '+T,'Accept':'application/octet-stream'},timeout=120);rr.raise_for_status()
+              b=rr.content;z=zipfile.ZipFile(io.BytesIO(b));audit['archive']={'sha256':hashlib.sha256(b).hexdigest(),'files':z.namelist()}
+              for name in z.namelist():
+                  if not name.lower().endswith(('.xls','.xlsx','.csv')):continue
+                  # Inspect all compact workbooks; record matching rows with headers, not inferred amounts.
+                  raw=z.read(name)
+                  try:
+                      if name.lower().endswith('.xlsx'):
+                          book=load_workbook(io.BytesIO(raw),read_only=True,data_only=True)
+                          grids=((w.title,list(w.values)) for w in book)
+                      elif name.lower().endswith('.xls'):
+                          book=xlrd.open_workbook(file_contents=raw)
+                          grids=((w.name,[w.row_values(i) for i in range(w.nrows)]) for w in book.sheets())
+                      else:
+                          s=raw.decode('utf-8-sig');grids=[('csv',list(csv.reader(io.StringIO(s))))]
+                      for sheet,grid in grids:
+                          def rowstr(row):return ['' if v is None else str(v) for v in row]
+                          target=[]
+                          for i,row in enumerate(grid):
+                              text=' '.join(rowstr(row))
+                              if re.search(r'(?i)\bPortugal\b|\bTotal\b|\b2024\b',text):
+                                  if len(target)<35:target.append({'row':i+1,'cells':rowstr(row)[:45]})
+                          if target:audit['results'].append({'file':name,'sheet':sheet,'shape':[len(grid),max(map(len,grid),default=0)],'headers':[rowstr(x)[:45] for x in grid[:12]],'matching_rows':target})
+                  except Exception as e:audit['errors'].append({'member':name,'error':type(e).__name__})
+          put('corridor-2024-gap-'+task+'-receipt-v1.json',audit)
+          if not audit['results']:raise SystemExit('no usable responses')
+          PY
