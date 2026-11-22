@@ -1,0 +1,26 @@
+name: Mobilidade Norte – TdR 2.1.4 phase 24 extraction
+on:
+  push:
+    branches: [main]
+    paths: ['extraction_requests/MN-TDR214-PHASE24-20261122.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-tdr214-phase24
+  cancel-in-progress: false
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install geospatial packages
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y osmium-tool
+          python3 -m pip install osmium numpy scipy pyproj
+      - name: Extract retained data and acquire direct source files
+        run: python3 src/mn_public_acquisition/recover_tdr214_phase24.py
