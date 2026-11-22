@@ -1,4 +1,5 @@
 {
   "scope": "F18 dated OSM 2026-11-01 native subset and directed passenger car free-flow model; private data only; preserve raw subset; no synthetic official TEN-T or traffic",
-  "publication_authorized": false
+  "publication_authorized": false,
+  "retry": "Recover exact private checkpoint cd15710b61733276c197fb67eca9d176c5f0fe8b, checksum every part; corrected WayNodeList iteration; no repeated download"
 }
