@@ -1,3 +1,1 @@
-{
-  "scope": "Existing RRN/RFN/CAOP official boundaries; v6 selected junctions; no external reacquisition; identify actual boundary crossing geometry"
-}
+{"scope":"Rerun verified RRN RFN CAOP intersection; explicitly skip null native geometries","publication_authorized":false}
