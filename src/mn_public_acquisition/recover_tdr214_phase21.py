@@ -206,7 +206,7 @@ def flatten(x):
             for a in x.values():
                 if isinstance(a,(dict,list)):yield from flatten(a)
 r=list(flatten(j));assert len(r)==120409
-cw,_=readcsv(PARENT+"municipal-nuts-crosswalk-dgeg-2024.csv");c={x[0]:x for x in cw[1:] if len(x)>8 and re.fullmatch(r"\d{4}",x[0])}
+cw,_=readcsv(PARENT+"municipal-nuts-crosswalk-dgeg-2024.csv");c={x[0]:x for x in cw[1:] if len(x)>8 and x[0]!="1999" and re.fullmatch(r"\d{4}",x[0])}
 assert len(c)==308
 by={};dup=0;label_discrepancies=set();excluded=0
 for x in r:
