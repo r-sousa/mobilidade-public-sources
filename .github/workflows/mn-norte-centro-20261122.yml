@@ -1,0 +1,22 @@
+name: Mobilidade Norte – selected Norte-Centro source recovery
+on:
+  push:
+    branches: [main]
+    paths: ['extraction_requests/MN-NORTE-CENTRO-20261122.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-norte-centro-20261122
+  cancel-in-progress: false
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover exact preserved members; acquire only missing scope; save to private repository
+        run: python3 src/mn_public_acquisition/recover_norte_centro_20261122.py

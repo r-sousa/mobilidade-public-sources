@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "request_id": "MN-NORTE-CENTRO-20261122",
+  "purpose": "Bounded recovery of existing F140/F141,F01/F02,F75/F101,F148,F24 and population evidence for interregional comparison",
+  "preserved_first": true,
+  "private_sink_only": true,
+  "publication_authorized": false,
+  "canonical_source_set_admission": false
+}
