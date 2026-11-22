@@ -1,0 +1,26 @@
+name: Mobilidade Norte – TdR 2.1.4 dependent QA and municipal completion
+on:
+  workflow_run:
+    workflows: ["Mobilidade Norte – TdR 2.1.4 phase 12 extraction"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-tdr214-phase13
+  cancel-in-progress: false
+jobs:
+  recover:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Consolidate verified upstream and fill residual municipal records
+        run: python3 src/mn_public_acquisition/recover_tdr214_phase13.py
