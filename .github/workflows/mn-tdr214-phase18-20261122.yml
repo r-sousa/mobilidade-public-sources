@@ -1,0 +1,23 @@
+name: Mobilidade Norte – TdR 2.1.4 phase 18 extraction
+on:
+  push:
+    branches: [main]
+    paths: ['extraction_requests/MN-TDR214-PHASE18-20261122.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-tdr214-phase18
+  cancel-in-progress: false
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip install pymupdf openpyxl
+      - name: Extract retained data and acquire direct source files
+        run: python3 src/mn_public_acquisition/recover_tdr214_phase18.py
