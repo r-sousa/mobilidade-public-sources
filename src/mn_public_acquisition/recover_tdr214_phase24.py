@@ -217,24 +217,25 @@ def cmd(args):
     return subprocess.run(args,check=True,capture_output=True,text=True,timeout=600).stdout
 with tempfile.TemporaryDirectory() as td:
     d=pathlib.Path(td);p=d/"source.osm.pbf";md5url=URL+".md5"
-    with OPENER.open(urllib.request.Request(md5url,headers={"User-Agent":"MobilidadeNorte/1.0"}),timeout=45) as rr: md5raw=rr.read(1000)
-    expected=md5raw.decode().split()[0];assert re.fullmatch(r"[a-fA-F0-9]{32}",expected)
-    h=hashlib.sha256();m=hashlib.md5();n=0
-    with OPENER.open(urllib.request.Request(URL,headers={"User-Agent":"MobilidadeNorte/1.0"}),timeout=120) as rr,p.open("wb") as f:
-        for b in iter(lambda:rr.read(1024*1024),b""):
-            h.update(b);m.update(b);n+=len(b);f.write(b)
-            if n>600_000_000:raise ValueError("source size cap")
-    assert m.hexdigest().lower()==expected.lower()
-    info=cmd(["osmium","fileinfo","-j",str(p)]);add_blob("source-fileinfo.json",info.encode());add_blob("source-md5.txt",md5raw)
-    source_hash=h.hexdigest()
-    p2=d/"bbox.osm.pbf";p3=d/"roads.osm.pbf"
-    cmd(["osmium","extract","-b",BBOX,"-s","complete_ways",str(p),"-o",str(p2),"--overwrite"])
-    cmd(["osmium","tags-filter",str(p2),"w/highway="+",".join(SPEEDS),"n/place=city,town,village","-o",str(p3),"--overwrite"])
-    source_fileinfo=cmd(["osmium","fileinfo","-j",str(p3)]);add_blob("filtered-fileinfo.json",source_fileinfo.encode())
-    raw=parts("raw/F18-portugal-261101-norte-centro-road-subset.osm.pbf",p3)
-    receipt("F18","source_subset","PASS",source_url=URL,source_bytes=n,source_sha256=source_hash,source_md5=expected,bbox=BBOX,filtered=raw,license="ODbL; © OpenStreetMap contributors; Geofabrik",guard="Full dated source retained at producer with checksum; exact derived native road objects preserved privately; not official TEN-T classification")
-    commit("NATIVE_ROAD_SUBSET_VERIFIED")
-    p.unlink();p2.unlink()
+    # Reuse the exact checksum-verified private checkpoint from the prior run.
+    # No source download or duplicate blob writes when the preserved parts validate.
+    p3=d/"roads.osm.pbf"
+    try:
+        prior=readj(ROOT+"receipt.json")
+        native=next(r for r in prior["requests"] if r["source_id"]=="F18" and r["stage"]=="source_subset" and r["state"]=="PASS")
+        assert native["source_url"]==URL and native["bbox"]==BBOX
+        raw=native["filtered"]; hh=hashlib.sha256(); total=0
+        with p3.open("wb") as f:
+            for part in raw["parts"]:
+                b,blob=read_private(part["path"])
+                assert len(b)==part["bytes"] and sha(b)==part["sha256"]
+                f.write(b);hh.update(b);total+=len(b)
+        assert total==raw["bytes"] and hh.hexdigest()==raw["sha256"]
+        RECEIPTS.append(native)
+        receipt("F18","reuse_checkpoint","PASS",bytes=total,sha256=hh.hexdigest(),parts=len(raw["parts"]))
+    except Exception as e:
+        receipt("F18","reuse_checkpoint","ERROR",error_type=type(e).__name__,detail=str(e)[:200])
+        raise RuntimeError("Preserved source checkpoint must be recovered before further processing") from e
     nodes={};nodeids=array("q");lon=array("d");lat=array("d");src=array("I");dst=array("I");sec=array("f");wayids=array("q");meters=array("f");ways=Counter();seenplaces=[];excluded=Counter();speedflags=Counter();barriers=set()
     def tag_allowed(t):
         a=t.get("motorcar",t.get("motor_vehicle",t.get("vehicle",t.get("access",""))))
@@ -278,7 +279,8 @@ with tempfile.TemporaryDirectory() as td:
             else:speedflags["assumed_class"]+=1
             sf=min(base,speed_tag(t.get("maxspeed:forward","")) or general or base);sb=min(base,speed_tag(t.get("maxspeed:backward","")) or general or base)
             ways[h]+=1
-            for a,b in zip(w.nodes,w.nodes[1:]):
+            wn=list(w.nodes)
+            for a,b in zip(wn,wn[1:]):
                 if not a.location.valid() or not b.location.valid():excluded["missing_location"]+=1;continue
                 if a.ref==b.ref:continue
                 if a.ref in barriers or b.ref in barriers:excluded["explicit_restricted_barrier_arc"]+=1;continue
