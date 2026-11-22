@@ -1,0 +1,24 @@
+name: Mobilidade Norte – TdR 2.1.4 phase 26 extraction
+on:
+  push:
+    branches: [main]
+    paths: ['extraction_requests/MN-TDR214-PHASE26-20261122.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-tdr214-phase26
+  cancel-in-progress: false
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install document extraction packages
+        run: python3 -m pip install beautifulsoup4 pymupdf openpyxl
+      - name: Acquire original release files and extract actual records
+        run: python3 src/mn_public_acquisition/recover_tdr214_phase26.py
