@@ -228,7 +228,7 @@ with tempfile.TemporaryDirectory() as td:
     for mode,df,filter_col,filter_val,name_col in [("road",rr,"estado","Construído","roadnumber"),("rail",rf,"exploracao","Com Exploração","designacao")]:
         for idx,x in df[df[filter_col]==filter_val].iterrows():
             geom=x.geometry
-            if not geom.intersects(shared):continue
+            if geom is None or not hasattr(geom,'is_empty') or geom.is_empty or not geom.intersects(shared):continue
             z=geom.intersection(shared)
             # Boundary overlaps kept separate from crossing candidates.
             for l in intersect_lines(z):overlap.append([mode,idx,x[name_col],l.length])
