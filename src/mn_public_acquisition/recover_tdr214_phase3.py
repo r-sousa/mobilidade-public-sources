@@ -182,7 +182,7 @@ def direct(sid,url,name,cap=40_000_000):
         with OPENER.open(urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0","Accept":"*/*"}),timeout=60) as r: b=r.read(cap+1); typ=r.headers.get("Content-Type","")
         if len(b)>cap: raise ValueError("download exceeds cap")
         if name.endswith(".pdf") and not b.startswith(b"%PDF"): raise ValueError("not PDF")
-        if name.endswith((".xlsx",".zip")) and not b.startswith(b"PK\\x03\\x04".encode().decode("unicode_escape").encode("latin1")): raise ValueError("not ZIP")
+        if name.endswith((".xlsx",".zip")) and not b.startswith(bytes.fromhex("504b0304")): raise ValueError("not ZIP")
         add_blob("raw/"+name,b)
         receipt(sid,"download","PRESERVED_BYTES",url=url,bytes=len(b),sha256=sha(b),mime=typ,path=ROOT+"raw/"+name)
         if name.endswith(".xlsx"):source_xlsx(name,b,ROOT+"raw/"+name,BLOBS["raw/"+name])
