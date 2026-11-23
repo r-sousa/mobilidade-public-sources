@@ -52,14 +52,14 @@ try:
         raw,_=read(r["path"]);check(raw,r["bytes"],r["sha256"])
         doc=fitz.open(stream=raw,filetype="pdf")
         iberia="Iberia" in r["path"]
-        offset=107 if iberia else 176
+        offset=106 if iberia else 175
         assert len(doc)==(4 if iberia else 3)
         items=[]
         for i,page in enumerate(doc):
             png=page.get_pixmap(matrix=fitz.Matrix(1.7,1.7),alpha=False).tobytes("png")
             key=f"generated/NV03-legal-OJ-{offset+i:03}.png"
             out[key]=png;items.append({"path":key,"OJ_page":offset+i,"pixel_sha256":sha(png),"width":round(page.rect.width*1.7),"height":round(page.rect.height*1.7)})
-        result["steps"].append({"id":"NV03-legal-map-pages","state":"PASS","source_path":r["path"],"source_sha256":r["sha256"],"pages":items,"guard":"Full native regulatory map pages as raster; no new spatial line classification, no cropping legend, no georeferencing. OJ page numbering assumed from phase9 zero-based indexes."})
+        result["steps"].append({"id":"NV03-legal-map-pages","state":"PASS","source_path":r["path"],"source_sha256":r["sha256"],"pages":items,"guard":"Full native regulatory map pages as raster; no new spatial line classification, no cropping legend, no georeferencing. OJ page numbering follows phase9 producer's 1-based page-1 indexing."})
         doc.close()
 except Exception as e:
     result["steps"].append({"id":"NV03-legal-map-pages","state":"ERROR","error_type":type(e).__name__})
