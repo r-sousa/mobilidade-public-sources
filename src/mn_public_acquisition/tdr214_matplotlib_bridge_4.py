@@ -1,5 +1,5 @@
 """Execute the pinned, reviewed private Matplotlib chart generator and save only to private branch."""
-import os, json, hashlib, base64, urllib.request, urllib.parse, subprocess, tempfile, pathlib, sys, time
+import os, json, hashlib, base64, urllib.request, urllib.parse, subprocess, tempfile, pathlib, sys, time, re
 REPO="r-sousa/EU-transp-weekly"
 REF="norte2040-tdr214-visual-catalogue"
 ROOT="statistics/assessments/norte2040-tdr214/visuals/"
@@ -32,7 +32,14 @@ with tempfile.TemporaryDirectory() as td:
     # No bridge credentials passed to the renderer process.
     child_env={k:v for k,v in os.environ.items() if k in ("PATH","HOME","LANG","LC_ALL","SYSTEMROOT")}
     child_env["MPLCONFIGDIR"]=str(td/"mpl")
-    subprocess.run([sys.executable,str(td/"build-nv34-nv36.py"),str(td/"nv34-nv36-inputs.json"),str(geo),str(out)],check=True,env=child_env,capture_output=True,timeout=90)
+    proc=subprocess.run([sys.executable,str(td/"build-nv34-nv36.py"),str(td/"nv34-nv36-inputs.json"),str(geo),str(out)],check=False,env=child_env,capture_output=True,timeout=180)
+    if proc.returncode:
+        err=proc.stderr.decode("utf-8",errors="replace")
+        # Log only private generator line number and exception type, never private inputs or raw stderr.
+        loc=re.findall(r'build-nv34-nv36\.py", line (\d+)',err)
+        kind=re.findall(r"^([A-Za-z][A-Za-z0-9_.]*(?:Error|Exception))(?::|$)",err,re.M)
+        print("Renderer diagnostic: line",loc[-1] if loc else "unknown","exception",kind[-1] if kind else "unknown",flush=True)
+        raise SystemExit(1)
     files=list(out.iterdir());assert len(files)==7
     for name in ["candidate-NV34-pendular-geography","candidate-NV35-industrial-access-geography","candidate-NV36-scenario-investment-matrix"]:
         for ext in ["png","svg"]: assert (out/(name+"."+ext)).is_file()
