@@ -1,0 +1,15 @@
+name: Extract AMT railway chart coordinates
+on:
+  push:
+    branches: [main]
+    paths: ['extraction_requests/MN-AMT-CHART-QA-20261123.json']
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pymupdf requests
+      - run: python src/mn_public_acquisition/extract_amt_chart_2025.py
