@@ -3,7 +3,7 @@ import os, json, hashlib, base64, urllib.request, urllib.parse, subprocess, temp
 REPO="r-sousa/EU-transp-weekly"
 REF="norte2040-tdr214-visual-catalogue"
 ROOT="statistics/assessments/norte2040-tdr214/visuals/"
-PINS={"nv34-nv36-inputs.json":"b162d84f365ecae4dfd6b8e70d04d20bad26f52c","build-nv34-nv36.py":"83e7a4ffca208a02d220038cc303b611d5ee2c1a"}
+PINS={"nv34-nv36-inputs.json":"3542f2be4bd940e323ba0217da9b39556d9c77d7","build-nv34-nv36.py":"7fde5d99f7a3dd521559b190650251eef3d68430"}
 READ=os.environ.get("MN_PRIVATE_READ_TOKEN") or os.environ.get("MN_PRIVATE_SINK_TOKEN")
 WRITE=os.environ.get("MN_PRIVATE_SINK_TOKEN")
 if not READ or not WRITE: raise SystemExit("Private bridge tokens unavailable")
