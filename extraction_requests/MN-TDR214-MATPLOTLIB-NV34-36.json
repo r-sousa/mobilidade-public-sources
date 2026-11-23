@@ -1,5 +1,5 @@
 {
-  "scope": "NV34–NV36 render and CAOP integrity, private sink only",
+  "scope": "NV34–NV36 render with verified DTM crosswalk, private sink only",
   "public_data": false,
-  "attempt": 2
+  "attempt": 3
 }
