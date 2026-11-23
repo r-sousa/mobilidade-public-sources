@@ -1,0 +1,24 @@
+name: Mobilidade Norte — visual catalogue bridge (NV04, legal map evidence)
+on:
+  push:
+    branches: [main]
+    paths: ['extraction_requests/MN-TDR214-VISUAL-BRIDGE-20261123.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-tdr214-visual-bridge
+  cancel-in-progress: false
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install required libraries
+        run: python3 -m pip install numpy scipy pyproj pymupdf
+      - name: Reuse preserved inputs and write private results
+        run: python3 src/mn_public_acquisition/tdr214_visual_bridge.py
