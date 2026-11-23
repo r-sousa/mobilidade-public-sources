@@ -17,6 +17,16 @@ for i,p in enumerate(d):
         # chart labels sometimes outlined or image: preserve page image for review
         pix=p.get_pixmap(matrix=fitz.Matrix(1.5,1.5))
         png=pix.tobytes("png")
+        crop=p.get_pixmap(matrix=fitz.Matrix(2,2),clip=fitz.Rect(45,400,553,654)).tobytes("png")
+        # Text transport for chart inspection through repository connector.
+        txt=base64.b64encode(crop)
+        h["Authorization"]="Bearer "+os.environ["MN_PRIVATE_SINK_TOKEN"]
+        cp="statistics/assessments/norte-centro-2026-11-22/phase26/extracted/AMT-rail-2025-figure6-review.b64.txt"
+        oldc=requests.get(u+"/contents/"+cp,params={"ref":ref},headers=h)
+        bd={"message":"Preserve chart image text for visual QA","branch":ref,"content":base64.b64encode(txt).decode()}
+        if oldc.ok:bd["sha"]=oldc.json()["sha"]
+        rc=requests.put(u+"/contents/"+cp,headers=h,json=bd);rc.raise_for_status()
+        print("CROP_PRESERVED",flush=True)
         dest="statistics/assessments/norte-centro-2026-11-22/phase26/extracted/AMT-rail-2025-figure6-page.png"
         h["Authorization"]="Bearer "+os.environ["MN_PRIVATE_SINK_TOKEN"]
         old=requests.get(u+"/contents/"+dest,params={"ref":ref},headers=h)
