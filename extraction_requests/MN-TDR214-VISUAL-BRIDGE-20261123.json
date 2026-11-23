@@ -1,0 +1,10 @@
+{
+  "operation": "visual-catalogue-private-sink",
+  "scope": [
+    "preserved-legal-map-render",
+    "preserved-AMT-source-page",
+    "F18-routing-to-public-facility-reference-points"
+  ],
+  "data_publication": false,
+  "workflow": "mn-tdr214-visual-bridge-20261123.yml"
+}
