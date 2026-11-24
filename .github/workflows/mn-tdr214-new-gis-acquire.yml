@@ -13,12 +13,14 @@ concurrency:
 jobs:
   acquire:
     runs-on: ubuntu-latest
-    timeout-minutes: 22
+    timeout-minutes: 12
     env:
       GH_TOKEN: ${{ github.token }}
       MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
       MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Acquire official IGR-RT strategic geometry and retain licensed sources
-        run: python3 src/mn_public_acquisition/tdr214_cartography_official.py
+      - name: Install small geometry dependencies
+        run: python3 -m pip install shapely==2.1.2 pyproj==3.7.2
+      - name: Acquire pinned static CartoBase ANE files and preserve public assets
+        run: python3 src/mn_public_acquisition/tdr214_cartography_static.py
