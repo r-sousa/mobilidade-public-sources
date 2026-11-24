@@ -1,0 +1,28 @@
+name: NORTE 2040 — fresh NV37–NV40 cartography
+on:
+  workflow_run:
+    workflows: ['NORTE 2040 — new Iberian GIS acquisition']
+    types: [completed]
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['extraction_requests/MN-TDR214-NEW-GIS-RENDER.json']
+permissions:
+  contents: read
+concurrency:
+  group: mn-tdr214-new-gis-render
+  cancel-in-progress: false
+jobs:
+  render:
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned GIS renderer
+        run: python3 -m pip install matplotlib==3.10.8 numpy==2.4.4 shapely==2.1.2 pyproj==3.7.2 scipy==1.16.3
+      - name: Render to private catalogue
+        run: python3 src/mn_public_acquisition/tdr214_cartography_render.py
