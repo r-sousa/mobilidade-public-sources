@@ -5,20 +5,20 @@ on:
     paths: ['extraction_requests/MN-TDR214-NEW-GIS-ACQUIRE.json']
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
+  actions: write
 concurrency:
   group: mn-tdr214-new-gis-acquire
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   acquire:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 18
     env:
+      GH_TOKEN: ${{ github.token }}
       MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
       MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install geometry tooling
-        run: python3 -m pip install osmium==4.3.0 shapely==2.1.2 pyproj==3.7.2
-      - name: Acquire missing Iberian geodata into private sink
-        run: python3 src/mn_public_acquisition/tdr214_cartography_acquire.py
+      - name: Acquire bounded strategic geometry and retain public source assets
+        run: python3 src/mn_public_acquisition/tdr214_cartography_selective.py
