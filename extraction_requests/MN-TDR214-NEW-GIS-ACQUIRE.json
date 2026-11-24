@@ -1,7 +1,8 @@
 {
-  "scope": "bounded missing Iberian strategic geometry and selected facilities; reuse PT official networks and F18",
-  "attempt": 2,
-  "cancel_previous_run": 45310318481,
+  "attempt": 3,
+  "scope": "Official IGN IGR-RT road/rail selective queries; APA hydro discovery; AIP ARP fallback in renderer; retain previous public and private datasets",
+  "previous_acquisition_run": 45312803599,
+  "previous_render_run": 45314053105,
   "public_release": "mn-iberian-strategic-gis-20261124",
   "private_inputs_public": false
 }
