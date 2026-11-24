@@ -1,0 +1,24 @@
+name: NORTE 2040 — Domestic GIS cartography revisions
+on:
+  push:
+    branches: [main]
+    paths: ['extraction_requests/MN-TDR214-GIS-NV37-40-R2.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mn-tdr214-gis-nv37-40-r2
+  cancel-in-progress: false
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned renderer
+        run: python3 -m pip install matplotlib==3.10.8 numpy==2.4.4 shapely==2.1.2 pyproj==3.7.2
+      - name: Render to private catalogue
+        run: python3 src/mn_public_acquisition/tdr214_matplotlib_bridge_5.py
