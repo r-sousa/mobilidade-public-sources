@@ -13,12 +13,12 @@ concurrency:
 jobs:
   acquire:
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 22
     env:
       GH_TOKEN: ${{ github.token }}
       MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
       MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Acquire bounded strategic geometry and retain public source assets
-        run: python3 src/mn_public_acquisition/tdr214_cartography_selective.py
+      - name: Acquire official IGR-RT strategic geometry and retain licensed sources
+        run: python3 src/mn_public_acquisition/tdr214_cartography_official.py
