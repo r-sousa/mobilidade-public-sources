@@ -1,1 +1,7 @@
-{"scope":"fresh NV37–NV40 missing external geometry only","public_data":false,"attempt":1}
+{
+  "scope": "bounded missing Iberian strategic geometry and selected facilities; reuse PT official networks and F18",
+  "attempt": 2,
+  "cancel_previous_run": 45310318481,
+  "public_release": "mn-iberian-strategic-gis-20261124",
+  "private_inputs_public": false
+}
