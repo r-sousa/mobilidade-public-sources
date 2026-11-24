@@ -34,7 +34,7 @@ def file(path,ref,pin=None):
     return blob(m["sha"])
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 
-pins={"renderer":"263b7acefad540cc42da299eb89710860d02e606","config":"0fdc527a637c4021e07c5a3ec9c97e1b61fd63ff","phase5":"964cbf553cd5eac3b05d83cc07a4725d9950c8be","phase24":"68e5ef1f843d39972b818919c7570526fad5c884","hubs":"7397728fe6045f9e2568b30d36e5575f9cf309a5","facilities":"9ffcc08a8cdfd845918752ea5a27e622f80614e2","legal":"dc0d5dd75580c37367f33a76d5ba569df81a5abd"}
+pins={"renderer":"fceb571e003aaf245d7ab2e064535f16ff0d963f","config":"0fdc527a637c4021e07c5a3ec9c97e1b61fd63ff","phase5":"964cbf553cd5eac3b05d83cc07a4725d9950c8be","phase24":"68e5ef1f843d39972b818919c7570526fad5c884","hubs":"7397728fe6045f9e2568b30d36e5575f9cf309a5","facilities":"9ffcc08a8cdfd845918752ea5a27e622f80614e2","legal":"dc0d5dd75580c37367f33a76d5ba569df81a5abd"}
 SRC=ROOT+"cartography/rebuild/"
 OUT=SRC+"render/"
 with tempfile.TemporaryDirectory() as tmp:
@@ -67,6 +67,10 @@ with tempfile.TemporaryDirectory() as tmp:
     m=rec["sources"].get("gisco",{})
     if m.get("state")=="PASS":
         raw=file(SRC+"gisco.gz",REF);assert sha(raw)==m["derived_sha256"];save("gisco.geojson.gz",raw)
+    for name,m in rec.get("official_sources",{}).items():
+        if m.get("state")!="PASS":continue
+        assert re.fullmatch(r"(?:ign-(?:road|rail)-(?:gal-west|gal-east|cyl-north|cyl-south)|apa-douro)",name)
+        raw=file(SRC+m["asset"],REF);assert len(raw)==m["bytes"] and sha(raw)==m["sha256"];save(m["asset"],raw)
     out=td/"render"
     env={k:v for k,v in os.environ.items() if k in ("PATH","HOME","LANG","LC_ALL","SYSTEMROOT")};env["MPLCONFIGDIR"]=str(td/"mpl")
     proc=subprocess.run([sys.executable,str(td/"render.py"),str(td),str(out)],env=env,capture_output=True,timeout=900)
