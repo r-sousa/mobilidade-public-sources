@@ -1,0 +1,20 @@
+name: NV41 focused INE recovery
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/mn-tdr214-nv41-supplement.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  supplement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+      PYTHONPATH: src
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip install openpyxl==3.1.5 requests==2.32.5
+      - run: python3 src/mn_public_acquisition/tdr214_nv41_supplement.py
