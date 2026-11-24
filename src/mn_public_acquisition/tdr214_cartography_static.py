@@ -130,7 +130,7 @@ with tempfile.TemporaryDirectory() as t:
             rec.setdefault("static_metadata",{})[kind]=meta
             print(kind,"verified",len(data),flush=True)
             if kind in ("road","rail"):
-                for tile,region,b in tiles:
+                for tileidx,(tile,region,b) in enumerate(tiles):
                     fs=[]
                     for i,(p,g) in enumerate(data):
                         if not g.intersects(b):continue
@@ -141,7 +141,7 @@ with tempfile.TemporaryDirectory() as t:
                         ref=str(p.get("rotulo") or p.get("nombre") or "")
                         # reference-based classification only if native descriptions not decoded
                         if kind=="road" and not typ:typ="Autovía/autopista (referencia)" if re.match(r"^AP?-\d",ref,re.I) else "Rede principal (CartoBase)"
-                        attrs={**p,"OBJECTID":i,"source_kind":kind,"source_region":region,"source":"CartoBase ANE","estadofisd":status,"tipo_viald":typ,"tipo_lined":typ,"electrifid":"","native_status_unverified":not bool(status)}
+                        attrs={**p,"OBJECTID":i*10+tileidx,"source_kind":kind,"source_region":region,"source":"CartoBase ANE","estadofisd":status,"tipo_viald":typ,"tipo_lined":typ,"electrifid":"","native_status_unverified":not bool(status)}
                         fs.append({"type":"Feature","properties":attrs,"geometry":mapping(g)})
                     save("ign-"+kind+"-"+tile,fs,kind,region,name,td)
             elif kind=="river":
