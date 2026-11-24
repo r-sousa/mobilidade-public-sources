@@ -34,7 +34,7 @@ def file(path,ref,pin=None):
     return blob(m["sha"])
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 
-pins={"renderer":"fcafec186c2a5050ef181cf151270273f928436e","config":"0fdc527a637c4021e07c5a3ec9c97e1b61fd63ff","phase5":"964cbf553cd5eac3b05d83cc07a4725d9950c8be","phase24":"68e5ef1f843d39972b818919c7570526fad5c884","hubs":"7397728fe6045f9e2568b30d36e5575f9cf309a5","facilities":"9ffcc08a8cdfd845918752ea5a27e622f80614e2","legal":"dc0d5dd75580c37367f33a76d5ba569df81a5abd"}
+pins={"renderer":"b1d7a881cac5e1b436cefb808149c939923bb629","config":"0fdc527a637c4021e07c5a3ec9c97e1b61fd63ff","phase5":"964cbf553cd5eac3b05d83cc07a4725d9950c8be","phase24":"68e5ef1f843d39972b818919c7570526fad5c884","hubs":"7397728fe6045f9e2568b30d36e5575f9cf309a5","facilities":"9ffcc08a8cdfd845918752ea5a27e622f80614e2","legal":"dc0d5dd75580c37367f33a76d5ba569df81a5abd"}
 SRC=ROOT+"cartography/rebuild/"
 OUT=SRC+"render/"
 with tempfile.TemporaryDirectory() as tmp:
