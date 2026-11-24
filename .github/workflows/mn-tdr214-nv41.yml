@@ -1,0 +1,25 @@
+name: NORTE 2040 — NV41 road safety
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['extraction_requests/MN-TDR214-NV41.json']
+permissions:
+  contents: read
+concurrency:
+  group: mn-tdr214-nv41
+  cancel-in-progress: false
+jobs:
+  acquire-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    env:
+      MN_PRIVATE_READ_TOKEN: ${{ secrets.MN_PRIVATE_READ_TOKEN }}
+      MN_PRIVATE_SINK_TOKEN: ${{ secrets.MN_PRIVATE_SINK_TOKEN }}
+      PYTHONPATH: src
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install small analysis dependencies
+        run: python3 -m pip install openpyxl==3.1.5 requests==2.32.5 matplotlib==3.10.8 numpy==2.4.4
+      - name: Reuse F49 and F88; acquire remaining sources and render NV41
+        run: python3 src/mn_public_acquisition/tdr214_nv41.py
