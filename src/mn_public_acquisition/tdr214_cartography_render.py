@@ -71,6 +71,35 @@ with tempfile.TemporaryDirectory() as tmp:
         if m.get("state")!="PASS":continue
         assert re.fullmatch(r"(?:ign-(?:road|rail)-(?:gal-west|gal-east|cyl-north|cyl-south)|apa-douro|siane-urban)",name)
         raw=file(SRC+m["asset"],REF);assert len(raw)==m["bytes"] and sha(raw)==m["sha256"];save(m["asset"],raw)
+    # Small native CartoBase code lists, pinned to upstream Git blobs.
+    import struct
+    dictpins={"EstadoFisico":"db27fefe5fdf8daf90a7de83879249f8319b9443","TipoCarretera":"cb6a484b694e5c73ffc7e7bffe7cccf1abdaead1","TipoFFCC":"b16cbe39c7f17cc9d25ac0aae1fd3e3d07fa601c","BooleanSymbolValue":"dba2807ad585da7c4025afab3e8f3b034858aae8","AnchoVia":"fda04ec4c02ac0a95dffd6cb12448ef021eabcdf","NumeroVias":"d7050186d077830b6e57c30fe297afa434031ae0","Orden":"e43c0ebd80b92dd6ffc090a25eef8478ce85e8f7"}
+    dd={};diag={}
+    for name,pin in dictpins.items():
+        try:
+            fname="lve_"+name+".dbf";url="https://raw.githubusercontent.com/rOpenSpain/mapSpain/main/data-raw/listas_de_valores_enumerados/"+fname
+            with opener.open(url,timeout=15) as f:raw=f.read(100001)
+            assert len(raw)<100001 and hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()==pin
+            n,h,rl=struct.unpack_from("<IHH",raw,4);fields=[]
+            for i in range(32,h-1,32):
+                if raw[i]==13:break
+                fields.append((raw[i:i+11].split(b"\0")[0].decode("ascii").lower(),raw[i+16]))
+            rows=[]
+            for j in range(n):
+                off=h+j*rl
+                if raw[off:off+1]==b"*":continue
+                off+=1;row={}
+                for key,l in fields:
+                    row[key]=raw[off:off+l].decode("utf-8",errors="replace").strip();off+=l
+                rows.append(row)
+            assert rows and all("descrip" in row for row in rows)
+            key=next(k for k in rows[0] if k!="descrip" and k in ("valor","codigo","cod","id","value"))
+            dd[name]={row[key]:row["descrip"] for row in rows};diag[name]={"pin":pin,"sha256":sha(raw),"fields":fields,"url":url}
+            save(fname,raw)
+            if os.environ.get("GH_TOKEN"):
+                subprocess.run(["gh","release","upload","mn-iberian-strategic-gis-20261124",str(td/fname),"--repo","r-sousa/mobilidade-public-sources","--clobber"],check=True,stdout=subprocess.DEVNULL)
+        except Exception as e:diag[name]={"error":type(e).__name__,"detail":str(e)[:120]}
+    save("cartobase-dictionaries.json",json.dumps({"tables":dd,"metadata":diag},ensure_ascii=False).encode())
     out=td/"render"
     env={k:v for k,v in os.environ.items() if k in ("PATH","HOME","LANG","LC_ALL","SYSTEMROOT")};env["MPLCONFIGDIR"]=str(td/"mpl")
     proc=subprocess.run([sys.executable,str(td/"render.py"),str(td),str(out)],env=env,capture_output=True,timeout=900)
